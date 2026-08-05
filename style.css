@@ -9,10 +9,6 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    /* Background image + optional gradient overlay.
-       Replace `assets/cherry.jpg` with the correct path to your cherry image in the repo.
-       If you prefer a plain image without overlay, use: background: url("assets/cherry.jpg") center/cover no-repeat fixed;
-    */
     background: linear-gradient(135deg, rgba(253,231,233,0.35), rgba(255,246,235,0.25)), url("assets/cherry.jpg") center/cover no-repeat fixed;
     overflow:hidden;
 
