@@ -9,7 +9,7 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear
+    background: linear-gradient(135deg, #fde7e9, #fff6eb)
     overflow:hidden;
 }
 .container{
@@ -21,7 +21,7 @@ body{
     overflow:hidden;
     position:relative;
     box-shadow:0 20px 60px rgba(0,0,0,.12);
-    background-image: url('Cherry Picnic Aesthetic _ Red Gingham Summer Wallpaper with Vintage Vibes.jpg')
+    background-image: 'Cherry Picnic Aesthetic _ Red Gingham Summer Wallpaper with Vintage Vibes.jpg');
 }
 .left-panel{
     position:absolute;
