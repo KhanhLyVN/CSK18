@@ -11,6 +11,9 @@ body{
     align-items:center;
     background:linear-gradient(135deg,#fde7e9,#fff6eb);
     overflow:hidden;
+    background-image: url("");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 .container{
     width:1200px;
