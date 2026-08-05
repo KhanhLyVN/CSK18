@@ -3,16 +3,17 @@
     padding:0;
     box-sizing:border-box;
     font-family:"Poppins",sans-serif;
-    background-image: url("Cherry Picnic Aesthetic _ Red Gingham Summer Wallpaper with Vintage Vibes.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 body{
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:linear-gradient(135deg,#fde7e9,#fff6eb);
+    /* Background image + optional gradient overlay.
+       Replace `assets/cherry.jpg` with the correct path to your cherry image in the repo.
+       If you prefer a plain image without overlay, use: background: url("assets/cherry.jpg") center/cover no-repeat fixed;
+    */
+    background: linear-gradient(135deg, rgba(253,231,233,0.35), rgba(255,246,235,0.25)), url("assets/cherry.jpg") center/cover no-repeat fixed;
     overflow:hidden;
 
 }
