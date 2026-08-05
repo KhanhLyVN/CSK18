@@ -1,260 +1,149 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Support Center</title>
-
     <link rel="stylesheet" href="style.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
-
 <body>
-
     <div class="container" id="container">
-
         <!--================ LEFT PANEL =================-->
-
         <div class="left-panel">
-
             <div class="form-wrapper">
-
                 <!-- LOGIN -->
-
                 <form class="login-form active-form" id="loginForm">
-
                     <h1>Welcome Back</h1>
-
                     <p>
                         Đăng nhập để tiếp tục sử dụng hệ thống
                         Hỗ trợ & Phản hồi người dùng.
                     </p>
-
                     <div class="input-box">
-
                         <i class="fa-solid fa-envelope"></i>
-
                         <input
                             type="email"
                             placeholder="Email"
                             required>
-
                     </div>
-
                     <div class="input-box password-box">
-
                         <i class="fa-solid fa-lock"></i>
-
                         <input
                             type="password"
                             placeholder="Mật khẩu"
                             id="loginPassword"
                             required>
-
                         <span class="toggle-password">
-
                             <i class="fa-solid fa-eye"></i>
-
                         </span>
-
                     </div>
-
                     <div class="option">
-
                         <label>
-
                             <input type="checkbox">
-
                             Ghi nhớ đăng nhập
-
                         </label>
-
                         <a href="#">Quên mật khẩu?</a>
-
                     </div>
-
                     <button class="btn">
-
                         Đăng nhập
-
                     </button>
-
                     <div class="line">
-
                         <span>Hoặc</span>
-
                     </div>
-
                     <button
                         type="button"
                         class="google-btn">
-
                         <i class="fa-brands fa-google"></i>
-
                         Đăng nhập bằng Google
-
                     </button>
-
                     <p class="switch-text">
-
                         Chưa có tài khoản?
-
                         <span id="showRegister">
-
                             Đăng ký
-
                         </span>
-
                     </p>
-
                 </form>
-
                 <!-- REGISTER -->
-
                 <form class="register-form" id="registerForm">
-
                     <h1>Create Account</h1>
-
                     <p>
-
                         Tạo tài khoản mới để gửi phản hồi
                         và theo dõi yêu cầu hỗ trợ.
-
                     </p>
-
                     <div class="input-box">
-
                         <i class="fa-solid fa-user"></i>
-
                         <input
                             type="text"
                             placeholder="Họ và tên"
                             required>
-
                     </div>
-
                     <div class="input-box">
-
                         <i class="fa-solid fa-envelope"></i>
-
                         <input
                             type="email"
                             placeholder="Email"
                             required>
-
                     </div>
-
                     <div class="input-box">
-
                         <i class="fa-solid fa-phone"></i>
-
                         <input
                             type="text"
                             placeholder="Số điện thoại">
-
                     </div>
-
                     <div class="input-box password-box">
-
                         <i class="fa-solid fa-lock"></i>
-
                         <input
                             type="password"
                             id="registerPassword"
                             placeholder="Mật khẩu"
                             required>
-
                         <span class="toggle-password">
-
                             <i class="fa-solid fa-eye"></i>
-
                         </span>
-
                     </div>
-
                     <div class="input-box password-box">
-
                         <i class="fa-solid fa-lock"></i>
-
                         <input
                             type="password"
                             placeholder="Xác nhận mật khẩu"
                             required>
-
                         <span class="toggle-password">
-
                             <i class="fa-solid fa-eye"></i>
-
                         </span>
-
                     </div>
-
                     <button class="btn">
-
                         Đăng ký
-
                     </button>
-
                     <p class="switch-text">
-
                         Đã có tài khoản?
-
                         <span id="showLogin">
-
                             Đăng nhập
-
                         </span>
-
                     </p>
-
                 </form>
-
             </div>
-
         </div>
-
         <!--================ RIGHT PANEL =================-->
-
         <div class="right-panel">
-
             <div class="overlay">
-
                 <h1>
-
                     Welcome to Support Center
-
                 </h1>
-
                 <p>
-
                     Chúng tôi luôn sẵn sàng tiếp nhận,
                     hỗ trợ và phản hồi mọi yêu cầu của bạn.
-
                 </p>
-
                 <img
                     src="download.png"
                     alt="illustration">
-
             </div>
-
         </div>
-
     </div>
-
     <script src="script.js"></script>
-
 </body>
-
 </html>
