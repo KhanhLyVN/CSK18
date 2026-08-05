@@ -22,9 +22,6 @@ body{
     overflow:hidden;
     position:relative;
     box-shadow:0 20px 60px rgba(0,0,0,.12);
-    background-image: url("Cherry Picnic Aesthetic _ Red Gingham Summer Wallpaper with Vintage Vibes.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 .left-panel{
     position:absolute;
