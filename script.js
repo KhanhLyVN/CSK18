@@ -84,7 +84,6 @@ registerForm.addEventListener("submit", async (e) => {
         alert(error.message);
     }
 });
-
 const googleLogin = document.getElementById("googleLogin");
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 googleLogin.addEventListener("click", async () => {
