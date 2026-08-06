@@ -9,9 +9,8 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(135deg, rgba(253,231,233,0.35), rgba(255,246,235,0.25)), url("assets/Cherry Picnic Aesthetic _ Red Gingham Summer Wallpaper with Vintage Vibes.jpg.jpg") center/cover no-repeat fixed;
+    background:linear-gradient(135deg,#fde7e9,#fff6eb);
     overflow:hidden;
-
 }
 .container{
     width:1200px;
