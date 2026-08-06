@@ -84,12 +84,16 @@ registerForm.addEventListener("submit", async (e) => {
         alert(error.message);
     }
 });
+// ================================
+// FIREBASE GOOGLE LOGIN
+// ================================
 const googleLogin = document.getElementById("googleLogin");
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 googleLogin.addEventListener("click", async () => {
     try {
         const result = await auth.signInWithPopup(googleProvider);
         const user = result.user;
+        // Kiểm tra xem user đã có trong Firestore chưa, nếu chưa thì tạo mới
         const userRef = db.collection("users").doc(user.uid);
         const userSnap = await userRef.get();
         if (!userSnap.exists) {
