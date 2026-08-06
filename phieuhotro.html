@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phiếu Yêu Cầu Hỗ Trợ Học Viên</title>
+<link href="phieuhotro.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-left">
+      <div class="eyebrow">Trung tâm hỗ trợ học viên</div>
+      <h1>Phiếu Yêu Cầu Hỗ Trợ</h1>
+    </div>
+    <div class="masthead-right">
+      <div class="clock" id="todayStr">—</div>
+      <div class="num-live" id="livePreviewNum">HV-0000</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- FORM -->
+    <div class="card">
+
+      <div class="form-view" id="formView">
+        <div class="section-title"><span class="idx">01</span> Thông tin học viên</div>
+        <p class="section-desc">Vui lòng điền đúng thông tin để chúng tôi liên hệ và xác minh nhanh chóng.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Họ và tên <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="Nguyễn Văn A">
+          </div>
+          <div class="field">
+            <label>Ngày gửi yêu cầu <span class="opt">(tự động, có thể đổi)</span></label>
+            <input type="date" id="fDate">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" id="fEmail" placeholder="ban@email.com">
+          </div>
+          <div class="field">
+            <label>Số điện thoại <span class="opt">(không bắt buộc)</span></label>
+            <input type="tel" id="fPhone" placeholder="09xx xxx xxx">
+          </div>
+        </div>
+        <div class="field">
+          <label>Khóa học <span class="opt">*</span></label>
+          <input type="text" id="fCourse" placeholder="VD: Lập trình Python cơ bản - Lớp K15">
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-title"><span class="idx">02</span> Loại yêu cầu</div>
+        <p class="section-desc">Chọn nhóm phù hợp nhất với nội dung bạn cần hỗ trợ.</p>
+
+        <div class="chip-grid" id="chipGrid"></div>
+
+        <hr class="divider">
+
+        <div class="section-title"><span class="idx">03</span> Nội dung chi tiết</div>
+        <p class="section-desc">Mô tả càng cụ thể, thời gian xử lý càng nhanh.</p>
+
+        <div class="field">
+          <label>Tiêu đề <span class="req">*</span></label>
+          <input type="text" id="fTitle" placeholder="Tóm tắt ngắn gọn vấn đề của bạn">
+        </div>
+        <div class="field">
+          <label>Mô tả chi tiết <span class="req">*</span></label>
+          <textarea id="fDesc" placeholder="Vui lòng mô tả rõ vấn đề, thời điểm xảy ra, và các bước bạn đã thử (nếu có)..."></textarea>
+        </div>
+        <div class="field">
+          <label>Tệp đính kèm <span class="opt">(ảnh chụp màn hình, minh chứng...)</span></label>
+          <div class="file-drop" id="fileDrop">
+            <strong>Chọn tệp</strong> hoặc kéo thả vào đây
+            <div class="file-name" id="fileName"></div>
+          </div>
+          <input type="file" id="fFile" style="display:none">
+        </div>
+
+        <div class="error-text" id="errorText">Vui lòng điền đầy đủ các trường bắt buộc (*) và chọn loại yêu cầu.</div>
+
+        <div class="submit-row">
+          <button class="btn-submit" id="submitBtn">Gửi yêu cầu</button>
+          <span class="submit-hint">Thời gian phản hồi trung bình: 12-24 giờ</span>
+        </div>
+      </div>
+
+      <div class="success-view" id="successView">
+        <div class="check">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h2>Đã gửi yêu cầu thành công</h2>
+        <p id="successText">Phiếu của bạn đã được ghi nhận. Vui lòng lưu lại mã số để tra cứu tiến trình xử lý.</p>
+        <button class="btn-again" id="againBtn">Tạo yêu cầu mới</button>
+      </div>
+
+    </div>
+
+    <!-- TICKET STUB -->
+    <div class="stub-wrap">
+      <div class="stub-label">Phiếu của bạn</div>
+      <div class="stub">
+        <div class="stub-top">
+          <div class="k1">Mã yêu cầu</div>
+          <div class="num" id="stubNum">HV-0000</div>
+          <div class="cat" id="stubCat">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <span>Chưa chọn loại</span>
+          </div>
+          <div class="course" id="stubCourse"></div>
+        </div>
+        <div class="perf"></div>
+        <div class="stub-body">
+          <div class="stub-row"><span class="k">Học viên</span><span class="v" id="stubName">—</span></div>
+          <div class="stub-row"><span class="k">Khóa học</span><span class="v" id="stubCourseBody">—</span></div>
+          <div class="stub-row"><span class="k">Tiêu đề</span><span class="v" id="stubTitle">—</span></div>
+          <div class="stub-row"><span class="k">Ngày gửi</span><span class="v" id="stubDate">—</span></div>
+          <div class="stub-status"><span class="dot"></span> Đang chờ xác nhận</div>
+          <div class="stub-note">Giữ lại mã yêu cầu này để tra cứu tình trạng xử lý trong mục <a href="#">"Yêu cầu của tôi"</a>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="module" src="phieuhotro.js"></script>
+</body>
+</html>
