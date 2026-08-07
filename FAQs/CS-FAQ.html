@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>CS Center - Quản Lý FAQ</title>
+  <style>
+    :root { --maroon: #5D0703; --maroon-deep: #3E0402; --cream: #EEDCC8; --cream-pale: #FBF4E9; --paper: #FFFBF5; --line: rgba(93,7,3,0.18); --danger: #991b1b; }
+    body { background-color: var(--paper); color: #2A1712; padding: 30px; font-family: 'Segoe UI', serif; }
+    .container { max-width: 800px; margin: 0 auto; background: var(--cream-pale); padding: 30px; border-radius: 12px; border: 1px solid var(--line); }
+    h2 { color: var(--maroon-deep); text-align: center; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--maroon-deep); }
+input, select, textarea { 
+  width: 100%; 
+  padding: 10px; 
+  border: 1px solid var(--line); 
+  border-radius: 6px; 
+  background: var(--paper); 
+  box-sizing: border-box; 
+  resize: vertical; /* Chỉ cho phép kéo giãn theo chiều dọc */
+}    button.btn-add { background: var(--maroon); color: var(--cream-pale); padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+    table { width: 100%; margin-top: 25px; border-collapse: collapse; background: var(--paper); }
+    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; }
+    th { background: var(--cream); color: var(--maroon-deep); }
+    .btn-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Quản Lý FAQ - CS Center</h2>
+  
+  <form id="csForm">
+    <div class="form-group">
+      <label>Danh mục:</label>
+      <select id="category">
+        <option value="Tài khoản & Đăng nhập">Tài khoản & Đăng nhập</option>
+        <option value="Lịch học & Thời gian">Lịch học & Thời gian</option>
+        <option value="Học phí & Thanh toán">Học phí & Thanh toán</option>
+        <option value="Chứng chỉ & Kết quả">Chứng chỉ & Kết quả</option>
+        <option value="Kỹ thuật & Hệ thống">Kỹ thuật & Hệ thống</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Câu hỏi:</label>
+      <input type="text" id="question" placeholder="Nhập câu hỏi..." required>
+    </div>
+    <div class="form-group">
+      <label>Câu trả lời:</label>
+      <textarea id="answer" rows="3" placeholder="Nhập câu trả lời..." required></textarea>
+    </div>
+    <button type="submit" class="btn-add">Lưu & Cập Nhật FAQ</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr><th>STT</th><th>Danh mục</th><th>Câu hỏi</th><th>Xóa</th></tr>
+    </thead>
+    <tbody id="adminTable"></tbody>
+  </table>
+</div>
+
+<script>
+  function getLocalFaqs() {
+    return JSON.parse(localStorage.getItem('my_faqs')) || [];
+  }
+
+  function renderAdminTable() {
+    const faqs = getLocalFaqs();
+    const tbody = document.getElementById('adminTable');
+    tbody.innerHTML = '';
+    faqs.forEach((item, index) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td><b>${item.category}</b></td>
+          <td>${item.question}</td>
+          <td><button class="btn-del" onclick="deleteFaq(${index})">Xóa</button></td>
+        </tr>
+      `;
+    });
+  }
+
+  document.getElementById('csForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const faqs = getLocalFaqs();
+    faqs.unshift({
+      category: document.getElementById('category').value,
+      question: document.getElementById('question').value,
+      answer: document.getElementById('answer').value
+    });
+    localStorage.setItem('my_faqs', JSON.stringify(faqs));
+    document.getElementById('question').value = '';
+    document.getElementById('answer').value = '';
+    renderAdminTable();
+    alert('Đã lưu câu hỏi thành công!');
+  });
+
+  function deleteFaq(index) {
+    if (confirm('Bạn muốn xóa câu hỏi này?')) {
+      const faqs = getLocalFaqs();
+      faqs.splice(index, 1);
+      localStorage.setItem('my_faqs', JSON.stringify(faqs));
+      renderAdminTable();
+    }
+  }
+
+  renderAdminTable();
+</script>
+</body>
+</html>

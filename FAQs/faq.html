@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Hỏi Đáp Thường Gặp (FAQ)</title>
+
+  <style>
+    :root {
+      --maroon: #5D0703;
+      --maroon-deep: #3E0402;
+      --maroon-soft: #7A1410;
+      --cream: #EEDCC8;
+      --cream-pale: #FBF4E9;
+      --paper: #FFFBF5;
+      --gold: #B08A4E;
+      --ink: #2A1712;
+      --ink-soft: #6B5348;
+      --line: rgba(93, 7, 3, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      padding: 40px 15px;
+      line-height: 1.6;
+    }
+
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--cream-pale);
+      padding: 35px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(62, 4, 2, 0.05);
+    }
+
+    .faq-title {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--maroon-deep);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      position: relative;
+      padding-bottom: 12px;
+    }
+
+    .faq-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: var(--gold);
+      border-radius: 2px;
+    }
+
+    /* Controls: Tìm kiếm & Bộ lọc */
+    .faq-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .faq-search {
+      flex: 2;
+      min-width: 220px;
+      padding: 12px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: var(--paper);
+      color: var(--ink);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .faq-search::placeholder {
+      color: var(--ink-soft);
+    }
+
+    .faq-search:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(176, 138, 78, 0.2);
+    }
+
+    .faq-category-filter {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: var(--paper);
+      color: var(--ink);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .faq-category-filter:focus {
+      border-color: var(--gold);
+    }
+
+    /* Accordion List */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--paper);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .faq-item:hover {
+      border-color: var(--gold);
+    }
+
+    .faq-header {
+      padding: 18px 22px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      background-color: var(--paper);
+      transition: background-color 0.25s ease;
+    }
+
+    .faq-header:hover {
+      background-color: var(--cream);
+    }
+
+    .faq-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background-color: var(--maroon);
+      color: var(--cream-pale);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+    }
+
+    .faq-question-text {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--maroon-deep);
+    }
+
+    .faq-icon {
+      font-size: 22px;
+      color: var(--gold);
+      transition: transform 0.3s ease, color 0.3s ease;
+      font-weight: bold;
+      margin-left: 15px;
+      line-height: 1;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+      background-color: var(--paper);
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-size: 15px;
+      padding: 0 22px;
+    }
+
+    /* Accordion mở */
+    .faq-item.active {
+      border-color: var(--gold);
+      box-shadow: 0 4px 12px rgba(93, 7, 3, 0.08);
+    }
+
+    .faq-item.active .faq-header {
+      background-color: var(--cream);
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+      color: var(--maroon-soft);
+    }
+
+    .faq-item.active .faq-answer {
+      padding: 18px 22px;
+      max-height: 1000px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--ink-soft);
+      font-style: italic;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="faq-container">
+  <h1 class="faq-title">Câu Hỏi Thường Gặp</h1>
+
+  <div class="faq-controls">
+    <input type="text" id="searchInput" class="faq-search" placeholder="Nhập từ khóa tìm kiếm (có dấu hoặc không dấu)...">
+    <select id="categoryFilter" class="faq-category-filter">
+      <option value="all">Tất cả chủ đề</option>
+    </select>
+  </div>
+
+  <div class="faq-list" id="faqList"></div>
+
+  <div id="noResults" class="no-results">
+    Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.
+  </div>
+</div>
+
+<script>
+  let faqData = [];
+
+  const faqListContainer = document.getElementById('faqList');
+  const searchInput = document.getElementById('searchInput');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const noResults = document.getElementById('noResults');
+
+  // Loại bỏ dấu tiếng Việt để phục vụ tìm kiếm thông minh
+  function removeVietnameseTones(str) {
+    if (!str) return '';
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+      .toLowerCase();
+  }
+
+  // Chống lỗi định dạng HTML & hỗ trợ xuống dòng
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+      .replace(/\n/g, "<br>");
+  }
+
+  // Tải dữ liệu từ LocalStorage (Không qua Server/Cloud)
+  function loadFaqs() {
+    const rawData = localStorage.getItem('my_faqs');
+    const parsedData = rawData ? JSON.parse(rawData) : [];
+
+    faqData = parsedData.map((item, index) => ({
+      ...item,
+      stt: index + 1
+    }));
+
+    initCategories();
+    filterData();
+  }
+
+  // Khởi tạo bộ lọc danh mục
+  function initCategories() {
+    const selected = categoryFilter.value;
+    categoryFilter.innerHTML = '<option value="all">Tất cả chủ đề</option>';
+
+    const categories = [...new Set(faqData.map(item => item.category))].filter(Boolean);
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      categoryFilter.appendChild(option);
+    });
+
+    categoryFilter.value = categories.includes(selected) ? selected : 'all';
+  }
+
+  // Hiển thị danh sách FAQ
+  function renderFAQ(data) {
+    faqListContainer.innerHTML = '';
+
+    if (data.length === 0) {
+      noResults.style.display = 'block';
+      return;
+    }
+
+    noResults.style.display = 'none';
+
+    data.forEach((item) => {
+      const faqItem = document.createElement('div');
+      faqItem.className = 'faq-item';
+      faqItem.innerHTML = `
+        <div class="faq-header" onclick="toggleFAQ(this)">
+          <div>
+            <span class="faq-badge">${escapeHTML(item.category || 'Thông thường')}</span>
+            <div class="faq-question-text">${item.stt}. ${escapeHTML(item.question)}</div>
+          </div>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">${escapeHTML(item.answer)}</div>
+      `;
+      faqListContainer.appendChild(faqItem);
+    });
+  }
+
+  // Mở / Đóng Accordion
+  function toggleFAQ(headerElement) {
+    const faqItem = headerElement.parentElement;
+    const isActive = faqItem.classList.contains('active');
+
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.classList.remove('active');
+    });
+
+    if (!isActive) {
+      faqItem.classList.add('active');
+    }
+  }
+
+  // Lọc dữ liệu theo từ khóa và danh mục
+  function filterData() {
+    const rawSearch = searchInput.value.trim();
+    const searchTerm = removeVietnameseTones(rawSearch);
+    const selectedCategory = categoryFilter.value;
+
+    const filtered = faqData.filter(item => {
+      const q = removeVietnameseTones(item.question || '');
+      const a = removeVietnameseTones(item.answer || '');
+      
+      const matchesSearch = q.includes(searchTerm) || a.includes(searchTerm);
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    renderFAQ(filtered);
+  }
+
+  // Bắt sự kiện
+  searchInput.addEventListener('input', filterData);
+  categoryFilter.addEventListener('change', filterData);
+
+  // Lắng nghe sự thay đổi từ trang CS (khi mở trên cùng trình duyệt)
+  window.addEventListener('storage', loadFaqs);
+
+  // Tải dữ liệu ban đầu
+  loadFaqs();
+</script>
+
+</body>
+</html>
