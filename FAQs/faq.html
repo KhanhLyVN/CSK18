@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trang Hỏi Đáp Thường Gặp (FAQ)</title>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
 
   <style>
     :root {
@@ -17,6 +23,7 @@
       --ink: #2A1712;
       --ink-soft: #6B5348;
       --line: rgba(93, 7, 3, 0.18);
+      --danger: #991b1b;
     }
 
     * {
@@ -66,7 +73,6 @@
       border-radius: 2px;
     }
 
-    /* Controls: Tìm kiếm & Bộ lọc */
     .faq-controls {
       display: flex;
       gap: 15px;
@@ -114,7 +120,6 @@
       border-color: var(--gold);
     }
 
-    /* Accordion List */
     .faq-list {
       display: flex;
       flex-direction: column;
@@ -187,7 +192,6 @@
       padding: 0 22px;
     }
 
-    /* Accordion mở */
     .faq-item.active {
       border-color: var(--gold);
       box-shadow: 0 4px 12px rgba(93, 7, 3, 0.08);
@@ -206,14 +210,22 @@
       padding: 18px 22px;
       max-height: 1000px;
       border-top: 1px dashed var(--line);
+      transition: max-height 0.5s ease-in-out, padding 0.3s ease;
     }
 
-    .no-results {
+    .status-box {
       text-align: center;
       padding: 40px 20px;
       color: var(--ink-soft);
       font-style: italic;
-      display: none;
+    }
+
+    .error-box {
+      color: var(--danger);
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      font-style: normal;
     }
   </style>
 </head>
@@ -223,15 +235,17 @@
   <h1 class="faq-title">Câu Hỏi Thường Gặp</h1>
 
   <div class="faq-controls">
-    <input type="text" id="searchInput" class="faq-search" placeholder="Nhập từ khóa tìm kiếm (có dấu hoặc không dấu)...">
+    <input type="text" id="searchInput" class="faq-search" placeholder="Nhập từ khóa tìm kiếm (không dấu hoặc có dấu)...">
     <select id="categoryFilter" class="faq-category-filter">
       <option value="all">Tất cả chủ đề</option>
     </select>
   </div>
 
-  <div class="faq-list" id="faqList"></div>
+  <div class="faq-list" id="faqList">
+    <div class="status-box">⏳ Đang tải danh sách câu hỏi...</div>
+  </div>
 
-  <div id="noResults" class="no-results">
+  <div id="noResults" class="status-box" style="display: none;">
     Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.
   </div>
 </div>
@@ -244,7 +258,6 @@
   const categoryFilter = document.getElementById('categoryFilter');
   const noResults = document.getElementById('noResults');
 
-  // Loại bỏ dấu tiếng Việt để phục vụ tìm kiếm thông minh
   function removeVietnameseTones(str) {
     if (!str) return '';
     return str
@@ -254,7 +267,6 @@
       .toLowerCase();
   }
 
-  // Chống lỗi định dạng HTML & hỗ trợ xuống dòng
   function escapeHTML(str) {
     if (!str) return '';
     return str
@@ -266,21 +278,44 @@
       .replace(/\n/g, "<br>");
   }
 
-  // Tải dữ liệu từ LocalStorage (Không qua Server/Cloud)
-  function loadFaqs() {
-    const rawData = localStorage.getItem('my_faqs');
-    const parsedData = rawData ? JSON.parse(rawData) : [];
-
-    faqData = parsedData.map((item, index) => ({
-      ...item,
-      stt: index + 1
-    }));
-
-    initCategories();
-    filterData();
+  function getTimestampMillis(ts) {
+    if (!ts) return 0;
+    if (typeof ts.toMillis === 'function') return ts.toMillis();
+    if (ts.seconds) return ts.seconds * 1000;
+    if (ts instanceof Date) return ts.getTime();
+    return new Date(ts).getTime() || 0;
   }
 
-  // Khởi tạo bộ lọc danh mục
+  if (typeof db === 'undefined') {
+    faqListContainer.innerHTML = `
+      <div class="status-box error-box">
+        ⚠️ <b>Chưa cấu hình Firebase:</b> Vui lòng kiểm tra lại file <code>firebase-config.js</code>.
+      </div>`;
+  } else {
+    db.collection('faqs').onSnapshot(snapshot => {
+      let rawData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      rawData.sort((a, b) => getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt));
+
+      faqData = rawData.map((item, index) => ({
+        ...item,
+        stt: index + 1
+      }));
+
+      initCategories();
+      filterData();
+    }, error => {
+      console.error("Lỗi Realtime Firestore:", error);
+      faqListContainer.innerHTML = `
+        <div class="status-box error-box">
+          <b>Lỗi kết nối dữ liệu:</b> ${error.message}
+        </div>`;
+    });
+  }
+
   function initCategories() {
     const selected = categoryFilter.value;
     categoryFilter.innerHTML = '<option value="all">Tất cả chủ đề</option>';
@@ -296,7 +331,6 @@
     categoryFilter.value = categories.includes(selected) ? selected : 'all';
   }
 
-  // Hiển thị danh sách FAQ
   function renderFAQ(data) {
     faqListContainer.innerHTML = '';
 
@@ -324,7 +358,6 @@
     });
   }
 
-  // Mở / Đóng Accordion
   function toggleFAQ(headerElement) {
     const faqItem = headerElement.parentElement;
     const isActive = faqItem.classList.contains('active');
@@ -338,7 +371,6 @@
     }
   }
 
-  // Lọc dữ liệu theo từ khóa và danh mục
   function filterData() {
     const rawSearch = searchInput.value.trim();
     const searchTerm = removeVietnameseTones(rawSearch);
@@ -357,15 +389,8 @@
     renderFAQ(filtered);
   }
 
-  // Bắt sự kiện
   searchInput.addEventListener('input', filterData);
   categoryFilter.addEventListener('change', filterData);
-
-  // Lắng nghe sự thay đổi từ trang CS (khi mở trên cùng trình duyệt)
-  window.addEventListener('storage', loadFaqs);
-
-  // Tải dữ liệu ban đầu
-  loadFaqs();
 </script>
 
 </body>
