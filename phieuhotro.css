@@ -99,7 +99,7 @@ body{
   display: grid !important;
   grid-template-columns: 1fr 290px !important; /* Khung trái rộng (1fr), Ticket phải thon gọn (290px) */
   align-items: start;
-  gap: 18px;
+  gap: 24px;
 }
 
 .layout.has-submitted .card {
