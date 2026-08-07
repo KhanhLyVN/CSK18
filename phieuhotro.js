@@ -1,3 +1,18 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABb8e6NfOhMv--kMge0DlafPmGAJfOuCY",
+  authDomain: "csk18-5417b.firebaseapp.com",
+  projectId: "csk18-5417b",
+  storageBucket: "csk18-5417b.firebasestorage.app",
+  messagingSenderId: "630800680084",
+  appId: "1:630800680084:web:96a5fb888393bf6a5fe081",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const EMAILJS_PUBLIC_KEY  = "dmcYr1M1K9V45Q18B";
 const EMAILJS_SERVICE_ID  = "service_ts3osyy";
 const EMAILJS_TEMPLATE_ID = "template_2bntc3p";
@@ -151,7 +166,7 @@ updateStub();
 const submitBtn = document.getElementById('submitBtn');
 const layoutContainer = document.getElementById('layoutContainer');
 
-submitBtn.addEventListener('click', () => {
+submitBtn.addEventListener('click', async () => {
   const name = document.getElementById('fName').value.trim();
   const email = document.getElementById('fEmail').value.trim();
   const phone = document.getElementById('fPhone').value.trim();
@@ -184,24 +199,45 @@ submitBtn.addEventListener('click', () => {
   submitBtn.disabled = true;
   submitBtn.textContent = 'Đang gửi...';
 
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-    .then(() => {
-      document.getElementById('successText').innerHTML =
-        `Phiếu <strong>${ticketNum}</strong> — "<em>${title}</em>" đã được gửi qua email cho bộ phận hỗ trợ. Chúng tôi sẽ phản hồi lại <strong>${email}</strong> trong thời gian sớm nhất.`;
-      
-      document.getElementById('formView').classList.add('hide');
-      document.getElementById('successView').classList.add('show');
-      if (layoutContainer) layoutContainer.classList.add('has-submitted');
-    })
-    .catch((err) => {
-      console.error('EmailJS error:', err);
-      errEl.textContent = 'Gửi yêu cầu thất bại. Vui lòng kiểm tra kết nối và thử lại.';
-      errEl.classList.add('show');
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Gửi yêu cầu';
+  try {
+    await addDoc(collection(db, "tickets"), {
+      ticket_num: ticketNum,
+      name: name,
+      email: email,
+      phone: phone || 'Không cung cấp',
+      is_student: isStudent,
+      course: course,
+      date: formatDateVN(fDateEl.value),
+      ticket_type: type.value,
+      icon: type.dataset.icon,
+      title: title,
+      message: desc,
+      status: "pending",
+      history: [],
+      createdAt: Timestamp.now()
     });
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+    } catch (emailErr) {
+      console.warn('Gửi email thông báo thất bại (phiếu vẫn đã được ghi nhận):', emailErr);
+    }
+
+    document.getElementById('successText').innerHTML =
+      `Phiếu <strong>${ticketNum}</strong> — "<em>${title}</em>" đã được ghi nhận vào hệ thống. Bạn có thể theo dõi và trao đổi trực tiếp với bộ phận hỗ trợ ở trang "Trao đổi trên Ticket".`;
+
+    document.getElementById('formView').classList.add('hide');
+    document.getElementById('successView').classList.add('show');
+    if (layoutContainer) layoutContainer.classList.add('has-submitted');
+
+  } catch (err) {
+    console.error('Lỗi khi ghi nhận phiếu lên hệ thống:', err);
+    errEl.textContent = 'Gửi yêu cầu thất bại lên hệ thống. Vui lòng kiểm tra kết nối và thử lại.';
+    errEl.classList.add('show');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Gửi yêu cầu';
+  }
 });
 
 document.getElementById('againBtn').addEventListener('click', () => {
@@ -219,4 +255,4 @@ document.getElementById('againBtn').addEventListener('click', () => {
   if (layoutContainer) layoutContainer.classList.remove('has-submitted');
   document.getElementById('successView').classList.remove('show');
   document.getElementById('formView').classList.remove('hide');
-});
+})
