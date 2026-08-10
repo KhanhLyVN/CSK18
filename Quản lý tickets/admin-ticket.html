@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Lý Yêu Cầu Hỗ Trợ — Admin / CS</title>
+<link rel="stylesheet" href="admin.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="masthead">
+    <div class="masthead-left">
+      <div class="eyebrow">Trung tâm hỗ trợ học viên</div>
+      <h1>Quản Lý Yêu Cầu Hỗ Trợ</h1>
+    </div>
+    <div class="masthead-right">
+      <div class="conn"><span class="conn-dot" id="connDot"></span><span id="connLabel">Đang kết nối...</span></div>
+      <div class="clock" id="todayStr">—</div>
+    </div>
+  </div>
+
+  <div class="overview" id="overviewBar"></div>
+
+  <div class="layout">
+    <div class="card list-pane" id="listPane">
+      <div class="list-toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="searchInput" type="text" placeholder="Tìm theo mã phiếu, tên, tiêu đề...">
+        </div>
+        <div class="filter-tabs" id="filterTabs"></div>
+        <div class="list-count" id="listCount">0 phiếu</div>
+      </div>
+      <div class="ticket-list" id="ticketList">
+        <div class="empty-list">Đang tải danh sách ticket...</div>
+      </div>
+    </div>
+
+    <div class="card detail-pane" id="detailPane">
+      <div class="detail-empty" id="detailEmpty">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/></svg>
+        <p>Chọn một ticket ở danh sách bên trái để xem chi tiết và xử lý</p>
+      </div>
+      <div class="detail-content" id="detailContent" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
