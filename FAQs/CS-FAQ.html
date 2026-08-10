@@ -1,111 +1,388 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>CS Center - Quản Lý FAQ</title>
-  <style>
-    :root { --maroon: #5D0703; --maroon-deep: #3E0402; --cream: #EEDCC8; --cream-pale: #FBF4E9; --paper: #FFFBF5; --line: rgba(93,7,3,0.18); --danger: #991b1b; }
-    body { background-color: var(--paper); color: #2A1712; padding: 30px; font-family: 'Segoe UI', serif; }
-    .container { max-width: 800px; margin: 0 auto; background: var(--cream-pale); padding: 30px; border-radius: 12px; border: 1px solid var(--line); }
-    h2 { color: var(--maroon-deep); text-align: center; margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--maroon-deep); }
-input, select, textarea { 
-  width: 100%; 
-  padding: 10px; 
-  border: 1px solid var(--line); 
-  border-radius: 6px; 
-  background: var(--paper); 
-  box-sizing: border-box; 
-  resize: vertical; /* Chỉ cho phép kéo giãn theo chiều dọc */
-}    button.btn-add { background: var(--maroon); color: var(--cream-pale); padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-    table { width: 100%; margin-top: 25px; border-collapse: collapse; background: var(--paper); }
-    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; }
-    th { background: var(--cream); color: var(--maroon-deep); }
-    .btn-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <title>CS Center - Quản Lý FAQ</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        :root {
+            --maroon: #5D0703;
+            --maroon-deep: #3E0402;
+            --cream: #EEDCC8;
+            --cream-pale: #FBF4E9;
+            --paper: #FFFBF5;
+            --line: rgba(93, 7, 3, 0.18);
+            --danger: #991b1b;
+            --edit: #8a5a00;
+        }
+        body {
+            background-color: var(--paper);
+            color: #2A1712;
+            padding: 30px;
+            font-family: 'Segoe UI', serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--cream-pale);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+        }
+        h2 {
+            color: var(--maroon-deep);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--maroon-deep);
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--paper);
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        button.btn-add {
+            background: var(--maroon);
+            color: var(--cream-pale);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        button.btn-add:hover {
+            background: var(--maroon-deep);
+        }
+        .btn-cancel {
+            display: none;
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #777;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            margin-top: 25px;
+            border-collapse: collapse;
+            background: var(--paper);
+        }
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid var(--line);
+            text-align: left;
+        }
+        th {
+            background: var(--cream);
+            color: var(--maroon-deep);
+        }
+        .btn-del,
+        .btn-edit {
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .btn-del {
+            background: var(--danger);
+        }
+        .btn-edit {
+            background: var(--edit);
+        }
+        .btn-del:hover,
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+    </style>
 </head>
 <body>
-
-<div class="container">
-  <h2>Quản Lý FAQ - CS Center</h2>
-  
-  <form id="csForm">
-    <div class="form-group">
-      <label>Danh mục:</label>
-      <select id="category">
-        <option value="Tài khoản & Đăng nhập">Tài khoản & Đăng nhập</option>
-        <option value="Lịch học & Thời gian">Lịch học & Thời gian</option>
-        <option value="Học phí & Thanh toán">Học phí & Thanh toán</option>
-        <option value="Chứng chỉ & Kết quả">Chứng chỉ & Kết quả</option>
-        <option value="Kỹ thuật & Hệ thống">Kỹ thuật & Hệ thống</option>
-      </select>
+    <div class="container">
+        <h2 id="formTitle">Quản Lý FAQ - CS Center</h2>
+        <form id="csForm">
+            <div class="form-group">
+                <label>Danh mục:</label>
+                <select id="category">
+                    <option value="Tài khoản & Đăng nhập">
+                        Tài khoản & Đăng nhập
+                    </option>
+                    <option value="Lịch học & Thời gian">
+                        Lịch học & Thời gian
+                    </option>
+                    <option value="Học phí & Thanh toán">
+                        Học phí & Thanh toán
+                    </option>
+                    <option value="Chứng chỉ & Kết quả">
+                        Chứng chỉ & Kết quả
+                    </option>
+                    <option value="Kỹ thuật & Hệ thống">
+                        Kỹ thuật & Hệ thống
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Câu hỏi:</label>
+                <input
+                    type="text"
+                    id="question"
+                    placeholder="Nhập câu hỏi..."
+                    required
+                >
+            </div>
+            <div class="form-group">
+                <label>Câu trả lời:</label>
+                <textarea
+                    id="answer"
+                    rows="3"
+                    placeholder="Nhập câu trả lời..."
+                    required
+                ></textarea>
+            </div>
+            <button
+                type="submit"
+                class="btn-add"
+                id="submitBtn"
+            >
+                Lưu FAQ
+            </button>
+            <button
+                type="button"
+                class="btn-cancel"
+                id="cancelBtn"
+                onclick="cancelEdit()"
+            >
+                Hủy sửa
+            </button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Danh mục</th>
+                    <th>Câu hỏi</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="adminTable"></tbody>
+        </table>
     </div>
-    <div class="form-group">
-      <label>Câu hỏi:</label>
-      <input type="text" id="question" placeholder="Nhập câu hỏi..." required>
-    </div>
-    <div class="form-group">
-      <label>Câu trả lời:</label>
-      <textarea id="answer" rows="3" placeholder="Nhập câu trả lời..." required></textarea>
-    </div>
-    <button type="submit" class="btn-add">Lưu & Cập Nhật FAQ</button>
-  </form>
-
-  <table>
-    <thead>
-      <tr><th>STT</th><th>Danh mục</th><th>Câu hỏi</th><th>Xóa</th></tr>
-    </thead>
-    <tbody id="adminTable"></tbody>
-  </table>
-</div>
-
-<script>
-  function getLocalFaqs() {
-    return JSON.parse(localStorage.getItem('my_faqs')) || [];
-  }
-
-  function renderAdminTable() {
-    const faqs = getLocalFaqs();
-    const tbody = document.getElementById('adminTable');
-    tbody.innerHTML = '';
-    faqs.forEach((item, index) => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${index + 1}</td>
-          <td><b>${item.category}</b></td>
-          <td>${item.question}</td>
-          <td><button class="btn-del" onclick="deleteFaq(${index})">Xóa</button></td>
-        </tr>
-      `;
-    });
-  }
-
-  document.getElementById('csForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const faqs = getLocalFaqs();
-    faqs.unshift({
-      category: document.getElementById('category').value,
-      question: document.getElementById('question').value,
-      answer: document.getElementById('answer').value
-    });
-    localStorage.setItem('my_faqs', JSON.stringify(faqs));
-    document.getElementById('question').value = '';
-    document.getElementById('answer').value = '';
-    renderAdminTable();
-    alert('Đã lưu câu hỏi thành công!');
-  });
-
-  function deleteFaq(index) {
-    if (confirm('Bạn muốn xóa câu hỏi này?')) {
-      const faqs = getLocalFaqs();
-      faqs.splice(index, 1);
-      localStorage.setItem('my_faqs', JSON.stringify(faqs));
-      renderAdminTable();
-    }
-  }
-
-  renderAdminTable();
-</script>
+    <script>
+        const FAQ_COLLECTION = "faqs";
+        let editingId = null;
+        async function renderAdminTable() {
+            const tbody = document.getElementById("adminTable");
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;">
+                        Đang tải dữ liệu...
+                    </td>
+                </tr>
+            `;
+            try {
+                const snapshot = await db
+                    .collection(FAQ_COLLECTION)
+                    .get();
+                tbody.innerHTML = "";
+                if (snapshot.empty) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align:center;">
+                                Chưa có FAQ nào.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                let index = 1;
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>
+                            ${index}
+                        </td>
+                        <td>
+                            <b>${escapeHTML(item.category || "")}</b>
+                        </td>
+                        <td>
+                            ${escapeHTML(item.question || "")}
+                        </td>
+                        <td>
+                            <button
+                                class="btn-edit"
+                                onclick="editFaq('${doc.id}')"
+                            >
+                                Sửa
+                            </button>
+                            <button
+                                class="btn-del"
+                                onclick="deleteFaq('${doc.id}')"
+                            >
+                                Xóa
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    index++;
+                });
+            } catch (error) {
+                console.error("Lỗi tải FAQ:", error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:red;">
+                            Không thể tải FAQ.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        document
+            .getElementById("csForm")
+            .addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const category =
+                    document.getElementById("category").value.trim();
+                const question =
+                    document.getElementById("question").value.trim();
+                const answer =
+                    document.getElementById("answer").value.trim();
+                if (!question || !answer) {
+                    alert("Vui lòng nhập đầy đủ câu hỏi và câu trả lời.");
+                    return;
+                }
+                const faqData = {
+                    category: category,
+                    question: question,
+                    answer: answer,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                try {
+                    if (editingId) {
+                        await db
+                            .collection(FAQ_COLLECTION)
+                            .doc(editingId)
+                            .update(faqData);
+                        alert("Đã cập nhật FAQ thành công!");
+                    }
+                    else {
+                        faqData.createdAt =
+                            firebase.firestore.FieldValue.serverTimestamp();
+                        await db
+                            .collection(FAQ_COLLECTION)
+                            .add(faqData);
+                        alert("Đã thêm FAQ thành công!");
+                    }
+                    cancelEdit();
+                    renderAdminTable();
+                } catch (error) {
+                    console.error("Lỗi lưu FAQ:", error);
+                    alert(
+                        "Có lỗi xảy ra khi lưu FAQ:\n" +
+                        error.message
+                    );
+                }
+            });
+        async function editFaq(id) {
+            try {
+                const doc = await db
+                    .collection(FAQ_COLLECTION)
+                    .doc(id)
+                    .get();
+                if (!doc.exists) {
+                    alert("FAQ không tồn tại.");
+                    return;
+                }
+                const item = doc.data();
+                editingId = id;
+                document.getElementById("category").value =
+                    item.category || "";
+                document.getElementById("question").value =
+                    item.question || "";
+                document.getElementById("answer").value =
+                    item.answer || "";
+                document.getElementById("formTitle").textContent =
+                    "Chỉnh Sửa FAQ";
+                document.getElementById("submitBtn").textContent =
+                    "Cập Nhật FAQ";
+   
+                document.getElementById("cancelBtn").style.display =
+                    "block";
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            } catch (error) {
+                console.error("Lỗi lấy FAQ:", error);
+                alert(
+                    "Không thể lấy dữ liệu FAQ:\n" +
+                    error.message
+                );
+            }
+        }
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById("category").selectedIndex = 0;
+            document.getElementById("question").value = "";
+            document.getElementById("answer").value = "";
+            document.getElementById("formTitle").textContent =
+                "Quản Lý FAQ - CS Center";
+            document.getElementById("submitBtn").textContent =
+                "Lưu FAQ";
+            document.getElementById("cancelBtn").style.display =
+                "none";
+        }
+        async function deleteFaq(id) {
+            if (!confirm("Bạn muốn xóa câu hỏi này?")) {
+                return;
+            }
+            try {
+                await db
+                    .collection(FAQ_COLLECTION)
+                    .doc(id)
+                    .delete();
+                alert("Đã xóa FAQ thành công!");
+                if (editingId === id) {
+                    cancelEdit();
+                }
+                renderAdminTable();
+            } catch (error) {
+                console.error("Lỗi xóa FAQ:", error);
+                alert(
+                    "Không thể xóa FAQ:\n" +
+                    error.message
+                );
+            }
+        }
+        function escapeHTML(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        renderAdminTable();
+    </script>
 </body>
 </html>
