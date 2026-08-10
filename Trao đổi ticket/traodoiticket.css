@@ -53,7 +53,7 @@ body{
 /* ---------- Body layout ---------- */
 .body{ flex:1; display:flex; min-height:0; }
 
-/* ---------- Sidebar (mục lục ticket) ---------- */
+/* ---------- Sidebar ---------- */
 .sidebar{
   width: 340px;
   flex:none;
@@ -75,7 +75,7 @@ body{
   background:#fff;
 }
 .sidebar-head .search:focus{ border-color:var(--maroon); }
-.filter-row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.filter-row{ display:flex; gap:8px; margin-top:10px; }
 .filter-chip{
   font-size: 11.5px; font-weight:700;
   padding: 6px 12px;
@@ -152,7 +152,7 @@ body{
   background-size: 20px 20px;
 }
 
-/* ---------- Stub card: thông tin phiếu ghi nhận, nằm phía trên khung chat ---------- */
+/* Stub card — mở đầu cuộc trao đổi */
 .stub-card{
   background: var(--cream);
   border-radius: 6px;
@@ -176,7 +176,7 @@ body{
 }
 .stub-top .row{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
 .stub-top .k1{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.75; font-weight:700; }
-.stub-top .num{ font-family:'Fraunces',serif; font-weight:700; font-size:26px; line-height:1.1; margin:4px 0 2px; }
+.stub-top .num{ font-family:'Fraunces',serif; font-weight:700; font-size:30px; line-height:1.1; margin:4px 0 2px; }
 .stub-top .cat{ font-size:12.5px; font-weight:600; opacity:0.92; display:flex; align-items:center; gap:7px; }
 .stub-top .cat svg{ width:14px;height:14px; stroke: var(--cream-pale); flex:none; }
 .stub-top .course{ font-size:11.5px; opacity:0.78; text-align:right; max-width:220px; }
@@ -186,14 +186,13 @@ body{
 
 .stub-body{ padding:16px 24px 20px; }
 .stub-grid{ display:grid; grid-template-columns:1fr 1fr; gap: 4px 20px; }
-@media (max-width: 480px){ .stub-grid{ grid-template-columns: 1fr; } }
 .stub-field{ padding:7px 0; border-bottom:1px solid rgba(93,7,3,0.10); }
 .stub-field .k{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color: var(--ink-soft); }
-.stub-field .v{ font-size:13px; font-weight:700; color: var(--maroon-deep); margin-top:2px; word-break:break-word; }
+.stub-field .v{ font-size:13px; font-weight:700; color: var(--maroon-deep); margin-top:2px; }
 .stub-desc{ margin-top:12px; font-size:13px; line-height:1.55; color: var(--ink); background:var(--paper); border:1px solid rgba(93,7,3,0.12); border-radius:4px; padding:12px 14px; }
 .stub-desc .lbl{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color: var(--gold); display:block; margin-bottom:6px; }
 
-/* ---------- Messages (bình luận qua lại) ---------- */
+/* Messages */
 .msg-row{ display:flex; gap:10px; max-width:640px; margin: 0 auto 16px; }
 .msg-row.student{ justify-content:flex-start; }
 .msg-row.cs{ justify-content:flex-end; }
@@ -213,7 +212,6 @@ body{
   border-radius: 12px;
   font-size: 13.6px;
   line-height:1.5;
-  white-space: pre-wrap;
 }
 .msg-row.student .bubble{ background:#fff; border:1px solid var(--line); border-top-left-radius:3px; color: var(--ink); }
 .msg-row.cs .bubble{ background: var(--maroon); color: var(--cream-pale); border-top-right-radius:3px; }
@@ -227,31 +225,14 @@ body{
 }
 .status-divider::before, .status-divider::after{ content:""; flex:1; height:1px; background: var(--line); }
 
-/* ---------- Composer ---------- */
+/* Composer */
 .composer{
   flex:none;
   border-top: 1px solid var(--line);
   background: var(--paper);
   padding: 12px 26px 16px;
 }
-.who-select-row{
-  max-width: 640px; margin: 0 auto 8px;
-  display:flex; align-items:center; gap:8px;
-}
-.who-select-row span{ font-size:11.5px; color: var(--ink-soft); font-weight:700; }
-.who-toggle{ display:flex; gap:6px; }
-.who-btn{
-  font-size: 11px; font-weight:700;
-  padding: 5px 11px;
-  border-radius: 999px;
-  border: 1.4px solid var(--line);
-  background:#fff;
-  color: var(--ink-soft);
-  cursor:pointer;
-}
-.who-btn.active{ background: var(--maroon); border-color:var(--maroon); color:var(--cream-pale); }
 .composer-box{
-  max-width: 640px; margin: 0 auto;
   display:flex; align-items:flex-end; gap:10px;
   background:#fff; border:1.4px solid var(--line); border-radius:12px; padding:8px 8px 8px 14px;
 }
@@ -270,7 +251,7 @@ body{
 .send-btn{ background: var(--maroon); }
 .send-btn svg{ stroke: var(--cream-pale); }
 .send-btn:hover{ background: var(--maroon-deep); }
-.attach-name{ max-width:640px; margin:0 auto; font-size:11px; color: var(--maroon-deep); font-weight:600; padding: 6px 4px 0; }
+.attach-name{ font-size:11px; color: var(--maroon-deep); font-weight:600; padding: 0 4px 6px; }
 
 .no-ticket{
   flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;

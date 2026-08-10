@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, arrayUnion, query, orderBy } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyABb8e6NfOhMv--kMge0DlafPmGAJfOuCY",
@@ -10,9 +10,9 @@ const firebaseConfig = {
   appId: "1:630800680084:web:96a5fb888393bf6a5fe081",
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+/* ===== Icon set (đồng bộ với trang Phiếu Yêu Cầu Hỗ Trợ) ===== */
 const ICONS = {
   bug: '<path d="M12 8v8M8 12h8"/><path d="M9 4h6l1 3H8l1-3z"/><rect x="6" y="7" width="12" height="12" rx="4"/><path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>',
   calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
@@ -34,23 +34,32 @@ const STATUS_META = {
   closed:      { label: "Đã đóng",            color: "#8A7A6D" }
 };
 
+/* =========================================================
+   KẾT NỐI DATABASE (Firestore) — TRA CỨU THỜI GIAN THỰC
+   Collection "tickets": mỗi document là 1 phiếu, ID = ticket_num.
+   Các trường khớp với trang "Phiếu Yêu Cầu Hỗ Trợ" để liên kết
+   thông tin: ticket_num, name, email, phone, course, date,
+   ticket_type, icon, title, message, status, createdAt.
+   Sub-collection "messages" bên trong mỗi ticket: lưu toàn bộ
+   lịch sử trao đổi { from, who, text, createdAt }.
+   ========================================================= */
 let TICKETS = [];
+let ticketsLoaded = false;
 let activeId = null;
 let activeFilter = "all";
 let searchTerm = "";
-let composerRole = "cs"; // "cs" hoặc "student" — người đang soạn bình luận
+let unsubMessages = null;
+let activeMessages = [];
 
 const ticketListEl = document.getElementById("ticketList");
 const mainEl = document.getElementById("mainEl");
 const bodyEl = document.getElementById("bodyEl");
 const backBtn = document.getElementById("backBtn");
 
-function getTicket(id){ return TICKETS.find(t => t.ticket_num === id); }
+function getTicket(id){ return TICKETS.find(t => t.id === id); }
 
 function lastSnippet(t){
-  if(!t.history || t.history.length === 0) return t.message;
-  const last = [...t.history].reverse().find(h => h.type === "message");
-  return last ? last.text : t.message;
+  return t.lastMessage || t.message || "";
 }
 
 function statusPill(statusKey){
@@ -60,49 +69,59 @@ function statusPill(statusKey){
   </span>`;
 }
 
-function statusSelectHtml(statusKey){
-  const current = STATUS_META[statusKey] ? statusKey : "pending";
-  const opts = Object.entries(STATUS_META).map(([key, meta]) =>
-    `<option value="${key}" ${key === current ? "selected" : ""}>${meta.label}</option>`
-  ).join("");
-  return `<select class="status-select" id="statusSelect" style="color:${STATUS_META[current].color}; border-color:${STATUS_META[current].color}55;">${opts}</select>`;
+function formatTime(ts){
+  if(!ts || !ts.toDate) return "Đang gửi...";
+  const d = ts.toDate();
+  const p = n => String(n).padStart(2,"0");
+  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-// Lắng nghe dữ liệu thời gian thực từ Firestore — mọi phiếu gửi từ trang phiếu hỗ trợ
-// sẽ tự động xuất hiện ở đây ngay khi được ghi vào collection "tickets".
-const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
-onSnapshot(q, (snapshot) => {
-  TICKETS = [];
-  snapshot.forEach((docSnap) => {
-    TICKETS.push({ id: docSnap.id, ...docSnap.data() });
-  });
-
-  if(!activeId && TICKETS.length > 0){
-    activeId = TICKETS[0].ticket_num;
-  } else if(activeId && !getTicket(activeId)){
-    activeId = TICKETS.length ? TICKETS[0].ticket_num : null;
-  }
-
+/* ---------- Sidebar: lắng nghe collection "tickets" theo thời gian thực ---------- */
+db.collection("tickets").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+  ticketsLoaded = true;
+  TICKETS = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  if(!activeId && TICKETS.length) activeId = TICKETS[0].id;
+  if(activeId && !getTicket(activeId)) activeId = TICKETS.length ? TICKETS[0].id : null;
   renderList();
   renderMain();
-}, (error) => {
-  console.warn("Lỗi khi đọc dữ liệu Firestore:", error);
-  ticketListEl.innerHTML = `<div class="empty-list">Không thể tải dữ liệu. Vui lòng kiểm tra kết nối hoặc Firestore Rules.</div>`;
+  subscribeMessages();
+}, (err) => {
+  console.error("Lỗi kết nối Firestore (tickets):", err);
+  ticketListEl.innerHTML = `<div class="empty-list">Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra cấu hình Firebase trong mã nguồn.</div>`;
 });
+
+/* ---------- Chat: lắng nghe sub-collection "messages" của ticket đang chọn ---------- */
+function subscribeMessages(){
+  if(unsubMessages){ unsubMessages(); unsubMessages = null; }
+  const t = getTicket(activeId);
+  if(!t) return;
+  unsubMessages = db.collection("tickets").doc(t.id).collection("messages")
+    .orderBy("createdAt", "asc")
+    .onSnapshot((snapshot) => {
+      activeMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderThread(t);
+    }, (err) => {
+      console.error("Lỗi kết nối Firestore (messages):", err);
+    });
+}
 
 function renderList(){
   let items = TICKETS.filter(t => {
     if(activeFilter === "open" && (t.status === "resolved" || t.status === "closed")) return false;
     if(activeFilter === "closed" && !(t.status === "resolved" || t.status === "closed")) return false;
     if(searchTerm){
-      const hay = (t.ticket_num + " " + t.title).toLowerCase();
+      const hay = ((t.ticket_num||t.id) + " " + t.title).toLowerCase();
       if(!hay.includes(searchTerm.toLowerCase())) return false;
     }
     return true;
   });
 
+  if(!ticketsLoaded){
+    ticketListEl.innerHTML = `<div class="empty-list">Đang tải danh sách phiếu...</div>`;
+    return;
+  }
   if(TICKETS.length === 0){
-    ticketListEl.innerHTML = `<div class="empty-list">Chưa có phiếu yêu cầu nào trên hệ thống.<br>Phiếu gửi từ trang "Phiếu Yêu Cầu Hỗ Trợ" sẽ tự xuất hiện tại đây.</div>`;
+    ticketListEl.innerHTML = `<div class="empty-list">Bạn chưa gửi phiếu yêu cầu nào.<br>Hãy gửi một phiếu ở trang "Phiếu Yêu Cầu Hỗ Trợ" để bắt đầu trao đổi với Customer Success.</div>`;
     return;
   }
   if(items.length === 0){
@@ -111,9 +130,9 @@ function renderList(){
   }
 
   ticketListEl.innerHTML = items.map(t => `
-    <div class="ticket-item ${t.ticket_num === activeId ? 'active' : ''}" data-id="${t.ticket_num}">
+    <div class="ticket-item ${t.id === activeId ? 'active' : ''}" data-id="${t.id}">
       <div class="ti-row1">
-        <span class="ti-num">${t.ticket_num}</span>
+        <span class="ti-num">${t.ticket_num || t.id}</span>
         ${statusPill(t.status)}
       </div>
       <div class="ti-title">${t.title}</div>
@@ -130,31 +149,29 @@ function renderList(){
       activeId = el.dataset.id;
       renderList();
       renderMain();
+      subscribeMessages();
       bodyEl.classList.add("show-chat");
     });
   });
 }
 
 function renderStubCard(t){
-  const courseLine = t.is_student
-    ? `Khóa học:<br>${t.course || "—"}`
-    : `Đối tượng:<br>Không phải học viên`;
   return `
     <div class="stub-card">
       <div class="stub-top">
         <div class="row">
           <div>
             <div class="k1">Mã yêu cầu</div>
-            <div class="num">${t.ticket_num}</div>
+            <div class="num">${t.ticket_num || t.id}</div>
             <div class="cat">${svgIcon(t.icon)}<span>${t.ticket_type}</span></div>
           </div>
-          <div class="course">${courseLine}</div>
+          <div class="course">Khóa học:<br>${t.course}</div>
         </div>
       </div>
       <div class="perf"></div>
       <div class="stub-body">
         <div class="stub-grid">
-          <div class="stub-field"><div class="k">Người gửi</div><div class="v">${t.name}</div></div>
+          <div class="stub-field"><div class="k">Học viên</div><div class="v">${t.name}</div></div>
           <div class="stub-field"><div class="k">Ngày gửi</div><div class="v">${t.date}</div></div>
           <div class="stub-field"><div class="k">Email</div><div class="v">${t.email}</div></div>
           <div class="stub-field"><div class="k">Số điện thoại</div><div class="v">${t.phone}</div></div>
@@ -169,23 +186,32 @@ function renderStubCard(t){
 }
 
 function renderThreadItems(t){
-  if(!t.history) return "";
-  return t.history.map(h => {
+  return activeMessages.map(h => {
     if(h.type === "status"){
-      return `<div class="status-divider">${h.text} • ${h.time}</div>`;
+      return `<div class="status-divider">${h.text} • ${formatTime(h.createdAt)}</div>`;
     }
     const isStudent = h.from === "student";
-    const initials = isStudent ? ((t.name || "HV").trim().split(" ").pop()[0] || "HV") : "CS";
+    const initials = isStudent ? (t.name.trim().split(" ").pop()[0] || "HV") : "CS";
     return `
       <div class="msg-row ${isStudent ? 'student' : 'cs'}">
         <div class="avatar">${initials}</div>
         <div class="bubble-wrap">
           <div class="bubble">${h.text}</div>
-          <div class="msg-meta"><span class="who">${h.who}</span> • ${h.time}</div>
+          <div class="msg-meta"><span class="who">${h.who}</span> • ${formatTime(h.createdAt)}</div>
         </div>
       </div>
     `;
   }).join("");
+}
+
+function renderThread(t){
+  const threadEl = document.getElementById("threadEl");
+  if(!threadEl) return;
+  threadEl.innerHTML = renderStubCard(t) + `<div class="status-divider">Bắt đầu trao đổi</div>` +
+    (activeMessages.length === 0
+      ? `<div class="empty-list">Chưa có tin nhắn nào.<br>Hãy nhắn cho Customer Success để được hỗ trợ.</div>`
+      : renderThreadItems(t));
+  scrollThreadToBottom();
 }
 
 function renderMain(){
@@ -194,7 +220,7 @@ function renderMain(){
     mainEl.innerHTML = `
       <div class="no-ticket">
         ${svgIcon('chat')}
-        <p>Chọn một phiếu ở danh sách bên trái để xem thông tin và lịch sử trao đổi.</p>
+        <p>${ticketsLoaded ? 'Chọn một phiếu ở danh sách bên trái để xem lịch sử trao đổi.' : 'Đang tải dữ liệu...'}</p>
       </div>`;
     return;
   }
@@ -205,23 +231,10 @@ function renderMain(){
         <h2>${t.title}</h2>
         <p>${t.name} · ${t.email}</p>
       </div>
-      ${statusSelectHtml(t.status)}
+      ${statusPill(t.status)}
     </div>
-    <div class="thread" id="threadEl">
-      ${renderStubCard(t)}
-      <div class="status-divider">Bắt đầu trao đổi</div>
-      ${(!t.history || t.history.length === 0)
-        ? `<div class="empty-list">Chưa có bình luận nào.<br>Hãy nhắn nội dung trao đổi bên dưới.</div>`
-        : renderThreadItems(t)}
-    </div>
+    <div class="thread" id="threadEl"></div>
     <div class="composer">
-      <div class="who-select-row">
-        <span>Gửi với vai trò:</span>
-        <div class="who-toggle">
-          <button type="button" class="who-btn ${composerRole === 'student' ? 'active' : ''}" data-role="student">Học viên</button>
-          <button type="button" class="who-btn ${composerRole === 'cs' ? 'active' : ''}" data-role="cs">Customer Success</button>
-        </div>
-      </div>
       <div class="composer-box">
         <button class="icon-btn" id="attachBtn" title="Đính kèm tệp">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
@@ -236,39 +249,7 @@ function renderMain(){
     </div>
   `;
 
-  // Đổi trạng thái xử lý — được ghi lại như một mốc trong lịch sử ticket
-  const statusSelect = document.getElementById("statusSelect");
-  statusSelect.addEventListener("change", async () => {
-    const newStatus = statusSelect.value;
-    if(newStatus === t.status) return;
-    const meta = STATUS_META[newStatus];
-    statusSelect.disabled = true;
-    try {
-      const ticketRef = doc(db, "tickets", t.id);
-      await updateDoc(ticketRef, {
-        status: newStatus,
-        history: arrayUnion({
-          type: "status",
-          text: `Trạng thái chuyển sang "${meta.label}"`,
-          time: nowLabel()
-        })
-      });
-    } catch (err) {
-      console.error("Lỗi khi đổi trạng thái:", err);
-      statusSelect.value = t.status;
-    } finally {
-      statusSelect.disabled = false;
-    }
-  });
-
-  // Chọn vai trò gửi bình luận (demo cho việc học viên / CS cùng dùng chung giao diện)
-  mainEl.querySelectorAll(".who-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      composerRole = btn.dataset.role;
-      mainEl.querySelectorAll(".who-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-    });
-  });
+  renderThread(t);
 
   const attachInput = document.getElementById("attachInput");
   const attachName = document.getElementById("attachName");
@@ -286,40 +267,40 @@ function renderMain(){
     if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(t); }
   });
   document.getElementById("sendBtn").addEventListener("click", () => sendMessage(t));
-
-  scrollThreadToBottom();
 }
 
-async function sendMessage(t){
+function sendMessage(t){
   const input = document.getElementById("msgInput");
   const attachInput = document.getElementById("attachInput");
   const attachName = document.getElementById("attachName");
+  const sendBtn = document.getElementById("sendBtn");
   let text = input.value.trim();
   if(attachInput.files[0]) text = (text ? text + " " : "") + "📎 " + attachInput.files[0].name;
   if(!text) return;
 
-  const isStudent = composerRole === "student";
-  const newMessage = {
+  sendBtn.disabled = true;
+  const ticketRef = db.collection("tickets").doc(t.id);
+
+  ticketRef.collection("messages").add({
     type: "message",
-    from: isStudent ? "student" : "cs",
-    who: isStudent ? t.name : "Customer Success",
+    from: "student",
+    who: t.name,
     text: text,
-    time: nowLabel()
-  };
-
-  try {
-    const ticketRef = doc(db, "tickets", t.id);
-    await updateDoc(ticketRef, {
-      history: arrayUnion(newMessage)
-    });
-
-    input.value = "";
-    input.style.height = "auto";
-    attachInput.value = "";
-    attachName.textContent = "";
-  } catch (err) {
-    console.error("Lỗi khi gửi bình luận lên Firestore:", err);
-  }
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    return ticketRef.set({
+      lastMessage: text,
+      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  }).then(() => {
+    input.value = ""; input.style.height = "auto";
+    attachInput.value = ""; attachName.textContent = "";
+  }).catch((err) => {
+    console.error("Không thể gửi tin nhắn:", err);
+    alert("Gửi tin nhắn thất bại. Vui lòng kiểm tra kết nối và thử lại.");
+  }).finally(() => {
+    sendBtn.disabled = false;
+  });
 }
 
 function scrollThreadToBottom(){
@@ -327,17 +308,9 @@ function scrollThreadToBottom(){
   if(el) el.scrollTop = el.scrollHeight;
 }
 
-function nowLabel(){
-  const d = new Date();
-  const p = n => String(n).padStart(2,"0");
-  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-
 document.getElementById("searchInput").addEventListener("input", (e) => {
-  searchTerm = e.target.value;
-  renderList();
+  searchTerm = e.target.value; renderList();
 });
-
 document.querySelectorAll(".filter-chip").forEach(c => {
   c.addEventListener("click", () => {
     document.querySelectorAll(".filter-chip").forEach(x => x.classList.remove("active"));
@@ -354,3 +327,6 @@ function syncBackBtn(){
 }
 window.addEventListener("resize", syncBackBtn);
 syncBackBtn();
+
+renderList();
+renderMain();
