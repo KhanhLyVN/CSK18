@@ -28,6 +28,30 @@ body{
   max-width: 896px; 
   margin: 0 auto;
 }
+.back-link-wrap{
+  margin: 0 0 24px;
+}
+.btn-back{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 176px;
+  padding: 8px 0;
+  gap: 8px;
+  font-family:'Inter',sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--maroon);
+  background: transparent;
+  border: 1.4px solid var(--maroon);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease, transform .1s ease;
+}
+.btn-back:hover{
+  background: var(--cream);
+  transform: translateY(-1px);
+}
 
 /* ---------- Header ---------- */
 .masthead{
