@@ -111,6 +111,13 @@
   function fullTime(ts){ return (ts && ts.toDate) ? ts.toDate().toLocaleString('vi-VN') : "—"; }
   function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str || ""; return d.innerHTML; }
   
+  function initials(name){
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
   /* ---------- Render ticket list ---------- */
   function renderList(){
     const listEl = document.getElementById("ticketList");
