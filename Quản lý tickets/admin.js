@@ -1,16 +1,17 @@
 
-   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  //  const firebaseConfig = {
+  //   apiKey: "YOUR_API_KEY",
+  //   authDomain: "YOUR_PROJECT.firebaseapp.com",
+  //   projectId: "YOUR_PROJECT_ID",
+  //   storageBucket: "YOUR_PROJECT.appspot.com",
+  //   messagingSenderId: "YOUR_SENDER_ID",
+  //   appId: "YOUR_APP_ID"
+  // };
+  // firebase.initializeApp(firebaseConfig);
+  // const db = firebase.firestore();
 
   /* ---------- Icon theo loại yêu cầu ---------- */
+  const STAFF = ["Tên nhân viên 1", "Tên nhân viên 2", "Tên nhân viên 3"];
   const ICONS = {
     bug: '<path d="M12 8v8M8 12h8"/><path d="M9 4h6l1 3H8l1-3z"/><rect x="6" y="7" width="12" height="12" rx="4"/><path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
