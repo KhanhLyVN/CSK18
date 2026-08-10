@@ -148,148 +148,108 @@ function renderTickets() {
   });
 }
 // ======================================================
-// OPEN TICKET
+// OPEN TICKET (Cập nhật giao diện khung phiếu ghi nhận)
 // ======================================================
 function openTicket(ticket) {
   currentTicket = ticket;
   renderTickets();
+  
+  const statusText = ticket.status === "closed" ? "Đã đóng" : "Đang mở";
+  const dateStr = formatTicketDate(ticket.createdAt);
+
   mainEl.innerHTML = `
     <div class="conversation">
       <!-- HEADER -->
       <div class="conversation-header">
         <div>
           <div class="conversation-code">
-            ${escapeHTML(
-              ticket.ticketNum || ticket.id
-            )}
+            ${escapeHTML(ticket.ticketNum || ticket.id)}
           </div>
           <h2>
-            ${escapeHTML(
-              ticket.title || "Không có tiêu đề"
-            )}
+            ${escapeHTML(ticket.title || "Không có tiêu đề")}
           </h2>
         </div>
-        <div class="conversation-status
-          ${ticket.status}">
-          ${
-            ticket.status === "closed"
-              ? "Đã đóng"
-              : "Đang mở"
-          }
+        <div class="conversation-status ${ticket.status}">
+          <span class="dot"></span>
+          ${statusText}
         </div>
       </div>
-      <!-- THÔNG TIN TICKET -->
-      <div class="ticket-information">
-        <div class="info-item">
-          <span>Người gửi</span>
-          <strong>
-            ${escapeHTML(
-              ticket.name || "—"
-            )}
-          </strong>
+
+      <!-- KHUNG PHIẾU GHI NHẬN -->
+      <div class="stub-card">
+        <div class="stub-top">
+          <div class="stub-top-left">
+            <div class="stub-top-group">
+              <span class="k1">Mã yêu cầu:</span>
+              <span class="num">${escapeHTML(ticket.ticketNum || ticket.id)}</span>
+            </div>
+            <div class="cat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              ${escapeHTML(ticket.ticketType || "Báo lỗi hệ thống")}
+            </div>
+          </div>
+          <div class="stub-status-badge ${ticket.status}">
+            <span class="dot"></span> ${statusText}
+          </div>
         </div>
-        <div class="info-item">
-          <span>Email</span>
-          <strong>
-            ${escapeHTML(
-              ticket.email || "—"
-            )}
-          </strong>
-        </div>
-        <div class="info-item">
-          <span>Khóa học</span>
-          <strong>
-            ${escapeHTML(
-              ticket.course || "Không có"
-            )}
-          </strong>
-        </div>
-        <div class="info-item">
-          <span>Loại yêu cầu</span>
-          <strong>
-            ${escapeHTML(
-              ticket.ticketType || "—"
-            )}
-          </strong>
-        </div>
-      </div>
-      <!-- NỘI DUNG BAN ĐẦU -->
-      <div class="original-ticket">
-        <div class="message-name">
-          ${escapeHTML(
-            ticket.name || "Học viên"
-          )}
-        </div>
-        <div class="message-content">
-          ${escapeHTML(
-            ticket.description || ""
-          )}
+        <div class="stub-body">
+          <div class="stub-grid">
+            <div class="stub-field">
+              <div class="k">Người gửi</div>
+              <div class="v">${escapeHTML(ticket.name || "—")}</div>
+            </div>
+            <div class="stub-field">
+              <div class="k">Khóa học</div>
+              <div class="v">${escapeHTML(ticket.course || "Không có")}</div>
+            </div>
+            <div class="stub-field">
+              <div class="k">Tiêu đề</div>
+              <div class="v">${escapeHTML(ticket.title || "—")}</div>
+            </div>
+            <div class="stub-field">
+              <div class="k">Ngày gửi</div>
+              <div class="v">${dateStr || "—"}</div>
+            </div>
+          </div>
         </div>
       </div>
+
       <!-- MESSAGES -->
-      <div
-        class="messages"
-        id="messages">
-        <div class="loading-message">
-          Đang tải trao đổi...
-        </div>
+      <div class="messages" id="messages">
+        <div class="loading-message">Đang tải trao đổi...</div>
       </div>
+
       <!-- INPUT -->
       ${
         ticket.status !== "closed"
           ? `
             <div class="message-input">
-              <textarea
-                id="messageInput"
-                placeholder="Nhập nội dung trao đổi..."
-              ></textarea>
-              <button
-                id="sendMessageBtn">
-                Gửi
-              </button>
+              <textarea id="messageInput" placeholder="Nhập nội dung trao đổi..."></textarea>
+              <button id="sendMessageBtn">Gửi</button>
             </div>
           `
           : `
-            <div class="closed-message">
-              Ticket này đã được đóng.
-            </div>
+            <div class="closed-message">Ticket này đã được đóng.</div>
           `
       }
     </div>
   `;
-  // Load messages realtime
+
   loadMessages(ticket.id);
-  // Gửi message
-  const sendBtn =
-    document.getElementById(
-      "sendMessageBtn"
-    );
+
+  const sendBtn = document.getElementById("sendMessageBtn");
   if (sendBtn) {
-    sendBtn.addEventListener(
-      "click",
-      () => {
+    sendBtn.addEventListener("click", () => sendMessage(ticket));
+  }
+
+  const input = document.getElementById("messageInput");
+  if (input) {
+    input.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
         sendMessage(ticket);
       }
-    );
-  }
-  // Ctrl + Enter để gửi
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-  if (input) {
-    input.addEventListener(
-      "keydown",
-      (event) => {
-        if (
-          event.ctrlKey &&
-          event.key === "Enter"
-        ) {
-          event.preventDefault();
-          sendMessage(ticket);
-        }
-      }
-    );
+    });
   }
 }
 // ======================================================
