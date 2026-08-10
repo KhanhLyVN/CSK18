@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trang Hỏi Đáp Thường Gặp (FAQ)</title>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
-  <script src="firebase-config.js"></script>
+  <script src="/firebase-config.js"></script>
 
   <style>
     :root {
@@ -90,11 +92,6 @@
       background-color: var(--paper);
       color: var(--ink);
       outline: none;
-      transition: all 0.3s ease;
-    }
-
-    .faq-search::placeholder {
-      color: var(--ink-soft);
     }
 
     .faq-search:focus {
@@ -113,11 +110,6 @@
       color: var(--ink);
       outline: none;
       cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .faq-category-filter:focus {
-      border-color: var(--gold);
     }
 
     .faq-list {
@@ -146,7 +138,6 @@
       align-items: center;
       user-select: none;
       background-color: var(--paper);
-      transition: background-color 0.25s ease;
     }
 
     .faq-header:hover {
@@ -175,16 +166,16 @@
     .faq-icon {
       font-size: 22px;
       color: var(--gold);
-      transition: transform 0.3s ease, color 0.3s ease;
       font-weight: bold;
       margin-left: 15px;
       line-height: 1;
+      transition: transform 0.3s ease;
     }
 
     .faq-answer {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.35s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+      transition: max-height 0.35s ease, padding 0.3s ease;
       background-color: var(--paper);
       color: var(--ink-soft);
       line-height: 1.7;
@@ -210,7 +201,6 @@
       padding: 18px 22px;
       max-height: 1000px;
       border-top: 1px dashed var(--line);
-      transition: max-height 0.5s ease-in-out, padding 0.3s ease;
     }
 
     .status-box {
@@ -227,170 +217,1517 @@
       border-radius: 8px;
       font-style: normal;
     }
+
+
+    /* =====================================================
+       AI BUTTON
+    ===================================================== */
+
+    .ai-floating-button {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      width: 62px;
+      height: 62px;
+      border: none;
+      border-radius: 50%;
+      background: var(--maroon);
+      color: white;
+      font-size: 27px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(62, 4, 2, 0.3);
+      z-index: 9999;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .ai-floating-button:hover {
+      transform: scale(1.08);
+      background: var(--maroon-soft);
+    }
+
+
+    /* =====================================================
+       AI CHAT
+    ===================================================== */
+
+    .ai-chat {
+      position: fixed;
+      right: 25px;
+      bottom: 100px;
+      width: 390px;
+      height: 560px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 15px 50px rgba(62, 4, 2, 0.25);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9998;
+    }
+
+    .ai-chat.open {
+      display: flex;
+    }
+
+    .ai-header {
+      background: var(--maroon);
+      color: white;
+      padding: 15px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ai-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ai-avatar {
+      width: 38px;
+      height: 38px;
+      background: var(--cream);
+      color: var(--maroon);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .ai-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .ai-status {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .ai-header-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .ai-header-button {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .ai-header-button:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+
+    /* =====================================================
+       CHAT MESSAGES
+    ===================================================== */
+
+    .ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--cream-pale);
+    }
+
+    .ai-message {
+      max-width: 85%;
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.55;
+      word-wrap: break-word;
+    }
+
+    .ai-message.user {
+      align-self: flex-end;
+      background: var(--maroon);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-message.bot {
+      align-self: flex-start;
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-bottom-left-radius: 4px;
+    }
+
+    .ai-message.bot strong {
+      color: var(--maroon);
+    }
+
+    .ai-typing {
+      align-self: flex-start;
+      background: white;
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+
+    /* =====================================================
+       CHAT INPUT
+    ===================================================== */
+
+    .ai-input-area {
+      padding: 12px;
+      background: white;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+    }
+
+    .ai-input {
+      flex: 1;
+      resize: none;
+      height: 44px;
+      max-height: 100px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      outline: none;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .ai-input:focus {
+      border-color: var(--gold);
+    }
+
+    .ai-send {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      background: var(--maroon);
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .ai-send:hover {
+      background: var(--maroon-soft);
+    }
+
+    .ai-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 20px 10px;
+      }
+
+      .faq-container {
+        padding: 22px 15px;
+      }
+
+      .faq-title {
+        font-size: 26px;
+      }
+
+      .ai-chat {
+        right: 10px;
+        bottom: 85px;
+        width: calc(100vw - 20px);
+        height: 70vh;
+      }
+
+      .ai-floating-button {
+        right: 15px;
+        bottom: 15px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <div class="faq-container">
-  <h1 class="faq-title">Câu Hỏi Thường Gặp</h1>
+
+  <h1 class="faq-title">
+    Câu Hỏi Thường Gặp
+  </h1>
 
   <div class="faq-controls">
-    <input type="text" id="searchInput" class="faq-search" placeholder="Nhập từ khóa tìm kiếm (không dấu hoặc có dấu)...">
+
+    <input
+      type="text"
+      id="searchInput"
+      class="faq-search"
+      placeholder="Nhập từ khóa tìm kiếm (không dấu hoặc có dấu)..."
+    >
+
     <select id="categoryFilter" class="faq-category-filter">
       <option value="all">Tất cả chủ đề</option>
     </select>
+
   </div>
 
   <div class="faq-list" id="faqList">
-    <div class="status-box">⏳ Đang tải danh sách câu hỏi...</div>
+
+    <div class="status-box">
+      ⏳ Đang tải danh sách câu hỏi...
+    </div>
+
   </div>
 
-  <div id="noResults" class="status-box" style="display: none;">
+  <div id="noResults" class="status-box" style="display:none;">
     Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.
   </div>
+
 </div>
 
+
+<!-- =====================================================
+     AI FLOATING BUTTON
+===================================================== -->
+
+<button
+  class="ai-floating-button"
+  id="aiFloatingButton"
+  title="Hỏi AI"
+>
+  🤖
+</button>
+
+
+<!-- =====================================================
+     AI CHAT
+===================================================== -->
+
+<div class="ai-chat" id="aiChat">
+
+  <div class="ai-header">
+
+    <div class="ai-header-left">
+
+      <div class="ai-avatar">
+        🤖
+      </div>
+
+      <div>
+        <div class="ai-title">
+          CS Center AI
+        </div>
+
+        <div class="ai-status">
+          Trợ lý hỗ trợ học viên
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ai-header-buttons">
+
+      <button
+        class="ai-header-button"
+        id="clearChatButton"
+        title="Xóa cuộc trò chuyện"
+      >
+        🗑
+      </button>
+
+      <button
+        class="ai-header-button"
+        id="closeAiButton"
+        title="Đóng"
+      >
+        ✕
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="ai-messages" id="aiMessages">
+
+    <div class="ai-message bot">
+      Xin chào! 👋<br><br>
+      Mình là trợ lý AI của CS Center.
+      Bạn có thể hỏi mình về lịch học, học phí,
+      tài khoản, bảo lưu, chuyển lớp, chứng chỉ...
+    </div>
+
+  </div>
+
+
+  <div class="ai-input-area">
+
+    <textarea
+      id="aiInput"
+      class="ai-input"
+      placeholder="Nhập câu hỏi của bạn..."
+    ></textarea>
+
+    <button
+      id="aiSend"
+      class="ai-send"
+      title="Gửi"
+    >
+      ➤
+    </button>
+
+  </div>
+
+</div>
+
+
 <script>
+
+  /* =====================================================
+     CONFIG
+  ===================================================== */
+
+  const AI_WEB_APP_URL =
+    "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+
+
+  /* =====================================================
+     FAQ VARIABLES
+  ===================================================== */
+
   let faqData = [];
 
-  const faqListContainer = document.getElementById('faqList');
-  const searchInput = document.getElementById('searchInput');
-  const categoryFilter = document.getElementById('categoryFilter');
-  const noResults = document.getElementById('noResults');
+  const faqListContainer =
+    document.getElementById('faqList');
+
+  const searchInput =
+    document.getElementById('searchInput');
+
+  const categoryFilter =
+    document.getElementById('categoryFilter');
+
+  const noResults =
+    document.getElementById('noResults');
+
+
+  /* =====================================================
+     AI VARIABLES
+  ===================================================== */
+
+  const aiFloatingButton =
+    document.getElementById('aiFloatingButton');
+
+  const aiChat =
+    document.getElementById('aiChat');
+
+  const closeAiButton =
+    document.getElementById('closeAiButton');
+
+  const clearChatButton =
+    document.getElementById('clearChatButton');
+
+  const aiMessages =
+    document.getElementById('aiMessages');
+
+  const aiInput =
+    document.getElementById('aiInput');
+
+  const aiSend =
+    document.getElementById('aiSend');
+
+
+  // Lịch sử hội thoại
+  let conversationHistory = [];
+
+  // Những FAQ người dùng vừa tìm/xem
+  let learnedFAQContext = [];
+
+
+  /* =====================================================
+     LOCAL STORAGE
+  ===================================================== */
+
+  function loadAIHistory() {
+
+    try {
+
+      const savedConversation =
+        localStorage.getItem('cs_ai_conversation');
+
+      const savedContext =
+        localStorage.getItem('cs_ai_faq_context');
+
+      if (savedConversation) {
+
+        conversationHistory =
+          JSON.parse(savedConversation);
+
+      }
+
+      if (savedContext) {
+
+        learnedFAQContext =
+          JSON.parse(savedContext);
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Không thể tải lịch sử AI:",
+        error
+      );
+
+    }
+
+  }
+
+
+  function saveAIHistory() {
+
+    try {
+
+      localStorage.setItem(
+        'cs_ai_conversation',
+        JSON.stringify(conversationHistory)
+      );
+
+      localStorage.setItem(
+        'cs_ai_faq_context',
+        JSON.stringify(learnedFAQContext)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Không thể lưu lịch sử AI:",
+        error
+      );
+
+    }
+
+  }
+
+
+  loadAIHistory();
+
+
+  /* =====================================================
+     VIETNAMESE SEARCH
+  ===================================================== */
 
   function removeVietnameseTones(str) {
+
     if (!str) return '';
+
     return str
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
       .toLowerCase();
+
   }
 
+
+  /* =====================================================
+     ESCAPE HTML
+  ===================================================== */
+
   function escapeHTML(str) {
+
     if (!str) return '';
-    return str
+
+    return String(str)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;")
       .replace(/\n/g, "<br>");
+
   }
+
+
+  /* =====================================================
+     FIREBASE TIMESTAMP
+  ===================================================== */
 
   function getTimestampMillis(ts) {
+
     if (!ts) return 0;
-    if (typeof ts.toMillis === 'function') return ts.toMillis();
-    if (ts.seconds) return ts.seconds * 1000;
-    if (ts instanceof Date) return ts.getTime();
+
+    if (typeof ts.toMillis === 'function') {
+
+      return ts.toMillis();
+
+    }
+
+    if (ts.seconds) {
+
+      return ts.seconds * 1000;
+
+    }
+
+    if (ts instanceof Date) {
+
+      return ts.getTime();
+
+    }
+
     return new Date(ts).getTime() || 0;
+
   }
+
+
+  /* =====================================================
+     SAVE FAQ INTO AI MEMORY
+  ===================================================== */
+
+  function rememberFAQ(item) {
+
+    if (!item || !item.question) return;
+
+    const exists =
+      learnedFAQContext.some(
+        faq =>
+          faq.question === item.question
+      );
+
+    if (!exists) {
+
+      learnedFAQContext.push({
+
+        question: item.question,
+
+        answer: item.answer || '',
+
+        category: item.category || ''
+
+      });
+
+    }
+
+    // Không cho bộ nhớ quá lớn
+    if (learnedFAQContext.length > 15) {
+
+      learnedFAQContext =
+        learnedFAQContext.slice(-15);
+
+    }
+
+    saveAIHistory();
+
+  }
+
+
+  /* =====================================================
+     FIRESTORE
+  ===================================================== */
 
   if (typeof db === 'undefined') {
+
     faqListContainer.innerHTML = `
+
       <div class="status-box error-box">
-        ⚠️ <b>Chưa cấu hình Firebase:</b> Vui lòng kiểm tra lại file <code>firebase-config.js</code>.
-      </div>`;
+
+        ⚠️
+        <b>Chưa cấu hình Firebase:</b>
+
+        Vui lòng kiểm tra lại file
+        <code>firebase-config.js</code>.
+
+      </div>
+
+    `;
+
   } else {
-    db.collection('faqs').onSnapshot(snapshot => {
-      let rawData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
 
-      rawData.sort((a, b) => getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt));
+    db.collection('faqs')
+      .onSnapshot(
 
-      faqData = rawData.map((item, index) => ({
-        ...item,
-        stt: index + 1
-      }));
+        snapshot => {
 
-      initCategories();
-      filterData();
-    }, error => {
-      console.error("Lỗi Realtime Firestore:", error);
-      faqListContainer.innerHTML = `
-        <div class="status-box error-box">
-          <b>Lỗi kết nối dữ liệu:</b> ${error.message}
-        </div>`;
-    });
+          let rawData =
+            snapshot.docs.map(doc => ({
+
+              id: doc.id,
+
+              ...doc.data()
+
+            }));
+
+
+          rawData.sort(
+
+            (a, b) =>
+
+              getTimestampMillis(b.createdAt) -
+
+              getTimestampMillis(a.createdAt)
+
+          );
+
+
+          faqData =
+            rawData.map(
+
+              (item, index) => ({
+
+                ...item,
+
+                stt: index + 1
+
+              })
+
+            );
+
+
+          initCategories();
+
+          filterData();
+
+        },
+
+        error => {
+
+          console.error(
+            "Lỗi Realtime Firestore:",
+            error
+          );
+
+
+          faqListContainer.innerHTML = `
+
+            <div class="status-box error-box">
+
+              <b>Lỗi kết nối dữ liệu:</b>
+
+              ${escapeHTML(error.message)}
+
+            </div>
+
+          `;
+
+        }
+
+      );
+
   }
+
+
+  /* =====================================================
+     CATEGORIES
+  ===================================================== */
 
   function initCategories() {
-    const selected = categoryFilter.value;
-    categoryFilter.innerHTML = '<option value="all">Tất cả chủ đề</option>';
 
-    const categories = [...new Set(faqData.map(item => item.category))].filter(Boolean);
+    const selected =
+      categoryFilter.value;
+
+    categoryFilter.innerHTML =
+
+      '<option value="all">Tất cả chủ đề</option>';
+
+
+    const categories = [
+
+      ...new Set(
+
+        faqData
+
+          .map(item => item.category)
+
+          .filter(Boolean)
+
+      )
+
+    ];
+
+
     categories.forEach(cat => {
-      const option = document.createElement('option');
+
+      const option =
+        document.createElement('option');
+
       option.value = cat;
+
       option.textContent = cat;
+
       categoryFilter.appendChild(option);
+
     });
 
-    categoryFilter.value = categories.includes(selected) ? selected : 'all';
+
+    categoryFilter.value =
+      categories.includes(selected)
+        ? selected
+        : 'all';
+
   }
 
+
+  /* =====================================================
+     RENDER FAQ
+  ===================================================== */
+
   function renderFAQ(data) {
+
     faqListContainer.innerHTML = '';
 
     if (data.length === 0) {
+
       noResults.style.display = 'block';
+
       return;
+
     }
+
 
     noResults.style.display = 'none';
 
-    data.forEach((item) => {
-      const faqItem = document.createElement('div');
-      faqItem.className = 'faq-item';
+
+    data.forEach(item => {
+
+      const faqItem =
+        document.createElement('div');
+
+      faqItem.className =
+        'faq-item';
+
+
       faqItem.innerHTML = `
-        <div class="faq-header" onclick="toggleFAQ(this)">
+
+        <div
+          class="faq-header"
+          onclick="toggleFAQ(this)"
+        >
+
           <div>
-            <span class="faq-badge">${escapeHTML(item.category || 'Thông thường')}</span>
-            <div class="faq-question-text">${item.stt}. ${escapeHTML(item.question)}</div>
+
+            <span class="faq-badge">
+
+              ${escapeHTML(
+                item.category ||
+                'Thông thường'
+              )}
+
+            </span>
+
+            <div class="faq-question-text">
+
+              ${item.stt}.
+              ${escapeHTML(item.question)}
+
+            </div>
+
           </div>
-          <span class="faq-icon">+</span>
+
+          <span class="faq-icon">
+            +
+          </span>
+
         </div>
-        <div class="faq-answer">${escapeHTML(item.answer)}</div>
+
+
+        <div class="faq-answer">
+
+          ${escapeHTML(item.answer)}
+
+        </div>
+
       `;
-      faqListContainer.appendChild(faqItem);
+
+
+      faqListContainer.appendChild(
+        faqItem
+      );
+
     });
+
   }
+
+
+  /* =====================================================
+     TOGGLE FAQ
+  ===================================================== */
 
   function toggleFAQ(headerElement) {
-    const faqItem = headerElement.parentElement;
-    const isActive = faqItem.classList.contains('active');
 
-    document.querySelectorAll('.faq-item').forEach(item => {
-      item.classList.remove('active');
-    });
+    const faqItem =
+      headerElement.parentElement;
+
+    const isActive =
+      faqItem.classList.contains('active');
+
+
+    document
+      .querySelectorAll('.faq-item')
+      .forEach(item => {
+
+        item.classList.remove('active');
+
+      });
+
 
     if (!isActive) {
+
       faqItem.classList.add('active');
+
+      /*
+       * Lấy câu hỏi đang được mở
+       * để AI có thể nhớ.
+       */
+
+      const questionText =
+        faqItem.querySelector(
+          '.faq-question-text'
+        );
+
+      if (questionText) {
+
+        const question =
+          questionText.textContent
+            .replace(/^\d+\.\s*/, '')
+            .trim();
+
+
+        const found =
+          faqData.find(
+
+            item =>
+
+              item.question &&
+              removeVietnameseTones(
+                item.question
+              ) ===
+              removeVietnameseTones(
+                question
+              )
+
+          );
+
+
+        if (found) {
+
+          rememberFAQ(found);
+
+        }
+
+      }
+
     }
+
   }
+
+
+  /* =====================================================
+     FILTER FAQ
+  ===================================================== */
 
   function filterData() {
-    const rawSearch = searchInput.value.trim();
-    const searchTerm = removeVietnameseTones(rawSearch);
-    const selectedCategory = categoryFilter.value;
 
-    const filtered = faqData.filter(item => {
-      const q = removeVietnameseTones(item.question || '');
-      const a = removeVietnameseTones(item.answer || '');
-      
-      const matchesSearch = q.includes(searchTerm) || a.includes(searchTerm);
-      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const rawSearch =
+      searchInput.value.trim();
 
-      return matchesSearch && matchesCategory;
-    });
+    const searchTerm =
+      removeVietnameseTones(
+        rawSearch
+      );
+
+
+    const selectedCategory =
+      categoryFilter.value;
+
+
+    const filtered =
+      faqData.filter(item => {
+
+        const q =
+          removeVietnameseTones(
+            item.question || ''
+          );
+
+        const a =
+          removeVietnameseTones(
+            item.answer || ''
+          );
+
+
+        const matchesSearch =
+          q.includes(searchTerm) ||
+          a.includes(searchTerm);
+
+
+        const matchesCategory =
+          selectedCategory === 'all' ||
+          item.category === selectedCategory;
+
+
+        return (
+          matchesSearch &&
+          matchesCategory
+        );
+
+      });
+
+
+    /*
+     * Nếu người dùng tìm kiếm,
+     * ghi nhớ những FAQ phù hợp.
+     */
+
+    if (searchTerm && filtered.length > 0) {
+
+      filtered
+        .slice(0, 5)
+        .forEach(item => {
+
+          rememberFAQ(item);
+
+        });
+
+    }
+
 
     renderFAQ(filtered);
+
   }
 
-  searchInput.addEventListener('input', filterData);
-  categoryFilter.addEventListener('change', filterData);
+
+  searchInput.addEventListener(
+    'input',
+    filterData
+  );
+
+
+  categoryFilter.addEventListener(
+    'change',
+    filterData
+  );
+
+
+  /* =====================================================
+     AI OPEN / CLOSE
+  ===================================================== */
+
+  aiFloatingButton.addEventListener(
+    'click',
+    () => {
+
+      aiChat.classList.toggle('open');
+
+      if (aiChat.classList.contains('open')) {
+
+        setTimeout(() => {
+
+          aiInput.focus();
+
+        }, 100);
+
+      }
+
+    }
+  );
+
+
+  closeAiButton.addEventListener(
+    'click',
+    () => {
+
+      aiChat.classList.remove('open');
+
+    }
+  );
+
+
+  /* =====================================================
+     CLEAR AI
+  ===================================================== */
+
+  clearChatButton.addEventListener(
+    'click',
+    () => {
+
+      conversationHistory = [];
+
+      learnedFAQContext = [];
+
+      localStorage.removeItem(
+        'cs_ai_conversation'
+      );
+
+      localStorage.removeItem(
+        'cs_ai_faq_context'
+      );
+
+
+      aiMessages.innerHTML = `
+
+        <div class="ai-message bot">
+
+          Đã xóa lịch sử trò chuyện. 🗑️
+
+          <br><br>
+
+          Bạn có thể bắt đầu cuộc trò chuyện mới.
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  /* =====================================================
+     ADD CHAT MESSAGE
+  ===================================================== */
+
+  function addChatMessage(
+    text,
+    type
+  ) {
+
+    const message =
+      document.createElement('div');
+
+    message.className =
+      `ai-message ${type}`;
+
+
+    message.innerHTML =
+      escapeHTML(text);
+
+
+    aiMessages.appendChild(
+      message
+    );
+
+
+    aiMessages.scrollTop =
+      aiMessages.scrollHeight;
+
+  }
+
+
+  /* =====================================================
+     TYPING
+  ===================================================== */
+
+  function showTyping() {
+
+    const typing =
+      document.createElement('div');
+
+    typing.className =
+      'ai-typing';
+
+    typing.id =
+      'aiTyping';
+
+    typing.textContent =
+      '🤖 AI đang suy nghĩ...';
+
+
+    aiMessages.appendChild(
+      typing
+    );
+
+
+    aiMessages.scrollTop =
+      aiMessages.scrollHeight;
+
+  }
+
+
+  function hideTyping() {
+
+    const typing =
+      document.getElementById(
+        'aiTyping'
+      );
+
+    if (typing) {
+
+      typing.remove();
+
+    }
+
+  }
+
+
+  /* =====================================================
+     FIND RELATED FAQ
+  ===================================================== */
+
+  function findRelatedFAQs(question) {
+
+    const words =
+      removeVietnameseTones(question)
+        .split(/\s+/)
+        .filter(word => word.length >= 3);
+
+
+    if (words.length === 0) {
+
+      return [];
+
+    }
+
+
+    const results =
+      faqData.map(item => {
+
+        const text =
+          removeVietnameseTones(
+
+            `${item.question || ''} ${
+              item.answer || ''
+            }`
+
+          );
+
+
+        let score = 0;
+
+
+        words.forEach(word => {
+
+          if (text.includes(word)) {
+
+            score++;
+
+          }
+
+        });
+
+
+        return {
+
+          item,
+
+          score
+
+        };
+
+      });
+
+
+    return results
+
+      .filter(result => result.score > 0)
+
+      .sort(
+        (a, b) =>
+          b.score - a.score
+      )
+
+      .slice(0, 5)
+
+      .map(result => result.item);
+
+  }
+
+
+  /* =====================================================
+     SEND TO AI
+  ===================================================== */
+
+  async function askAI(question) {
+
+    const relatedFAQs =
+      findRelatedFAQs(question);
+
+
+    /*
+     * Gộp FAQ vừa tìm được
+     * với FAQ người dùng đã xem trước.
+     */
+
+    const allContext = [
+
+      ...relatedFAQs,
+
+      ...learnedFAQContext
+
+    ];
+
+
+    const uniqueContext = [];
+
+    allContext.forEach(item => {
+
+      if (!item) return;
+
+      const exists =
+        uniqueContext.some(
+
+          x =>
+            x.question === item.question
+
+        );
+
+      if (!exists) {
+
+        uniqueContext.push(item);
+
+      }
+
+    });
+
+
+    const faqContext =
+      uniqueContext
+        .slice(0, 12)
+        .map(item => ({
+
+          category:
+            item.category || '',
+
+          question:
+            item.question || '',
+
+          answer:
+            item.answer || ''
+
+        }));
+
+
+    /*
+     * Lưu câu hỏi vào lịch sử.
+     */
+
+    conversationHistory.push({
+
+      role: 'user',
+
+      text: question
+
+    });
+
+
+    /*
+     * Chỉ gửi khoảng 10 lượt gần nhất
+     * để tránh request quá lớn.
+     */
+
+    const recentHistory =
+      conversationHistory
+        .slice(-10);
+
+
+    saveAIHistory();
+
+
+    const response =
+      await fetch(
+        AI_WEB_APP_URL,
+        {
+
+          method: 'POST',
+
+          headers: {
+
+            'Content-Type':
+              'application/x-www-form-urlencoded;charset=UTF-8'
+
+          },
+
+          body:
+            new URLSearchParams({
+
+              question: question,
+
+              history:
+                JSON.stringify(
+                  recentHistory
+                ),
+
+              faqContext:
+                JSON.stringify(
+                  faqContext
+                )
+
+            })
+
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        'AI không thể trả lời.'
+      );
+
+    }
+
+
+    const answer =
+      data.answer || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
+
+
+    /*
+     * Lưu câu trả lời vào lịch sử.
+     */
+
+    conversationHistory.push({
+
+      role: 'assistant',
+
+      text: answer
+
+    });
+
+
+    saveAIHistory();
+
+
+    return answer;
+
+  }
+
+
+  /* =====================================================
+     SEND MESSAGE
+  ===================================================== */
+
+  async function sendAIMessage() {
+
+    const question =
+      aiInput.value.trim();
+
+
+    if (!question) return;
+
+
+    /*
+     * Hiện câu hỏi của user.
+     */
+
+    addChatMessage(
+      question,
+      'user'
+    );
+
+
+    aiInput.value = '';
+
+    aiSend.disabled = true;
+
+
+    showTyping();
+
+
+    try {
+
+      const answer =
+        await askAI(question);
+
+
+      hideTyping();
+
+
+      addChatMessage(
+        answer,
+        'bot'
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        'AI ERROR:',
+        error
+      );
+
+
+      hideTyping();
+
+
+      addChatMessage(
+
+        'Xin lỗi, hiện tại AI chưa thể trả lời. Vui lòng thử lại sau.',
+
+        'bot'
+
+      );
+
+    }
+
+
+    aiSend.disabled = false;
+
+    aiInput.focus();
+
+  }
+
+
+  /* =====================================================
+     SEND BUTTON
+  ===================================================== */
+
+  aiSend.addEventListener(
+    'click',
+    sendAIMessage
+  );
+
+
+  /* =====================================================
+     ENTER TO SEND
+  ===================================================== */
+
+  aiInput.addEventListener(
+    'keydown',
+    event => {
+
+      if (
+        event.key === 'Enter' &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendAIMessage();
+
+      }
+
+    }
+  );
+
+
 </script>
 
 </body>
