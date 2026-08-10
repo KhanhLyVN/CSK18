@@ -1,92 +1,72 @@
 // ======================================================
-// ELEMENT
+// ELEMENT REFERENCES
 // ======================================================
-const ticketList = document.getElementById("ticketList");
-const mainEl = document.getElementById("mainEl");
-const searchInput = document.getElementById("searchInput");
-const filterRow = document.getElementById("filterRow");
-const backBtn = document.getElementById("backBtn");
+const ticketListEl = document.getElementById("ticketListEl");
+const mainPaneEl = document.getElementById("mainPaneEl");
+const searchInputEl = document.getElementById("searchInputEl");
+const filterRowEl = document.getElementById("filterRowEl");
+const backButtonEl = document.getElementById("backButtonEl");
+
 // ======================================================
-// VARIABLES
+// STATE VARIABLES
 // ======================================================
-let tickets = [];
-let currentTicket = null;
-let currentFilter = "all";
+let ticketsDataList = [];
+let activeTicketItem = null;
+let currentStatusFilter = "all";
+let activeChatSubscription = null;
+
 // ======================================================
 // LOAD TICKETS REALTIME
 // ======================================================
-function loadTickets() {
-  db.collection("tickets")
-    .onSnapshot(
-      (snapshot) => {
-        tickets = [];
-        snapshot.forEach((doc) => {
-          tickets.push({
-            id: doc.id,
-            ...doc.data()
-          });
+function loadTicketsData() {
+  db.collection("tickets").onSnapshot(
+    (snapshotQuery) => {
+      ticketsDataList = [];
+      snapshotQuery.forEach((docSnap) => {
+        ticketsDataList.push({
+          id: docSnap.id,
+          ...docSnap.data()
         });
-        // Sắp xếp ticket mới nhất lên đầu
-        tickets.sort((a, b) => {
-          const timeA =
-            a.createdAt?.toMillis?.() || 0;
-          const timeB =
-            b.createdAt?.toMillis?.() || 0;
-          return timeB - timeA;
-        });
-        renderTickets();
-      },
-      (error) => {
-        console.error(
-          "Firebase load tickets error:",
-          error
-        );
-        ticketList.innerHTML = `
-          <div class="ticket-error">
-            Không thể tải danh sách ticket.
-          </div>
-        `;
-      }
-    );
+      });
+      ticketsDataList.sort((ticketA, ticketB) => {
+        const timeA = ticketA.createdAt?.toMillis?.() || 0;
+        const timeB = ticketB.createdAt?.toMillis?.() || 0;
+        return timeB - timeA;
+      });
+      renderTicketsList();
+    },
+    (error) => {
+      console.error("Firebase load tickets error:", error);
+      ticketListEl.innerHTML = `
+        <div class="ticket-error">
+          Không thể tải danh sách ticket.
+        </div>
+      `;
+    }
+  );
 }
+
 // ======================================================
-// RENDER SIDEBAR
+// RENDER SIDEBAR LIST
 // ======================================================
-function renderTickets() {
-  const keyword =
-    searchInput.value
-      .trim()
-      .toLowerCase();
-  const filteredTickets =
-    tickets.filter((ticket) => {
-      // -------------------------
-      // SEARCH
-      // -------------------------
-      const ticketNum =
-        (ticket.ticketNum || "")
-          .toLowerCase();
-      const title =
-        (ticket.title || "")
-          .toLowerCase();
-      const matchesSearch =
-        !keyword ||
-        ticketNum.includes(keyword) ||
-        title.includes(keyword);
-      // -------------------------
-      // FILTER STATUS
-      // -------------------------
-      const matchesFilter =
-        currentFilter === "all" ||
-        ticket.status === currentFilter;
-      return (
-        matchesSearch &&
-        matchesFilter
-      );
-    });
-  ticketList.innerHTML = "";
-  // Không có ticket
-  if (!filteredTickets.length) {
-    ticketList.innerHTML = `
+function renderTicketsList() {
+  const searchKeyword = searchInputEl.value.trim().toLowerCase();
+  const filteredTicketsCollection = ticketsDataList.filter((ticketRecord) => {
+    const ticketNumberStr = (ticketRecord.ticketNum || "").toLowerCase();
+    const ticketTitleStr = (ticketRecord.title || "").toLowerCase();
+    const isMatchingSearch =
+      !searchKeyword ||
+      ticketNumberStr.includes(searchKeyword) ||
+      ticketTitleStr.includes(searchKeyword);
+    const isMatchingFilter =
+      currentStatusFilter === "all" ||
+      ticketRecord.status === currentStatusFilter;
+    return isMatchingSearch && isMatchingFilter;
+  });
+
+  ticketListEl.innerHTML = "";
+  if (!filteredTicketsCollection.length) {
+    ticketListEl.innerHTML = `
       <div class="empty-ticket">
         <div class="empty-icon">🎫</div>
         <div>Chưa có ticket nào</div>
@@ -94,138 +74,121 @@ function renderTickets() {
     `;
     return;
   }
-  // Render từng ticket
-  filteredTickets.forEach((ticket) => {
-    const item =
-      document.createElement("div");
-    item.className = "ticket-item";
-    if (
-      currentTicket &&
-      currentTicket.id === ticket.id
-    ) {
-      item.classList.add("active");
+
+  filteredTicketsCollection.forEach((ticketRecord) => {
+    const ticketNode = document.createElement("div");
+    ticketNode.className = "ticket-item";
+    if (activeTicketItem && activeTicketItem.id === ticketRecord.id) {
+      ticketNode.classList.add("active");
     }
-    const statusText =
-      ticket.status === "closed"
-        ? "Đã đóng"
-        : "Đang mở";
-    const date =
-      formatTicketDate(ticket.createdAt);
-    item.innerHTML = `
+    const localizedStatusText =
+      ticketRecord.status === "closed" ? "Đã đóng" : "Đang mở";
+    const formattedDateString = formatTicketDateValue(ticketRecord.createdAt);
+
+    ticketNode.innerHTML = `
       <div class="ticket-item-top">
         <strong>
-          ${escapeHTML(
-            ticket.ticketNum || ticket.id
-          )}
+          ${escapeHTMLValue(ticketRecord.ticketNum || ticketRecord.id)}
         </strong>
-        <span class="ticket-status ${ticket.status}">
-          ${statusText}
+        <span class="ticket-status ${ticketRecord.status}">
+          ${localizedStatusText}
         </span>
       </div>
       <div class="ticket-item-title">
-        ${escapeHTML(
-          ticket.title || "Không có tiêu đề"
-        )}
+        ${escapeHTMLValue(ticketRecord.title || "Không có tiêu đề")}
       </div>
       <div class="ticket-item-info">
         <span>
-          ${escapeHTML(
-            ticket.ticketType || "Khác"
-          )}
+          ${escapeHTMLValue(ticketRecord.ticketType || "Khác")}
         </span>
         <span>
-          ${date}
+          ${formattedDateString}
         </span>
       </div>
     `;
-    item.addEventListener(
-      "click",
-      () => {
-        openTicket(ticket);
-      }
-    );
-    ticketList.appendChild(item);
+
+    ticketNode.addEventListener("click", () => {
+      openSelectedTicket(ticketRecord);
+    });
+    ticketListEl.appendChild(ticketNode);
   });
 }
-// ======================================================
-// OPEN TICKET (Cập nhật giao diện khung phiếu ghi nhận)
-// ======================================================
-function openTicket(ticket) {
-  currentTicket = ticket;
-  renderTickets();
-  
-  const statusText = ticket.status === "closed" ? "Đã đóng" : "Đang mở";
-  const dateStr = formatTicketDate(ticket.createdAt);
 
-  mainEl.innerHTML = `
+// ======================================================
+// OPEN SELECTED TICKET
+// ======================================================
+function openSelectedTicket(ticketRecord) {
+  activeTicketItem = ticketRecord;
+  renderTicketsList();
+  
+  const localizedStatusText = ticketRecord.status === "closed" ? "Đã đóng" : "Đang mở";
+  const formattedDateString = formatTicketDateValue(ticketRecord.createdAt);
+
+  mainPaneEl.innerHTML = `
     <div class="conversation">
-      <!-- HEADER -->
       <div class="conversation-header">
         <div>
           <div class="conversation-code">
-            ${escapeHTML(ticket.ticketNum || ticket.id)}
+            ${escapeHTMLValue(ticketRecord.ticketNum || ticketRecord.id)}
           </div>
           <h2>
-            ${escapeHTML(ticket.title || "Không có tiêu đề")}
+            ${escapeHTMLValue(ticketRecord.title || "Không có tiêu đề")}
           </h2>
         </div>
-        <div class="conversation-status ${ticket.status}">
+        <div class="conversation-status ${ticketRecord.status}">
           <span class="dot"></span>
-          ${statusText}
+          ${localizedStatusText}
         </div>
       </div>
 
-      <!-- KHUNG PHIẾU GHI NHẬN -->
       <div class="stub-card">
         <div class="stub-top">
           <div class="stub-top-left">
             <div class="stub-top-group">
               <span class="k1">Mã yêu cầu:</span>
-              <span class="num">${escapeHTML(ticket.ticketNum || ticket.id)}</span>
+              <span class="num">${escapeHTMLValue(ticketRecord.ticketNum || ticketRecord.id)}</span>
             </div>
             <div class="cat">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              ${escapeHTML(ticket.ticketType || "Báo lỗi hệ thống")}
+              ${escapeHTMLValue(ticketRecord.ticketType || "Báo lỗi hệ thống")}
             </div>
           </div>
-          <div class="stub-status-badge ${ticket.status}">
-            <span class="dot"></span> ${statusText}
+          <div class="stub-status-badge ${ticketRecord.status}">
+            <span class="dot"></span> ${localizedStatusText}
           </div>
         </div>
         <div class="stub-body">
           <div class="stub-grid">
             <div class="stub-field">
               <div class="k">Người gửi</div>
-              <div class="v">${escapeHTML(ticket.name || "—")}</div>
+              <div class="v">${escapeHTMLValue(ticketRecord.name || "—")}</div>
             </div>
             <div class="stub-field">
               <div class="k">Khóa học</div>
-              <div class="v">${escapeHTML(ticket.course || "Không có")}</div>
+              <div class="v">${escapeHTMLValue(ticketRecord.course || "Không có")}</div>
             </div>
             <div class="stub-field">
               <div class="k">Tiêu đề</div>
-              <div class="v">${escapeHTML(ticket.title || "—")}</div>
+              <div class="v">${escapeHTMLValue(ticketRecord.title || "—")}</div>
             </div>
             <div class="stub-field">
               <div class="k">Ngày gửi</div>
-              <div class="v">${dateStr || "—"}</div>
+              <div class="v">${formattedDateString || "—"}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- MESSAGES -->
-      <div class="messages" id="messages">
+      <div class="messages" id="messagesContainerEl">
         <div class="loading-message">Đang tải trao đổi...</div>
       </div>
 
-      <!-- INPUT -->
       ${
-        ticket.status !== "closed"
+        ticketRecord.status !== "closed"
           ? `
             <div class="message-input">
-              <textarea id="messageInput" placeholder="Nhập nội dung trao đổi..."></textarea>
-              <button id="sendMessageBtn">Gửi</button>
+              <textarea id="messageInputArea" placeholder="Nhập nội dung trao đổi..."></textarea>
+              <button id="sendMessageButton">Gửi</button>
             </div>
           `
           : `
@@ -235,96 +198,79 @@ function openTicket(ticket) {
     </div>
   `;
 
-  loadMessages(ticket.id);
+  loadTicketMessagesRealtime(ticketRecord.id);
 
-  const sendBtn = document.getElementById("sendMessageBtn");
-  if (sendBtn) {
-    sendBtn.addEventListener("click", () => sendMessage(ticket));
+  const sendMessageButtonEl = document.getElementById("sendMessageButton");
+  if (sendMessageButtonEl) {
+    sendMessageButtonEl.addEventListener("click", () => sendNewMessage(ticketRecord));
   }
 
-  const input = document.getElementById("messageInput");
-  if (input) {
-    input.addEventListener("keydown", (event) => {
+  const messageInputAreaEl = document.getElementById("messageInputArea");
+  if (messageInputAreaEl) {
+    messageInputAreaEl.addEventListener("keydown", (event) => {
       if (event.ctrlKey && event.key === "Enter") {
         event.preventDefault();
-        sendMessage(ticket);
+        sendNewMessage(ticketRecord);
       }
     });
   }
 }
+
 // ======================================================
 // LOAD MESSAGES REALTIME
 // ======================================================
-function loadMessages(ticketId) {
-  const messagesEl =
-    document.getElementById("messages");
-  if (!messagesEl) {
-    return;
+function loadTicketMessagesRealtime(ticketRecordId) {
+  const messagesContainerEl = document.getElementById("messagesContainerEl");
+  if (!messagesContainerEl) return;
+
+  if (activeChatSubscription) {
+    activeChatSubscription();
+    activeChatSubscription = null;
   }
-  db.collection("tickets")
-    .doc(ticketId)
+
+  activeChatSubscription = db.collection("tickets")
+    .doc(ticketRecordId)
     .collection("messages")
     .orderBy("createdAt", "asc")
     .onSnapshot(
-      (snapshot) => {
-        messagesEl.innerHTML = "";
-        if (snapshot.empty) {
-          messagesEl.innerHTML = `
+      (messagesSnapshot) => {
+        messagesContainerEl.innerHTML = "";
+        if (messagesSnapshot.empty) {
+          messagesContainerEl.innerHTML = `
             <div class="empty-message">
               Chưa có trao đổi nào.
             </div>
           `;
           return;
         }
-        snapshot.forEach((doc) => {
-          const message =
-            doc.data();
-          const messageEl =
-            document.createElement("div");
-          messageEl.className =
-            `message ${
-              message.sender === "admin"
-                ? "admin"
-                : "student"
-            }`;
-          const senderName =
-            message.senderName ||
-            (
-              message.sender === "admin"
-                ? "Customer Success"
-                : "Học viên"
-            );
-          messageEl.innerHTML = `
+        messagesSnapshot.forEach((messageDoc) => {
+          const messageData = messageDoc.data();
+          const singleMessageNode = document.createElement("div");
+          const isCustomerServiceSender = messageData.senderType === "cs" || messageData.sender === "admin";
+          
+          singleMessageNode.className = `message ${isCustomerServiceSender ? "admin" : "student"}`;
+          const currentSenderName =
+            messageData.senderName ||
+            (isCustomerServiceSender ? "Customer Success" : "Học viên");
+
+          singleMessageNode.innerHTML = `
             <div class="message-name">
-              ${escapeHTML(
-                senderName
-              )}
+              ${escapeHTMLValue(currentSenderName)}
             </div>
             <div class="message-content">
-              ${escapeHTML(
-                message.message || ""
-              )}
+              ${escapeHTMLValue(messageData.message || messageData.text || "")}
             </div>
             <div class="message-time">
-              ${formatTicketDate(
-                message.createdAt
-              )}
+              ${formatTicketDateValue(messageData.createdAt)}
             </div>
           `;
-          messagesEl.appendChild(
-            messageEl
-          );
+          messagesContainerEl.appendChild(singleMessageNode);
         });
-        // Cuộn xuống cuối
-        messagesEl.scrollTop =
-          messagesEl.scrollHeight;
+        messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
       },
       (error) => {
-        console.error(
-          "Load messages error:",
-          error
-        );
-        messagesEl.innerHTML = `
+        console.error("Load messages error:", error);
+        messagesContainerEl.innerHTML = `
           <div class="empty-message">
             Không thể tải nội dung trao đổi.
           </div>
@@ -332,163 +278,113 @@ function loadMessages(ticketId) {
       }
     );
 }
+
 // ======================================================
 // SEND MESSAGE
 // ======================================================
-async function sendMessage(ticket) {
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-  if (!input) {
-    return;
-  }
-  const message =
-    input.value.trim();
-  if (!message) {
-    return;
-  }
-  const sendBtn =
-    document.getElementById(
-      "sendMessageBtn"
-    );
+async function sendNewMessage(ticketRecord) {
+  const messageInputAreaEl = document.getElementById("messageInputArea");
+  if (!messageInputAreaEl) return;
+
+  const messageTextContent = messageInputAreaEl.value.trim();
+  if (!messageTextContent) return;
+
+  const sendMessageButtonEl = document.getElementById("sendMessageButton");
   try {
-    sendBtn.disabled = true;
-    sendBtn.textContent =
-      "Đang gửi...";
-    // -------------------------
-    // THÊM MESSAGE
-    // -------------------------
+    if (sendMessageButtonEl) {
+      sendMessageButtonEl.disabled = true;
+      sendMessageButtonEl.textContent = "Đang gửi...";
+    }
+
     await db
       .collection("tickets")
-      .doc(ticket.id)
+      .doc(ticketRecord.id)
       .collection("messages")
       .add({
         sender: "student",
-        senderName:
-          ticket.name || "Học viên",
-        message: message,
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        senderType: "student",
+        senderName: ticketRecord.name || "Học viên",
+        message: messageTextContent,
+        text: messageTextContent,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-    // -------------------------
-    // UPDATE TICKET
-    // -------------------------
+
     await db
       .collection("tickets")
-      .doc(ticket.id)
+      .doc(ticketRecord.id)
       .update({
-        updatedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-    input.value = "";
+
+    messageInputAreaEl.value = "";
   } catch (error) {
-    console.error(
-      "Send message error:",
-      error
-    );
-    alert(
-      "Không thể gửi tin nhắn. Vui lòng thử lại."
-    );
+    console.error("Send message error:", error);
+    alert("Không thể gửi tin nhắn. Vui lòng thử lại.");
   } finally {
-    sendBtn.disabled = false;
-    sendBtn.textContent = "Gửi";
+    if (sendMessageButtonEl) {
+      sendMessageButtonEl.disabled = false;
+      sendMessageButtonEl.textContent = "Gửi";
+    }
   }
 }
+
 // ======================================================
-// SEARCH
+// SEARCH & FILTER EVENTS
 // ======================================================
-searchInput.addEventListener(
-  "input",
-  () => {
-    renderTickets();
-  }
-);
-// ======================================================
-// FILTER
-// ======================================================
-document
-  .querySelectorAll(".filter-chip")
-  .forEach((chip) => {
-    chip.addEventListener(
-      "click",
-      () => {
-        document
-          .querySelectorAll(".filter-chip")
-          .forEach((item) => {
-            item.classList.remove(
-              "active"
-            );
-          });
-        chip.classList.add("active");
-        currentFilter =
-          chip.dataset.filter;
-        renderTickets();
-      }
-    );
+if (searchInputEl) {
+  searchInputEl.addEventListener("input", () => {
+    renderTicketsList();
   });
-// ======================================================
-// BACK BUTTON
-// ======================================================
-if (backBtn) {
-  backBtn.addEventListener(
-    "click",
-    () => {
-      history.back();
-    }
-  );
 }
+
+document.querySelectorAll(".filter-chip").forEach((chipElement) => {
+  chipElement.addEventListener("click", () => {
+    document.querySelectorAll(".filter-chip").forEach((itemElement) => {
+      itemElement.classList.remove("active");
+    });
+    chipElement.classList.add("active");
+    currentStatusFilter = chipElement.dataset.filter;
+    renderTicketsList();
+  });
+});
+
+if (backButtonEl) {
+  backButtonEl.addEventListener("click", () => {
+    history.back();
+  });
+}
+
 // ======================================================
-// FORMAT DATE
+// UTILITY HELPERS
 // ======================================================
-function formatTicketDate(timestamp) {
-  if (!timestamp) {
-    return "";
-  }
-  let date;
-  if (
-    typeof timestamp.toDate === "function"
-  ) {
-    date =
-      timestamp.toDate();
+function formatTicketDateValue(timestampValue) {
+  if (!timestampValue) return "";
+  let parsedDateObj;
+  if (typeof timestampValue.toDate === "function") {
+    parsedDateObj = timestampValue.toDate();
   } else {
-    date =
-      new Date(timestamp);
+    parsedDateObj = new Date(timestampValue);
   }
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return "";
-  }
-  return date.toLocaleString(
-    "vi-VN",
-    {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    }
-  );
+  if (Number.isNaN(parsedDateObj.getTime())) return "";
+  return parsedDateObj.toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
-// ======================================================
-// ESCAPE HTML
-// ======================================================
-function escapeHTML(value) {
-  return String(value ?? "")
+
+function escapeHTMLValue(inputStringValue) {
+  return String(inputStringValue ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 // ======================================================
-// START
+// START APPLICATION
 // ======================================================
-loadTickets();
+loadTicketsData();
