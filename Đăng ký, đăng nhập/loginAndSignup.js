@@ -119,13 +119,13 @@ registerForm.addEventListener("submit", async (e) => {
     registerBtn.textContent = "Đang xử lý...";
 
     try {
-        // Kiểm tra email đã tồn tại chưa
-        const methods = await auth.fetchSignInMethodsForEmail(email);
-        if (methods.length > 0) {
-            alert("Email này đã được đăng ký. Vui lòng đổi email khác hoặc đăng nhập.");
-            document.getElementById("registerEmail").focus();
-            return;
-        }
+        // // Kiểm tra email đã tồn tại chưa
+        // const methods = await auth.fetchSignInMethodsForEmail(email);
+        // if (methods.length > 0) {
+        //     alert("Email này đã được đăng ký. Vui lòng đổi email khác hoặc đăng nhập.");
+        //     document.getElementById("registerEmail").focus();
+        //     return;
+        // }
 
         // Kiểm tra số điện thoại đã tồn tại chưa (nếu có nhập)
         if (phone) {
@@ -169,7 +169,7 @@ registerForm.addEventListener("submit", async (e) => {
    ĐĂNG NHẬP GOOGLE
 ====================================================== */
 const googleLogin = document.getElementById("googleLogin");
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+// const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 googleLogin.addEventListener("click", async () => {
     try {
