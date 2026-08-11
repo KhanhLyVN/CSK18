@@ -290,7 +290,6 @@ body{
   font-family: 'Inter', sans-serif;
 }
 
-/* Tin nhắn của CS: Nằm bên trái, nền trắng viền trang nhã */
 .chat-bubble.cs {
   background: var(--maroon);
   color: var(--cream-pale);
@@ -298,7 +297,6 @@ body{
   border-bottom-right-radius: 2px;
 }
 
-/* Tin nhắn của Học viên: Nằm bên phải, nền đỏ maroon hệ thống */
 .chat-bubble.student {
   background: #fff;
   color: var(--ink);
