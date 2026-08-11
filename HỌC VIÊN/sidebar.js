@@ -1,4 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const menuToggleEl = document.getElementById("menuToggle");
+    const sidebarEl = document.getElementById("sidebarEl");
+  
+    if (menuToggleEl && sidebarEl) {
+      menuToggleEl.addEventListener("click", () => {
+        sidebarEl.classList.toggle("collapsed");
+      });
+    }
+  });
+
+document.addEventListener("DOMContentLoaded", () => {
     const currentPath = window.location.pathname;
     const menuItems = document.querySelectorAll(".sidebar-menu .menu-item");
   
