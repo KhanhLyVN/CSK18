@@ -45,46 +45,52 @@ const ICONS = {
     '<circle cx="12" cy="12" r="1.4"/>' +
     '<circle cx="19" cy="12" r="1.4"/>'
 };
-const TYPES = [
+const TICKET_CATEGORIES = [
   {
-    label: "Báo lỗi hệ thống",
-    icon: "bug"
+    id: "system",
+    label: "Hệ thống",
+    icon: "bug",
+    issues: [
+      { value: "system-login", label: "Đăng nhập / xác thực" },
+      { value: "system-course", label: "Khóa học / lịch học" },
+      { value: "system-payment", label: "Thanh toán / học phí" },
+      { value: "system-technical", label: "Lỗi kỹ thuật / trang web" },
+      { value: "system-other", label: "Khác" }
+    ]
   },
   {
-    label: "Hỏi về lịch học",
-    icon: "calendar"
+    id: "learning",
+    label: "Khóa học",
+    icon: "book",
+    issues: [
+      { value: "learning-schedule", label: "Lịch học / buổi học" },
+      { value: "learning-material", label: "Tài liệu / bài học" },
+      { value: "learning-assignment", label: "Bài tập / kiểm tra" },
+      { value: "learning-mentor", label: "Mentor / giảng viên" },
+      { value: "learning-other", label: "Khác" }
+    ]
   },
   {
-    label: "Hỏi về học phí",
-    icon: "wallet"
+    id: "account",
+    label: "Tài khoản",
+    icon: "wallet",
+    issues: [
+      { value: "account-profile", label: "Thông tin tài khoản" },
+      { value: "account-password", label: "Mật khẩu / truy cập" },
+      { value: "account-payment", label: "Học phí / thanh toán" },
+      { value: "account-certificate", label: "Chứng chỉ / hồ sơ" },
+      { value: "account-other", label: "Khác" }
+    ]
   },
   {
-    label: "Chứng chỉ",
-    icon: "cert"
-  },
-  {
-    label: "Bảo lưu / Chuyển lớp",
-    icon: "swap"
-  },
-  {
-    label: "Góp ý",
-    icon: "chat"
-  },
-  {
-    label: "Khiếu nại",
-    icon: "scale"
-  },
-  {
-    label: "Phản hồi về Mentor",
-    icon: "mentor"
-  },
-  {
-    label: "Phản hồi về khóa học",
-    icon: "book"
-  },
-  {
+    id: "other",
     label: "Khác",
-    icon: "other"
+    icon: "other",
+    issues: [
+      { value: "other-feedback", label: "Góp ý / phản hồi" },
+      { value: "other-complaint", label: "Khiếu nại" },
+      { value: "other-request", label: "Yêu cầu hỗ trợ khác" }
+    ]
   }
 ];
 const svgIcon = (key) => {
@@ -99,20 +105,46 @@ const svgIcon = (key) => {
     </svg>
   `;
 };
+const issueField = document.getElementById("issueField");
+const issueSelect = document.getElementById("issueSelect");
+
+function renderIssueOptions(categoryId) {
+  const category = TICKET_CATEGORIES.find((item) => item.id === categoryId);
+
+  if (!category || category.id === "other") {
+    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
+    issueField.classList.remove("show");
+    issueSelect.disabled = true;
+    issueSelect.value = "";
+    return;
+  }
+
+  issueSelect.innerHTML = `
+    <option value="">-- Chọn chi tiết vấn đề --</option>
+    ${category.issues
+      .map(
+        (issue) => `<option value="${issue.value}">${issue.label}</option>`
+      )
+      .join("")}
+  `;
+  issueField.classList.add("show");
+  issueSelect.disabled = false;
+  issueSelect.value = "";
+}
+
 // ======================================================
 // RENDER LOẠI YÊU CẦU
 // ======================================================
-const chipGrid =
-  document.getElementById("chipGrid");
-TYPES.forEach((t) => {
-  const el =
-    document.createElement("label");
+const chipGrid = document.getElementById("chipGrid");
+TICKET_CATEGORIES.forEach((t) => {
+  const el = document.createElement("label");
   el.className = "chip";
   el.innerHTML = `
     <input
       type="radio"
-      name="ticketType"
-      value="${t.label}"
+      name="ticketMainType"
+      value="${t.id}"
+      data-label="${t.label}"
       data-icon="${t.icon}">
     ${svgIcon(t.icon)}
     <span>${t.label}</span>
@@ -120,27 +152,49 @@ TYPES.forEach((t) => {
   `;
   chipGrid.appendChild(el);
 });
+
 // ======================================================
 // CHỌN LOẠI TICKET
 // ======================================================
-const chips = () =>
-  Array.from(
-    document.querySelectorAll(".chip")
-  );
+const chips = () => Array.from(document.querySelectorAll(".chip"));
 chips().forEach((chip) => {
   chip.addEventListener("click", () => {
-    chips().forEach((x) => {
-      x.classList.remove("active");
-    });
+    chips().forEach((x) => x.classList.remove("active"));
     chip.classList.add("active");
-    chip.querySelector("input").checked = true;
-    // TẠO MÃ TICKET KHI CHỌN LOẠI
-    const typeLabel =
-      chip.querySelector("input").value;
-    ticketNum =
-      genTicketNum(typeLabel);
+    const radio = chip.querySelector("input");
+    radio.checked = true;
+    renderIssueOptions(radio.value);
+
+    const categoryValue = radio.value;
+    const categoryLabel = radio.dataset.label;
+    const selectedIssueValue = categoryValue === "other" ? "" : issueSelect.value;
+    if (categoryValue === "other") {
+      ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
+    } else if (categoryValue && selectedIssueValue) {
+      ticketNum = genTicketNum(`${categoryValue}-${selectedIssueValue}`);
+    } else {
+      ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
+    }
     updateStub();
   });
+});
+
+issueSelect.addEventListener("change", () => {
+  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+  if (!selectedRadio) return;
+
+  const categoryValue = selectedRadio.value;
+  const categoryLabel = selectedRadio.dataset.label;
+  const issueValue = issueSelect.value;
+
+  if (categoryValue === "other") {
+    ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
+  } else {
+    ticketNum = issueValue
+      ? genTicketNum(`${categoryValue}-${issueValue}`)
+      : genTicketNum(categoryLabel || categoryValue || "other");
+  }
+  updateStub();
 });
 // ======================================================
 // CHECKBOX HỌC VIÊN
@@ -273,65 +327,33 @@ function formatDateVN(isoStr) {
 // UPDATE TICKET STUB
 // ======================================================
 function updateStub() {
-  const selectedChip =
-    document.querySelector(
-      ".chip.active"
-    );
-  const catLabel =
-    selectedChip
-      ? selectedChip.querySelector("span").textContent
-      : "";
-  document.getElementById(
-    "stubNum"
-  ).textContent =
-    ticketNum;
-  const name =
-    document
-      .getElementById("fName")
-      .value
-      .trim();
-  document.getElementById(
-    "stubName"
-  ).textContent =
-    name || "—";
-  const course =
-    chkCourse.checked
-      ? fCourse.value.trim()
-      : "";
-  document.getElementById(
-    "stubCourse"
-  ).textContent =
-    course
-      ? `Khóa học: ${course}`
-      : "";
-  document.getElementById(
-    "stubCourseBody"
-  ).textContent =
-    course || "Không có";
-  const title =
-    document
-      .getElementById("fTitle")
-      .value
-      .trim();
-  document.getElementById(
-    "stubTitle"
-  ).textContent =
-    title || "—";
-  const catIconKey =
-    selectedChip
-      ? selectedChip
-          .querySelector("input")
-          .dataset.icon
-      : "other";
-  document.getElementById(
-    "stubCat"
-  ).innerHTML =
-    svgIcon(catIconKey) +
-    `<span>${catLabel || "Chưa chọn loại"}</span>`;
-  document.getElementById(
-    "stubDate"
-  ).textContent =
-    formatDateVN(fDateEl.value);
+  const selectedChip = document.querySelector(".chip.active");
+  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+  const selectedIssue = issueSelect.value;
+  const selectedIssueLabel = issueSelect.selectedOptions[0]
+    ? issueSelect.selectedOptions[0].textContent.trim()
+    : "";
+  const catLabel = selectedRadio ? selectedRadio.dataset.label : "";
+  const displayLabel = selectedIssueLabel
+    ? `${catLabel || "Khác"} · ${selectedIssueLabel}`
+    : catLabel || "Chưa chọn loại";
+
+  document.getElementById("stubNum").textContent = ticketNum;
+
+  const name = document.getElementById("fName").value.trim();
+  document.getElementById("stubName").textContent = name || "—";
+
+  const course = chkCourse.checked ? fCourse.value.trim() : "";
+  document.getElementById("stubCourse").textContent = course ? `Khóa học: ${course}` : "";
+  document.getElementById("stubCourseBody").textContent = course || "Không có";
+
+  const title = document.getElementById("fTitle").value.trim();
+  document.getElementById("stubTitle").textContent = title || "—";
+
+  const catIconKey = selectedRadio ? selectedRadio.dataset.icon : "other";
+  document.getElementById("stubCat").innerHTML =
+    svgIcon(catIconKey) + `<span>${displayLabel}</span>`;
+  document.getElementById("stubDate").textContent = formatDateVN(fDateEl.value);
 }
 // ======================================================
 // INPUT → UPDATE STUB
@@ -394,14 +416,10 @@ submitBtn.addEventListener(
         .getElementById("fDesc")
         .value
         .trim();
-    const type =
-      document.querySelector(
-        'input[name="ticketType"]:checked'
-      );
-    const errEl =
-      document.getElementById(
-        "errorText"
-      );
+    const selectedMainType = document.querySelector('input[name="ticketMainType"]:checked');
+    const selectedIssue = issueSelect.value;
+    const errEl = document.getElementById("errorText");
+    const requiresIssue = selectedMainType && selectedMainType.value !== "other";
     // ================================
     // VALIDATE
     // ================================
@@ -411,7 +429,8 @@ submitBtn.addEventListener(
       (isStudent && !course) ||
       !title ||
       !desc ||
-      !type
+      !selectedMainType ||
+      (requiresIssue && !selectedIssue)
     ) {
       errEl.textContent =
         "Vui lòng điền đầy đủ các trường bắt buộc (*) và chọn loại yêu cầu.";
@@ -433,14 +452,20 @@ submitBtn.addEventListener(
     // ================================
     // NẾU CHƯA CÓ MÃ TICKET
     // ================================
+    const ticketValue =
+      selectedMainType.value === "other"
+        ? "other"
+        : `${selectedMainType.value}-${selectedIssue}`;
+    const ticketIssueLabel =
+      selectedMainType.value === "other"
+        ? "Khác"
+        : issueSelect.selectedOptions[0].textContent.trim();
     if (ticketNum === "HV-000000") {
-      ticketNum =
-        genTicketNum(type.value);
+      ticketNum = genTicketNum(ticketValue);
       updateStub();
     }
     submitBtn.disabled = true;
-    submitBtn.textContent =
-      "Đang gửi...";
+    submitBtn.textContent = "Đang gửi...";
     try {
       // ==================================
       // DATA TICKET
@@ -453,7 +478,9 @@ submitBtn.addEventListener(
         isStudent: isStudent,
         course: course,
         date: fDateEl.value,
-        ticketType: type.value,
+        ticketType: ticketValue,
+        ticketCategory: selectedMainType.dataset.label,
+        ticketIssue: ticketIssueLabel,
         title: title,
         description: desc,
         status: "open",
@@ -505,7 +532,9 @@ submitBtn.addEventListener(
             fDateEl.value
           ),
         ticket_type:
-          type.value,
+          selectedMainType.value === "other"
+            ? selectedMainType.dataset.label
+            : `${selectedMainType.dataset.label} · ${ticketIssueLabel}`,
         title: title,
         message: desc
       };
@@ -581,11 +610,15 @@ document
     });
     document
       .querySelectorAll(
-        'input[name="ticketType"]'
+        'input[name="ticketMainType"]'
       )
       .forEach((input) => {
         input.checked = false;
       });
+    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
+    issueField.classList.remove("show");
+    issueSelect.disabled = true;
+    issueSelect.value = "";
     fDateEl.value =
       isoToday();
     ticketNum =
