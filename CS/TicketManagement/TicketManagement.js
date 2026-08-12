@@ -1,17 +1,4 @@
 // cs-ticket.js — Ticket Management page logic
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ---- Fill in your Firebase project config here ----
-const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
-};
-
 const PAGE_SIZE = 10;
 let allTickets = [];
 let filteredTickets = [];
@@ -170,8 +157,11 @@ function setStats(tickets) {
 }
 
 async function loadTickets() {
-  // No config provided -> stay in N/A / empty state.
-  if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  const firebaseRef = window.firebase;
+  const firestoreDb = window.db || (firebaseRef && firebaseRef.firestore ? firebaseRef.firestore() : null);
+
+  if (!firebaseRef || !firebaseRef.firestore || !firestoreDb) {
+    console.warn("Firebase chưa sẵn sàng. Kiểm tra /firebase-config.js và SDK Firebase đã được load.");
     allTickets = [];
     filteredTickets = [];
     setStats([]);
@@ -180,9 +170,7 @@ async function loadTickets() {
   }
 
   try {
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const snap = await getDocs(collection(db, "tickets"));
+    const snap = await firestoreDb.collection("tickets").get();
 
     allTickets = snap.docs.map(doc => {
       const d = doc.data();
@@ -192,8 +180,8 @@ async function loadTickets() {
         subject: d.subject || null,
         status: d.status || null,
         priority: d.priority || null,
-        category: d.category || null,
-        date: d.date || null
+        category: d.category || d.ticketCategory || null,
+        date: d.date || d.createdAt || null
       };
     });
 
