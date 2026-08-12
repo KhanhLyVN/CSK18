@@ -17,6 +17,7 @@
 
   <!-- Chart.js cho Biểu đồ Tròn -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/CS/navbar.css">
 
 <style>
   :root{
@@ -42,6 +43,7 @@
     color: var(--ink);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
+<<<<<<< HEAD
   }
   .masthead {
     flex: 1;
@@ -49,6 +51,14 @@
     padding: 30px 40px;
     background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,0.04) 1px, transparent 0);
     background-size: 24px 24px;
+=======
+    padding: 0;
+  }
+  .page{
+    max-width: none;
+    margin: 0;
+    width: 100%;
+>>>>>>> 226a7f00d2b1ae2086b6b415f514accc703e002f
   }
 
 
@@ -253,6 +263,7 @@
     border-radius: 4px;
     padding: 26px 24px 24px;
     box-shadow: 0 1px 2px rgba(93,7,3,0.04);
+    margin-top: 18px;
   }
   .chart-head{
     display:flex;
@@ -364,18 +375,150 @@
     color: var(--maroon);
     font-style: normal;
   }
+.sidebar {
+  width: 260px;
+  flex: none;
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transition: width 0.25s ease, transform 0.25s ease;
+  z-index: 90;
+}
+
+/* Trạng thái thu gọn Sidebar */
+.sidebar.collapsed { width: 70px; }
+.sidebar.collapsed .menu-item span { display: none; }
+.sidebar.collapsed .menu-item { justify-content: center; padding: 12px; }
+
+.sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
+.menu-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
+.menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
+.menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
+
 </style>
 </head>
 <body>
+<<<<<<< HEAD
 
   <div class="app">
     <!-- Top bar -->
+=======
+  <div class="app">
+>>>>>>> 226a7f00d2b1ae2086b6b415f514accc703e002f
     <div class="topbar">
       <button class="menu-toggle" id="menuToggle" title="Thu gọn / Mở rộng Sidebar">&#9776;</button>
       <div class="mark">CS</div>
       <div class="titles">
         <h1>Hệ thống Quản lý Hỗ trợ</h1>
+<<<<<<< HEAD
         <span>Trang tổng quan Customer Success</span>
+=======
+        <span>Dashboard tổng quan Customer Success</span>
+      </div>
+    </div>
+
+    <div class="body" id="bodyEl">
+      <div class="sidebar" id="sidebarEl">
+        <div class="sidebar-menu">
+          <a href="/CS/Trang chủ CS/trangchu-cs.html" class="menu-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Trang chủ</span>
+          </a>
+          <a href="/CS/Quản lý tickets CS/cs-ticket.html" class="menu-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Trao đổi Ticket</span>
+          </a>
+          <a href="/CS/Dashboard/cs-dashboard.html" class="menu-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Báo cáo thống kê</span>
+          </a>
+          <a href="#" class="menu-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Cài đặt hệ thống</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page">
+          <div class="masthead">
+            <div class="masthead-left">
+              <div class="eyebrow">Trung tâm hỗ trợ học viên</div>
+              <h1>Tổng quan Dashboard</h1>
+            </div>
+            <div class="masthead-right">
+              <div class="date-label">Ngày</div>
+              <div class="clock" id="todayStr">—</div>
+            </div>
+          </div>
+
+          <!-- ================= STATS TOP ================= -->
+          <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Ticket cần xử lý<br>hôm nay</div>
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M9 3v4M15 3v4M4 11h16"/><path d="M12 15v3M10.5 16.5h3"/></svg>
+      </div>
+      <div class="stat-value" id="valToday"><span class="stat-empty">—</span></div>
+      <div class="stat-sub" id="subToday">Chưa kết nối dữ liệu Firebase</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Ticket hoàn thành<br>trong tuần</div>
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>
+      </div>
+      <div class="stat-value" id="valCompleted"><span class="stat-empty">—</span></div>
+      <div class="stat-sub" id="subCompleted">Chưa kết nối dữ liệu Firebase</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Ticket đang<br>xử lý</div>
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 8.5l-3-3M4 20l4.5-1 9-9-3.5-3.5-9 9L4 20z"/></svg>
+      </div>
+      <div class="stat-value" id="valInProgress"><span class="stat-empty">—</span></div>
+      <div class="stat-sub" id="subInProgress">Chưa kết nối dữ liệu Firebase</div>
+    </div>
+
+    <div class="stat-card highlight">
+      <div class="stat-top">
+        <div class="stat-label">Tỷ lệ<br>hoàn thành</div>
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div class="stat-value" id="valCompletionRate"><span class="stat-empty">—</span></div>
+      <div class="progress-track"><div class="progress-fill" id="completionFill"></div></div>
+      <div class="stat-sub" id="subCompletionRate">Chưa kết nối dữ liệu Firebase</div>
+    </div>
+
+  </div>
+
+  <!-- ================= PIE CHART & EXTRA METRICS ================= -->
+  <div class="analytics-grid">
+    <!-- Box Pie Chart -->
+    <div class="pie-card">
+      <div class="chart-head">
+        <div class="chart-title">Loại ticket phổ biến (1-5)</div>
+      </div>
+      <p class="chart-desc" style="margin-bottom: 10px;">Phân bổ số lượng ticket theo phân loại nhóm (Loại 1 đến Loại 5).</p>
+      <div class="pie-container">
+        <canvas id="ticketTypeChart"></canvas>
+        <div class="pie-empty-text" id="pieEmptyNote">Chưa có dữ liệu loại ticket</div>
+>>>>>>> 226a7f00d2b1ae2086b6b415f514accc703e002f
       </div>
     </div>
   
@@ -519,8 +662,42 @@
     </div>
   </div>
 
+<<<<<<< HEAD
 <script src="cs-dashboard.js"></script>
 <script type="module" src="/CS/navbar.js"></script>
 
+=======
+  <!-- ================= CHART: SO SÁNH TUẦN ================= -->
+  <div class="chart-section">
+    <div class="chart-head">
+      <div class="chart-title">So sánh Ticket: Tuần này &amp; Tuần trước</div>
+      <div class="chart-legend">
+        <span class="legend-dot this-week">Tuần này</span>
+        <span class="legend-dot last-week">Tuần trước</span>
+      </div>
+    </div>
+    <p class="chart-desc">Số lượng ticket được tạo theo từng ngày trong tuần, so sánh với tuần liền trước.</p>
+
+    <div class="chart-body">
+      <div class="bar-chart" id="weekBarChart">
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis0"></div><div class="bar" id="barLast0"></div></div><div class="day-label">T2</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis1"></div><div class="bar" id="barLast1"></div></div><div class="day-label">T3</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis2"></div><div class="bar" id="barLast2"></div></div><div class="day-label">T4</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis3"></div><div class="bar" id="barLast3"></div></div><div class="day-label">T5</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis4"></div><div class="bar" id="barLast4"></div></div><div class="day-label">T6</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis5"></div><div class="bar" id="barLast5"></div></div><div class="day-label">T7</div></div>
+        <div class="bar-day"><div class="bar-pair"><div class="bar" id="barThis6"></div><div class="bar" id="barLast6"></div></div><div class="day-label">CN</div></div>
+      </div>
+      <div class="chart-empty-note" id="chartNote">Biểu đồ sẽ tự động cập nhật khi kết nối <strong>Firebase</strong>.</div>
+    </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/CS/navbar.js"></script>
+  <script src="cs-dashboard.js"></script>
+>>>>>>> 226a7f00d2b1ae2086b6b415f514accc703e002f
 </body>
 </html>
