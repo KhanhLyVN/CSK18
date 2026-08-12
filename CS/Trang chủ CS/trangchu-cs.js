@@ -11,19 +11,16 @@ const ICONS = {
   other: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'
 };
 const svgIcon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[key] || ICONS.other}</svg>`;
-
 const STATUS_META = {
   open:        { label: "Đang mở",        color: "#B08A4E" },
   in_progress: { label: "Đang xử lý",     color: "#5D0703" },
   resolved:    { label: "Đã giải quyết",   color: "#4C6B3C" },
   closed:      { label: "Đã đóng",         color: "#8A7A6D" }
 };
-
 function normalizeStatus(statusValue){
   if (!statusValue || statusValue === "pending") return "open";
   return STATUS_META[statusValue] ? statusValue : "open";
 }
-
 function statusPill(statusKey){
   const normalizedKey = normalizeStatus(statusKey);
   const s = STATUS_META[normalizedKey] || STATUS_META.open;
@@ -31,13 +28,11 @@ function statusPill(statusKey){
     <span class="dot" style="background:${s.color};"></span>${s.label}
   </span>`;
 }
-
 function todayLabel(){
   const d = new Date();
   return d.toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
 }
 document.getElementById('todayStr').textContent = todayLabel();
-
 function greetingByHour(){
   const h = new Date().getHours();
   if(h < 11) return "Chào buổi sáng";
@@ -47,37 +42,46 @@ function greetingByHour(){
 }
 document.getElementById('greetingLine').textContent =
   `${greetingByHour()} — đây là tổng quan các yêu cầu hỗ trợ từ học viên hiện có trên hệ thống.`;
-
-// Đồng bộ quy chuẩn tên trường dữ liệu với phieuhotro.js và traodoiticket.js
-function getTicketNum(t){
-  return t.ticketNum || t.ticket_num || t.id;
+function getTicketNum(ticket) {
+  return ticket.ticketNum || ticket.id;
 }
-
-function getTicketType(t){
-  return t.ticketType || t.ticket_type || "Khác";
+function getTicketType(ticket) {
+  return ticket.ticketType || "Khác";
 }
-
-// Lắng nghe dữ liệu thời gian thực từ Firestore
-const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
-onSnapshot(q, (snapshot) => {
-  const tickets = [];
-  snapshot.forEach(docSnap => {
-    tickets.push({ id: docSnap.id, ...docSnap.data() });
+function getTicketTitle(ticket) {
+  return ticket.title || "Không có tiêu đề";
+}
+function getStudentName(ticket) {
+  return ticket.name || "Học viên";
+}
+function getTicketStatus(ticket) {
+  return ticket.status || "open";
+}
+db.collection("tickets")
+  .orderBy("createdAt", "desc")
+  .onSnapshot((snapshot) => {
+    const tickets = [];
+    snapshot.forEach((docSnap) => {
+      tickets.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
+    });
+    renderDashboard(tickets);
+  }, (error) => {
+    console.error("Lỗi khi đọc dữ liệu Firestore:", error);
+    document.getElementById("recentList").innerHTML = `
+      <div class="empty-note">
+        Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình Firebase.
+      </div>
+    `;
   });
-  renderDashboard(tickets);
-}, (error) => {
-  console.error("Lỗi khi đọc dữ liệu Firestore:", error);
-  document.getElementById('recentList').innerHTML =
-    `<div class="empty-note">Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình Firebase.</div>`;
-});
-
 function renderDashboard(tickets){
   renderStats(tickets);
   renderUnanswered(tickets);
   renderTypeBreakdown(tickets);
   renderRecent(tickets);
 }
-
 function renderStats(tickets){
   const counts = { open:0, in_progress:0, resolved:0, closed:0 };
   tickets.forEach(t => {
@@ -90,18 +94,15 @@ function renderStats(tickets){
   document.getElementById('statResolved').textContent = counts.resolved;
   document.getElementById('statClosed').textContent = counts.closed;
 }
-
 function renderUnanswered(tickets){
   // Lọc các ticket chưa đóng và có trạng thái open hoặc in_progress chưa có phản hồi từ CS
   const list = tickets.filter(t => normalizeStatus(t.status) === 'open' || normalizeStatus(t.status) === 'in_progress');
   document.getElementById('unansweredCount').textContent = list.length;
   const el = document.getElementById('unansweredList');
-
   if(list.length === 0){
     el.innerHTML = `<div class="empty-note">Tuyệt vời! Không có ticket nào đang chờ xử lý. 🎉</div>`;
     return;
   }
-
   el.innerHTML = list.slice(0, 10).map(t => {
     const tNum = getTicketNum(t);
     return `
@@ -116,7 +117,6 @@ function renderUnanswered(tickets){
     `;
   }).join("");
 }
-
 function renderTypeBreakdown(tickets){
   const counts = {};
   tickets.forEach(t => {
@@ -126,12 +126,10 @@ function renderTypeBreakdown(tickets){
   const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]);
   const max = entries.length ? entries[0][1] : 1;
   const el = document.getElementById('typeBarList');
-
   if(entries.length === 0){
     el.innerHTML = `<div class="empty-note">Chưa có dữ liệu phân loại.</div>`;
     return;
   }
-
   el.innerHTML = entries.map(([label, count]) => `
     <div class="bar-row">
       <div class="br-top">
@@ -142,12 +140,10 @@ function renderTypeBreakdown(tickets){
     </div>
   `).join("");
 }
-
 function renderRecent(tickets){
   document.getElementById('recentCount').textContent = tickets.length;
   const el = document.getElementById('recentList');
   const recent = tickets.slice(0, 10);
-
   const head = `
     <div class="recent-row head">
       <span>Mã ticket</span>
@@ -157,12 +153,10 @@ function renderRecent(tickets){
       <span>Trạng thái</span>
     </div>
   `;
-
   if(recent.length === 0){
     el.innerHTML = head + `<div class="empty-note">Chưa có phiếu yêu cầu nào trên hệ thống.</div>`;
     return;
   }
-
   el.innerHTML = head + recent.map(t => {
     const tNum = getTicketNum(t);
     const tType = getTicketType(t);
@@ -177,13 +171,11 @@ function renderRecent(tickets){
     `;
   }).join("");
 }
-
 function escapeHtml(str){
   const d = document.createElement("div");
   d.textContent = str || "";
   return d.innerHTML;
 }
-
 // Tương tác click thẻ thống kê → lọc sang trang trao đổi
 document.querySelectorAll('.stat-card').forEach(card => {
   card.addEventListener('click', () => {
@@ -194,12 +186,10 @@ document.querySelectorAll('.stat-card').forEach(card => {
     window.location.href = url;
   });
 });
-
 // Tìm nhanh theo mã ticket
 const quickFindInput = document.getElementById('quickFindInput');
 const quickFindBtn = document.getElementById('quickFindBtn');
 const quickFindErr = document.getElementById('quickFindErr');
-
 function goToTicket(){
   const val = quickFindInput.value.trim();
   if(!val){
