@@ -133,7 +133,7 @@ function openSelectedTicket(ticketRecord) {
           </div>
           <h2>
             ${escapeHTMLValue(ticketRecord.title || "Không có tiêu đề")}
-          </h2>
+          </h2> 
         </div>
         <div class="conversation-status ${ticketRecord.status}">
           <span class="dot"></span>
