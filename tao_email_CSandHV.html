@@ -597,18 +597,25 @@ tbody tr:hover {
     <div class="step-desc">Cho hệ thống biết cột nào chứa thông tin gì. Có thể để trống các mục không dùng đến.</div>
     <div class="grid-map" id="mapGrid"></div>
     <div style="margin-top:20px;">
-      <label class="field-label">Quy tắc sinh username</label>
-      <div class="row-inline">
-        <div>
-          <select id="usernameRule">
-            <option value="given_initials">tên + chữ cái đầu họ đệm (cho CS)</option>
-            <option value="full_noaccent">họ tên đầy đủ không dấu, cách nhau bằng dấu chấm (cho HV)</option>
-          </select>
+        <label class="field-label">Quy tắc sinh username</label>
+
+        <div class="row-inline">
+            <div>
+                <input
+                    type="text"
+                    value="Họ tên đầy đủ không dấu"
+                    readonly
+                >
+            </div>
+
+            <div>
+                <input
+                    type="text"
+                    value="@student.edu.vn"
+                    readonly
+                >
+            </div>
         </div>
-        <div>
-          <input type="text" id="usernameSuffix" placeholder="@student.edu.vn">
-        </div>
-      </div>
     </div>
     <div style="margin-top:14px;">
       <label class="field-label">Độ dài mật khẩu</label>
@@ -772,8 +779,7 @@ document.getElementById('generateBtn').addEventListener('click', () => {
         toast('Vui lòng chọn cột Họ tên trước.');
         return;
     }
-    const rule = document.getElementById('usernameRule').value;
-    const suffix = document.getElementById('usernameSuffix').value.trim();
+
     const pwLen = Math.max(
         6,
         Math.min(
@@ -787,10 +793,7 @@ document.getElementById('generateBtn').addEventListener('click', () => {
     const used = new Set();
     genRows = [];
     try {
-        const domain = suffix || '@student.edu.vn';
-        const emailDomain = domain.startsWith('@')
-            ? domain
-            : '@' + domain;
+        const emailDomain = '@student.edu.vn';
         for (const r of rawRows) {
             const fullName = String(r[mapping.name] || '').trim();
             if (!fullName) continue;
@@ -800,7 +803,7 @@ document.getElementById('generateBtn').addEventListener('click', () => {
             const campus = mapping.campus
                 ? String(r[mapping.campus] || '').trim()
                 : '';
-            let base = buildUsernameBase(fullName, clazz, rule);
+            let base = buildUsernameBase(fullName);
             let uname = base;
             let n = 1;
             while (used.has(uname)) {
@@ -935,23 +938,18 @@ document.getElementById('confirmAccountsBtn').addEventListener('click', async ()
         btn.textContent = 'Xác nhận & tạo tài khoản Firebase';
     }
 });
-function buildUsernameBase(fullName, clazz, rule) {
+function buildUsernameBase(fullName) {
     const clean = stripAccents(fullName);
-    const parts = clean.split(/\s+/).filter(Boolean);
-    if (!parts.length) return 'hocvien';
-    const given = parts[parts.length - 1];
-    const restInitials = parts
-        .slice(0, -1)
-        .map(p => p[0])
-        .join('');
-    // Nguyễn Văn An
-    // → nguyenvanan
-    if (rule === 'full_noaccent') {
-        return parts.join('');
+
+    const parts = clean
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (!parts.length) {
+        return 'hocvien';
     }
-    return restInitials
-        ? `${given}.${restInitials}`
-        : given;
+
+    return parts.join('');
 }
 function genPassword(len){
   const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
