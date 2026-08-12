@@ -99,12 +99,54 @@
     /* =====================================================
        RENDER BIỂU ĐỒ TRÒN (PIE CHART - TYPE 1-5)
     ===================================================== */
+    function normalizeCategoryKey(ticket) {
+        const rawValue = ticket?.ticketCategory || ticket?.category || ticket?.type || ticket?.typeId || ticket?.ticketType;
+        if (rawValue === undefined || rawValue === null || rawValue === "") return null;
+
+        const normalized = String(rawValue).trim().toLowerCase();
+        const categoryMap = {
+            "system": "system",
+            "he thong": "system",
+            "hệ thống": "system",
+            "learning": "learning",
+            "khoa hoc": "learning",
+            "khóa học": "learning",
+            "account": "account",
+            "tai khoan": "account",
+            "tài khoản": "account",
+            "other": "other",
+            "khac": "other",
+            "khác": "other"
+        };
+
+        if (categoryMap[normalized]) return categoryMap[normalized];
+
+        const parts = normalized.split("-");
+        if (parts.length > 0 && categoryMap[parts[0]]) return categoryMap[parts[0]];
+
+        const numericValue = Number(rawValue);
+        if (!Number.isNaN(numericValue)) {
+            const legacyMap = { 1: "system", 2: "learning", 3: "account", 4: "other", 5: "other" };
+            return legacyMap[numericValue] || null;
+        }
+
+        return null;
+    }
+
     function renderPieChart(typeCounts) {
         const canvas = el("ticketTypeChart");
         const emptyNote = el("pieEmptyNote");
         if (!canvas) return;
 
-        const totalTypes = Object.values(typeCounts).reduce((a, b) => a + b, 0);
+        const categoryOrder = ["system", "learning", "account", "other"];
+        const categoryLabels = {
+            system: "Hệ thống",
+            learning: "Khóa học",
+            account: "Tài khoản",
+            other: "Khác"
+        };
+
+        const totalTypes = categoryOrder.reduce((sum, key) => sum + (typeCounts[key] || 0), 0);
 
         if (totalTypes === 0) {
             if (pieChartInstance) {
@@ -119,16 +161,11 @@
         canvas.style.display = "block";
         if (emptyNote) emptyNote.style.display = "none";
 
-        const labels = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
-        const data = [
-            typeCounts[1] || 0,
-            typeCounts[2] || 0,
-            typeCounts[3] || 0,
-            typeCounts[4] || 0,
-            typeCounts[5] || 0
-        ];
+        const labels = categoryOrder.map((key) => categoryLabels[key]);
+        const data = categoryOrder.map((key) => typeCounts[key] || 0);
 
         if (pieChartInstance) {
+            pieChartInstance.data.labels = labels;
             pieChartInstance.data.datasets[0].data = data;
             pieChartInstance.update();
         } else {
@@ -143,8 +180,7 @@
                             "#5D0703",
                             "#B08A4E",
                             "#7A1410",
-                            "#4C6B3C",
-                            "#2A1712"
+                            "#4C6B3C"
                         ],
                         borderWidth: 2,
                         borderColor: "#FFFBF5"
@@ -232,7 +268,7 @@
 
         setProgress(null);
         resetBarsEmpty();
-        renderPieChart({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+        renderPieChart({ system: 0, learning: 0, account: 0, other: 0 });
     }
 
     /* =====================================================
@@ -254,7 +290,7 @@
         let totalThisWeek = 0;
 
         // Biểu đồ tròn
-        const typeCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        const typeCounts = { system: 0, learning: 0, account: 0, other: 0 };
 
         // Thời gian trung bình
         let totalTimeMinutes = 0;
@@ -273,10 +309,10 @@
             createdAt = typeof createdAt.toDate === "function" ? createdAt.toDate() : new Date(createdAt);
             if (isNaN(createdAt.getTime())) return;
 
-            // 2. PHÂN LOẠI TICKET (1-5)
-            const rawType = Number(ticket.type || ticket.category || ticket.typeId);
-            if (rawType >= 1 && rawType <= 5) {
-                typeCounts[rawType]++;
+            // 2. PHÂN LOẠI TICKET (hệ thống / khóa học / tài khoản / khác)
+            const categoryKey = normalizeCategoryKey(ticket);
+            if (categoryKey && typeCounts[categoryKey] !== undefined) {
+                typeCounts[categoryKey]++;
             }
 
             // 3. ĐÁNH GIÁ HÀI LÒNG (1-5)
