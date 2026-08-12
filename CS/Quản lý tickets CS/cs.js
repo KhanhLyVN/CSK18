@@ -193,21 +193,13 @@ function selectTicket(id){
         <hr class="divider">
 
         <div class="section-title"><span class="idx">03</span> Phân công &amp; thông tin liên hệ</div>
-        <p class="section-desc">Chọn người phụ trách xử lý ticket này.</p>
         <div class="assign-row" style="margin-bottom:16px;">
-          <select id="assigneeSelect">
-            <option value="">Chưa phân công</option>
-            ${STAFF.map(n => `<option value="${n}" ${t.assignee===n?'selected':''}>${n}</option>`).join("")}
-          </select>
-          <button class="btn-outline" id="assignMeBtn" ${currentStaff ? '' : 'disabled'}>Nhận xử lý</button>
         </div>
         <div class="info-grid">
           <div class="info-row"><div class="k">Email</div><div class="v">${escapeHtml(t.email || '—')}</div></div>
           <div class="info-row"><div class="k">Điện thoại</div><div class="v">${escapeHtml(t.phone || '—')}</div></div>
           <div class="info-row"><div class="k">Khóa học</div><div class="v">${escapeHtml(t.course || 'Không có')}</div></div>
           <div class="info-row"><div class="k">Ngày gửi</div><div class="v">${escapeHtml(t.date || '—')}</div></div>
-          <div class="info-row"><div class="k">Tạo lúc</div><div class="v">${fullTime(t.createdAt)}</div></div>
-          <div class="info-row"><div class="k">Cập nhật lúc</div><div class="v">${t.updatedAt ? fullTime(t.updatedAt) : '—'}</div></div>
         </div>
       </div>
 
