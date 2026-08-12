@@ -76,19 +76,19 @@
 
 .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
 .menu-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: var(--ink-soft);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 600;
-  transition: background 0.15s ease, color 0.15s ease;
-  white-space: nowrap;
-}
-.menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
-.menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
-.menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+  .menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
+  .menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
+  .menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
 
 
 /* ---------- Main Content ---------- */
