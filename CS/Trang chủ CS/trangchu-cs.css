@@ -18,15 +18,11 @@ body{
   background: var(--cream-pale);
   background-image:
     radial-gradient(circle at 1px 1px, rgba(93,7,3,0.04) 1px, transparent 0);
-  background-size: 24px 24px;
+    background-size: 24px 24px;
   color: var(--ink);
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
-  padding: 40px 20px 80px;
-}
-.page{
-  max-width: 1160px;
-  margin: 0 auto;
+
 }
 
 /* ---------- Header ---------- */
