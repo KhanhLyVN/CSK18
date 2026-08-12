@@ -1,53 +1,53 @@
 :root {
-    --maroon: #5D0703;
-    --maroon-deep: #3E0402;
-    --maroon-soft: #7A1410;
-    --cream: #EEDCC8;
-    --cream-pale: #FBF4E9;
-    --paper: #FFFBF5;
-    --gold: #B08A4E;
-    --ink: #2A1712;
-    --ink-soft: #6B5348;
-    --line: rgba(93,7,3,0.15);
-    --ok: #4C6B3C;
-    --muted: #8A7A6D;
-  }
-  
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; height: 100%; }
-  body {
-    font-family: 'Inter', sans-serif;
-    color: var(--ink);
-    background: var(--cream-pale);
-    overflow: hidden; /* Quan trọng để cuộn độc lập trong main */
-  }
+  --maroon: #5D0703;
+  --maroon-deep: #3E0402;
+  --maroon-soft: #7A1410;
+  --cream: #EEDCC8;
+  --cream-pale: #FBF4E9;
+  --paper: #FFFBF5;
+  --gold: #B08A4E;
+  --ink: #2A1712;
+  --ink-soft: #6B5348;
+  --line: rgba(93,7,3,0.15);
+  --ok: #4C6B3C;
+  --muted: #8A7A6D;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  background: var(--cream-pale);
+  overflow: hidden; /* Quan trọng để cuộn độc lập trong main */
+}
 
 .app { height: 100vh; display: flex; flex-direction: column; }
 
 /* ---------- Top bar ---------- */
 .topbar {
-  background: var(--maroon);
-  color: var(--cream-pale);
-  padding: 13px 22px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: none;
-  border-bottom: 1px solid rgba(0,0,0,0.15);
-  z-index: 100;
+background: var(--maroon);
+color: var(--cream-pale);
+padding: 13px 22px;
+display: flex;
+align-items: center;
+gap: 12px;
+flex: none;
+border-bottom: 1px solid rgba(0,0,0,0.15);
+z-index: 100;
 }
 .menu-toggle {
-  background: none; border: none; color: var(--cream-pale);
-  font-size: 20px; cursor: pointer; padding: 0 4px;
-  display: flex; align-items: center; justify-content: center;
+background: none; border: none; color: var(--cream-pale);
+font-size: 20px; cursor: pointer; padding: 0 4px;
+display: flex; align-items: center; justify-content: center;
 }
 .topbar .mark {
-  width: 30px; height: 30px; border-radius: 6px;
-  background: var(--cream);
-  color: var(--maroon-deep);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px;
-  flex: none;
+width: 30px; height: 30px; border-radius: 6px;
+background: var(--cream);
+color: var(--maroon-deep);
+display: flex; align-items: center; justify-content: center;
+font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px;
+flex: none;
 }
 .topbar .titles { line-height: 1.25; }
 .topbar h1 { margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16.5px; }
@@ -58,16 +58,26 @@
 
 /* ---------- Sidebar linh hoạt ---------- */
 .sidebar {
-  width: 260px;
-  flex: none;
-  background: var(--paper);
-  border-right: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  transition: width 0.25s ease, transform 0.25s ease;
-  z-index: 90;
+width: 260px;
+flex: none;
+background: var(--paper);
+border-right: 1px solid var(--line);
+display: flex;
+flex-direction: column;
+min-height: 0;
+transition: width 0.25s ease, transform 0.25s ease;
+z-index: 90;
 }
+
+.menu-item {
+min-height: 42px; display: flex; align-items: center; gap: 12px;
+padding: 10px 14px; border-left: 3px solid transparent; border-radius: 8px;
+color: var(--ink-soft); text-decoration: none; white-space: nowrap;
+font-size: 13px; font-weight: 600; transition: background .15s ease, color .15s ease;
+}
+.menu-item svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.menu-item:hover { color: var(--maroon); background: var(--cream-pale); }
+.menu-item.active { color: var(--maroon-deep); background: var(--cream); border-left-color: var(--maroon); font-weight: 700; }
 
 /* Trạng thái thu gọn Sidebar */
 .sidebar.collapsed { width: 70px; }
@@ -76,26 +86,45 @@
 
 .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
 .menu-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-size: 13.5px;
-    font-weight: 600;
-    transition: background 0.15s ease, color 0.15s ease;
-    white-space: nowrap;
-  }
-  .menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
-  .menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
-  .menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
+.menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
+.menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
 
 
 /* ---------- Main Content ---------- */
 .main {
-    flex: 1;
-    overflow-y: auto;
-    padding: 22px 26px 28px;
-    background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,0.04) 1px, transparent 0);
-    background-size: 24px 24px;
-  }
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 26px 28px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Shared CS shell overrides */
+.topbar { min-height: 58px; padding: 12px 22px; }
+.topbar .titles h1, .topbar h1 { font: 600 17px/1.2 "Fraunces", serif; }
+.topbar .titles span { display: block; margin-top: 2px; font-size: 11px; }
+.menu-toggle { width: 30px; height: 30px; padding: 0; font-size: 21px; line-height: 1; }
+.sidebar { width: 260px; min-height: 0; overflow: hidden; transition: width .25s ease, transform .25s ease; }
+.sidebar.collapsed { width: 70px; }
+.sidebar.collapsed .menu-item span { display: none; }
+.sidebar.collapsed .menu-item { justify-content: center; padding-inline: 10px; }
+.menu-item { min-height: 42px; border-left: 3px solid transparent; font-size: 13px; }
+.menu-item.active { border-left-color: var(--maroon); }
+.main { min-width: 0; min-height: 0; }
+@media (max-width: 860px) {
+.sidebar { position: absolute; inset: 0 auto 0 0; width: 260px; transform: translateX(-105%); box-shadow: 0 14px 34px rgba(62,4,2,.14); }
+.sidebar.collapsed { width: 260px; transform: translateX(0); }
+.sidebar.collapsed .menu-item span { display: inline; }
+.sidebar.collapsed .menu-item { justify-content: flex-start; padding-inline: 14px; }
+}

@@ -3,77 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trao đổi trên Ticket</title>
-<link rel="stylesheet" href="/HỌC VIÊN/Trao đổi ticket/traodoiticket.css">
-<link rel="stylesheet" href="/HỌC VIÊN/Trang chủ/homepage.css">
+<title>Trao đổi trên Ticket | Học viên</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-  <script src="/firebase-config.js"></script>
+<link rel="stylesheet" href="traodoiticket.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
 </head>
 <body>
-  <div class="app">
- 
-    <div class="topbar">
-      <button class="menu-toggle" id="menuToggle" title="Thu gọn / Mở rộng Sidebar">&#9776;</button>
-      <button class="back-btn" id="backButtonEl">&#8592;</button>
-      <div class="mark">HV</div>
-      <div class="titles">
-        <h1>Trao đổi trên Ticket</h1>
-        <span>Học viên &amp; Customer Success</span>
-      </div>
+<div class="app">
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc đóng menu">☰</button>
+    <button class="back-btn" id="backButtonEl" type="button" aria-label="Quay lại danh sách">←</button>
+    <div class="mark">HV</div>
+    <div class="titles">
+      <h1>Trao đổi trên Ticket</h1>
+      <span>Học viên &amp; Customer Success</span>
     </div>
+  </header>
 
-    <div class="body" id="bodyEl">
-      <!-- SIDEBAR LINH HOẠT -->
-      <div class="sidebar" id="sidebarEl">
-        <div class="sidebar-menu">
-          <a href="../Trang chủ/homepage.html" class="menu-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Trang chủ</span>
-          </a>
-          <a href="../Trao đổi ticket/trao-doi-ticket.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <span>Trao đổi Ticket</span>
-          </a>
-          <a href="/HỌC VIÊN/Phiếu hỗ trợ/phieuhotro.html" class="menu-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>Tạo phiếu hỗ trợ</span>
-          </a>
-          <a href="/FAQs/faq.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <span>Q&A</span>
-          </a>
-          <a href="#" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Cài đặt tài khoản</span>
-          </a>
-        </div>
-      </div>
-   
-    <div class="body" id="bodyLayoutEl">
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <div class="sidebar-head">
-          <input class="search" id="searchInputEl" placeholder="Tìm theo mã phiếu, tiêu đề...">
-          <div class="filter-row" id="filterRowEl">
-            <div class="filter-chip active" data-filter="all">Tất cả</div>
-            <div class="filter-chip" data-filter="open">Đang mở</div>
-            <div class="filter-chip" data-filter="closed">Đã đóng</div>
-          </div>
+  <div class="body" id="bodyEl">
+    <aside class="nav-sidebar" id="navSidebarEl">
+      <nav class="nav-menu" aria-label="Điều hướng học viên">
+        <a href="../Trang chủ/homepage.html" class="menu-item">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Trang chủ</span>
+        </a>
+        <a href="trao-doi-ticket.html" class="menu-item active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Trao đổi Ticket</span>
+        </a>
+        <a href="../Phiếu hỗ trợ/phieuhotro.html" class="menu-item">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>Tạo phiếu hỗ trợ</span>
+        </a>
+        <a href="/FAQs/faq.html" class="menu-item">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Hỏi đáp (Q&A)</span>
+        </a>
+        <a href="#" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Cài đặt tài khoản</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="exchange-shell" id="bodyLayoutEl">
+      <aside class="ticket-browser" aria-label="Danh sách ticket của tôi">
+        <div class="browser-head">
+          <div class="browser-title-row"><div><span class="browser-kicker">HỖ TRỢ CỦA TÔI</span><h2>Danh sách Ticket</h2></div><span class="ticket-total" id="ticketTotalEl">0</span></div>
+          <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input class="search" id="searchInputEl" type="search" placeholder="Tìm mã phiếu, tiêu đề..."></label>
+          <div class="filter-row" id="filterRowEl"><button class="filter-chip active" type="button" data-filter="all">Tất cả</button><button class="filter-chip" type="button" data-filter="open">Đang mở</button><button class="filter-chip" type="button" data-filter="in_progress">Đang xử lý</button><button class="filter-chip" type="button" data-filter="resolved">Đã giải quyết</button><button class="filter-chip" type="button" data-filter="closed">Đã đóng</button></div>
         </div>
         <div class="ticket-list" id="ticketListEl"></div>
-      </div>
-   
-      <!-- MAIN -->
-      <div class="main" id="mainPaneEl"></div>
+      </aside>
+
+      <main class="main" id="mainPaneEl">
+        <div class="empty-conversation"><div class="empty-conversation-icon">⌁</div><h2>Chọn một ticket để trao đổi</h2><p>Danh sách các phiếu hỗ trợ của bạn nằm ở bên trái.</p></div>
+      </main>
     </div>
   </div>
-<script src="/HỌC VIÊN/Trao đổi ticket/traodoiticket.js"></script>
-<script type="module" src="/HỌC VIÊN/sidebar.js"></script>
+</div>
+
+<script src="traodoiticket.js"></script>
+<script src="/HỌC VIÊN/sidebar.js"></script>
 </body>
 </html>

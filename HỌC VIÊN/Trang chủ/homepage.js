@@ -1,56 +1,90 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const openTicketsEl = document.getElementById("openTicketsCount");
-    
-    if (typeof db !== "undefined" && openTicketsEl) {
-      // Lắng nghe dữ liệu collection "tickets" từ Firestore
-      db.collection("tickets").onSnapshot(
-        (snapshot) => {
-          let openCount = 0;
-          
-          snapshot.forEach((doc) => {
-            const ticketData = doc.data();
-            // Kiểm tra điều kiện ticket đang mở (ví dụ: trạng thái khác "closed")
-            if (ticketData.status && ticketData.status !== "closed") {
-              openCount++;
-            }
-          });
-          
-          // Cập nhật số lượng lên giao diện trang chủ
-          openTicketsEl.textContent = openCount;
-        },
-        (error) => {
-          console.error("Lỗi khi tải số lượng ticket:", error);
-          openTicketsEl.textContent = "0";
-        }
-      );
-    }
-  });
+  const openTicketsEl = document.getElementById("openTicketsCount");
+  const progressTicketsEl = document.getElementById("progressTicketsCount");
+  const resolvedTicketsEl = document.getElementById("resolvedTicketsCount");
+  const totalTicketsEl = document.getElementById("totalTicketsCount");
+  const recentListEl = document.getElementById("recentTicketList");
+  const connectionDotEl = document.getElementById("connectionDot");
+  const connectionLabelEl = document.getElementById("connectionLabel");
+  const todayLabelEl = document.getElementById("todayLabel");
 
+  const STATUS_META = {
+    open: { label: "Đang mở", className: "status-open" },
+    in_progress: { label: "Đang xử lý", className: "status-in_progress" },
+    resolved: { label: "Đã giải quyết", className: "status-resolved" },
+    closed: { label: "Đã đóng", className: "status-closed" }
+  };
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const completedTicketsEl = document.getElementById("completedTicketsCount");
-    
-    if (typeof db !== "undefined" && completedTicketsEl) {
-      // Lắng nghe dữ liệu collection "tickets" từ Firestore
-      db.collection("tickets").onSnapshot(
-        (snapshot) => {
-          let completedCount = 0;
-          
-          snapshot.forEach((doc) => {
-            const ticketData = doc.data();
-            // Đếm các ticket có trạng thái là "closed" (Đã đóng / đã xử lý xong)
-            if (ticketData.status === "closed") {
-              completedCount++;
-            }
-          });
-          
-          // Cập nhật số lượng lên giao diện trang chủ
-          completedTicketsEl.textContent = completedCount;
-        },
-        (error) => {
-          console.error("Lỗi khi tải số lượng ticket đã hoàn thành:", error);
-          completedTicketsEl.textContent = "0";
-        }
-      );
+  function getDatabase() { return typeof db !== "undefined" ? db : null; }
+  function firstValue(ticket, ...keys) {
+    for (const key of keys) {
+      if (ticket[key] !== undefined && ticket[key] !== null && String(ticket[key]).trim()) return ticket[key];
     }
+    return "";
+  }
+  function normalizeStatus(status) { return status === "pending" || !STATUS_META[status] ? "open" : status; }
+  function getMillis(value) {
+    if (!value) return 0;
+    if (typeof value.toMillis === "function") return value.toMillis();
+    if (typeof value.toDate === "function") return value.toDate().getTime();
+    if (typeof value.seconds === "number") return value.seconds * 1000;
+    const valueMillis = new Date(value).getTime();
+    return Number.isNaN(valueMillis) ? 0 : valueMillis;
+  }
+  function formatDate(value) {
+    const millis = getMillis(value);
+    return millis ? new Date(millis).toLocaleDateString("vi-VN") : (value || "—");
+  }
+  function escapeHTML(value) {
+    const element = document.createElement("div");
+    element.textContent = value == null ? "" : String(value);
+    return element.innerHTML;
+  }
+  function setText(element, value) { if (element) element.textContent = value; }
+
+  setText(todayLabelEl, new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }));
+
+  function renderRecentTickets(tickets) {
+    if (!recentListEl) return;
+    if (!tickets.length) {
+      recentListEl.innerHTML = `<div class="empty-state">Bạn chưa có ticket nào. Hãy tạo yêu cầu đầu tiên.</div>`;
+      return;
+    }
+    recentListEl.innerHTML = tickets.slice(0, 5).map(ticket => {
+      const status = normalizeStatus(ticket.status);
+      const meta = STATUS_META[status];
+      const number = firstValue(ticket, "ticketNum", "ticket_num", "id");
+      const title = firstValue(ticket, "title", "subject") || "Không có tiêu đề";
+      const type = firstValue(ticket, "ticketIssue", "ticketType", "ticket_type", "category") || "Khác";
+      const query = encodeURIComponent(number);
+      return `<a class="recent-item" href="../Trao đổi ticket/trao-doi-ticket.html?ticket=${query}"><span class="recent-code">${escapeHTML(number)}</span><span class="recent-title-wrap"><span class="recent-title" title="${escapeHTML(title)}">${escapeHTML(title)}</span><span class="recent-type">${escapeHTML(type)}</span></span><span class="status-badge ${meta.className}">${meta.label}</span><span class="recent-date">${escapeHTML(firstValue(ticket, "date") || formatDate(ticket.createdAt))}</span></a>`;
+    }).join("");
+  }
+
+  const database = getDatabase();
+  if (!database) {
+    setText(connectionLabelEl, "Chưa kết nối");
+    if (recentListEl) recentListEl.innerHTML = `<div class="empty-state">Chưa cấu hình kết nối dữ liệu.</div>`;
+    return;
+  }
+
+  database.collection("tickets").onSnapshot(snapshot => {
+    connectionDotEl?.classList.add("live");
+    setText(connectionLabelEl, "Realtime");
+    const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => getMillis(b.createdAt) - getMillis(a.createdAt));
+    const counts = { open: 0, in_progress: 0, resolved: 0, closed: 0 };
+    tickets.forEach(ticket => counts[normalizeStatus(ticket.status)]++);
+    setText(openTicketsEl, counts.open + counts.in_progress + counts.resolved);
+    setText(progressTicketsEl, counts.in_progress);
+    setText(resolvedTicketsEl, counts.resolved);
+    setText(totalTicketsEl, tickets.length);
+    // Tương thích với giao diện cũ nếu còn phần tử này.
+    setText(document.getElementById("completedTicketsCount"), counts.closed + counts.resolved);
+    renderRecentTickets(tickets);
+  }, error => {
+    console.error("Không thể tải thống kê ticket:", error);
+    connectionDotEl?.classList.remove("live");
+    setText(connectionLabelEl, "Mất kết nối");
+    if (recentListEl) recentListEl.innerHTML = `<div class="empty-state">Không thể tải ticket. Vui lòng thử tải lại trang.</div>`;
   });
+});

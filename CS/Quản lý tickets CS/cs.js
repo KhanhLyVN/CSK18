@@ -1,328 +1,400 @@
-const STAFF = ["Tên nhân viên 1", "Tên nhân viên 2", "Tên nhân viên 3"];
-const ICONS = {
-  bug: '<path d="M12 8v8M8 12h8"/><path d="M9 4h6l1 3H8l1-3z"/><rect x="6" y="7" width="12" height="12" rx="4"/><path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>',
-  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
-  wallet: '<path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5a2 2 0 0 0 0 4h6"/>',
-  cert: '<circle cx="12" cy="8" r="5"/><path d="M9 12.5L7 21l5-3 5 3-2-8.5"/>',
-  swap: '<path d="M7 4v10M7 4L4 7M7 4l3 3"/><path d="M17 20V10M17 20l3-3M17 20l-3-3"/>',
-  chat: '<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.6-3.8A8.5 8.5 0 1 1 21 11.5z"/><path d="M12 9v4M12 15.5h.01"/>',
-  scale: '<path d="M12 3v18M5 8l-3 6a4 4 0 0 0 6 0zM19 8l-3 6a4 4 0 0 0 6 0zM5 8h14M9 3h6"/>',
-  mentor: '<circle cx="9" cy="8" r="3"/><path d="M4 20c0-3.3 2.7-5.5 5-5.5s5 2.2 5 5.5"/><path d="M15 8h6M18 5v6"/>',
-  book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/>',
-  other: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'
-};
-const svgIcon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[key] || ICONS.other}</svg>`;
+const STAFF = ["CS Customer Success"];
 
-const STATUS_FLOW = ["open", "in_progress", "resolved", "closed"];
 const STATUS_META = {
-  open:        { label:"Open",        color:"var(--st-open)",     soft:"var(--st-open-soft)" },
-  in_progress: { label:"In Progress", color:"var(--st-progress)", soft:"var(--st-progress-soft)" },
-  resolved:    { label:"Resolved",    color:"var(--st-resolved)", soft:"var(--st-resolved-soft)" },
-  closed:      { label:"Closed",      color:"var(--st-closed)",   soft:"var(--st-closed-soft)" }
+  open: { label: "Đang mở", className: "badge-open" },
+  in_progress: { label: "Đang xử lý", className: "badge-progress" },
+  resolved: { label: "Đã giải quyết", className: "badge-resolved" },
+  closed: { label: "Đã đóng", className: "badge-closed" }
 };
-
-function normalizeStatus(s){
-  if (!s || s === "pending") return "open";
-  return STATUS_META[s] ? s : "open";
-}
-
-function todayLabel(){
-  const d = new Date();
-  return d.toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
-}
-document.getElementById('todayStr').textContent = todayLabel();
+const STATUS_FLOW = ["open", "in_progress", "resolved", "closed"];
+const PAGE_SIZE = 10;
 
 let allTickets = [];
-let currentFilter = "all";
-let searchTerm = "";
+let filteredTickets = [];
+let currentPage = 1;
 let selectedTicketId = null;
+let currentChatTicketId = null;
 let unsubChat = null;
 let currentStaff = localStorage.getItem("cs_staff_name") || STAFF[0];
 
-function renderOverview(){
-  const bar = document.getElementById("overviewBar");
-  const counts = { open:0, in_progress:0, resolved:0, closed:0 };
-  allTickets.forEach(t => counts[normalizeStatus(t.status)]++);
-  bar.innerHTML = STATUS_FLOW.map(key => {
-    const meta = STATUS_META[key];
-    const active = currentFilter === key ? "active" : "";
+function getDatabase() {
+  return typeof db !== "undefined" ? db : null;
+}
+
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+function escapeHtml(value) {
+  const element = document.createElement("div");
+  element.textContent = value == null ? "" : String(value);
+  return element.innerHTML;
+}
+
+function firstValue(ticket, ...keys) {
+  for (const key of keys) {
+    const value = ticket && ticket[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") return value;
+  }
+  return "";
+}
+
+function normalizeStatus(status) {
+  if (!status || status === "pending") return "open";
+  return STATUS_META[status] ? status : "open";
+}
+
+function ticketNumber(ticket) {
+  return firstValue(ticket, "ticketNum", "ticket_num", "id") || "—";
+}
+
+function ticketType(ticket) {
+  return firstValue(ticket, "ticketType", "ticket_type", "category") || "Khác";
+}
+
+function ticketDescription(ticket) {
+  return firstValue(ticket, "description", "message", "content") || "Không có mô tả.";
+}
+
+function ticketTitle(ticket) {
+  return firstValue(ticket, "title", "subject") || "Không có tiêu đề";
+}
+
+function ticketPriority(ticket) {
+  const value = String(firstValue(ticket, "priority", "urgency") || "").toLowerCase();
+  return ["high", "medium", "low"].includes(value) ? value : "na";
+}
+
+function timestampMillis(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === "function") return value.toMillis();
+  if (typeof value.toDate === "function") return value.toDate().getTime();
+  if (typeof value.seconds === "number") return value.seconds * 1000;
+  const millis = new Date(value).getTime();
+  return Number.isNaN(millis) ? 0 : millis;
+}
+
+function formatDate(value) {
+  const millis = timestampMillis(value);
+  if (!millis) return value ? String(value) : "—";
+  return new Date(millis).toLocaleDateString("vi-VN");
+}
+
+function formatDateTime(value) {
+  const millis = timestampMillis(value);
+  return millis ? new Date(millis).toLocaleString("vi-VN") : "Đang cập nhật";
+}
+
+function todayLabel() {
+  return new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function initials(name) {
+  const parts = String(name || "?").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return parts.length === 1 ? parts[0][0].toUpperCase() : `${parts[0][0]}${parts.at(-1)[0]}`.toUpperCase();
+}
+
+function statusBadge(status) {
+  const normalized = normalizeStatus(status);
+  const meta = STATUS_META[normalized];
+  return `<span class="badge ${meta.className}"><span class="dot"></span>${meta.label}</span>`;
+}
+
+function priorityBadge(priority) {
+  const labels = { high: "Cao", medium: "Trung bình", low: "Thấp", na: "—" };
+  return `<span class="priority priority-${priority}">${labels[priority] || "—"}</span>`;
+}
+
+function renderStats() {
+  const counts = { open: 0, in_progress: 0, resolved: 0, closed: 0 };
+  allTickets.forEach(ticket => counts[normalizeStatus(ticket.status)]++);
+  $("#statTotal").textContent = allTickets.length;
+  $("#statOpen").textContent = counts.open;
+  $("#statProgress").textContent = counts.in_progress;
+  $("#statResolved").textContent = counts.resolved;
+  $("#statClosed").textContent = counts.closed;
+}
+
+function renderCategoryFilter() {
+  const select = $("#filterCategory");
+  const currentValue = select.value;
+  const categories = [...new Set(allTickets.map(ticketType).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi"));
+  select.innerHTML = `<option value="all">Tất cả</option>${categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}`;
+  select.value = categories.includes(currentValue) ? currentValue : "all";
+}
+
+function getFilteredTickets() {
+  const status = $("#filterStatus").value;
+  const priority = $("#filterPriority").value;
+  const category = $("#filterCategory").value;
+  const search = $("#searchInput").value.trim().toLocaleLowerCase("vi");
+
+  return allTickets.filter(ticket => {
+    const statusMatch = status === "all" || normalizeStatus(ticket.status) === status;
+    const priorityMatch = priority === "all" || ticketPriority(ticket) === priority;
+    const categoryMatch = category === "all" || ticketType(ticket) === category;
+    const searchable = [ticketNumber(ticket), firstValue(ticket, "name"), firstValue(ticket, "email"), ticketTitle(ticket), ticketType(ticket)].join(" ").toLocaleLowerCase("vi");
+    return statusMatch && priorityMatch && categoryMatch && (!search || searchable.includes(search));
+  });
+}
+
+function renderTable() {
+  filteredTickets = getFilteredTickets();
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filteredTickets.slice(start, start + PAGE_SIZE);
+  const body = $("#ticketBody");
+  const emptyState = $("#emptyState");
+
+  body.innerHTML = pageItems.map(ticket => {
+    const id = escapeHtml(ticket.id);
+    const name = firstValue(ticket, "name") || "Chưa cập nhật";
+    const email = firstValue(ticket, "email");
+    const selected = ticket.id === selectedTicketId ? "selected-row" : "";
     return `
-      <div class="stat ${active}" style="--s-color:${meta.color}" data-status="${key}">
-        <span class="stat-name">${meta.label}</span>
-        <span class="stat-count">${counts[key]}</span>
-      </div>`;
+      <tr class="${selected}" data-ticket-id="${id}">
+        <td><span class="cell-id">${escapeHtml(ticketNumber(ticket))}</span></td>
+        <td><div class="cell-name">${escapeHtml(name)}</div><div class="cell-email">${escapeHtml(email)}</div></td>
+        <td><div class="cell-subject" title="${escapeHtml(ticketTitle(ticket))}">${escapeHtml(ticketTitle(ticket))}</div></td>
+        <td><div class="cell-type" title="${escapeHtml(ticketType(ticket))}">${escapeHtml(ticketType(ticket))}</div></td>
+        <td>${statusBadge(ticket.status)}</td>
+        <td>${priorityBadge(ticketPriority(ticket))}</td>
+        <td><span class="cell-date">${escapeHtml(firstValue(ticket, "date") || formatDate(ticket.createdAt))}</span></td>
+        <td><button class="action-menu" type="button" data-action="details" data-ticket-id="${id}" aria-label="Xem thông tin ticket" title="Xem thông tin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg></button></td>
+      </tr>`;
   }).join("");
-  bar.querySelectorAll(".stat").forEach(el => {
-    el.addEventListener("click", () => {
-      currentFilter = currentFilter === el.dataset.status ? "all" : el.dataset.status;
-      renderOverview(); renderFilterTabs(); renderList();
+
+  emptyState.hidden = pageItems.length !== 0;
+  $("#entriesNote").textContent = `Hiển thị ${pageItems.length} / ${filteredTickets.length} ticket`;
+  renderPagination(totalPages);
+
+  $$("[data-action='details']").forEach(button => {
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      openTicketDrawer(button.dataset.ticketId);
     });
+  });
+  $$("#ticketBody tr[data-ticket-id]").forEach(row => {
+    row.addEventListener("click", () => openTicketDrawer(row.dataset.ticketId));
   });
 }
 
-function renderFilterTabs(){
-  const wrap = document.getElementById("filterTabs");
-  const tabs = [{key:"all", label:"Tất cả"}, ...STATUS_FLOW.map(k => ({key:k, label:STATUS_META[k].label}))];
-  wrap.innerHTML = tabs.map(t => `<button class="${currentFilter===t.key?'active':''}" data-status="${t.key}">${t.label}</button>`).join("");
-  wrap.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentFilter = btn.dataset.status;
-      renderOverview(); renderFilterTabs(); renderList();
-    });
+function renderPagination(totalPages) {
+  const pagination = $("#paginationEl");
+  pagination.innerHTML = "";
+  const previous = document.createElement("button");
+  previous.className = "page-btn";
+  previous.textContent = "‹";
+  previous.disabled = currentPage === 1;
+  previous.addEventListener("click", () => { currentPage--; renderTable(); });
+  pagination.appendChild(previous);
+
+  for (let page = 1; page <= totalPages; page++) {
+    const button = document.createElement("button");
+    button.className = `page-btn ${page === currentPage ? "active" : ""}`;
+    button.textContent = page;
+    button.addEventListener("click", () => { currentPage = page; renderTable(); });
+    pagination.appendChild(button);
+  }
+
+  const next = document.createElement("button");
+  next.className = "page-btn";
+  next.textContent = "›";
+  next.disabled = currentPage === totalPages;
+  next.addEventListener("click", () => { currentPage++; renderTable(); });
+  pagination.appendChild(next);
+}
+
+function openTicketDrawer(ticketId) {
+  const ticket = allTickets.find(item => item.id === ticketId);
+  if (!ticket) return;
+  selectedTicketId = ticketId;
+  renderTable();
+
+  const status = normalizeStatus(ticket.status);
+  const name = firstValue(ticket, "name") || "Chưa cập nhật";
+  const email = firstValue(ticket, "email") || "—";
+  const phone = firstValue(ticket, "phone") || "—";
+  const course = firstValue(ticket, "course") || "Không có";
+
+  $("#drawerBody").innerHTML = `
+    <div class="drawer-ticket-head">
+      <div class="drawer-ticket-number">${escapeHtml(ticketNumber(ticket))}</div>
+      <div class="drawer-ticket-meta"><span>${escapeHtml(ticketType(ticket))}</span><span>${escapeHtml(firstValue(ticket, "date") || formatDate(ticket.createdAt))}</span></div>
+    </div>
+    <section class="drawer-section"><h3>${escapeHtml(ticketTitle(ticket))}</h3><p>${escapeHtml(ticketDescription(ticket))}</p></section>
+    <section class="drawer-section"><h3>Thông tin học viên</h3><div class="info-grid">
+      <div class="info-item"><div class="info-label">Họ tên</div><div class="info-value">${escapeHtml(name)}</div></div>
+      <div class="info-item"><div class="info-label">Email</div><div class="info-value">${escapeHtml(email)}</div></div>
+      <div class="info-item"><div class="info-label">Điện thoại</div><div class="info-value">${escapeHtml(phone)}</div></div>
+      <div class="info-item"><div class="info-label">Khóa học</div><div class="info-value">${escapeHtml(course)}</div></div>
+    </div></section>
+    <section class="drawer-section"><h3>Xử lý ticket</h3>
+      <div class="status-stepper" id="drawerStatusStepper" aria-label="Cập nhật trạng thái">
+        ${STATUS_FLOW.map(key => `<button type="button" class="status-step ${key === status ? "current" : ""} status-${key}" data-status="${key}"><span class="status-step-dot"></span>${STATUS_META[key].label}</button>`).join("")}
+      </div>
+      <div class="drawer-actions"><button class="chat-trigger" id="openChatBtn" type="button">💬 Mở chat</button></div>
+    </section>
+    <section class="drawer-section"><h3>Thời gian</h3><div class="info-grid">
+      <div class="info-item"><div class="info-label">Tạo lúc</div><div class="info-value">${escapeHtml(formatDateTime(ticket.createdAt))}</div></div>
+      <div class="info-item"><div class="info-label">Cập nhật</div><div class="info-value">${escapeHtml(formatDateTime(ticket.updatedAt))}</div></div>
+    </div></section>`;
+
+  $$("#drawerStatusStepper .status-step").forEach(button => {
+    button.addEventListener("click", () => updateTicketStatus(ticket.id, button.dataset.status));
   });
+  $("#openChatBtn").addEventListener("click", () => openChatPanel(ticket));
+  $("#ticketDrawer").classList.add("open");
+  $("#ticketDrawer").setAttribute("aria-hidden", "false");
+  updateBackdrop();
 }
 
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  searchTerm = e.target.value.trim().toLowerCase();
-  renderList();
-});
-
-function relativeTime(ts){
-  if (!ts || !ts.toDate) return "";
-  const min = Math.floor((Date.now() - ts.toDate().getTime()) / 60000);
-  if (min < 1) return "vừa xong";
-  if (min < 60) return `${min} phút trước`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} giờ trước`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `${day} ngày trước`;
-  return ts.toDate().toLocaleDateString('vi-VN');
-}
-function fullTime(ts){ return (ts && ts.toDate) ? ts.toDate().toLocaleString('vi-VN') : "—"; }
-function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str || ""; return d.innerHTML; }
-
-function initials(name){
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+function closeTicketDrawer() {
+  closeChatPanel();
+  $("#ticketDrawer").classList.remove("open");
+  $("#ticketDrawer").setAttribute("aria-hidden", "true");
+  selectedTicketId = null;
+  renderTable();
+  updateBackdrop();
 }
 
-function renderList(){
-  const listEl = document.getElementById("ticketList");
-  let items = allTickets.filter(t => {
-    const st = normalizeStatus(t.status);
-    if (currentFilter !== "all" && st !== currentFilter) return false;
-    if (searchTerm){
-      const hay = `${t.ticket_num||''} ${t.name||''} ${t.email||''} ${t.title||''}`.toLowerCase();
-      if (!hay.includes(searchTerm)) return false;
+function openChatPanel(ticket) {
+  currentChatTicketId = ticket.id;
+  $("#chatTitle").textContent = `Chat với ${firstValue(ticket, "name") || "học viên"}`;
+  $("#chatTicketContext").textContent = `${ticketNumber(ticket)} · ${ticketTitle(ticket)}`;
+  $("#chatPanel").classList.add("open");
+  $("#chatPanel").setAttribute("aria-hidden", "false");
+  loadChatMessages(ticket.id);
+  updateBackdrop();
+  setTimeout(() => $("#chatInput").focus(), 180);
+}
+
+function closeChatPanel() {
+  $("#chatPanel").classList.remove("open");
+  $("#chatPanel").setAttribute("aria-hidden", "true");
+  currentChatTicketId = null;
+  if (unsubChat) { unsubChat(); unsubChat = null; }
+  updateBackdrop();
+}
+
+function updateBackdrop() {
+  const isOpen = $("#ticketDrawer").classList.contains("open");
+  $("#drawerBackdrop").hidden = !isOpen;
+}
+
+function updateTicketStatus(ticketId, status) {
+  const database = getDatabase();
+  if (!database || !window.firebase?.firestore) return;
+  database.collection("tickets").doc(ticketId).update({ status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(error => console.error("Không thể cập nhật trạng thái:", error));
+}
+
+function loadChatMessages(ticketId) {
+  const messageBox = $("#chatMessages");
+  if (unsubChat) { unsubChat(); unsubChat = null; }
+  const database = getDatabase();
+  if (!database) { messageBox.innerHTML = `<div class="thread-empty">Chưa kết nối Firestore.</div>`; return; }
+
+  unsubChat = database.collection("tickets").doc(ticketId).collection("messages").onSnapshot(snapshot => {
+    const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => timestampMillis(a.createdAt) - timestampMillis(b.createdAt));
+    if (!messages.length) {
+      messageBox.innerHTML = `<div class="thread-empty">Chưa có tin nhắn. Hãy bắt đầu cuộc trao đổi với học viên.</div>`;
+      return;
     }
-    return true;
-  });
-
-  document.getElementById("listCount").textContent = `${items.length} phiếu`;
-
-  if (items.length === 0){
-    listEl.innerHTML = `<div class="empty-list">Không có ticket nào khớp với bộ lọc hiện tại.</div>`;
-    return;
-  }
-
-  listEl.innerHTML = items.map(t => {
-    const st = normalizeStatus(t.status);
-    const meta = STATUS_META[st];
-    const selected = t.id === selectedTicketId ? "selected" : "";
-    const assignee = t.assignee
-      ? `<span class="assignee-chip"><span class="a-dot">${initials(t.assignee)}</span>${escapeHtml(t.assignee)}</span>`
-      : `<span class="assignee-chip">Chưa phân công</span>`;
-    return `
-      <div class="ticket-row ${selected}" data-id="${t.id}">
-        <div class="ticon">${svgIcon(t.icon)}</div>
-        <div class="tbody">
-          <div class="trow-top">
-            <span class="tnum">${escapeHtml(t.ticket_num || t.id)}</span>
-            <span class="ttime">${relativeTime(t.createdAt)}</span>
-          </div>
-          <div class="ttitle">${escapeHtml(t.title || '(Không có tiêu đề)')}</div>
-          <div class="tmeta">
-            <span class="badge" style="--s-color:${meta.color}; --s-soft:${meta.soft}"><span class="d"></span>${meta.label}</span>
-            ${assignee}
-          </div>
-        </div>
-      </div>`;
-  }).join("");
-
-  listEl.querySelectorAll(".ticket-row").forEach(row => {
-    row.addEventListener("click", () => selectTicket(row.dataset.id));
+    messageBox.innerHTML = messages.map(message => {
+      const isCS = message.senderType === "cs" || message.sender === "admin";
+      const content = firstValue(message, "message", "text") || "";
+      return `<div class="chat-bubble ${isCS ? "cs" : "student"}"><div class="chat-sender">${escapeHtml(firstValue(message, "senderName") || (isCS ? "CS" : "Học viên"))}</div><div>${escapeHtml(content)}</div><div class="chat-meta">${escapeHtml(formatDateTime(message.createdAt))}</div></div>`;
+    }).join("");
+    messageBox.scrollTop = messageBox.scrollHeight;
+  }, error => {
+    console.error("Không thể tải tin nhắn:", error);
+    messageBox.innerHTML = `<div class="thread-empty">Không thể tải khung chat.</div>`;
   });
 }
 
-function selectTicket(id){
-  selectedTicketId = id;
-  renderList();
-  const t = allTickets.find(x => x.id === id);
-  if (!t) return;
-
-  document.getElementById("detailEmpty").style.display = "none";
-  const content = document.getElementById("detailContent");
-  content.style.display = "flex";
-  content.style.flexDirection = "column";
-
-  const st = normalizeStatus(t.status);
-
-  content.innerHTML = `
-    <button class="back-btn" id="backBtn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Danh sách</button>
-
-    <div class="stub-top">
-      <div class="k1">Mã yêu cầu</div>
-      <div class="num">${escapeHtml(t.ticket_num || t.id)}</div>
-      <div class="row2">
-        <div class="cat">${svgIcon(t.icon)}<span>${escapeHtml(t.ticket_type || '')}</span></div>
-        <div class="who">${escapeHtml(t.name || '')} · ${t.date || ''}</div>
-      </div>
-    </div>
-    <div class="perf"></div>
-
-    <div class="detail-content-split">
-      <div class="detail-scroll">
-        <div class="section-title"><span class="idx">01</span> Trạng thái xử lý</div>
-        <p class="section-desc">Cập nhật trạng thái ticket khi tiếp nhận và xử lý.</p>
-        <div class="status-stepper" id="statusStepper">
-          ${STATUS_FLOW.map(key => {
-            const m = STATUS_META[key];
-            const cur = key === st ? "current" : "";
-            return `<button class="${cur}" data-status="${key}" style="--s-color:${m.color}; --s-soft:${m.soft}"><span class="d"></span>${m.label}</button>`;
-          }).join("")}
-        </div>
-
-        <hr class="divider">
-
-        <div class="section-title"><span class="idx">02</span> Nội dung yêu cầu</div>
-        <p class="section-desc">Tiêu đề: <strong style="color:var(--maroon-deep)">${escapeHtml(t.title || '(Không có tiêu đề)')}</strong></p>
-        <div class="desc-box">${escapeHtml(t.message || '(Không có mô tả)')}</div>
-
-        <hr class="divider">
-
-        <div class="section-title"><span class="idx">03</span> Phân công &amp; thông tin liên hệ</div>
-        <div class="assign-row" style="margin-bottom:16px;">
-        </div>
-        <div class="info-grid">
-          <div class="info-row"><div class="k">Email</div><div class="v">${escapeHtml(t.email || '—')}</div></div>
-          <div class="info-row"><div class="k">Điện thoại</div><div class="v">${escapeHtml(t.phone || '—')}</div></div>
-          <div class="info-row"><div class="k">Khóa học</div><div class="v">${escapeHtml(t.course || 'Không có')}</div></div>
-          <div class="info-row"><div class="k">Ngày gửi</div><div class="v">${escapeHtml(t.date || '—')}</div></div>
-        </div>
-      </div>
-
-      <div class="chat-pane-right">
-        <div class="chat-pane-header">
-          💬 Tin nhắn trao đổi trực tiếp
-        </div>
-        <div class="chat-messages-list" id="chatMessagesList">
-          <div class="thread-empty">Đang tải tin nhắn...</div>
-        </div>
-        <div class="chat-input-box">
-          <textarea id="chatInput" placeholder="Nhập tin nhắn gửi học viên..."></textarea>
-          <div style="display: flex; justify-content: flex-end;">
-            <button class="btn-submit" id="sendChatBtn">Gửi tin nhắn</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  content.querySelectorAll("#statusStepper button").forEach(btn => {
-    btn.addEventListener("click", () => updateTicketStatus(t.id, btn.dataset.status));
-  });
-  document.getElementById("assigneeSelect").addEventListener("change", (e) => updateTicketAssignee(t.id, e.target.value));
-  document.getElementById("assignMeBtn").addEventListener("click", () => { if (currentStaff) updateTicketAssignee(t.id, currentStaff); });
-
-  const backBtn = document.getElementById("backBtn");
-  if (backBtn) backBtn.addEventListener("click", () => {
-    document.getElementById("listPane").classList.remove("has-selection");
-    document.getElementById("detailPane").classList.remove("show");
-  });
-  document.getElementById("listPane").classList.add("has-selection");
-  document.getElementById("detailPane").classList.add("show");
-
-  loadChatMessages(t.id);
-  document.getElementById("sendChatBtn").addEventListener("click", () => sendChatMessage(t.id));
-}
-
-function updateTicketStatus(id, newStatus){
-  db.collection("tickets").doc(id).update({
-    status: newStatus,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(err => console.error("Không thể cập nhật trạng thái:", err));
-}
-
-function updateTicketAssignee(id, assignee){
-  db.collection("tickets").doc(id).update({
-    assignee: assignee || firebase.firestore.FieldValue.delete(),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(err => console.error("Không thể cập nhật phân công:", err));
-}
-
-function loadChatMessages(ticketId){
-  const chatListEl = document.getElementById("chatMessagesList");
-  if (!chatListEl) return;
-
-  if (unsubChat) {
-    unsubChat();
-    unsubChat = null;
-  }
-
-  unsubChat = db.collection("tickets").doc(ticketId).collection("messages").orderBy("createdAt", "asc")
-    .onSnapshot(snap => {
-      if (snap.empty){
-        chatListEl.innerHTML = `<div class="thread-empty">Chưa có tin nhắn trao đổi nào.</div>`;
-        return;
-      }
-      chatListEl.innerHTML = snap.docs.map(doc => {
-        const msg = doc.data();
-        const isCS = msg.senderType === "cs";
-        return `
-          <div class="chat-bubble ${isCS ? 'cs' : 'student'}">
-            <div style="font-weight: 600; font-size: 11px; margin-bottom: 2px; opacity: 0.9;">${escapeHtml(msg.senderName)}</div>
-            <div>${escapeHtml(msg.text)}</div>
-            <div class="meta-info">${fullTime(msg.createdAt)}</div>
-          </div>`;
-      }).join("");
-      chatListEl.scrollTop = chatListEl.scrollHeight;
-    }, err => {
-      console.error("Lỗi tải tin nhắn:", err);
-      chatListEl.innerHTML = `<div class="thread-empty">Không thể tải khung chat.</div>`;
-    });
-}
-
-function sendChatMessage(ticketId){
-  const input = document.getElementById("chatInput");
-  if (!input) return;
+function sendChatMessage() {
+  const input = $("#chatInput");
   const text = input.value.trim();
-  if (!text) return;
-  
-  const btn = document.getElementById("sendChatBtn");
-  if (btn) btn.disabled = true;
-
-  db.collection("tickets").doc(ticketId).collection("messages").add({
-    senderName: currentStaff || "CSKH",
+  const database = getDatabase();
+  if (!currentChatTicketId || !text || !database) return;
+  const button = $("#sendChatBtn");
+  button.disabled = true;
+  database.collection("tickets").doc(currentChatTicketId).collection("messages").add({
+    sender: "admin",
     senderType: "cs",
-    text: text,
+    senderName: currentStaff,
+    message: text,
+    text,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => {
     input.value = "";
-  }).catch(err => {
-    console.error("Không thể gửi tin nhắn:", err);
-  }).finally(() => {
-    if (btn) btn.disabled = false;
+  }).catch(error => console.error("Không thể gửi tin nhắn:", error)).finally(() => {
+    button.disabled = false;
   });
 }
 
-const connDot = document.getElementById("connDot");
-const connLabel = document.getElementById("connLabel");
+function setupSidebar() {
+  const toggle = $("#menuToggle");
+  const sidebar = $("#sidebarEl");
+  if (!toggle || !sidebar) return;
+  toggle.addEventListener("click", () => {
+    if (window.innerWidth <= 900) sidebar.classList.toggle("mobile-open");
+    else sidebar.classList.toggle("collapsed");
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) sidebar.classList.remove("mobile-open");
+  });
+}
 
-db.collection("tickets").orderBy("createdAt", "desc").onSnapshot(snap => {
-  connDot.classList.add("live");
-  connLabel.textContent = "Realtime";
-  allTickets = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  renderOverview();
-  renderList();
-  if (selectedTicketId && allTickets.find(t => t.id === selectedTicketId)) selectTicket(selectedTicketId);
-}, err => {
-  connDot.classList.remove("live");
-  connLabel.textContent = "Mất kết nối";
-  console.error("Firestore error:", err);
-  document.getElementById("ticketList").innerHTML = `<div class="empty-list">Không thể tải dữ liệu.</div>`;
-});
+function setupControls() {
+  ["#filterStatus", "#filterPriority", "#filterCategory", "#searchInput"].forEach(selector => {
+    $(selector).addEventListener("input", () => { currentPage = 1; renderTable(); });
+    $(selector).addEventListener("change", () => { currentPage = 1; renderTable(); });
+  });
+  $("#closeDrawerBtn").addEventListener("click", closeTicketDrawer);
+  $("#closeChatBtn").addEventListener("click", closeChatPanel);
+  $("#drawerBackdrop").addEventListener("click", () => { closeChatPanel(); closeTicketDrawer(); });
+  $("#sendChatBtn").addEventListener("click", sendChatMessage);
+  $("#chatInput").addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") { closeChatPanel(); closeTicketDrawer(); }
+  });
+}
 
-renderOverview();
-renderFilterTabs();
+function startRealtimeTickets() {
+  $("#todayStr").textContent = todayLabel();
+  const database = getDatabase();
+  if (!database || !window.firebase) {
+    $("#connLabel").textContent = "Chưa kết nối";
+    $("#ticketBody").innerHTML = `<tr><td colspan="8"><div class="empty-state">Không tìm thấy cấu hình Firebase.</div></td></tr>`;
+    return;
+  }
+
+  database.collection("tickets").onSnapshot(snapshot => {
+    $("#connDot").classList.add("live");
+    $("#connLabel").textContent = "Realtime";
+    allTickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => timestampMillis(b.createdAt) - timestampMillis(a.createdAt));
+    renderStats();
+    renderCategoryFilter();
+    renderTable();
+    if (selectedTicketId) {
+      const selected = allTickets.find(ticket => ticket.id === selectedTicketId);
+      if (selected && $("#ticketDrawer").classList.contains("open")) openTicketDrawer(selected.id);
+    }
+  }, error => {
+    console.error("Firestore error:", error);
+    $("#connDot").classList.remove("live");
+    $("#connLabel").textContent = "Mất kết nối";
+    $("#ticketBody").innerHTML = `<tr><td colspan="8"><div class="empty-state">Không thể tải dữ liệu ticket.</div></td></tr>`;
+  });
+}
+
+setupSidebar();
+setupControls();
+renderStats();
+renderCategoryFilter();
+renderTable();
+startRealtimeTickets();
