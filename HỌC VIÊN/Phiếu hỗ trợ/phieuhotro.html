@@ -28,10 +28,6 @@
     </div>
   </div>
 
-  <div class="back-link-wrap">
-    <a class="btn-back" href="/HỌC VIÊN/Trang chủ/homepage.html">← Về trang chủ</a>
-  </div>
-
   <div class="layout" id="layoutContainer">
     <!-- KHUNG TRÁI: FORM HOẶC THÔNG BÁO THÀNH CÔNG -->
     <div class="card">
@@ -79,6 +75,13 @@
         <p class="section-desc">Chọn nhóm phù hợp nhất với nội dung bạn cần hỗ trợ.</p>
 
         <div class="chip-grid" id="chipGrid"></div>
+
+        <div class="field issue-field" id="issueField">
+          <label for="issueSelect">Chi tiết vấn đề <span class="req">*</span></label>
+          <select id="issueSelect" disabled>
+            <option value="">-- Chọn chi tiết vấn đề --</option>
+          </select>
+        </div>
 
         <hr class="divider">
 
@@ -141,7 +144,7 @@
           <div class="stub-row"><span class="k">Tiêu đề</span><span class="v" id="stubTitle">—</span></div>
           <div class="stub-row"><span class="k">Ngày gửi</span><span class="v" id="stubDate">—</span></div>
           <div class="stub-status"><span class="dot"></span> Đang chờ xác nhận</div>
-          <div class="stub-note">Giữ lại mã yêu cầu này để tra cứu tình trạng xử lý trong mục <a href="#">"Yêu cầu của tôi"</a>.</div>
+          <div class="stub-note">Giữ lại mã yêu cầu này để tra cứu tình trạng xử lý trong mục <a href="/HỌC VIÊN/Trao đổi ticket/trao-doi-ticket.html">"Yêu cầu của tôi"</a>.</div>
         </div>
       </div>
     </div>
