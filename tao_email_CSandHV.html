@@ -630,25 +630,6 @@ tbody tr:hover {
     </div>
     <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
   </div>
-  <!-- STEP 4: EMAIL TEMPLATE -->
-  <!-- <div class="step" id="templateStep" style="display:none;">
-    <div class="step-head"><div class="step-num">4</div><h2>Soạn nội dung email</h2></div>
-    <div class="step-desc">Chèn các thẻ dưới đây vào tiêu đề / nội dung, hệ thống sẽ tự thay bằng thông tin từng học viên.</div>
-    <div class="placeholder-chips" id="chipRow"></div>
-    <label class="field-label">Tiêu đề email</label>
-    <input type="text" id="subjectTpl" value="Thông tin tài khoản học tập của {ho_ten}">
-    <label class="field-label" style="margin-top:12px;">Nội dung email</label>
-    <textarea id="bodyTpl" rows="9">Chào {ho_ten},
-Trung tâm đã cấp tài khoản học tập cho bạn.
-Thông tin đăng nhập:
-Email: {student_email}
-Mật khẩu: {mat_khau}
-Lớp: {lop}
-Vui lòng giữ bí mật thông tin đăng nhập và đổi mật khẩu sau lần đăng nhập đầu tiên.
-Trân trọng.
-Customer Success</textarea>
-    <div class="note">Đây là tên đăng nhập / mật khẩu nội bộ do bạn tự quản lý, chưa phải hộp thư điện tử thật. Nếu cần cấp email thật (dạng @tên-trường.edu.vn) qua Google Workspace hoặc Microsoft 365, việc đó cần kết nối API quản trị riêng của tổ chức bạn — mình có thể hỗ trợ bước đó ở một trang khác nếu bạn cần.</div>
-  </div> -->
   <!-- STEP 4: SEND / EXPORT -->
   <div class="step" id="sendStep" style="display:none;">
     <div class="step-head"><div class="step-num">4</div><h2>Gửi &amp; xuất dữ liệu</h2></div>
@@ -804,17 +785,6 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
             const clazz = mapping.clazz
                 ? String(r[mapping.clazz] || '').trim()
                 : '';
-            // const email = String(
-            //     r[mapping.email] || ''
-            // ).trim()
-            // .toLowerCase();
-            // const studentEmail = email;
-            // if (!email) {
-            //     console.warn(
-            //         `Bỏ qua ${fullName}: không có email`
-            //     );
-            //     continue;
-            // }
             let base = buildUsernameBase(
                 fullName,
                 clazz,
@@ -864,9 +834,9 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
                 .set({
                     uid: user.uid,
                     name: fullName,
-                    // Email học viên được hệ thống tự sinh
                     email: studentEmail,
                     username: uname,
+                    password: password,
                     role: 'student',
                     provider: 'e-mail',
                     class: clazz,
@@ -919,17 +889,6 @@ function buildUsernameBase(fullName, clazz, rule) {
     if (rule === 'full_noaccent') {
         return parts.join('');
     }
-    // // An + mã lớp
-    // // → an.10a1
-    // if (rule === 'given_class') {
-    //     return given + (
-    //         clazz
-    //             ? '.' + stripAccents(String(clazz)).replace(/\s+/g, '')
-    //             : ''
-    //     );
-    // }
-    // Mặc định:
-    // Nguyễn Văn An → an.nv
     return restInitials
         ? `${given}.${restInitials}`
         : given;
@@ -987,42 +946,6 @@ function renderReviewTable(){
     });
   });
 }
-// // ---- STEP 4: template chips ----
-// function renderTemplateChips(){
-//   const chipRow=document.getElementById('chipRow');
-//   const chips=[
-//     {tag:'{ho_ten}', on: !!mapping.name},
-//     {tag:'{lop}', on: !!mapping.clazz},
-//     {tag:'{ngay_hoc}', on: !!mapping.date},
-//     {tag:'{username}', on:true},
-//     {tag:'{mat_khau}', on:true},
-//   ].filter(c=>c.on);
-//   chipRow.innerHTML=chips.map(c=>`<span class="chip" data-tag="${c.tag}">${c.tag}</span>`).join('');
-//   chipRow.querySelectorAll('.chip').forEach(chip=>{
-//     chip.addEventListener('click',()=>{
-//       const ta=document.activeElement.tagName==='TEXTAREA'||document.activeElement.tagName==='INPUT' ? document.activeElement : document.getElementById('bodyTpl');
-//       const tag=chip.dataset.tag;
-//       const start=ta.selectionStart||ta.value.length, end=ta.selectionEnd||ta.value.length;
-//       ta.value=ta.value.slice(0,start)+tag+ta.value.slice(end);
-//       ta.focus();
-//       renderSendTable();
-//     });
-//   });
-// }
-// document.getElementById('subjectTpl').addEventListener('input',renderSendTable);
-// document.getElementById('bodyTpl').addEventListener('input',renderSendTable);
-// function fillTemplate(tpl,row){
-//   return tpl
-//     .replaceAll('{ho_ten}', mapping.name? (row.raw[mapping.name]||'') : '')
-//     .replaceAll('{lop}', mapping.clazz? (row.raw[mapping.clazz]||'') : '')
-//     .replaceAll('{ngay_hoc}', mapping.date? (row.raw[mapping.date]||'') : '')
-//     .replaceAll(
-//         '{student_email}',
-//         row.studentEmail || ''
-//     )
-//     .replaceAll('{username}', row.username)
-//     .replaceAll('{mat_khau}', row.password);
-// }
 // ---- STEP 4: send table ----
 function renderSendTable() {
     const body = document.getElementById('sendBody');
@@ -1078,52 +1001,133 @@ Vui lòng bảo mật thông tin đăng nhập.
         });
     });
 }
-// ---- Export CSV ----
-document.getElementById('exportCsvBtn').addEventListener('click', () => {
-    if (!genRows.length) {
-        toast('Chưa có dữ liệu để xuất.');
-        return;
+async function getAllStudentsFromFirebase() {
+    try {
+        const snapshot = await accountDb
+            .collection('users')
+            .where('role', '==', 'student')
+            .get();
+        const students = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            students.push({
+                name: data.name || '',
+                email: data.email || '',
+                username: data.username || '',
+                password: data.password || '',
+                class: data.class || '',
+                uid: data.uid || ''
+            });
+        });
+        return students;
+    } catch (error) {
+        console.error(
+            'Lỗi lấy danh sách học viên:',
+            error
+        );
+        toast(
+            'Không thể lấy danh sách học viên từ Firebase.'
+        );
+        return [];
     }
-    // Thêm email vào cuối file
-    const cols = [
-        ...headers,
-        'email',
-        'username',
-        'password'
-    ];
-    const escape = v =>
-        `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const lines = [
-        cols.map(escape).join(',')
-    ];
-    genRows.forEach(row => {
-        // Dữ liệu gốc từ Excel
-        const vals = headers.map(h => row.raw[h]);
-        // Thêm email được hệ thống tự sinh
-        vals.push(
-            row.studentEmail,
-            row.username,
-            row.password
-        );
-        lines.push(
-            vals.map(escape).join(',')
-        );
-    });
-    const blob = new Blob(
-        ['\uFEFF' + lines.join('\n')],
-        {
-            type: 'text/csv;charset=utf-8;'
+}
+// ---- Export CSV ----
+document.getElementById('exportCsvBtn').addEventListener(
+    'click',
+    async () => {
+        const btn =
+            document.getElementById('exportCsvBtn');
+        btn.disabled = true;
+        btn.textContent = 'Đang lấy dữ liệu...';
+        try {
+            // Lấy toàn bộ học viên trong Firebase
+            const students =
+                await getAllStudentsFromFirebase();
+            if (!students.length) {
+                toast(
+                    'Firebase chưa có học viên nào.'
+                );
+                return;
+            }
+            /*
+             * Các cột xuất ra
+             */
+            const cols = [
+                'Họ tên',
+                'Email',
+                'Username',
+                'Password',
+                'Lớp',
+                'UID'
+            ];
+            const escape = value =>
+                `"${String(value ?? '')
+                    .replace(/"/g, '""')}"`;
+            /*
+             * Header
+             */
+            const lines = [
+                cols.map(escape).join(',')
+            ];
+            /*
+             * Dữ liệu
+             */
+            students.forEach(student => {
+                const row = [
+                    student.name,
+                    student.email,
+                    student.username,
+                    student.password,
+                    student.class,
+                    student.uid
+                ];
+                lines.push(
+                    row.map(escape).join(',')
+                );
+            });
+            /*
+             * Tạo file CSV
+             */
+            const blob = new Blob(
+                [
+                    '\uFEFF' +
+                    lines.join('\n')
+                ],
+                {
+                    type:
+                        'text/csv;charset=utf-8;'
+                }
+            );
+            const url =
+                URL.createObjectURL(blob);
+            const a =
+                document.createElement('a');
+            a.href = url;
+            a.download =
+                'tat-ca-tai-khoan-hoc-vien.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            toast(
+                `Đã xuất ${students.length} học viên.`
+            );
+        } catch (error) {
+            console.error(error);
+            toast(
+                'Có lỗi khi xuất dữ liệu.'
+            );
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `
+                <span class="material-symbols-outlined">
+                    download
+                </span>
+                Xuất tất cả học viên
+            `;
         }
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'tai-khoan-hoc-vien.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-});
+    }
+);
 </script>
 </body>
 </html>
