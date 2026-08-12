@@ -435,7 +435,12 @@
   </div>
 </div>
 
-<!-- Firebase (modular v10 SDK) — logic lives in cs-ticket.js -->
-<script type="module" src="cs-ticket.js"></script>
+<!-- Firebase SDK + shared project config -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="TicketManagement.js"></script>
 </body>
 </html>
