@@ -579,7 +579,7 @@ tbody tr:hover {
 <div class="wrap">
   <header class="page">
     <h1>Cấp tài khoản học viên</h1>
-    <div class="tagline">Đọc danh sách từ Excel, tự sinh username &amp; mật khẩu, soạn sẵn nội dung email để bạn gửi thủ công. Mọi dữ liệu chỉ xử lý ngay trong trình duyệt, không gửi lên máy chủ nào.</div>
+    <div class="tagline">Đọc danh sách từ Excel, tự sinh username &amp; mật khẩu. Bạn có thể chỉnh sửa trước; chỉ khi bấm “Xác nhận &amp; tạo tài khoản” thì dữ liệu mới được đưa lên Firebase.</div>
   </header>
   <!-- STEP 1: UPLOAD -->
   <div class="step">
@@ -615,7 +615,7 @@ tbody tr:hover {
       <input type="number" id="pwLength" value="8" min="6" max="20" style="max-width:120px;">
     </div>
     <div class="actions-row">
-      <button class="btn-primary" id="generateBtn">Tạo tài khoản cho toàn bộ danh sách</button>
+      <button class="btn-primary" id="generateBtn">Tạo dữ liệu xem trước</button>
     </div>
   </div>
   <!-- STEP 3: PREVIEW / EDIT -->
@@ -629,14 +629,19 @@ tbody tr:hover {
       </table>
     </div>
     <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
+    <div class="actions-row">
+        <button class="btn-primary" id="confirmAccountsBtn">
+            Xác nhận & tiếp tục
+        </button>
+    </div>
   </div>
   <!-- STEP 4: SEND / EXPORT -->
   <div class="step" id="sendStep" style="display:none;">
     <div class="step-head"><div class="step-num">4</div><h2>Gửi &amp; xuất dữ liệu</h2></div>
-    <div class="step-desc">Với mỗi học viên: mở sẵn email trong ứng dụng thư mặc định (nếu có cột email liên hệ), hoặc sao chép nội dung để dán tay.</div>
+    <div class="step-desc">Chỉ xuất hiện sau khi bạn bấm “Xác nhận & tạo tài khoản Firebase”. Tại đây có thể sao chép thông tin hoặc xuất toàn bộ học viên đang có trong Firebase.</div>
     <div style="overflow-x:auto;">
       <table id="sendTable">
-        <thead><tr><th>Họ tên</th><th>Lớp</th><th>Email liên hệ</th><th>Thao tác</th></tr></thead>
+        <thead><tr><th>Họ tên</th><th>Lớp</th><th>Cơ sở</th><th>Email</th><th>Thao tác</th></tr></thead>
         <tbody id="sendBody"></tbody>
       </table>
     </div>
@@ -672,10 +677,11 @@ function toast(msg){
 let headers=[];
 let rawRows=[];   // array of objects keyed by header
 let genRows=[];   // generated: {raw, username, password}
-let mapping={
-    name:'',
-    clazz:'',
-    date:''
+let mapping = {
+    name: '',
+    clazz: '',
+    date: '',
+    campus: ''
 };
 // ---- STEP 1: upload ----
 const dropzone=document.getElementById('dropzone');
@@ -719,10 +725,11 @@ function handleFile(file){
 }
 function buildMappingUI(){
   const grid=document.getElementById('mapGrid');
-    const fields=[
-        {key:'name', label:'Họ tên', required:true},
-        {key:'clazz', label:'Lớp', required:false},
-        {key:'date', label:'Ngày học', required:false}
+    const fields = [
+        { key: 'name', label: 'Họ tên', required: true },
+        { key: 'clazz', label: 'Lớp', required: false },
+        { key: 'date', label: 'Ngày học', required: false },
+        { key: 'campus', label: 'Cơ sở', required: false }
     ];
   grid.innerHTML='';
   fields.forEach(f=>{
@@ -738,9 +745,10 @@ function buildMappingUI(){
   });
   // auto-guess
     const guesses = {
-        name: ['họ tên','ho ten','tên','ten','name','học viên'],
-        clazz: ['lớp','lop','class'],
-        date: ['ngày học','ngay hoc','ngày','date']
+        name: ['họ tên', 'ho ten', 'tên', 'ten', 'name', 'học viên'],
+        clazz: ['lớp', 'lop', 'class'],
+        date: ['ngày học', 'ngay hoc', 'ngày', 'date'],
+        campus: ['cơ sở', 'co so', 'cơsở', 'campus', 'branch']
     };
   grid.querySelectorAll('select').forEach(sel=>{
     const key=sel.dataset.key;
@@ -751,18 +759,19 @@ function buildMappingUI(){
     mapping[key]=sel.value;
   });
 }
-// ---- STEP 2: generate accounts ----
-const accountAuth = firebase.auth();
+// ---- STEP 2: generate preview data ONLY ----
 const accountDb = firebase.firestore();
-document.getElementById('generateBtn').addEventListener('click', async () => {
+// Dùng Firebase App thứ 2 để tạo tài khoản học viên.
+// Như vậy tài khoản Admin/CS đang đăng nhập ở App chính không bị đăng xuất.
+const creatorApp = firebase.apps.some(app => app.name === 'studentAccountCreator')
+    ? firebase.app('studentAccountCreator')
+    : firebase.initializeApp(firebase.app().options, 'studentAccountCreator');
+const creatorAuth = creatorApp.auth();
+document.getElementById('generateBtn').addEventListener('click', () => {
     if (!mapping.name) {
         toast('Vui lòng chọn cột Họ tên trước.');
         return;
     }
-    // if (!mapping.email) {
-    //     toast('Vui lòng chọn cột Email để tạo tài khoản.');
-    //     return;
-    // }
     const rule = document.getElementById('usernameRule').value;
     const suffix = document.getElementById('usernameSuffix').value.trim();
     const pwLen = Math.max(
@@ -774,22 +783,24 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     );
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
-    btn.textContent = 'Đang tạo tài khoản...';
+    btn.textContent = 'Đang tạo dữ liệu xem trước...';
     const used = new Set();
     genRows = [];
     try {
+        const domain = suffix || '@student.edu.vn';
+        const emailDomain = domain.startsWith('@')
+            ? domain
+            : '@' + domain;
         for (const r of rawRows) {
-            const fullName = String(
-                r[mapping.name] || ''
-            ).trim();
+            const fullName = String(r[mapping.name] || '').trim();
+            if (!fullName) continue;
             const clazz = mapping.clazz
                 ? String(r[mapping.clazz] || '').trim()
                 : '';
-            let base = buildUsernameBase(
-                fullName,
-                clazz,
-                rule
-            );
+            const campus = mapping.campus
+                ? String(r[mapping.campus] || '').trim()
+                : '';
+            let base = buildUsernameBase(fullName, clazz, rule);
             let uname = base;
             let n = 1;
             while (used.has(uname)) {
@@ -797,82 +808,131 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
                 uname = base + n;
             }
             used.add(uname);
-            // Hậu tố chính là domain email
-            const domain = suffix || '@student.edu.vn';
-            // Đảm bảo domain bắt đầu bằng @
-            const emailDomain = domain.startsWith('@')
-                ? domain
-                : '@' + domain;
-            const studentEmail = `${uname}${emailDomain}`;
-            const password = genPassword(pwLen);
-            /*
-             * TẠO TÀI KHOẢN FIREBASE AUTH
-             */
-            let userCredential;
-            try {
-                userCredential =
-                    await accountAuth.createUserWithEmailAndPassword(
-                        studentEmail,
-                        password
-                    );
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    console.warn(
-                        `Bỏ qua ${studentEmail}: email đã tồn tại`
-                    );
-                    continue;
-                }
-                throw error;
-            }
-            const user = userCredential.user;
-            /*
-             * LƯU THÔNG TIN VÀO FIRESTORE
-             */
-            await accountDb
-                .collection('users')
-                .doc(user.uid)
-                .set({
-                    uid: user.uid,
-                    name: fullName,
-                    email: studentEmail,
-                    username: uname,
-                    password: password,
-                    role: 'student',
-                    provider: 'e-mail',
-                    class: clazz,
-                    passwordCreated: true,
-                    createdAt:
-                        firebase.firestore.FieldValue.serverTimestamp()
-                });
-                genRows.push({
-                    raw: r,
-                    username: uname,
-                    password: password,
-                    uid: user.uid,
-                    studentEmail: studentEmail
-                });
+            genRows.push({
+                raw: r,
+                username: uname,
+                password: genPassword(pwLen),
+                uid: '',
+                studentEmail: `${uname}${emailDomain}`,
+                emailDomain: emailDomain,
+                campus: campus,
+                created: false
+            });
+        }
+        if (!genRows.length) {
+            toast('Không có học viên hợp lệ trong file.');
+            return;
         }
         renderReviewTable();
-        renderSendTable();
         document.getElementById('reviewStep').style.display = 'block';
-        document.getElementById('sendStep').style.display = 'block';
+        document.getElementById('sendStep').style.display = 'none';
         document.getElementById('reviewStep').scrollIntoView({
             behavior: 'smooth',
             block: 'start'
         });
-        toast(
-            `Đã tạo ${genRows.length} tài khoản Firebase`
-        );
+        toast(`Đã tạo ${genRows.length} dòng xem trước. Chưa có dữ liệu nào được đưa lên Firebase.`);
     } catch (error) {
         console.error(error);
-        toast(
-            'Có lỗi khi tạo tài khoản: ' +
-            error.message
-        );
+        toast('Có lỗi khi tạo dữ liệu xem trước: ' + error.message);
     } finally {
         btn.disabled = false;
-        btn.textContent =
-            'Tạo tài khoản cho toàn bộ danh sách';
+        btn.textContent = 'Tạo dữ liệu xem trước';
+    }
+});
+// ---- STEP 3: CONFIRM -> CREATE FIREBASE ----
+document.getElementById('confirmAccountsBtn').addEventListener('click', async () => {
+    if (!genRows.length) {
+        toast('Chưa có dữ liệu để tạo tài khoản.');
+        return;
+    }
+    // Kiểm tra username/email sau khi người dùng đã chỉnh sửa.
+    const usernameSet = new Set();
+    for (const row of genRows) {
+        row.username = String(row.username || '').trim().toLowerCase();
+        if (!row.username) {
+            toast('Có học viên chưa có Username.');
+            return;
+        }
+        if (usernameSet.has(row.username)) {
+            toast(`Username bị trùng: ${row.username}`);
+            return;
+        }
+        usernameSet.add(row.username);
+        row.studentEmail = `${row.username}${row.emailDomain || '@student.edu.vn'}`;
+        if (!row.password) {
+            toast(`Học viên ${row.raw[mapping.name] || ''} chưa có mật khẩu.`);
+            return;
+        }
+    }
+    const btn = document.getElementById('confirmAccountsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Đang tạo tài khoản Firebase...';
+    let createdCount = 0;
+    let skippedCount = 0;
+    const errors = [];
+    try {
+        for (const row of genRows) {
+            // Không tạo lại những dòng đã được tạo thành công.
+            if (row.created && row.uid) {
+                createdCount++;
+                continue;
+            }
+            try {
+                const credential = await creatorAuth.createUserWithEmailAndPassword(
+                    row.studentEmail,
+                    row.password
+                );
+                const user = credential.user;
+                row.uid = user.uid;
+                await accountDb
+                    .collection('users')
+                    .doc(user.uid)
+                    .set({
+                        uid: user.uid,
+                        name: mapping.name
+                            ? String(row.raw[mapping.name] || '').trim()
+                            : '',
+                        email: row.studentEmail,
+                        username: row.username,
+                        password: row.password,
+                        role: 'student',
+                        provider: 'e-mail',
+                        class: mapping.clazz
+                            ? String(row.raw[mapping.clazz] || '').trim()
+                            : '',
+                        campus: row.campus || '',
+                        passwordCreated: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                row.created = true;
+                createdCount++;
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    skippedCount++;
+                    errors.push(`${row.studentEmail}: email đã tồn tại trong Firebase Auth`);
+                } else {
+                    errors.push(`${row.studentEmail}: ${error.message}`);
+                }
+            }
+        }
+        renderSendTable();
+        document.getElementById('sendStep').style.display = 'block';
+        if (errors.length) {
+            console.warn('Các dòng chưa tạo được:', errors);
+            toast(`Đã tạo ${createdCount} tài khoản. Bỏ qua ${skippedCount} email đã tồn tại.`);
+        } else {
+            toast(`Đã tạo thành công ${createdCount} tài khoản Firebase.`);
+        }
+        document.getElementById('sendStep').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    } catch (error) {
+        console.error(error);
+        toast('Có lỗi khi tạo tài khoản Firebase: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Xác nhận & tạo tài khoản Firebase';
     }
 });
 function buildUsernameBase(fullName, clazz, rule) {
@@ -902,74 +962,128 @@ function genPassword(len){
   return pw;
 }
 // ---- STEP 3: review table ----
-function renderReviewTable(){
-  const head=document.getElementById('tableHead');
-  const cols=['#', ... (mapping.name?['Họ tên']:[]), ...(mapping.clazz?['Lớp']:[]), ...(mapping.date?['Ngày học']:[]), 'Username','Mật khẩu',''];
-  head.innerHTML=cols.map(c=>`<th>${c}</th>`).join('');
-  const body=document.getElementById('tableBody');
-  body.innerHTML='';
-  genRows.forEach((row,idx)=>{
-    const tr=document.createElement('tr');
-    let cells=`<td data-label="#">${idx+1}</td>`;
-    if(mapping.name) cells+=`<td data-label="Họ tên">${row.raw[mapping.name]||''}</td>`;
-    if(mapping.clazz) cells+=`<td data-label="Lớp">${row.raw[mapping.clazz]||''}</td>`;
-    if(mapping.date) cells+=`<td data-label="Ngày học">${row.raw[mapping.date]||''}</td>`;
-    cells+=`<td data-label="Username"><input class="cred" data-idx="${idx}" data-field="username" value="${row.username}"></td>`;
-    cells+=`<td data-label="Mật khẩu"><input class="cred" data-idx="${idx}" data-field="password" value="${row.password}"></td>`;
-    cells += `
-        <td data-label="">
-            <button
-                class="link-btn btn-small"
-                data-regen="${idx}"
-                title="Tạo lại mật khẩu">
-                <span class="material-symbols-outlined">refresh</span>
-            </button>
-        </td>`;
-    tr.innerHTML=cells;
-    body.appendChild(tr);
-  });
-  document.getElementById('rowCount').textContent=`${genRows.length} tài khoản đã được tạo.`;
-  body.querySelectorAll('input.cred').forEach(inp=>{
-    inp.addEventListener('input',()=>{
-      const idx=+inp.dataset.idx, field=inp.dataset.field;
-      genRows[idx][field]=inp.value;
-      renderSendTable();
+function renderReviewTable() {
+    const head = document.getElementById('tableHead');
+    const cols = [
+        '#',
+        ...(mapping.name ? ['Họ tên'] : []),
+        ...(mapping.clazz ? ['Lớp'] : []),
+        ...(mapping.date ? ['Ngày học'] : []),
+        ...(mapping.campus ? ['Cơ sở'] : []),
+        'Username',
+        'Mật khẩu',
+        ''
+    ];
+    head.innerHTML = cols.map(c => `<th>${c}</th>`).join('');
+    const body = document.getElementById('tableBody');
+    body.innerHTML = '';
+    genRows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        let cells = `<td data-label="#">${idx + 1}</td>`;
+        if (mapping.name) {
+            cells += `<td data-label="Họ tên">${row.raw[mapping.name] || ''}</td>`;
+        }
+        if (mapping.clazz) {
+            cells += `<td data-label="Lớp">${row.raw[mapping.clazz] || ''}</td>`;
+        }
+        if (mapping.date) {
+            cells += `<td data-label="Ngày học">${row.raw[mapping.date] || ''}</td>`;
+        }
+        if (mapping.campus) {
+            cells += `<td data-label="Cơ sở">${row.campus || ''}</td>`;
+        }
+        cells += `
+            <td data-label="Username">
+                <input
+                    class="cred"
+                    data-idx="${idx}"
+                    data-field="username"
+                    value="${escapeHtml(row.username)}">
+            </td>`;
+        cells += `
+            <td data-label="Mật khẩu">
+                <input
+                    class="cred"
+                    data-idx="${idx}"
+                    data-field="password"
+                    value="${escapeHtml(row.password)}">
+            </td>`;
+        cells += `
+            <td data-label="">
+                <button
+                    class="link-btn btn-small"
+                    data-regen="${idx}"
+                    title="Tạo lại mật khẩu">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+            </td>`;
+        tr.innerHTML = cells;
+        body.appendChild(tr);
     });
-  });
-  body.querySelectorAll('[data-regen]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const idx=+btn.dataset.regen;
-      const pwLen=Math.max(6, Math.min(20, parseInt(document.getElementById('pwLength').value)||8));
-      genRows[idx].password=genPassword(pwLen);
-      renderReviewTable();
-      renderSendTable();
+    document.getElementById('rowCount').textContent =
+        `${genRows.length} tài khoản đang chờ xác nhận. Chưa được tạo trên Firebase.`;
+    body.querySelectorAll('input.cred').forEach(inp => {
+        inp.addEventListener('input', () => {
+            const idx = Number(inp.dataset.idx);
+            const field = inp.dataset.field;
+            genRows[idx][field] = inp.value;
+            // Nếu sửa Username thì email Firebase cũng phải đổi theo.
+            if (field === 'username') {
+                const username = String(inp.value || '').trim().toLowerCase();
+                genRows[idx].studentEmail =
+                    `${username}${genRows[idx].emailDomain || '@student.edu.vn'}`;
+            }
+        });
     });
-  });
+    body.querySelectorAll('[data-regen]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.regen);
+            const pwLen = Math.max(
+                6,
+                Math.min(
+                    20,
+                    parseInt(document.getElementById('pwLength').value) || 8
+                )
+            );
+            // Chỉ đổi dữ liệu xem trước.
+            // Firebase CHƯA được tạo nên không cần update Firestore/Auth.
+            genRows[idx].password = genPassword(pwLen);
+            renderReviewTable();
+        });
+    });
+}
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 // ---- STEP 4: send table ----
 function renderSendTable() {
     const body = document.getElementById('sendBody');
     body.innerHTML = '';
     genRows.forEach((row, idx) => {
+        const name = mapping.name
+            ? (row.raw[mapping.name] || '')
+            : '';
+        const clazz = mapping.clazz
+            ? (row.raw[mapping.clazz] || '')
+            : '';
+        const campus = row.campus || '';
         const emailAddr = row.studentEmail || '';
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td data-label="Họ tên">
-                ${mapping.name ? (row.raw[mapping.name] || '') : ''}
-            </td>
-            <td data-label="Lớp">
-                ${mapping.clazz ? (row.raw[mapping.clazz] || '') : ''}
-            </td>
-            <td data-label="Email">
-                ${emailAddr}
-            </td>
+            <td data-label="Họ tên">${escapeHtml(name)}</td>
+            <td data-label="Lớp">${escapeHtml(clazz)}</td>
+            <td data-label="Cơ sở">${escapeHtml(campus)}</td>
+            <td data-label="Email">${escapeHtml(emailAddr)}</td>
             <td data-label="Thao tác" class="cell-actions">
                 <button
                     class="link-btn btn-small"
                     data-copy="${idx}">
-                    <span class="material-symbols-outlined">
-                        content_copy
-                    </span>
+                    <span class="material-symbols-outlined">content_copy</span>
                     Sao chép tài khoản
                 </button>
             </td>
@@ -990,14 +1104,15 @@ function renderSendTable() {
 Thông tin tài khoản học tập
 Họ tên: ${name}
 Lớp: ${clazz}
+Cơ sở: ${row.campus || ''}
 Email: ${row.studentEmail}
+Username: ${row.username}
 Mật khẩu: ${row.password}
 Vui lòng bảo mật thông tin đăng nhập.
             `.trim();
             navigator.clipboard.writeText(text)
-                .then(() => {
-                    toast('Đã sao chép thông tin tài khoản.');
-                });
+                .then(() => toast('Đã sao chép thông tin tài khoản.'))
+                .catch(() => toast('Không thể sao chép.'));
         });
     });
 }
@@ -1016,6 +1131,7 @@ async function getAllStudentsFromFirebase() {
                 username: data.username || '',
                 password: data.password || '',
                 class: data.class || '',
+                campus: data.campus || '',
                 uid: data.uid || ''
             });
         });
@@ -1058,6 +1174,7 @@ document.getElementById('exportCsvBtn').addEventListener(
                 'Username',
                 'Password',
                 'Lớp',
+                'Cơ sở',
                 'UID'
             ];
             const escape = value =>
@@ -1073,14 +1190,15 @@ document.getElementById('exportCsvBtn').addEventListener(
              * Dữ liệu
              */
             students.forEach(student => {
-                const row = [
-                    student.name,
-                    student.email,
-                    student.username,
-                    student.password,
-                    student.class,
-                    student.uid
-                ];
+            const row = [
+                student.name,
+                student.email,
+                student.username,
+                student.password,
+                student.class,
+                student.campus,
+                student.uid
+            ];
                 lines.push(
                     row.map(escape).join(',')
                 );
