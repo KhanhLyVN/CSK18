@@ -327,33 +327,63 @@ function formatDateVN(isoStr) {
 // UPDATE TICKET STUB
 // ======================================================
 function updateStub() {
-  const selectedChip = document.querySelector(".chip.active");
-  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+  const selectedRadio = document.querySelector(
+    'input[name="ticketMainType"]:checked'
+  );
+
   const selectedIssue = issueSelect.value;
-  const selectedIssueLabel = issueSelect.selectedOptions[0]
-    ? issueSelect.selectedOptions[0].textContent.trim()
+
+  const selectedIssueLabel =
+    issueSelect.selectedOptions[0]
+      ? issueSelect.selectedOptions[0].textContent.trim()
+      : "";
+
+  const catLabel = selectedRadio
+    ? selectedRadio.dataset.label
     : "";
-  const catLabel = selectedRadio ? selectedRadio.dataset.label : "";
+
   const displayLabel = selectedIssueLabel
     ? `${catLabel || "Khác"} · ${selectedIssueLabel}`
     : catLabel || "Chưa chọn loại";
 
-  document.getElementById("stubNum").textContent = ticketNum;
+  const stubNum = document.getElementById("stubNum");
+  const stubName = document.getElementById("stubName");
+  const stubTitle = document.getElementById("stubTitle");
+  const stubCat = document.getElementById("stubCat");
+  const stubDate = document.getElementById("stubDate");
 
-  const name = document.getElementById("fName").value.trim();
-  document.getElementById("stubName").textContent = name || "—";
+  if (stubNum) {
+    stubNum.textContent = ticketNum;
+  }
 
-  const course = chkCourse.checked ? fCourse.value.trim() : "";
-  document.getElementById("stubCourse").textContent = course ? `Khóa học: ${course}` : "";
-  document.getElementById("stubCourseBody").textContent = course || "Không có";
+  const name =
+    document.getElementById("fName")?.value.trim() || "";
 
-  const title = document.getElementById("fTitle").value.trim();
-  document.getElementById("stubTitle").textContent = title || "—";
+  if (stubName) {
+    stubName.textContent = name || "—";
+  }
 
-  const catIconKey = selectedRadio ? selectedRadio.dataset.icon : "other";
-  document.getElementById("stubCat").innerHTML =
-    svgIcon(catIconKey) + `<span>${displayLabel}</span>`;
-  document.getElementById("stubDate").textContent = formatDateVN(fDateEl.value);
+  const title =
+    document.getElementById("fTitle")?.value.trim() || "";
+
+  if (stubTitle) {
+    stubTitle.textContent = title || "—";
+  }
+
+  const catIconKey = selectedRadio
+    ? selectedRadio.dataset.icon
+    : "other";
+
+  if (stubCat) {
+    stubCat.innerHTML =
+      svgIcon(catIconKey) +
+      `<span>${displayLabel}</span>`;
+  }
+
+  if (stubDate && fDateEl) {
+    stubDate.textContent =
+      formatDateVN(fDateEl.value);
+  }
 }
 // ======================================================
 // INPUT → UPDATE STUB
@@ -385,7 +415,10 @@ if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "f
     }
 
     try {
-      const doc = await db.collection("users").doc(user.uid).get();
+      const doc = await db
+      .collection("accounts")
+      .doc(user.uid)
+      .get();
       const data = doc.exists ? doc.data() : {};
       const name = data.name || user.displayName || "Học viên";
       const email = data.email || user.email || "";
