@@ -176,7 +176,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/HỌC VIÊN//HỌC VIÊN/account-HV.html";
+                window.location.href = "/HỌC VIÊN/account-HV.html";
             }, 400);
 
         } catch (error) {
