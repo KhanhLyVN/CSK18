@@ -48,7 +48,11 @@ function ticketNumber(ticket) {
 }
 
 function ticketType(ticket) {
-  return firstValue(ticket, "ticketType", "ticket_type", "category") || "Khác";
+  // Prefer the human-readable `ticketCategory` and include `ticketIssue` when available
+  const category = firstValue(ticket, "ticketCategory");
+  const issue = firstValue(ticket, "ticketIssue");
+  if (category && issue && issue !== category) return `${category} · ${issue}`;
+  return issue || category || firstValue(ticket, "ticketType", "ticket_type", "category") || "Khác";
 }
 
 function ticketDescription(ticket) {
