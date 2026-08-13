@@ -307,7 +307,7 @@
     $("drawerBackdrop").addEventListener("click", closeDrawer);
     $("menuBtn").addEventListener("click", () => $("sidebar").classList.toggle("open"));
 
-    $("addAccountBtn").addEventListener("click", () => toast("Chức năng tạo tài khoản sẽ dùng Firebase Authentication"));
+    $("addAccountBtn").addEventListener("click", () => {window.location.href = "addAccount.html";});
     $("noticeBtn").addEventListener("click", () => toast("Không có thông báo mới"));
 
     $("logoutBtn").addEventListener("click", () => {
