@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tài khoản học viên</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script src="firebase-config.js"></script>
+
+    <style>
+        :root {
+            --maroon: #5D0703;
+            --maroon-deep: #3E0402;
+            --cream: #EEDCC8;
+            --cream-pale: #FBF4E9;
+            --paper: #FFFBF5;
+            --line: rgba(93, 7, 3, 0.18);
+            --text: #2B211D;
+            --text-soft: #76665D;
+            --white: #FFFFFF;
+            --danger: #991B1B;
+            --edit: #8A5A00;
+            --success: #3F6F4F;
+            --shadow: 0 8px 25px rgba(93, 7, 3, 0.07);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cream-pale);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            height: 70px;
+            background: var(--maroon);
+            color: var(--white);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 40px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: var(--cream);
+            color: var(--maroon);
+
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .brand-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            opacity: .7;
+            margin-top: 2px;
+        }
+
+        .back-btn {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            opacity: .75;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 40px 0 70px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: var(--maroon);
+
+            font-family: 'Fraunces', serif;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            margin: 7px 0 0;
+
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+
+        /* =========================
+           PROFILE
+        ========================= */
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            padding: 25px;
+
+            background: var(--maroon);
+            color: var(--white);
+
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+
+            margin-bottom: 22px;
+        }
+
+        .avatar {
+            width: 75px;
+            height: 75px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: var(--cream);
+            color: var(--maroon);
+
+            font-family: 'Fraunces', serif;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-family: 'Fraunces', serif;
+            font-size: 25px;
+        }
+
+        .profile-info p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: .8;
+        }
+
+        .role-badge {
+            display: inline-block;
+
+            margin-top: 10px;
+            padding: 5px 10px;
+
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+
+            border-radius: 20px;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            padding: 25px;
+
+            background: var(--paper);
+
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+        .card.full {
+            grid-column: 1 / -1;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--cream);
+            color: var(--maroon);
+
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .card-title h2 {
+            margin: 0;
+
+            color: var(--maroon);
+
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+        }
+
+        /* =========================
+           INFO
+        ========================= */
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            padding-bottom: 13px;
+
+            border-bottom: 1px solid var(--line);
+        }
+
+        .info-item:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-soft);
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .info-value {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--maroon);
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        /* =========================
+           SECURITY
+        ========================= */
+
+        .security-box {
+            padding: 15px;
+
+            background: var(--cream-pale);
+
+            border: 1px solid var(--line);
+            border-radius: 8px;
+
+            margin-bottom: 15px;
+        }
+
+        .security-box strong {
+            display: block;
+
+            color: var(--maroon);
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+        .security-box span {
+            color: var(--text-soft);
+            font-size: 12px;
+        }
+
+        .btn {
+            width: 100%;
+
+            padding: 11px 15px;
+
+            border: 1px solid transparent;
+            border-radius: 7px;
+
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--maroon);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--maroon-deep);
+        }
+
+        .btn-danger {
+            margin-top: 10px;
+
+            background: transparent;
+            border-color: rgba(153, 27, 27, .25);
+
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(153, 27, 27, .06);
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-soft);
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+
+            transform: translateX(-50%) translateY(20px);
+
+            padding: 11px 18px;
+
+            background: var(--maroon);
+            color: var(--white);
+
+            border-radius: 8px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            opacity: 0;
+            pointer-events: none;
+
+            transition: .2s ease;
+
+            z-index: 9999;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .container {
+                width: calc(100% - 24px);
+                padding-top: 25px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card.full {
+                grid-column: auto;
+            }
+
+            .profile-card {
+                padding: 20px;
+            }
+
+            .avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .profile-info h2 {
+                font-size: 20px;
+            }
+
+            .info-item {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-logo">HV</div>
+
+        <div>
+            <div class="brand-title">Student Account</div>
+            <div class="brand-subtitle">Thông tin học viên</div>
+        </div>
+    </div>
+
+    <a href="javascript:history.back()" class="back-btn">
+        ← Quay lại
+    </a>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-header">
+        <h1>Tài khoản của tôi</h1>
+        <p>Quản lý thông tin và bảo mật tài khoản học viên.</p>
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <section class="profile-card">
+
+        <div class="avatar" id="avatar">
+            HV
+        </div>
+
+        <div class="profile-info">
+
+            <h2 id="profileName">
+                Đang tải...
+            </h2>
+
+            <p id="profileEmail">
+                Đang tải...
+            </p>
+
+            <span class="role-badge">
+                HỌC VIÊN
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <div class="grid">
+
+        <!-- THÔNG TIN CÁ NHÂN -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                <div class="card-icon">
+                    01
+                </div>
+
+                <h2>Thông tin học viên</h2>
+
+            </div>
+
+
+            <div class="info-list">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Họ tên
+                    </span>
+
+                    <span class="info-value" id="name">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Lớp
+                    </span>
+
+                    <span class="info-value" id="class">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Cơ sở
+                    </span>
+
+                    <span class="info-value" id="campus">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Vai trò
+                    </span>
+
+                    <span class="info-value">
+                        Student
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TÀI KHOẢN -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                <div class="card-icon">
+                    02
+                </div>
+
+                <h2>Tài khoản</h2>
+
+            </div>
+
+
+            <div class="info-list">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Username
+                    </span>
+
+                    <span class="info-value mono" id="username">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Email
+                    </span>
+
+                    <span class="info-value" id="email">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Trạng thái
+                    </span>
+
+                    <span class="info-value status">
+
+                        <span class="status-dot"></span>
+
+                        Đang hoạt động
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BẢO MẬT -->
+
+        <section class="card full">
+
+            <div class="card-title">
+
+                <div class="card-icon">
+                    03
+                </div>
+
+                <h2>Bảo mật tài khoản</h2>
+
+            </div>
+
+
+            <div class="security-box">
+
+                <strong>
+                    Mật khẩu
+                </strong>
+
+                <span>
+                    Mật khẩu của bạn được bảo vệ bởi Firebase Authentication.
+                </span>
+
+            </div>
+
+
+            <button
+                class="btn btn-primary"
+                id="changePasswordBtn">
+
+                Gửi email đặt lại mật khẩu
+
+            </button>
+
+
+            <button
+                class="btn btn-danger"
+                id="logoutBtn">
+
+                Đăng xuất
+
+            </button>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(message) {
+
+    const element = $("toast");
+
+    element.textContent = message;
+    element.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(() => {
+        element.classList.remove("show");
+    }, 2200);
+}
+
+
+/* =========================
+   LOAD ACCOUNT
+========================= */
+
+auth.onAuthStateChanged(async user => {
+
+    if (!user) {
+
+        window.location.href = "login.html";
+
+        return;
+    }
+
+
+    try {
+
+        const doc = await db
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
+
+        if (!doc.exists) {
+
+            toast("Không tìm thấy thông tin học viên.");
+
+            return;
+        }
+
+
+        const data = doc.data();
+
+
+        const name = data.name || "Học viên";
+
+        const email = data.email || user.email || "";
+
+        const username = data.username || "";
+
+        const studentClass = data.class || "";
+
+        const campus = data.campus || "";
+
+
+        /* PROFILE */
+
+        $("profileName").textContent = name;
+
+        $("profileEmail").textContent = email;
+
+
+        /* AVATAR */
+
+        const parts = name
+            .trim()
+            .split(/\s+/);
+
+        let initials = "HV";
+
+        if (parts.length >= 2) {
+
+            initials =
+                parts[0][0] +
+                parts[parts.length - 1][0];
+
+        } else if (parts.length === 1) {
+
+            initials = parts[0][0];
+
+        }
+
+        $("avatar").textContent =
+            initials.toUpperCase();
+
+
+        /* PERSONAL */
+
+        $("name").textContent =
+            name;
+
+        $("class").textContent =
+            studentClass || "Chưa cập nhật";
+
+        $("campus").textContent =
+            campus || "Chưa cập nhật";
+
+
+        /* ACCOUNT */
+
+        $("username").textContent =
+            username || "Chưa cập nhật";
+
+        $("email").textContent =
+            email;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        toast(
+            "Không thể tải thông tin tài khoản."
+        );
+
+    }
+
+});
+
+
+/* =========================
+   RESET PASSWORD
+========================= */
+
+$("changePasswordBtn")
+    .addEventListener("click", async () => {
+
+        const user = auth.currentUser;
+
+        if (!user || !user.email) {
+
+            toast("Không xác định được email.");
+
+            return;
+        }
+
+
+        try {
+
+            await auth.sendPasswordResetEmail(
+                user.email
+            );
+
+            toast(
+                "Đã gửi email đặt lại mật khẩu."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            toast(
+                "Không thể gửi email đặt lại mật khẩu."
+            );
+
+        }
+
+    });
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+$("logoutBtn")
+    .addEventListener("click", async () => {
+
+        try {
+
+            await auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            toast(
+                "Đăng xuất thất bại."
+            );
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
