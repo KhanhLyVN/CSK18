@@ -225,12 +225,12 @@ if (loginForm) {
                 if (email.endsWith("@student.edu.vn")) {
 
                     // Học viên
-                    window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
+                    window.location.href = "/HỌC VIÊN/account-HV.html";
 
                 } else if (email.endsWith("@gmail.com")) {
 
                     // CS
-                    window.location.href = "/CS/Trang chủ CS/trangchu-cs.html";
+                    window.location.href = "/CS/Trang chủ/Trang chủ.html";
 
                 } else {
 
@@ -258,3 +258,4 @@ if (loginForm) {
         }
     });
 }
+
