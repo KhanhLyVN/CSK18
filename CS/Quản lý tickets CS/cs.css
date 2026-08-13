@@ -244,3 +244,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .filter-group, .filter-select, .search-wrap { width: 100%; min-width: 0; margin-left: 0; }
   .info-grid { grid-template-columns: 1fr; }
 }
+  
