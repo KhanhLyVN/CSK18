@@ -13,6 +13,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="/firebase-config.js"></script>
+<script>
+  window.db = window.db || (typeof db !== "undefined" ? db : null);
+  window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);
+</script>
 </head>
 <body>
   <div class="app">

@@ -4,9 +4,9 @@
 const EMAILJS_PUBLIC_KEY = "dmcYr1M1K9V45Q18B";
 const EMAILJS_SERVICE_ID = "service_ts3osyy";
 const EMAILJS_TEMPLATE_ID = "template_2bntc3p";
-emailjs.init({
-  publicKey: EMAILJS_PUBLIC_KEY
-});
+if (window.emailjs) {
+  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
 // ======================================================
 // ICONS
 // ======================================================
@@ -52,9 +52,16 @@ const TICKET_CATEGORIES = [
     icon: "bug",
     issues: [
       { value: "system-login", label: "Đăng nhập / xác thực" },
-      { value: "system-course", label: "Khóa học / lịch học" },
-      { value: "system-payment", label: "Thanh toán / học phí" },
-      { value: "system-technical", label: "Lỗi kỹ thuật / trang web" },
+      { value: "system-password", label: "Mật khẩu" },
+      { value: "system-account", label: "Tài khoản học viên" },
+      { value: "system-website-access", label: "Website không truy cập được" },
+      { value: "system-page-error", label: "Một trang bị lỗi" },
+      { value: "system-browser-device", label: "Lỗi thiết bị / trình duyệt" },
+      { value: "system-video-playback", label: "Lỗi phát video" },
+      { value: "system-file-upload", label: "Không tải được tệp" },
+      { value: "system-notification", label: "Email / thông báo" },
+      { value: "system-data-sync", label: "Dữ liệu chưa đồng bộ" },
+      { value: "system-security", label: "Bảo mật tài khoản" },
       { value: "system-other", label: "Khác" }
     ]
   },
@@ -63,23 +70,36 @@ const TICKET_CATEGORIES = [
     label: "Khóa học",
     icon: "book",
     issues: [
-      { value: "learning-schedule", label: "Lịch học / buổi học" },
-      { value: "learning-material", label: "Tài liệu / bài học" },
-      { value: "learning-assignment", label: "Bài tập / kiểm tra" },
-      { value: "learning-mentor", label: "Mentor / giảng viên" },
+      { value: "learning-registration", label: "Đăng ký khóa học" },
+      { value: "learning-course-access", label: "Quyền truy cập khóa học" },
+      { value: "learning-fee", label: "Học phí" },
+      { value: "learning-payment-method", label: "Phương thức thanh toán" },
+      { value: "learning-payment-confirmation", label: "Xác nhận thanh toán" },
+      { value: "learning-invoice", label: "Hóa đơn / biên nhận" },
+      { value: "learning-refund", label: "Hoàn tiền / hủy đăng ký" },
+      { value: "learning-promotion", label: "Mã giảm giá / ưu đãi" },
+      { value: "learning-certificate", label: "Chứng chỉ" },
+      { value: "learning-result", label: "Kết quả học tập" },
       { value: "learning-other", label: "Khác" }
     ]
   },
   {
+    // Giữ id account để CS vẫn đọc được ticket cũ; nhãn nghiệp vụ là Vận hành.
     id: "account",
-    label: "Tài khoản",
-    icon: "wallet",
+    label: "Vận hành",
+    icon: "mentor",
     issues: [
-      { value: "account-profile", label: "Thông tin tài khoản" },
-      { value: "account-password", label: "Mật khẩu / truy cập" },
-      { value: "account-payment", label: "Học phí / thanh toán" },
-      { value: "account-certificate", label: "Chứng chỉ / hồ sơ" },
-      { value: "account-other", label: "Khác" }
+      { value: "operations-schedule", label: "Lịch học" },
+      { value: "operations-attendance", label: "Điểm danh và vắng học" },
+      { value: "operations-mentor", label: "Mentor / giáo viên" },
+      { value: "operations-mentor-feedback", label: "Phản hồi về mentor" },
+      { value: "operations-video-quality", label: "Chất lượng hình ảnh / video" },
+      { value: "operations-video-access", label: "Không xem được bài giảng" },
+      { value: "operations-material", label: "Tài liệu và bài giảng" },
+      { value: "operations-assignment", label: "Bài tập và hỗ trợ bài giảng" },
+      { value: "operations-classroom", label: "Phòng học và buổi học" },
+      { value: "operations-support", label: "Hỗ trợ trong quá trình học" },
+      { value: "operations-other", label: "Khác" }
     ]
   },
   {
@@ -264,14 +284,10 @@ function getPrefixFromCategory(label) {
 // ======================================================
 let ticketNum = "HV-000000";
 function genTicketNum(typeLabel) {
-  const prefix =
-    getPrefixFromCategory(typeLabel);
-  const n =
-    Math.floor(
-      100000 +
-      Math.random() * 900000
-    );
-  return `${prefix}-${n}`;
+  const prefix = getPrefixFromCategory(typeLabel);
+  const timePart = String(Date.now()).slice(-7);
+  const randomPart = String(Math.floor(Math.random() * 100)).padStart(2, "0");
+  return `${prefix}-${timePart}${randomPart}`;
 }
 // ======================================================
 // NGÀY
@@ -451,6 +467,7 @@ const layoutContainer =
 submitBtn.addEventListener(
   "click",
   async () => {
+    const database = typeof db !== "undefined" ? db : window.db;
     const name =
       document
         .getElementById("fName")
@@ -486,6 +503,11 @@ submitBtn.addEventListener(
     const selectedIssue = issueSelect.value;
     const errEl = document.getElementById("errorText");
     const requiresIssue = selectedMainType && selectedMainType.value !== "other";
+    if (!database) {
+      errEl.textContent = "Chưa kết nối được với hệ thống. Vui lòng tải lại trang và thử lại.";
+      errEl.classList.add("show");
+      return;
+    }
     // ================================
     // VALIDATE
     // ================================
@@ -536,62 +558,74 @@ submitBtn.addEventListener(
       // ==================================
       // DATA TICKET
       // ==================================
+      const authClient = typeof auth !== "undefined" ? auth : window.auth;
+      const currentUser = authClient?.currentUser || null;
+      const databaseForProfile = typeof db !== "undefined" ? db : window.db;
+      let userProfile = {};
+      if (currentUser?.uid && databaseForProfile) {
+        try {
+          const profileSnapshot = await databaseForProfile.collection("users").doc(currentUser.uid).get();
+          if (profileSnapshot.exists) userProfile = profileSnapshot.data() || {};
+        } catch (profileError) {
+          console.warn("Không đọc được hồ sơ học viên, tiếp tục dùng thông tin form:", profileError);
+        }
+      }
       const ticketData = {
         ticketNum: ticketNum,
-        name: name,
-        email: email,
-        phone: phone || "",
+        studentId: currentUser?.uid || "",
+        name: userProfile.name || name,
+        email: userProfile.email || email,
+        phone: userProfile.phone || phone || "",
+        campus: userProfile.campus || document.getElementById("fCampus")?.value?.trim() || "",
+        createdByRole: "student",
         isStudent: isStudent,
         course: course,
         date: fDateEl.value,
         ticketType: ticketValue,
-        ticketCategory: selectedMainType.dataset.label,
+        ticketCategoryId: selectedMainType.value,
+        ticketIssueId: selectedIssue || "",
+        ticketCategory: selectedMainType.dataset.label || "Khác",
         ticketIssue: ticketIssueLabel,
+        ticketSchemaVersion: 2,
         title: title,
         description: desc,
+        attachmentName: fFile.files?.[0]?.name || "",
+        attachmentType: fFile.files?.[0]?.type || "",
+        attachmentSize: fFile.files?.[0]?.size || 0,
         status: "open",
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp(),
-        updatedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
       // ==================================
       // LƯU TICKET
       // ==================================
-      await db
+      await database
         .collection("tickets")
         .doc(ticketNum)
         .set(ticketData);
       // ==================================
       // TẠO MESSAGE ĐẦU TIÊN
       // ==================================
-      await db
+      await database
         .collection("tickets")
         .doc(ticketNum)
         .collection("messages")
         .add({
           sender: "student",
-          senderName: name,
+          senderType: "student",
+          senderName: ticketData.name,
           message: desc,
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
+          text: desc,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
       // ==================================
       // EMAILJS
       // ==================================
       const templateParams = {
         ticket_num: ticketNum,
-        name: name,
-        email: email,
-        phone:
-          phone ||
-          "Không cung cấp",
+        name: ticketData.name,
+        email: ticketData.email,
+        phone: ticketData.phone || "Không cung cấp",
         course: course,
         date:
           formatDateVN(
@@ -604,11 +638,17 @@ submitBtn.addEventListener(
         title: title,
         message: desc
       };
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams
-      );
+      if (window.emailjs) {
+        try {
+          await window.emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            templateParams
+          );
+        } catch (emailError) {
+          console.warn("Ticket đã lưu nhưng EmailJS không gửi được:", emailError);
+        }
+      }
       // ==================================
       // THÀNH CÔNG
       // ==================================

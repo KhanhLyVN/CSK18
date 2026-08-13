@@ -100,7 +100,7 @@
        RENDER BIỂU ĐỒ TRÒN (PIE CHART - TYPE 1-5)
     ===================================================== */
     function normalizeCategoryKey(ticket) {
-        const rawValue = ticket?.ticketCategory || ticket?.category || ticket?.type || ticket?.typeId || ticket?.ticketType;
+        const rawValue = ticket?.ticketCategory || ticket?.category || ticket?.ticketCategoryId || ticket?.type || ticket?.typeId || ticket?.ticketType;
         if (rawValue === undefined || rawValue === null || rawValue === "") return null;
 
         const normalized = String(rawValue).trim().toLowerCase();
@@ -112,8 +112,11 @@
             "khoa hoc": "learning",
             "khóa học": "learning",
             "account": "account",
+            "operations": "account",
             "tai khoan": "account",
             "tài khoản": "account",
+            "van hanh": "account",
+            "vận hành": "account",
             "other": "other",
             "khac": "other",
             "khác": "other"
@@ -142,7 +145,7 @@
         const categoryLabels = {
             system: "Hệ thống",
             learning: "Khóa học",
-            account: "Tài khoản",
+            account: "Vận hành",
             other: "Khác"
         };
 

@@ -18,7 +18,7 @@ let unsubChat = null;
 let currentStaff = localStorage.getItem("cs_staff_name") || STAFF[0];
 
 function getDatabase() {
-  return typeof db !== "undefined" ? db : null;
+  return typeof db !== "undefined" ? db : (window.db || null);
 }
 
 const $ = (selector) => document.querySelector(selector);

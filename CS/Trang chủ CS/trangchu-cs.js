@@ -43,28 +43,52 @@ function greetingByHour(){
 document.getElementById('greetingLine').textContent =
   `${greetingByHour()} — đây là tổng quan các yêu cầu hỗ trợ từ học viên hiện có trên hệ thống.`;
 function getTicketNum(ticket) {
-  return ticket.ticketNum || ticket.id;
+  return ticket.ticketNum || ticket.ticket_num || ticket.id || "—";
 }
 const TICKET_CATEGORY_LABELS = {
   system: "Hệ thống",
   learning: "Khóa học",
-  account: "Tài khoản",
+  account: "Vận hành",
+  operations: "Vận hành",
   other: "Khác",
   "system-login": "Đăng nhập / xác thực",
-  "system-course": "Khóa học / lịch học",
-  "system-payment": "Thanh toán / học phí",
+  "system-password": "Mật khẩu",
+  "system-account": "Tài khoản học viên",
+  "system-website-access": "Website không truy cập được",
+  "system-page-error": "Một trang bị lỗi",
+  "system-browser-device": "Lỗi thiết bị / trình duyệt",
+  "system-video-playback": "Lỗi phát video",
+  "system-file-upload": "Không tải được tệp",
+  "system-notification": "Email / thông báo",
+  "system-data-sync": "Dữ liệu chưa đồng bộ",
+  "system-security": "Bảo mật tài khoản",
   "system-technical": "Lỗi kỹ thuật / trang web",
-  "system-other": "Khác",
-  "learning-schedule": "Lịch học / buổi học",
-  "learning-material": "Tài liệu / bài học",
-  "learning-assignment": "Bài tập / kiểm tra",
-  "learning-mentor": "Mentor / giảng viên",
-  "learning-other": "Khác",
-  "account-profile": "Thông tin tài khoản",
-  "account-password": "Mật khẩu / truy cập",
-  "account-payment": "Học phí / thanh toán",
-  "account-certificate": "Chứng chỉ / hồ sơ",
-  "account-other": "Khác",
+  "system-web": "Website không truy cập được",
+  "learning-registration": "Đăng ký khóa học",
+  "learning-course-access": "Quyền truy cập khóa học",
+  "learning-fee": "Học phí",
+  "learning-payment-method": "Phương thức thanh toán",
+  "learning-payment-confirmation": "Xác nhận thanh toán",
+  "learning-invoice": "Hóa đơn / biên nhận",
+  "learning-refund": "Hoàn tiền / hủy đăng ký",
+  "learning-promotion": "Mã giảm giá / ưu đãi",
+  "learning-certificate": "Chứng chỉ",
+  "learning-result": "Kết quả học tập",
+  "learning-paymentmentol": "Phương thức thanh toán",
+  "account-schedule": "Lịch học",
+  "account-qualities": "Chất lượng hình ảnh / video",
+  "account-mentor": "Mentor / giáo viên",
+  "account-support": "Hỗ trợ trong quá trình học",
+  "operations-schedule": "Lịch học",
+  "operations-attendance": "Điểm danh và vắng học",
+  "operations-mentor": "Mentor / giáo viên",
+  "operations-mentor-feedback": "Phản hồi về mentor",
+  "operations-video-quality": "Chất lượng hình ảnh / video",
+  "operations-video-access": "Không xem được bài giảng",
+  "operations-material": "Tài liệu và bài giảng",
+  "operations-assignment": "Bài tập và hỗ trợ bài giảng",
+  "operations-classroom": "Phòng học và buổi học",
+  "operations-support": "Hỗ trợ trong quá trình học",
   "other-feedback": "Góp ý / phản hồi",
   "other-complaint": "Khiếu nại",
   "other-request": "Yêu cầu hỗ trợ khác"
@@ -75,10 +99,14 @@ function resolveTicketLabel(value) {
   return TICKET_CATEGORY_LABELS[normalized] || normalized;
 }
 function getTicketType(ticket) {
-  const category = resolveTicketLabel(ticket.ticketCategory || ticket.category || ticket.ticketType);
-  const issue = resolveTicketLabel(ticket.ticketIssue || ticket.issue || ticket.detail || ticket.type);
-  if (category && issue && issue !== category) return `${category} · ${issue}`;
-  return issue || category || "Khác";
+  const category = resolveTicketLabel(
+    ticket.ticketCategory || ticket.category || ticket.ticketCategoryId || ""
+  );
+  const issue = resolveTicketLabel(
+    ticket.ticketIssue || ticket.issue || ticket.detail || ticket.ticketIssueId || ticket.ticketType || ""
+  );
+  if (category && issue && issue !== category && issue !== "Khác") return `${category} · ${issue}`;
+  return category || issue || "Khác";
 }
 function getTicketTitle(ticket) {
   return ticket.title || "Không có tiêu đề";

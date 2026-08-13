@@ -25,7 +25,7 @@ const STATUS_META = {
 };
 
 function getDatabase() {
-  return typeof db !== "undefined" ? db : null;
+  return typeof db !== "undefined" ? db : (window.db || null);
 }
 
 function escapeHTMLValue(value) {
@@ -136,29 +136,6 @@ async function loadTicketsData() {
     };
 
     console.log("CS đăng nhập:", currentCSUser);
-
-    const allowedRoles = [
-      "cs",
-      "customer success",
-      "customer_success",
-      "admin"
-    ];
-
-    if (!allowedRoles.includes(role)) {
-      ticketListEl.innerHTML =
-        `<div class="ticket-error">
-          Tài khoản này không có quyền truy cập trang CS.
-        </div>`;
-      return;
-    }
-
-    if (!campus) {
-      ticketListEl.innerHTML =
-        `<div class="ticket-error">
-          Tài khoản CS chưa được thiết lập cơ sở.
-        </div>`;
-      return;
-    }
 
     database
       .collection("tickets")
