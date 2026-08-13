@@ -48,7 +48,16 @@ function ticketNumber(ticket) {
 }
 
 function ticketType(ticket) {
-  return firstValue(ticket, "ticketType", "ticket_type", "category") || "Khác";
+  // Prefer the human-readable `ticketCategory` and include `ticketIssue` when available
+  const category = firstValue(ticket, "ticketCategory");
+  const issue = firstValue(ticket, "ticketIssue");
+  if (category && issue && issue !== category) return `${category} · ${issue}`;
+  return issue || category || firstValue(ticket, "ticketType", "ticket_type", "category") || "Khác";
+}
+
+function ticketMainCategory(ticket) {
+  // Return only the primary category label (used for filters)
+  return firstValue(ticket, "ticketCategory", "ticketType", "ticket_type", "category") || "Khác";
 }
 
 function ticketDescription(ticket) {
@@ -118,7 +127,8 @@ function renderStats() {
 function renderCategoryFilter() {
   const select = $("#filterCategory");
   const currentValue = select.value;
-  const categories = [...new Set(allTickets.map(ticketType).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi"));
+  // Build filter options from the main category label only (no sub-issues)
+  const categories = [...new Set(allTickets.map(ticketMainCategory).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi"));
   select.innerHTML = `<option value="all">Tất cả</option>${categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}`;
   select.value = categories.includes(currentValue) ? currentValue : "all";
 }
@@ -132,7 +142,8 @@ function getFilteredTickets() {
   return allTickets.filter(ticket => {
     const statusMatch = status === "all" || normalizeStatus(ticket.status) === status;
     const priorityMatch = priority === "all" || ticketPriority(ticket) === priority;
-    const categoryMatch = category === "all" || ticketType(ticket) === category;
+    // Compare against the main category label (not the combined "category · issue")
+    const categoryMatch = category === "all" || ticketMainCategory(ticket) === category;
     const searchable = [ticketNumber(ticket), firstValue(ticket, "name"), firstValue(ticket, "email"), ticketTitle(ticket), ticketType(ticket)].join(" ").toLocaleLowerCase("vi");
     return statusMatch && priorityMatch && categoryMatch && (!search || searchable.includes(search));
   });
