@@ -45,8 +45,40 @@ document.getElementById('greetingLine').textContent =
 function getTicketNum(ticket) {
   return ticket.ticketNum || ticket.id;
 }
+const TICKET_CATEGORY_LABELS = {
+  system: "Hệ thống",
+  learning: "Khóa học",
+  account: "Tài khoản",
+  other: "Khác",
+  "system-login": "Đăng nhập / xác thực",
+  "system-course": "Khóa học / lịch học",
+  "system-payment": "Thanh toán / học phí",
+  "system-technical": "Lỗi kỹ thuật / trang web",
+  "system-other": "Khác",
+  "learning-schedule": "Lịch học / buổi học",
+  "learning-material": "Tài liệu / bài học",
+  "learning-assignment": "Bài tập / kiểm tra",
+  "learning-mentor": "Mentor / giảng viên",
+  "learning-other": "Khác",
+  "account-profile": "Thông tin tài khoản",
+  "account-password": "Mật khẩu / truy cập",
+  "account-payment": "Học phí / thanh toán",
+  "account-certificate": "Chứng chỉ / hồ sơ",
+  "account-other": "Khác",
+  "other-feedback": "Góp ý / phản hồi",
+  "other-complaint": "Khiếu nại",
+  "other-request": "Yêu cầu hỗ trợ khác"
+};
+function resolveTicketLabel(value) {
+  if (!value) return "Khác";
+  const normalized = String(value).trim();
+  return TICKET_CATEGORY_LABELS[normalized] || normalized;
+}
 function getTicketType(ticket) {
-  return ticket.ticketType || "Khác";
+  const category = resolveTicketLabel(ticket.ticketCategory || ticket.category || ticket.ticketType);
+  const issue = resolveTicketLabel(ticket.ticketIssue || ticket.issue || ticket.detail || ticket.type);
+  if (category && issue && issue !== category) return `${category} · ${issue}`;
+  return issue || category || "Khác";
 }
 function getTicketTitle(ticket) {
   return ticket.title || "Không có tiêu đề";
