@@ -2,10 +2,6 @@ const container = document.getElementById("container");
 const showRegister = document.getElementById("showRegister");
 const showLogin = document.getElementById("showLogin");
 
-/* Trang này chỉ có form đăng nhập, không có showRegister/showLogin
-   nên cần kiểm tra tồn tại trước khi gắn sự kiện — nếu không, lỗi
-   null sẽ chặn toàn bộ phần code phía dưới (toggle mật khẩu, submit
-   form...) không chạy được. */
 if (showRegister) {
     showRegister.addEventListener("click", () => {
         container.classList.add("active");
@@ -180,7 +176,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/account-HV.html";
+                window.location.href = "/HỌC VIÊN/account.html";
             }, 400);
 
         } catch (error) {
@@ -201,24 +197,66 @@ if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById("loginEmail").value.trim();
+        const email = document.getElementById("loginEmail").value.trim().toLowerCase();
         const password = document.getElementById("loginPassword").value;
 
         loginBtn.disabled = true;
         loginBtn.textContent = "Đang xử lý...";
 
         try {
-            await auth.signInWithEmailAndPassword(email, password);
+            // Đăng nhập Firebase
+            const result = await auth.signInWithEmailAndPassword(email, password);
+            const user = result.user;
+
             toast("Đăng nhập thành công!", "success");
+
             loginBtn.textContent = "Thành công!";
+
             setTimeout(() => {
-                window.location.href = "/account-HV.html";
+
+                // ==========================================
+                // PHÂN QUYỀN THEO EMAIL
+                // ==========================================
+
+                if (email.endsWith("@student.edu.vn")) {
+
+                    // Học viên
+                    window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
+
+                } else if (email.endsWith("@gmail.com")) {
+
+                    // CS
+                    window.location.href = "/CS/Trang chủ CS/trangchu-cs.html";
+
+                } else if (email.endsWith("adminhcm@gmai.com")) {
+
+                    // CS
+                    window.location.href = "/ADMIN/Trang chủ.html";
+
+                } else {
+
+                    // Email không thuộc hệ thống
+                    auth.signOut();
+
+                    toast(
+                        "Email không được phép đăng nhập vào hệ thống.",
+                        "error"
+                    );
+
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = "Đăng nhập";
+                }
+
             }, 400);
+
         } catch (error) {
             console.error("Lỗi đăng nhập:", error);
+
             toast(getAuthErrorMessage(error), "error");
+
             loginBtn.disabled = false;
             loginBtn.textContent = "Đăng nhập";
         }
     });
 }
+
