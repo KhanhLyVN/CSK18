@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const connectionDotEl = document.getElementById("connectionDot");
   const connectionLabelEl = document.getElementById("connectionLabel");
   const todayLabelEl = document.getElementById("todayLabel");
+  const welcomeNameEl = document.getElementById("welcomeName");
 
   const STATUS_META = {
     open: { label: "Đang mở", className: "status-open" },
@@ -43,6 +44,34 @@ document.addEventListener("DOMContentLoaded", () => {
   function setText(element, value) { if (element) element.textContent = value; }
 
   setText(todayLabelEl, new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }));
+
+  function updateWelcomeName(name) {
+    if (!welcomeNameEl) return;
+    const displayName = (name || "Học viên").trim();
+    welcomeNameEl.textContent = displayName || "Học viên";
+  }
+
+  const authInstance = typeof auth !== "undefined" ? auth : null;
+  if (authInstance && typeof authInstance.onAuthStateChanged === "function") {
+    authInstance.onAuthStateChanged(async user => {
+      if (!user) {
+        updateWelcomeName("Học viên");
+        return;
+      }
+
+      try {
+        const doc = await db.collection("users").doc(user.uid).get();
+        const data = doc.exists ? doc.data() : {};
+        const name = data.name || user.displayName || "Học viên";
+        updateWelcomeName(name);
+      } catch (error) {
+        console.error("Không thể lấy tên người dùng:", error);
+        updateWelcomeName("Học viên");
+      }
+    });
+  } else {
+    updateWelcomeName("Học viên");
+  }
 
   function renderRecentTickets(tickets) {
     if (!recentListEl) return;

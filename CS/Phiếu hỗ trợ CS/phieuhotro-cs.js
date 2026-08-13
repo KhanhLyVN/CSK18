@@ -388,6 +388,39 @@ function updateStub() {
     );
   }
 });
+
+if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "function") {
+  auth.onAuthStateChanged(async (user) => {
+    const nameInput = document.getElementById("fName");
+    const emailInput = document.getElementById("fEmail");
+
+    if (!user) {
+      if (nameInput) nameInput.value = "";
+      if (emailInput) emailInput.value = "";
+      return;
+    }
+
+    try {
+      const doc = await db.collection("users").doc(user.uid).get();
+      const data = doc.exists ? doc.data() : {};
+      const name = data.name || user.displayName || "Học viên";
+      const email = data.email || user.email || "";
+
+      if (nameInput) {
+        if (!nameInput.value.trim()) nameInput.value = name;
+        nameInput.readOnly = true;
+      }
+      if (emailInput) {
+        if (!emailInput.value.trim()) emailInput.value = email;
+        emailInput.readOnly = true;
+      }
+      updateStub();
+    } catch (error) {
+      console.error("Không thể lấy thông tin tài khoản hiện tại:", error);
+    }
+  });
+}
+
 updateStub();
 // ======================================================
 // SUBMIT TICKET

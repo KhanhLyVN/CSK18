@@ -970,11 +970,65 @@ tbody tr:hover {
   }
 }
 
-@media (max-width: 450px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
+.main-content .content-wrap,
+.main-content .hero,
+.main-content .stats-grid,
+.main-content .account-panel,
+.main-content .panel-head,
+.main-content .filters,
+.main-content table,
+.main-content .architecture-card {
+  font-size: 1.08em;
+}
+
+.main-content .hero h1 {
+  font-size: clamp(2.5rem, 3.4vw, 4rem);
+}
+
+.main-content .hero-copy,
+.main-content .panel-head p,
+.main-content .architecture-card p:not(.eyebrow),
+.main-content .search-box input,
+.main-content .filters select,
+.main-content .primary-btn,
+.main-content .stat-card small,
+.main-content .account-cell small,
+.main-content .last-active,
+.main-content .joined,
+.main-content .panel-foot,
+.main-content .detail-box strong,
+.main-content .detail-box small {
+  font-size: 1.1em;
+}
+
+.main-content .stat-card strong {
+  font-size: 2.5rem;
+}
+
+.main-content .title-line h2 {
+  font-size: 2rem;
+}
+
+.main-content th {
+  font-size: .76rem;
+}
+
+.main-content td {
+  font-size: .95rem;
+}
+
+.main-content .account-cell strong {
+  font-size: 1.05rem;
+}
+
+.main-content .architecture-card h2 {
+  font-size: 2rem;
+}
+
+.main-content .status {
+  font-size: .72rem;
+}
+
   .hero h1 {
     font-size: 35px;
   }
@@ -991,4 +1045,3 @@ tbody tr:hover {
   .realtime {
     font-size: 10px;
   }
-}
