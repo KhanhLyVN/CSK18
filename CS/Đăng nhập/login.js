@@ -180,7 +180,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/account.html";
+                window.location.href = "/account-HV.html";
             }, 400);
 
         } catch (error) {
@@ -212,7 +212,7 @@ if (loginForm) {
             toast("Đăng nhập thành công!", "success");
             loginBtn.textContent = "Thành công!";
             setTimeout(() => {
-                window.location.href = "/account.html";
+                window.location.href = "/account-HV.html";
             }, 400);
         } catch (error) {
             console.error("Lỗi đăng nhập:", error);
