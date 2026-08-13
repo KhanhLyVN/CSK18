@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     closed: { label: "Đã đóng", className: "status-closed" }
   };
 
-  function getDatabase() { return typeof db !== "undefined" ? db : null; }
+  function getDatabase() { return typeof db !== "undefined" ? db : (window.db || null); }
   function firstValue(ticket, ...keys) {
     for (const key of keys) {
       if (ticket[key] !== undefined && ticket[key] !== null && String(ticket[key]).trim()) return ticket[key];
@@ -55,7 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const meta = STATUS_META[status];
       const number = firstValue(ticket, "ticketNum", "ticket_num", "id");
       const title = firstValue(ticket, "title", "subject") || "Không có tiêu đề";
-      const type = firstValue(ticket, "ticketIssue", "ticketType", "ticket_type", "category") || "Khác";
+      const category = firstValue(ticket, "ticketCategory", "ticketCategoryId", "category");
+      const issue = firstValue(ticket, "ticketIssue", "ticketIssueId", "ticketType", "ticket_type");
+      const type = category && issue && category !== issue ? `${category} · ${issue}` : issue || category || "Khác";
       const query = encodeURIComponent(number);
       return `<a class="recent-item" href="../Trao đổi ticket/trao-doi-ticket.html?ticket=${query}"><span class="recent-code">${escapeHTML(number)}</span><span class="recent-title-wrap"><span class="recent-title" title="${escapeHTML(title)}">${escapeHTML(title)}</span><span class="recent-type">${escapeHTML(type)}</span></span><span class="status-badge ${meta.className}">${meta.label}</span><span class="recent-date">${escapeHTML(firstValue(ticket, "date") || formatDate(ticket.createdAt))}</span></a>`;
     }).join("");

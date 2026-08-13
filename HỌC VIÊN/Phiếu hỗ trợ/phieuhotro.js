@@ -10,13 +10,14 @@ const ICONS = {
   wallet: '<path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5a2 2 0 0 0 0 4h6"/>',
   cert: '<circle cx="12" cy="8" r="5"/><path d="M9 12.5L7 21l5-3 5 3-2-8.5"/>',
   book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/>',
+  work: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle>',
   other: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'
 };
 
 const TICKET_CATEGORIES = [
-  { id: "system", label: "Hệ thống", icon: "bug", issues: [{ value: "system-login", label: "Đăng nhập / xác thực" }, { value: "system-course", label: "Khóa học / lịch học" }, { value: "system-payment", label: "Thanh toán / học phí" }, { value: "system-technical", label: "Lỗi kỹ thuật / trang web" }, { value: "system-other", label: "Khác" }] },
-  { id: "learning", label: "Khóa học", icon: "book", issues: [{ value: "learning-schedule", label: "Lịch học / buổi học" }, { value: "learning-material", label: "Tài liệu / bài học" }, { value: "learning-assignment", label: "Bài tập / kiểm tra" }, { value: "learning-mentor", label: "Mentor / giảng viên" }, { value: "learning-other", label: "Khác" }] },
-  { id: "account", label: "Tài khoản", icon: "wallet", issues: [{ value: "account-profile", label: "Thông tin tài khoản" }, { value: "account-password", label: "Mật khẩu / truy cập" }, { value: "account-payment", label: "Học phí / thanh toán" }, { value: "account-certificate", label: "Chứng chỉ / hồ sơ" }, { value: "account-other", label: "Khác" }] },
+  { id: "system", label: "Hệ thống", icon: "bug", issues: [{ value: "system-login", label: "Đăng nhập" }, { value: "account", label: "Tài khoản học viên" }, { value: "system-web", label: "Trang web không truy cập được" }, { value: "system-technical", label: "Lỗi kỹ thuật" }, { value: "system-other", label: "Khác" }] },
+  { id: "learning", label: "Khóa học", icon: "book", issues: [{ value: "learning-class", label: "Đăng ký khóa học" }, { value: "learning-cost", label: "Học phí" }, { value: "learning-paymentmentol", label: "Phương thức thanh toán" }, { value: "learning-confirm", label: "Xác nhận thanh toán" }, { value: "learning-other", label: "Khác" }] },
+  { id: "account", label: "Vận hành", icon: "work", issues: [{ value: "account-schedule", label: "Lịch học" }, { value: "account-qualities", label: "Chất lượng hình ảnh và video" }, { value: "account-mentor", label: "Giáo viên" }, { value: "account-certificate", label: "Hỗ trợ bài" }, { value: "account-other", label: "Khác" }] },
   { id: "other", label: "Khác", icon: "other", issues: [{ value: "other-feedback", label: "Góp ý / phản hồi" }, { value: "other-complaint", label: "Khiếu nại" }, { value: "other-request", label: "Yêu cầu hỗ trợ khác" }] }
 ];
 
@@ -116,6 +117,7 @@ function setupForm() {
         // unlock fields when logged out
         $("fName").readOnly = false;
         $("fEmail").readOnly = false;
+        $("fCampus").readOnly = false;
         return;
       }
       try {
@@ -140,6 +142,8 @@ function setupForm() {
         $("fName").readOnly = true;
         $("fEmail").value = email;
         $("fEmail").readOnly = true;
+        $('fCampus').value = campus;
+        $('fCampus').readOnly = true;
         updateStub();
       } catch (e) {
         console.error("Không thể lấy thông tin người dùng:", e);
@@ -172,7 +176,7 @@ async function submitTicket() {
   const database = getDatabase();
   const name = $("fName").value.trim();
   const email = $("fEmail").value.trim();
-  const phone = $("fPhone").value.trim();
+  const campus = $("fCampus").value.trim();
   const isStudent = chkCourse.checked;
   const course = isStudent ? fCourse.value.trim() : "Không áp dụng";
   const title = $("fTitle").value.trim();
@@ -202,7 +206,7 @@ async function submitTicket() {
       studentId: loggedInUser?.uid || "",
       name,
       email,
-      phone,
+      campus,
 
       // Cơ sở của người tạo
       campus: loggedInUser?.campus || "",
