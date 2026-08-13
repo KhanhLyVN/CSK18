@@ -228,6 +228,11 @@ if (loginForm) {
                     // CS
                     window.location.href = "/CS/Trang chủ CS/trangchu-cs.html";
 
+                } else if (email.endsWith("adminhcm@gmai.com")) {
+
+                    // CS
+                    window.location.href = "/ADMIN/Trang chủ.html";
+
                 } else {
 
                     // Email không thuộc hệ thống
