@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/HỌC VIÊN/Trang chủ/homepage.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -38,13 +39,12 @@
             color: var(--text);
             font-family: 'Inter', sans-serif;
         }
+
         .topbar {
             height: 70px;
             background: var(--maroon);
             color: var(--white);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
             padding: 0 40px;
         }
         .brand {
@@ -411,8 +411,44 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/CS/navbar.css">
 </head>
 <body>
+<div class="app">
+<header class="topbar">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc thu gọn Sidebar" title="Mở hoặc thu gọn Sidebar">☰</button>
+    <div class="mark">HV</div>
+    <div class="titles">
+        <h1>Hệ thống Hỗ trợ Học viên</h1>
+        <span>Tài khoản học viên</span>
+    </div>
+</header>
+<div class="body" id="bodyEl">
+    <aside class="sidebar" id="sidebarEl">
+        <nav class="sidebar-menu" aria-label="Điều hướng học viên">
+            <a class="menu-item" href="/HỌC VIÊN/Trang chủ/homepage.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V9"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Trang chủ</span>
+            </a>
+            <a class="menu-item" href="/HỌC VIÊN/Phiếu hỗ trợ/phieuhotro.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>Tạo phiếu hỗ trợ</span>
+            </a>
+            <a class="menu-item" href="/HỌC VIÊN/Trao đổi ticket/trao-doi-ticket.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Trao đổi Ticket</span>
+            </a>
+            <a class="menu-item" href="/FAQs/faq.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span>Hỏi đáp (Q&A)</span>
+            </a>
+            <a class="menu-item active" href="/account-HV.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Tài khoản</span>
+            </a>
+        </nav>
+    </aside>
+    <main class="main">
 <!-- <header class="topbar">
     <div class="brand">
         <div class="brand-logo">HV</div>
@@ -425,7 +461,7 @@
         ← Quay lại
     </a>
 </header> -->
-<main class="container">
+<div class="container">
     <div class="page-header">
         <h1>Tài khoản của tôi</h1>
         <p>Quản lý thông tin và bảo mật tài khoản học viên.</p>
@@ -596,7 +632,10 @@
             </button>
         </section>
     </div>
-</main>
+</div>
+    </main>
+</div>
+</div>
 <div id="toast"></div>
 <script>
 /* firebase-config.js đã khởi tạo sẵn: firebase.initializeApp(...),
@@ -748,5 +787,6 @@ $("logoutBtn")
         }
     });
 </script>
+<script type="module" src="/HỌC VIÊN/sidebar.js"></script>
 </body>
 </html>
