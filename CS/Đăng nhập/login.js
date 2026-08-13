@@ -2,10 +2,6 @@ const container = document.getElementById("container");
 const showRegister = document.getElementById("showRegister");
 const showLogin = document.getElementById("showLogin");
 
-/* Trang này chỉ có form đăng nhập, không có showRegister/showLogin
-   nên cần kiểm tra tồn tại trước khi gắn sự kiện — nếu không, lỗi
-   null sẽ chặn toàn bộ phần code phía dưới (toggle mật khẩu, submit
-   form...) không chạy được. */
 if (showRegister) {
     showRegister.addEventListener("click", () => {
         container.classList.add("active");
@@ -180,7 +176,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/HỌC VIÊN/account-HV.html";
+                window.location.href = "/HỌC VIÊN/account.html";
             }, 400);
 
         } catch (error) {
@@ -225,12 +221,12 @@ if (loginForm) {
                 if (email.endsWith("@student.edu.vn")) {
 
                     // Học viên
-                    window.location.href = "/HỌC VIÊN/account-HV.html";
+                    window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
 
                 } else if (email.endsWith("@gmail.com")) {
 
                     // CS
-                    window.location.href = "/CS/Trang chủ/Trang chủ.html";
+                    window.location.href = "/CS/Trang chủ CS/trangchu-cs.html";
 
                 } else {
 
