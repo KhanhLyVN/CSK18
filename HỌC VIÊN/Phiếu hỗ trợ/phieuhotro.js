@@ -36,6 +36,7 @@ const successView = $("successView");
 const layoutContainer = $("layoutContainer");
 let ticketNum = "HV-000000";
 let selectedFile = null;
+let loggedInUser = null;
 
 function getDatabase() { return typeof db !== "undefined" ? db : null; }
 function escapeHTML(value) { const el = document.createElement("div"); el.textContent = value ?? ""; return el.innerHTML; }
@@ -106,6 +107,34 @@ function setupForm() {
   fDateEl.value = isoToday();
   renderCategories();
   updateStub();
+
+  // If Firebase `auth` is available, listen for user state and autofill name/email
+  if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "function") {
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        loggedInUser = null;
+        // unlock fields when logged out
+        $("fName").readOnly = false;
+        $("fEmail").readOnly = false;
+        return;
+      }
+      try {
+        const doc = await db.collection("users").doc(user.uid).get();
+        const data = doc.exists ? doc.data() : {};
+        const name = data.name || user.displayName || "";
+        const email = data.email || user.email || "";
+        loggedInUser = { uid: user.uid, name, email };
+        // set and lock the sender name (and email)
+        $("fName").value = name;
+        $("fName").readOnly = true;
+        $("fEmail").value = email;
+        $("fEmail").readOnly = true;
+        updateStub();
+      } catch (e) {
+        console.error("Không thể lấy thông tin người dùng:", e);
+      }
+    });
+  }
 
   issueSelect.addEventListener("change", () => { updateTicketNumber(); updateStub(); });
   chkCourse.addEventListener("change", () => { courseBoxWrap.classList.toggle("show", chkCourse.checked); if (!chkCourse.checked) fCourse.value = ""; updateStub(); });
@@ -193,7 +222,11 @@ async function submitTicket() {
 }
 
 function resetForm() {
-  document.querySelectorAll("#formView input:not([type=checkbox]), #formView textarea").forEach(input => { input.value = ""; });
+  document.querySelectorAll("#formView input:not([type=checkbox]), #formView textarea").forEach(input => {
+    // preserve name/email if user is logged in
+    if (loggedInUser && (input.id === "fName" || input.id === "fEmail")) return;
+    input.value = "";
+  });
   fFile.value = ""; selectedFile = null; fileNameEl.textContent = "";
   chkCourse.checked = false; courseBoxWrap.classList.remove("show");
   chipGrid.querySelectorAll(".chip").forEach(chip => chip.classList.remove("active"));
