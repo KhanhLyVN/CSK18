@@ -381,60 +381,66 @@ async function startRealtimeTickets(user) {
   const database = getDatabase();
 
   if (!database) {
-    $("#connLabel").textContent = "Chưa kết nối";
+    $("#connLabel").textContent = "Chưa kết nối Firebase";
     return;
   }
 
   try {
-    const accountDoc = await database
-      .collection("accounts")
-      .doc(user.uid)
-      .get();
+    // Tài khoản CS của hệ thống nằm trong users; accounts chỉ được dùng để tương thích dữ liệu cũ.
+    let staffSnapshot = await database.collection("users").doc(user.uid).get();
+    if (!staffSnapshot.exists) {
+      staffSnapshot = await database.collection("accounts").doc(user.uid).get();
+    }
 
-    if (!accountDoc.exists) {
-      console.error("Không tìm thấy account");
+    const staff = staffSnapshot.exists ? staffSnapshot.data() : {};
+    const role = String(staff.role || "").trim().toLowerCase();
+    const campus = String(staff.campus || "").trim();
+    const isAdmin = ["admin", "cs_admin", "customer success admin"].includes(role);
+
+    if (!staffSnapshot.exists) {
+      $("#connLabel").textContent = "Không tìm thấy hồ sơ CS";
+      console.error("Không tìm thấy hồ sơ CS trong users hoặc accounts", user.uid);
       return;
     }
 
-    const account = accountDoc.data();
+    if (!isAdmin && role && !["cs", "customer success", "customer_success", "staff"].includes(role)) {
+      $("#connLabel").textContent = "Không có quyền CS";
+      console.error("Tài khoản không có quyền truy cập CS", role);
+      return;
+    }
 
-    const department = account.department;
+    console.log("Nhân viên CS:", staff.name || user.displayName || user.email);
+    console.log("Cơ sở:", campus || "Chưa thiết lập");
 
-    console.log("Nhân viên:", account.name);
-    console.log("Phòng ban:", department);
-    console.log("UID:", user.uid);
+    // Không lọc bằng department/assignedTo vì ticket do học viên tạo chưa có hai trường này.
+    // Lọc campus ở client để tránh yêu cầu composite index và vẫn nhận ticket chưa phân công.
+    database.collection("tickets").onSnapshot(snapshot => {
+      $("#connDot").classList.add("live");
+      $("#connLabel").textContent = campus ? "Realtime · " + campus : "Realtime";
 
-    database
-      .collection("tickets")
-      .where("department", "==", department)
-      .where("assignedTo", "==", user.uid)
-      .onSnapshot(snapshot => {
+      allTickets = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(ticket => {
+          const ticketCampus = String(ticket.campus || "").trim();
+          const assignedTo = String(ticket.assignedTo || "").trim();
+          const sameCampus = isAdmin || !campus || !ticketCampus || ticketCampus === campus;
+          const assignedToThisStaff = isAdmin || !assignedTo || assignedTo === user.uid || assignedTo === user.email;
+          return sameCampus && assignedToThisStaff;
+        })
+        .sort((a, b) => timestampMillis(b.createdAt) - timestampMillis(a.createdAt));
 
-        $("#connDot").classList.add("live");
-        $("#connLabel").textContent = "Realtime";
-
-        allTickets = snapshot.docs
-          .map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          .sort(
-            (a, b) =>
-              timestampMillis(b.createdAt) -
-              timestampMillis(a.createdAt)
-          );
-
-        renderStats();
-        renderCategoryFilter();
-        renderTable();
-
-      }, error => {
-        console.error("Firestore error:", error);
-        $("#connLabel").textContent = "Mất kết nối";
-      });
-
+      renderStats();
+      renderCategoryFilter();
+      renderTable();
+    }, error => {
+      console.error("Firestore error khi đọc tickets:", error);
+      $("#connDot").classList.remove("live");
+      $("#connLabel").textContent = "Lỗi đọc dữ liệu";
+    });
   } catch (error) {
-    console.error("Không lấy được account:", error);
+    console.error("Không lấy được hồ sơ CS hoặc tickets:", error);
+    $("#connDot").classList.remove("live");
+    $("#connLabel").textContent = "Không kết nối được";
   }
 }
 
