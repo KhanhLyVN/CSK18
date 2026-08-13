@@ -717,6 +717,18 @@
               placeholder="Nhập mô tả về phòng ban..."
             ></textarea>
           </div>
+          <!-- FACILITY: tự động lấy theo người phụ trách -->
+          <div class="form-group">
+            <label>
+              Cơ sở
+            </label>
+            <input
+              type="text"
+              id="departmentFacility"
+              placeholder="Tự động lấy theo người phụ trách"
+              readonly
+            >
+          </div>
           <!-- STATUS -->
           <div class="form-group">
             <label>
@@ -928,6 +940,21 @@
               rows="4"
             ></textarea>
           </div>
+          <!-- FACILITY: tự động lấy theo người phụ trách -->
+          <div class="form-group">
+            <label>
+              Cơ sở
+            </label>
+            <input
+              type="text"
+              id="editFacility"
+              placeholder="Tự động lấy theo người phụ trách"
+              readonly
+            >
+            <small>
+              Cơ sở được lấy từ tài khoản của người phụ trách.
+            </small>
+          </div>
           <!-- STATUS -->
           <div class="form-group">
             <label>
@@ -1033,6 +1060,10 @@
       document.getElementById(
         "departmentDescription"
       );
+    const departmentFacility =
+      document.getElementById(
+        "departmentFacility"
+      );
     const departmentStatus =
       document.getElementById(
         "departmentStatus"
@@ -1132,6 +1163,10 @@
     const editDescription =
       document.getElementById(
         "editDescription"
+      );
+    const editFacility =
+      document.getElementById(
+        "editFacility"
       );
     const editStatus =
       document.getElementById(
@@ -1253,6 +1288,29 @@
         String(email || "").trim()
       );
     }
+    function getUserFacility(user) {
+      if (!user) return "";
+      return String(
+        user.facility ||
+        user.facilityName ||
+        user.coSo ||
+        user.coSoName ||
+        user.cơSở ||
+        user.cơSởName ||
+        user.branch ||
+        user.branchName ||
+        user.campus ||
+        user.location ||
+        ""
+      ).trim();
+    }
+    function findUserForDepartment(data) {
+      return users.find(
+        user =>
+          user.uid === data.managerUid ||
+          user.email === String(data.managerEmail || "").toLowerCase()
+      ) || null;
+    }
     /* =====================================================
        LOAD USERS
     ====================================================== */
@@ -1307,7 +1365,9 @@
               name:
                 String(name),
               email:
-                email
+                email,
+              facility:
+                getUserFacility(data)
             });
           }
         );
@@ -1530,6 +1590,8 @@
           user.name;
         createEmailText.textContent =
           user.email;
+        departmentFacility.value =
+          getUserFacility(user);
         createManagerSelect
           .classList.add(
             "has-value"
@@ -1564,6 +1626,8 @@
           user.name;
         editEmailText.textContent =
           user.email;
+        editFacility.value =
+          getUserFacility(user);
         editManagerSelect
           .classList.add(
             "has-value"
@@ -1766,6 +1830,8 @@
         "Chọn người phụ trách";
       createEmailText.textContent =
         "Chọn tài khoản Gmail";
+      departmentFacility.value =
+        "";
       createManagerSearch.value =
         "";
       createEmailSearch.value =
@@ -1886,6 +1952,8 @@
                 createSelectedManager.email,
               managerUid:
                 createSelectedManager.uid,
+              facility:
+                getUserFacility(createSelectedManager),
               status:
                 status,
               createdAt:
@@ -2062,6 +2130,16 @@
             )}
           </p>
           <div class="manager">
+            Cơ sở:
+            <strong>
+              ${escapeHTML(
+                data.facility ||
+                data.facilityName ||
+                (findUserForDepartment(data) && getUserFacility(findUserForDepartment(data))) ||
+                "Chưa có"
+              )}
+            </strong>
+            <br>
             Người phụ trách:
             <strong>
               ${escapeHTML(
@@ -2084,6 +2162,7 @@
                 ? "active"
                 : "inactive"
             }"
+            title="Trạng thái"
           >
             ${
               active
@@ -2141,6 +2220,10 @@
             data.code || "";
           editDescription.value =
             data.description || "";
+          editFacility.value =
+            data.facility ||
+            data.facilityName ||
+            "";
           editStatus.value =
             data.status || "active";
           /*
@@ -2161,6 +2244,8 @@
           if (
             editSelectedManager
           ) {
+            editFacility.value =
+              getUserFacility(editSelectedManager);
             editManagerText.textContent =
               editSelectedManager.name;
             editEmailText.textContent =
@@ -2265,6 +2350,8 @@
                 editSelectedManager.email,
               managerUid:
                 editSelectedManager.uid,
+              facility:
+                getUserFacility(editSelectedManager),
               status:
                 status,
               updatedAt:

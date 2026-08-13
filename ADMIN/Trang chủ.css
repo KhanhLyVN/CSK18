@@ -678,8 +678,8 @@ tbody tr:hover {
   align-items: center;
   gap: 6px;
 }
-
-.architecture-card {
+/* architecture */
+/* .architecture-card {
   display: flex;
   justify-content: space-between;
   gap: 30px;
@@ -734,7 +734,7 @@ tbody tr:hover {
   width: 24px;
   height: 1px;
   background: var(--maroon);
-}
+} */
 
 .drawer-backdrop {
   position: fixed;
