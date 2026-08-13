@@ -6,6 +6,7 @@
     <title>Tài khoản học viên</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -249,6 +250,78 @@
             color: var(--text-soft);
             font-size: 12px;
         }
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+        .password-form label {
+            color: var(--text-soft);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .password-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .password-input-wrap > .fa-lock {
+            position: absolute;
+            left: 13px;
+            z-index: 1;
+            color: var(--text-soft);
+            font-size: 13px;
+            pointer-events: none;
+        }
+        .password-form input {
+            width: 100%;
+            padding: 10px 42px 10px 36px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            color: var(--text-soft);
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .toggle-password:hover {
+            color: var(--maroon);
+        }
+        .password-form input:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(93, 7, 3, .08);
+        }
+        .password-hint {
+            margin: -2px 0 2px;
+            color: var(--text-soft);
+            font-size: 11px;
+            line-height: 1.5;
+        }
         .btn {
             width: 100%;
             padding: 11px 15px;
@@ -340,7 +413,7 @@
     </style>
 </head>
 <body>
-<header class="topbar">
+<!-- <header class="topbar">
     <div class="brand">
         <div class="brand-logo">HV</div>
         <div>
@@ -351,7 +424,7 @@
     <a href="javascript:history.back()" class="back-btn">
         ← Quay lại
     </a>
-</header>
+</header> -->
 <main class="container">
     <div class="page-header">
         <h1>Tài khoản của tôi</h1>
@@ -466,11 +539,56 @@
                     Mật khẩu của bạn được bảo vệ bởi Firebase Authentication.
                 </span>
             </div>
-            <!-- <button
-                class="btn btn-primary"
-                id="changePasswordBtn">
-                Gửi email đặt lại mật khẩu
-            </button> -->
+            <form class="password-form" id="changePasswordForm">
+                <label>
+                    Mật khẩu mới
+                    <span class="password-input-wrap">
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        <input
+                            type="password"
+                            id="newPassword"
+                            minlength="6"
+                            autocomplete="new-password"
+                            placeholder="Nhập mật khẩu mới"
+                            required>
+                        <button
+                            class="toggle-password"
+                            type="button"
+                            data-target="newPassword"
+                            aria-label="Hiện mật khẩu"
+                            title="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </label>
+                <label>
+                    Xác nhận mật khẩu mới
+                    <span class="password-input-wrap">
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            minlength="6"
+                            autocomplete="new-password"
+                            placeholder="Nhập lại mật khẩu mới"
+                            required>
+                        <button
+                            class="toggle-password"
+                            type="button"
+                            data-target="confirmPassword"
+                            aria-label="Hiện mật khẩu"
+                            title="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </label>
+                <p class="password-hint">Mật khẩu cần có ít nhất 6 ký tự.</p>
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+                    Đổi mật khẩu
+                </button>
+            </form>
             <button
                 class="btn btn-danger"
                 id="logoutBtn">
@@ -486,6 +604,27 @@
    Vì vậy ở đây KHÔNG khai báo lại const auth / const db để tránh
    lỗi "Identifier has already been declared". */
 const $ = id => document.getElementById(id);
+/* =========================
+   SHOW / HIDE PASSWORD
+========================= */
+document.querySelectorAll(".toggle-password").forEach(button => {
+    button.addEventListener("click", () => {
+        const input = $(button.dataset.target);
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        const icon = button.querySelector("i");
+        icon.classList.toggle("fa-eye", !isHidden);
+        icon.classList.toggle("fa-eye-slash", isHidden);
+        button.setAttribute(
+            "aria-label",
+            isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+        );
+        button.setAttribute(
+            "title",
+            isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+        );
+    });
+});
 /* =========================
    TOAST
 ========================= */
@@ -558,27 +697,38 @@ auth.onAuthStateChanged(async user => {
     }
 });
 /* =========================
-   RESET PASSWORD
+   CHANGE PASSWORD
 ========================= */
-$("changePasswordBtn")
-    .addEventListener("click", async () => {
+$("changePasswordForm")
+    .addEventListener("submit", async event => {
+        event.preventDefault();
         const user = auth.currentUser;
-        if (!user || !user.email) {
-            toast("Không xác định được email.");
+        const newPassword = $("newPassword").value;
+        const confirmPassword = $("confirmPassword").value;
+
+        if (!user) {
+            toast("Bạn chưa đăng nhập.");
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast("Mật khẩu phải có ít nhất 6 ký tự.");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            toast("Mật khẩu xác nhận không khớp.");
             return;
         }
         try {
-            await auth.sendPasswordResetEmail(
-                user.email
-            );
-            toast(
-                "Đã gửi email đặt lại mật khẩu."
-            );
+            await user.updatePassword(newPassword);
+            $("changePasswordForm").reset();
+            toast("Đổi mật khẩu thành công.");
         } catch (error) {
             console.error(error);
-            toast(
-                "Không thể gửi email đặt lại mật khẩu."
-            );
+            if (error.code === "auth/requires-recent-login") {
+                toast("Vui lòng đăng nhập lại rồi thử lại.");
+            } else {
+                toast("Không thể đổi mật khẩu. Vui lòng thử lại.");
+            }
         }
     });
 /* =========================
