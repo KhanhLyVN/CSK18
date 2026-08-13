@@ -12,6 +12,8 @@ let ticketsDataList = [];
 let activeTicketItem = null;
 let currentStatusFilter = "all";
 let activeChatSubscription = null;
+let currentCSUser = null;
+let firebaseCurrentUser = null;
 const requestedTicketNumber = new URLSearchParams(window.location.search).get("ticket");
 let requestedTicketOpened = false;
 
@@ -82,27 +84,158 @@ function renderTicketStatus(status) {
   return `<span class="ticket-status ${meta.className}"><span class="dot"></span>${meta.label}</span>`;
 }
 
-function loadTicketsData() {
+async function loadTicketsData() {
   const database = getDatabase();
+
   if (!database) {
-    ticketListEl.innerHTML = `<div class="ticket-error">Chưa kết nối được với Firebase.</div>`;
+    ticketListEl.innerHTML =
+      `<div class="ticket-error">Chưa kết nối được với Firebase.</div>`;
     return;
   }
-  database.collection("tickets").onSnapshot(snapshotQuery => {
-    ticketsDataList = snapshotQuery.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-    ticketsDataList.sort((ticketA, ticketB) => getTimestampMillis(ticketB.createdAt) - getTimestampMillis(ticketA.createdAt));
-    renderTicketsList();
-    if (activeTicketItem) {
-      const freshTicket = ticketsDataList.find(ticket => ticket.id === activeTicketItem.id);
-      if (freshTicket) openSelectedTicket(freshTicket);
-    } else if (requestedTicketNumber && !requestedTicketOpened) {
-      const requestedTicket = ticketsDataList.find(ticket => ticketNumber(ticket) === requestedTicketNumber || ticket.id === requestedTicketNumber);
-      if (requestedTicket) { requestedTicketOpened = true; openSelectedTicket(requestedTicket); }
+
+  if (typeof auth === "undefined" || !auth) {
+    ticketListEl.innerHTML =
+      `<div class="ticket-error">Không tìm thấy Firebase Authentication.</div>`;
+    return;
+  }
+
+  // Lấy user Firebase hiện tại
+  const user = firebaseCurrentUser || auth.currentUser;
+
+  if (!user) {
+    console.error("Không có Firebase user hiện tại.");
+    return;
+  }
+
+  try {
+    const userDoc = await database
+      .collection("users")
+      .doc(user.uid)
+      .get();
+
+    if (!userDoc.exists) {
+      ticketListEl.innerHTML =
+        `<div class="ticket-error">Không tìm thấy thông tin tài khoản.</div>`;
+      return;
     }
-  }, error => {
-    console.error("Firebase load tickets error:", error);
-    ticketListEl.innerHTML = `<div class="ticket-error">Không thể tải danh sách ticket.</div>`;
-  });
+
+    const userData = userDoc.data();
+
+    const role = String(userData.role || "")
+      .trim()
+      .toLowerCase();
+
+    const campus = String(userData.campus || "")
+      .trim();
+
+    currentCSUser = {
+      uid: user.uid,
+      name: userData.name || user.displayName || "Customer Success",
+      email: userData.email || user.email || "",
+      campus: campus
+    };
+
+    console.log("CS đăng nhập:", currentCSUser);
+
+    const allowedRoles = [
+      "cs",
+      "customer success",
+      "customer_success",
+      "admin"
+    ];
+
+    if (!allowedRoles.includes(role)) {
+      ticketListEl.innerHTML =
+        `<div class="ticket-error">
+          Tài khoản này không có quyền truy cập trang CS.
+        </div>`;
+      return;
+    }
+
+    if (!campus) {
+      ticketListEl.innerHTML =
+        `<div class="ticket-error">
+          Tài khoản CS chưa được thiết lập cơ sở.
+        </div>`;
+      return;
+    }
+
+    database
+      .collection("tickets")
+      .onSnapshot(snapshotQuery => {
+
+        ticketsDataList = snapshotQuery.docs
+          .map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+          }))
+          .filter(ticket => {
+            const ticketCampus =
+              String(ticket.campus || "").trim();
+
+            return ticketCampus === campus;
+          });
+
+        ticketsDataList.sort(
+          (a, b) =>
+            getTimestampMillis(b.createdAt) -
+            getTimestampMillis(a.createdAt)
+        );
+
+        renderTicketsList();
+
+        if (activeTicketItem) {
+          const freshTicket = ticketsDataList.find(
+            ticket => ticket.id === activeTicketItem.id
+          );
+
+          if (freshTicket) {
+            openSelectedTicket(freshTicket);
+          } else {
+            activeTicketItem = null;
+            bodyLayoutEl.classList.remove("show-chat");
+          }
+
+        } else if (
+          requestedTicketNumber &&
+          !requestedTicketOpened
+        ) {
+          const requestedTicket =
+            ticketsDataList.find(
+              ticket =>
+                ticketNumber(ticket) === requestedTicketNumber ||
+                ticket.id === requestedTicketNumber
+            );
+
+          if (requestedTicket) {
+            requestedTicketOpened = true;
+            openSelectedTicket(requestedTicket);
+          }
+        }
+
+      }, error => {
+        console.error(
+          "Firebase load tickets error:",
+          error
+        );
+
+        ticketListEl.innerHTML =
+          `<div class="ticket-error">
+            Không thể tải danh sách ticket.
+          </div>`;
+      });
+
+  } catch (error) {
+    console.error(
+      "Không thể xác định tài khoản CS:",
+      error
+    );
+
+    ticketListEl.innerHTML =
+      `<div class="ticket-error">
+        Không thể xác định thông tin tài khoản CS.
+      </div>`;
+  }
 }
 
 function matchesStatusFilter(ticket) {
@@ -269,4 +402,27 @@ filterRowEl.querySelectorAll(".filter-chip").forEach(chip => chip.addEventListen
 }));
 
 setupNavigation();
-loadTicketsData();
+
+if (typeof auth !== "undefined" && auth) {
+
+  auth.onAuthStateChanged(user => {
+
+    if (!user) {
+      console.log("Chưa có phiên đăng nhập Firebase.");
+      return;
+    }
+
+    firebaseCurrentUser = user;
+
+    console.log(
+      "Đã xác nhận đăng nhập:",
+      user.uid,
+      user.email
+    );
+
+    loadTicketsData();
+  });
+
+} else {
+  console.error("Firebase Auth chưa được khởi tạo.");
+}

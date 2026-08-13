@@ -442,7 +442,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 <span>Hỏi đáp (Q&A)</span>
             </a>
-            <a class="menu-item active" href="/HỌC VIÊN//HỌC VIÊN/account-HV.html".html">
+            <a class="menu-item active" href="/HỌC VIÊN/account-HV.html">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span>Tài khoản</span>
             </a>
@@ -680,33 +680,68 @@ function toast(message) {
    LOAD ACCOUNT
 ========================= */
 auth.onAuthStateChanged(async user => {
+
+    console.log("Auth state:", user);
+
     if (!user) {
+        console.log("Không có Firebase session.");
         toast("Bạn chưa đăng nhập.");
         return;
     }
+
+    console.log("Đã đăng nhập:", user.uid, user.email);
+
     try {
+
         const doc = await db
             .collection("users")
             .doc(user.uid)
             .get();
+
         if (!doc.exists) {
+            console.error(
+                "Không tìm thấy users/" + user.uid
+            );
+
             toast("Không tìm thấy thông tin học viên.");
             return;
         }
+
         const data = doc.data();
-        const name = data.name || "Học viên";
-        const email = data.email || user.email || "";
-        const username = data.username || "";
-        const studentClass = data.class || "";
-        const campus = data.campus || "";
-        /* PROFILE */
+
+        console.log("Thông tin user:", data);
+
+        const name =
+            data.name ||
+            user.displayName ||
+            "Học viên";
+
+        const email =
+            data.email ||
+            user.email ||
+            "";
+
+        const username =
+            data.username ||
+            "";
+
+        const studentClass =
+            data.class ||
+            "";
+
+        const campus =
+            data.campus ||
+            "";
+
         $("profileName").textContent = name;
         $("profileEmail").textContent = email;
-        /* AVATAR */
+
         const parts = name
             .trim()
             .split(/\s+/);
+
         let initials = "HV";
+
         if (parts.length >= 2) {
             initials =
                 parts[0][0] +
@@ -714,22 +749,35 @@ auth.onAuthStateChanged(async user => {
         } else if (parts.length === 1) {
             initials = parts[0][0];
         }
+
         $("avatar").textContent =
             initials.toUpperCase();
-        /* PERSONAL */
+
         $("name").textContent =
             name;
+
         $("class").textContent =
-            studentClass || "Chưa cập nhật";
+            studentClass ||
+            "Chưa cập nhật";
+
         $("campus").textContent =
-            campus || "Chưa cập nhật";
-        /* ACCOUNT */
+            campus ||
+            "Chưa cập nhật";
+
         $("username").textContent =
-            username || "Chưa cập nhật";
+            username ||
+            "Chưa cập nhật";
+
         $("email").textContent =
             email;
+
     } catch (error) {
-        console.error(error);
+
+        console.error(
+            "LOAD ACCOUNT ERROR:",
+            error
+        );
+
         toast(
             "Không thể tải thông tin tài khoản."
         );

@@ -123,7 +123,18 @@ function setupForm() {
         const data = doc.exists ? doc.data() : {};
         const name = data.name || user.displayName || "";
         const email = data.email || user.email || "";
-        loggedInUser = { uid: user.uid, name, email };
+        const phone = data.phone || "";
+        const campus = data.campus || "";
+        const role = data.role || "";
+
+        loggedInUser = {
+          uid: user.uid,
+          name,
+          email,
+          phone,
+          campus,
+          role
+        };
         // set and lock the sender name (and email)
         $("fName").value = name;
         $("fName").readOnly = true;
@@ -184,19 +195,51 @@ async function submitTicket() {
   submitButton.disabled = true;
   submitButton.innerHTML = "Đang gửi...";
 
-  const ticketData = {
-    ticketNum, name, email, phone, isStudent, course, date: fDateEl.value,
-    ticketType: selectedIssue || selectedMainType.value,
-    ticketCategory: category?.label || "Khác",
-    ticketIssue: issueLabel,
-    title, description,
-    attachmentName: selectedFile?.name || "",
-    attachmentType: selectedFile?.type || "",
-    attachmentSize: selectedFile?.size || 0,
-    status: "open",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+    const ticketData = {
+      ticketNum,
+
+      // Người tạo Ticket
+      studentId: loggedInUser?.uid || "",
+      name,
+      email,
+      phone,
+
+      // Cơ sở của người tạo
+      campus: loggedInUser?.campus || "",
+
+      // Vai trò người tạo
+      createdByRole: loggedInUser?.role || "student",
+
+      isStudent,
+      course,
+      date: fDateEl.value,
+
+      ticketType: selectedIssue || selectedMainType.value,
+      ticketCategory: category?.label || "Khác",
+      ticketIssue: issueLabel,
+
+      title,
+      description,
+
+      attachmentName: selectedFile?.name || "",
+      attachmentType: selectedFile?.type || "",
+      attachmentSize: selectedFile?.size || 0,
+
+      status: "open",
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+  //   ticketCategory: category?.label || "Khác",
+  //   ticketIssue: issueLabel,
+  //   title, description,
+  //   attachmentName: selectedFile?.name || "",
+  //   attachmentType: selectedFile?.type || "",
+  //   attachmentSize: selectedFile?.size || 0,
+  //   status: "open",
+  //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  //   updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  // };
 
   try {
     await database.collection("tickets").doc(ticketNum).set(ticketData);
