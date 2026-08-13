@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tài khoản học viên</title>
+    <title>Tài khoản CS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
+    <script src="/firebase-config.js"></script>
     <style>
         :root {
             --maroon: #5D0703;
@@ -417,15 +417,15 @@
 <div class="app">
 <header class="topbar">
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc thu gọn Sidebar" title="Mở hoặc thu gọn Sidebar">☰</button>
-    <div class="mark">HV</div>
+    <div class="mark">CS</div>
     <div class="titles">
-        <h1>Hệ thống Hỗ trợ Học viên</h1>
-        <span>Tài khoản học viên</span>
+        <h1>Hệ thống Hỗ trợ CS</h1>
+        <span>Tài khoản CS</span>
     </div>
 </header>
 <div class="body" id="bodyEl">
     <aside class="sidebar" id="sidebarEl">
-        <nav class="sidebar-menu" aria-label="Điều hướng học viên">
+        <nav class="sidebar-menu" aria-label="Điều hướng CS">
             <a class="menu-item" href="/HỌC VIÊN/Trang chủ/homepage.html">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V9"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 <span>Trang chủ</span>
@@ -442,7 +442,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 <span>Hỏi đáp (Q&A)</span>
             </a>
-            <a class="menu-item active" href="/HỌC VIÊN/account.html".html">
+            <a class="menu-item active" href="/HỌC VIÊN//HỌC VIÊN/account-HV.html".html">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span>Tài khoản</span>
             </a>
@@ -464,11 +464,11 @@
 <div class="container">
     <div class="page-header">
         <h1>Tài khoản của tôi</h1>
-        <p>Quản lý thông tin và bảo mật tài khoản học viên.</p>
+        <p>Quản lý thông tin và bảo mật tài khoản CS.</p>
     </div>
     <section class="profile-card">
         <div class="avatar" id="avatar">
-            HV
+            CS
         </div>
         <div class="profile-info">
             <h2 id="profileName">
@@ -478,7 +478,7 @@
                 Đang tải...
             </p>
             <span class="role-badge">
-                HỌC VIÊN
+                CS
             </span>
         </div>
     </section>
@@ -488,7 +488,7 @@
                 <div class="card-icon">
                     01
                 </div>
-                <h2>Thông tin học viên</h2>
+                <h2>Thông tin CS</h2>
             </div>
             <div class="info-list">
                 <div class="info-item">
@@ -546,6 +546,14 @@
                         Email
                     </span>
                     <span class="info-value" id="email">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Phone
+                    </span>
+                    <span class="info-value" id="phone">
                         —
                     </span>
                 </div>
@@ -697,6 +705,7 @@ auth.onAuthStateChanged(async user => {
         const name = data.name || "Học viên";
         const email = data.email || user.email || "";
         const username = data.username || "";
+        const phone = data.phone || "";
         const studentClass = data.class || "";
         const campus = data.campus || "";
         /* PROFILE */
@@ -706,7 +715,7 @@ auth.onAuthStateChanged(async user => {
         const parts = name
             .trim()
             .split(/\s+/);
-        let initials = "HV";
+        let initials = "CS";
         if (parts.length >= 2) {
             initials =
                 parts[0][0] +
@@ -728,6 +737,8 @@ auth.onAuthStateChanged(async user => {
             username || "Chưa cập nhật";
         $("email").textContent =
             email;
+        $("phone").textContent =
+            phone || "Chưa cập nhật";
     } catch (error) {
         console.error(error);
         toast(
