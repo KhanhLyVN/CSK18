@@ -138,7 +138,7 @@ function renderUnanswered(tickets){
   el.innerHTML = list.slice(0, 10).map(t => {
     const tNum = getTicketNum(t);
     return `
-      <a class="mini-item" href="trao-doi-ticket.html?ticket=${encodeURIComponent(tNum)}">
+      <a class="mini-item" href="/CS/Quản lý tickets CS/cs-ticket.html?ticket=${encodeURIComponent(tNum)}">
         <div class="mi-top">
           <span class="mi-num">${escapeHtml(tNum)}</span>
           <span class="mi-date">${t.date || 'Hôm nay'}</span>
@@ -193,7 +193,7 @@ function renderRecent(tickets){
     const tNum = getTicketNum(t);
     const tType = getTicketType(t);
     return `
-      <a class="recent-row" href="trao-doi-ticket.html?ticket=${encodeURIComponent(tNum)}">
+      <a class="recent-row" href="/CS/Quản lý tickets CS/cs-ticket.html">
         <span class="rc-num">${escapeHtml(tNum)}</span>
         <span class="rc-title">${escapeHtml(t.title || 'Không tiêu đề')}<span class="rc-sub">${escapeHtml(t.name || 'Ẩn danh')}</span></span>
         <span class="rc-type">${svgIcon(t.icon)}${escapeHtml(tType)}</span>
@@ -213,7 +213,7 @@ document.querySelectorAll('.stat-card').forEach(card => {
   card.addEventListener('click', () => {
     const filter = card.dataset.filter || 'all';
     const status = card.dataset.status;
-    let url = `trao-doi-ticket.html?filter=${encodeURIComponent(filter)}`;
+    let url = `/CS/Quản lý tickets CS/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
     if(status) url += `&status=${encodeURIComponent(status)}`;
     window.location.href = url;
   });
@@ -230,7 +230,7 @@ function goToTicket(){
     return;
   }
   quickFindErr.classList.remove('show');
-  window.location.href = `trao-doi-ticket.html?ticket=${encodeURIComponent(val)}`;
+  window.location.href = `/CS/Quản lý tickets CS/cs-ticket.html?ticket=${encodeURIComponent(val)}`;
 }
 quickFindBtn.addEventListener('click', goToTicket);
 quickFindInput.addEventListener('keydown', (e) => {
