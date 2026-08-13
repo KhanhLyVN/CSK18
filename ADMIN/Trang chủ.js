@@ -307,7 +307,7 @@
     $("drawerBackdrop").addEventListener("click", closeDrawer);
     $("menuBtn").addEventListener("click", () => $("sidebar").classList.toggle("open"));
 
-    $("addAccountBtn").addEventListener("click", () => {window.location.href = "addAccount.html";});
+    $("addAccountBtn").addEventListener("click", () => {window.location.href = "add/HỌC VIÊN/account-HV.html";});
     $("noticeBtn").addEventListener("click", () => toast("Không có thông báo mới"));
 
     $("logoutBtn").addEventListener("click", () => {
