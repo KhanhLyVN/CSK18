@@ -105,6 +105,43 @@ header.page .tagline {
     text-align: right;
 }
 /* ==============================
+   TEMPLATE DOWNLOAD BUTTON
+================================ */
+.template-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 20px;
+    background: var(--maroon);
+    border: 1px solid var(--maroon);
+    border-radius: 9px;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background .2s ease,
+        transform .1s ease;
+}
+.template-btn:hover {
+    background: var(--maroon-deep);
+}
+.template-btn:active {
+    transform: translateY(1px);
+}
+.template-btn .material-symbols-outlined {
+    font-size: 19px;
+}
+.template-hint {
+    margin: 8px 0 0;
+    max-width: 480px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-soft);
+    text-align: right;
+}
+/* ==============================
    STEP CARD
 ================================ */
 .step {
@@ -491,6 +528,10 @@ tbody tr:hover {
         max-width: none;
         text-align: left;
     }
+    .template-hint {
+        max-width: none;
+        text-align: left;
+    }
     .step {
         padding: 19px;
         border-radius: 10px;
@@ -579,7 +620,13 @@ tbody tr:hover {
 <div class="wrap">
   <header class="page">
     <h1>Cấp tài khoản học viên</h1>
-    <div class="tagline">Đọc danh sách từ Excel, tự sinh username &amp; mật khẩu. Bạn có thể chỉnh sửa trước; chỉ khi bấm “Xác nhận &amp; tạo tài khoản” thì dữ liệu mới được đưa lên Firebase.</div>
+    <div>
+        <button class="template-btn" id="downloadTemplateBtn" type="button">
+            <span class="material-symbols-outlined">download</span>
+            Tải file mẫu Excel
+        </button>
+        <div class="template-hint">Tải file mẫu Excel để điền thông tin học viên.</div>
+    </div>
   </header>
   <!-- STEP 1: UPLOAD -->
   <div class="step">
@@ -681,6 +728,27 @@ function toast(msg){
   clearTimeout(window.__toastTimer);
   window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
 }
+// ---- Tải file mẫu Excel ----
+document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+    try {
+        const templateHeaders = [
+            'Họ và tên',
+            'Số điện thoại',
+            'Lớp',
+            'Khóa học',
+            'Ngày học',
+            'Cơ sở'
+        ];
+        const ws = XLSX.utils.aoa_to_sheet([templateHeaders]);
+        ws['!cols'] = templateHeaders.map(() => ({ wch: 18 }));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Danh sách học viên');
+        XLSX.writeFile(wb, 'mau-danh-sach-hoc-vien.xlsx');
+    } catch (error) {
+        console.error(error);
+        toast('Không thể tạo file mẫu: ' + error.message);
+    }
+});
 let headers=[];
 let rawRows=[];   // array of objects keyed by header
 let genRows=[];   // generated: {raw, username, password}
@@ -1019,7 +1087,7 @@ function renderReviewTable() {
         body.appendChild(tr);
     });
     document.getElementById('rowCount').textContent =
-        `${genRows.length} tài khoản đang chờ xác nhận. Chưa được tạo trên Firebase.`;
+        `${genRows.length} tài khoản đang chờ xác nhận.`;
     body.querySelectorAll('input.cred').forEach(inp => {
         inp.addEventListener('input', () => {
             const idx = Number(inp.dataset.idx);
