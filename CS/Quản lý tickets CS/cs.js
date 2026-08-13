@@ -375,32 +375,67 @@ function setupControls() {
   });
 }
 
-function startRealtimeTickets() {
+async function startRealtimeTickets(user) {
   $("#todayStr").textContent = todayLabel();
+
   const database = getDatabase();
-  if (!database || !window.firebase) {
+
+  if (!database) {
     $("#connLabel").textContent = "Chưa kết nối";
-    $("#ticketBody").innerHTML = `<tr><td colspan="8"><div class="empty-state">Không tìm thấy cấu hình Firebase.</div></td></tr>`;
     return;
   }
 
-  database.collection("tickets").onSnapshot(snapshot => {
-    $("#connDot").classList.add("live");
-    $("#connLabel").textContent = "Realtime";
-    allTickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => timestampMillis(b.createdAt) - timestampMillis(a.createdAt));
-    renderStats();
-    renderCategoryFilter();
-    renderTable();
-    if (selectedTicketId) {
-      const selected = allTickets.find(ticket => ticket.id === selectedTicketId);
-      if (selected && $("#ticketDrawer").classList.contains("open")) openTicketDrawer(selected.id);
+  try {
+    const accountDoc = await database
+      .collection("accounts")
+      .doc(user.uid)
+      .get();
+
+    if (!accountDoc.exists) {
+      console.error("Không tìm thấy account");
+      return;
     }
-  }, error => {
-    console.error("Firestore error:", error);
-    $("#connDot").classList.remove("live");
-    $("#connLabel").textContent = "Mất kết nối";
-    $("#ticketBody").innerHTML = `<tr><td colspan="8"><div class="empty-state">Không thể tải dữ liệu ticket.</div></td></tr>`;
-  });
+
+    const account = accountDoc.data();
+
+    const department = account.department;
+
+    console.log("Nhân viên:", account.name);
+    console.log("Phòng ban:", department);
+    console.log("UID:", user.uid);
+
+    database
+      .collection("tickets")
+      .where("department", "==", department)
+      .where("assignedTo", "==", user.uid)
+      .onSnapshot(snapshot => {
+
+        $("#connDot").classList.add("live");
+        $("#connLabel").textContent = "Realtime";
+
+        allTickets = snapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .sort(
+            (a, b) =>
+              timestampMillis(b.createdAt) -
+              timestampMillis(a.createdAt)
+          );
+
+        renderStats();
+        renderCategoryFilter();
+        renderTable();
+
+      }, error => {
+        console.error("Firestore error:", error);
+        $("#connLabel").textContent = "Mất kết nối";
+      });
+
+  } catch (error) {
+    console.error("Không lấy được account:", error);
+  }
 }
 
 setupSidebar();
@@ -408,4 +443,15 @@ setupControls();
 renderStats();
 renderCategoryFilter();
 renderTable();
-startRealtimeTickets();
+
+firebase.auth().onAuthStateChanged(user => {
+
+  if (!user) {
+    console.log("Chưa đăng nhập");
+    return;
+  }
+
+  startRealtimeTickets(user);
+
+});
+
