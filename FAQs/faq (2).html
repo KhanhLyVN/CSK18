@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ | Hỏi đáp hỗ trợ học viên</title>
+<link rel="stylesheet" href="faq.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
+
+<style>
+  :root {
+  --maroon: #5d0703; --maroon-deep: #3e0402; --maroon-soft: #7a1410;
+  --cream: #eedcc8; --cream-pale: #fbf4e9; --paper: #fffbf5; --gold: #b08a4e;
+  --ink: #2a1712; --ink-soft: #6b5348; --muted: #8a7a6d; --line: rgba(93,7,3,.15);
+  --danger: #991b1b; --shadow: 0 12px 30px rgba(62,4,2,.1);
+}
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body { overflow: hidden; color: var(--ink); background: var(--cream-pale); font-family: "Inter", sans-serif; }
+button, input, select, textarea { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--maroon); outline-offset: 2px; }
+.app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { min-height: 58px; display: flex; align-items: center; gap: 12px; padding: 12px 22px; color: var(--cream-pale); background: var(--maroon); border-bottom: 1px solid rgba(0,0,0,.15); z-index: 30; }
+.menu-toggle { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; color: inherit; background: transparent; cursor: pointer; font-size: 21px; }
+.mark { width: 32px; height: 32px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; color: var(--maroon-deep); background: var(--cream); font: 700 16px/1 "Fraunces", serif; }
+.titles { min-width: 0; line-height: 1.2; }
+.titles h1 { margin: 0; font: 600 17px/1.2 "Fraunces", serif; }
+.titles span { display: block; margin-top: 2px; color: rgba(251,244,233,.78); font-size: 11px; }
+.body { min-height: 0; flex: 1; display: flex; position: relative; overflow: hidden; }
+.sidebar { width: 260px; flex: none; min-height: 0; overflow: hidden; background: var(--paper); border-right: 1px solid var(--line); transition: width .25s ease, transform .25s ease; z-index: 20; }
+.sidebar.collapsed { width: 70px; }
+.sidebar.collapsed .menu-item span { display: none; }
+.sidebar.collapsed .menu-item { justify-content: center; padding-inline: 10px; }
+.sidebar-menu { display: flex; flex-direction: column; gap: 6px; padding: 16px 12px; }
+.menu-item { min-height: 42px; display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-left: 3px solid transparent; border-radius: 8px; color: var(--ink-soft); text-decoration: none; white-space: nowrap; font-size: 13px; font-weight: 600; transition: background .15s ease, color .15s ease; }
+.menu-item svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.menu-item:hover { color: var(--maroon); background: var(--cream-pale); }
+.menu-item.active { color: var(--maroon-deep); background: var(--cream); border-left-color: var(--maroon); font-weight: 700; }
+.main { min-width: 0; min-height: 0; flex: 1; overflow-y: auto; padding: 28px 34px 50px; background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,.045) 1px, transparent 0); background-size: 22px 22px; }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; max-width: 980px; margin: 0 auto 18px; padding-bottom: 20px; border-bottom: 3px solid var(--maroon); }
+.eyebrow { display: block; color: var(--maroon); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
+.page-head h2 { margin: 7px 0 6px; color: var(--maroon-deep); font: 700 clamp(28px,3.2vw,40px)/1.04 "Fraunces", serif; }
+.page-head p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.page-head-link { color: var(--maroon); font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.faq-container { max-width: 980px; margin: 0 auto; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 3px 12px rgba(93,7,3,.04); }
+.faq-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.faq-toolbar-note { color: var(--muted); font-size: 11px; }
+.faq-controls { display: flex; gap: 10px; margin-bottom: 18px; }
+.faq-search, .faq-category-filter { min-height: 40px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; outline: none; color: var(--ink); background: #fff; font-size: 12px; }
+.faq-search { flex: 1; }
+.faq-category-filter { min-width: 190px; cursor: pointer; }
+.faq-search:focus, .faq-category-filter:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,7,3,.1); }
+.faq-list { display: flex; flex-direction: column; gap: 9px; }
+.faq-item { overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #fff; transition: border-color .2s ease, box-shadow .2s ease; }
+.faq-item:hover, .faq-item.active { border-color: var(--gold); box-shadow: 0 4px 12px rgba(93,7,3,.06); }
+.faq-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 15px 17px; cursor: pointer; user-select: none; }
+.faq-header:hover, .faq-item.active .faq-header { background: var(--cream-pale); }
+.faq-badge { display: inline-flex; padding: 3px 8px; margin-bottom: 5px; border-radius: 999px; color: var(--cream-pale); background: var(--maroon); font-size: 8.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.faq-question-text { color: var(--maroon-deep); font-size: 13px; font-weight: 700; line-height: 1.45; }
+.faq-icon { min-width: 22px; color: var(--gold); font: 700 22px/1 "Fraunces", serif; text-align: center; transition: transform .25s ease, color .25s ease; }
+.faq-item.active .faq-icon { color: var(--maroon); transform: rotate(45deg); }
+.faq-answer { max-height: 0; overflow: hidden; padding: 0 17px; color: var(--ink-soft); background: #fff; font-size: 12px; line-height: 1.7; transition: max-height .3s ease, padding .25s ease; }
+.faq-item.active .faq-answer { max-height: 1000px; padding: 15px 17px; border-top: 1px dashed var(--line); }
+.status-box { padding: 42px 18px; color: var(--muted); text-align: center; font-size: 12px; }
+.error-box { color: var(--danger); background: #fff1f0; border: 1px solid #f3c4c0; border-radius: 8px; }
+.ai-floating-button { position: fixed; right: 26px; bottom: 25px; z-index: 80; width: 52px; height: 52px; border: 0; border-radius: 50%; color: var(--cream-pale); background: var(--maroon); box-shadow: 0 8px 22px rgba(62,4,2,.25); cursor: pointer; font-size: 22px; transition: transform .2s ease, background .2s ease; }
+.ai-floating-button:hover { background: var(--maroon-soft); transform: translateY(-2px); }
+.ai-chat { position: fixed; right: 26px; bottom: 90px; z-index: 79; width: min(390px, calc(100vw - 32px)); height: min(570px, calc(100vh - 120px)); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); box-shadow: 0 15px 50px rgba(62,4,2,.24); }
+.ai-chat.open { display: flex; }
+.ai-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 15px; color: var(--cream-pale); background: var(--maroon); }
+.ai-header-left { display: flex; align-items: center; gap: 9px; }
+.ai-avatar { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--maroon); background: var(--cream); }
+.ai-title { font-size: 13px; font-weight: 800; }
+.ai-status { margin-top: 2px; color: rgba(251,244,233,.75); font-size: 9.5px; }
+.ai-header-buttons { display: flex; gap: 5px; }
+.ai-header-button { width: 31px; height: 31px; border: 1px solid rgba(251,244,233,.25); border-radius: 7px; color: var(--cream-pale); background: rgba(255,255,255,.1); cursor: pointer; font-size: 14px; }
+.ai-header-button:hover { background: rgba(255,255,255,.22); }
+.ai-messages { min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding: 15px; background: var(--cream-pale); }
+.ai-message, .ai-typing { max-width: 86%; padding: 10px 12px; border-radius: 11px; font-size: 12px; line-height: 1.55; overflow-wrap: anywhere; }
+.ai-message.user { align-self: flex-end; color: var(--cream-pale); background: var(--maroon); border-bottom-right-radius: 3px; }
+.ai-message.bot, .ai-typing { align-self: flex-start; color: var(--ink); background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 3px; }
+.ai-message.bot strong { color: var(--maroon); }
+.ai-typing { color: var(--ink-soft); }
+.ai-input-area { display: flex; align-items: flex-end; gap: 8px; padding: 11px; border-top: 1px solid var(--line); background: #fff; }
+.ai-input { min-height: 42px; max-height: 100px; flex: 1; resize: none; padding: 10px; border: 1px solid var(--line); border-radius: 8px; outline: none; color: var(--ink); background: var(--paper); font-size: 12px; line-height: 1.4; }
+.ai-input:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,7,3,.1); }
+.ai-send { width: 42px; height: 42px; flex: none; border: 0; border-radius: 8px; color: var(--cream-pale); background: var(--maroon); cursor: pointer; font-size: 16px; }
+.ai-send:hover { background: var(--maroon-soft); }
+.ai-send:disabled { cursor: not-allowed; opacity: .5; }
+@media (max-width: 860px) {
+  .sidebar { position: absolute; inset: 0 auto 0 0; width: 260px; transform: translateX(-105%); box-shadow: var(--shadow); }
+  .sidebar.collapsed { width: 260px; transform: translateX(0); }
+  .sidebar.collapsed .menu-item span { display: inline; }
+  .sidebar.collapsed .menu-item { justify-content: flex-start; padding-inline: 14px; }
+  .main { padding: 22px 18px 45px; }
+}
+@media (max-width: 600px) {
+  .topbar { padding-inline: 14px; }
+  .faq-container { padding: 15px; }
+  .page-head { align-items: flex-start; flex-direction: column; }
+  .faq-controls { align-items: stretch; flex-direction: column; }
+  .faq-category-filter { width: 100%; }
+  .ai-chat { right: 16px; bottom: 82px; width: calc(100vw - 32px); height: calc(100vh - 115px); }
+  .ai-floating-button { right: 16px; bottom: 16px; }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc đóng Sidebar" aria-expanded="true">☰</button>
+    <div class="mark">HV</div>
+    <div class="titles"><h1>Hệ thống Hỗ trợ Học viên</h1><span>Kho câu hỏi thường gặp</span></div>
+  </header>
+  <div class="body" id="bodyEl">
+    <aside class="sidebar" id="sidebarEl">
+      <nav class="sidebar-menu" aria-label="Điều hướng học viên">
+        <a class="menu-item" href="/HV/chat-hv/trao-doi-ticket.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V9"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Trang chủ</span>
+      </a>
+      <a class="menu-item" href="/HV/tickets/phieuhotro.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>Tạo phiếu hỗ trợ</span>
+      </a>
+      <a class="menu-item" href="/HV/chat-hv/trao-doi-ticket.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Trao đổi Ticket</span>
+      </a>
+      <a class="menu-item" href="/FAQs/faq.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Hỏi đáp (Q&A)</span>
+      </a>
+      <a class="menu-item active" href="/HV/account-HV.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Tài khoản</span>
+      </a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="page-head"><div><span class="eyebrow">KHO KIẾN THỨC HỖ TRỢ</span><h2>Câu hỏi thường gặp</h2><p>Tìm câu trả lời nhanh hoặc hỏi trợ lý AI khi bạn cần hướng dẫn thêm.</p></div><a class="page-head-link" href="/HỌC VIÊN/Phiếu hỗ trợ/phieuhotro.html">Chưa tìm thấy câu trả lời? Gửi ticket →</a></header>
+      <section class="faq-container">
+        <div class="faq-toolbar"><div><span class="eyebrow">TRA CỨU HỖ TRỢ</span><h3 class="faq-title">Hỏi đáp học viên</h3></div><span class="faq-toolbar-note">Cập nhật realtime</span></div>
+        <div class="faq-controls"><input type="search" id="searchInput" class="faq-search" placeholder="Tìm theo câu hỏi hoặc nội dung trả lời..."><select id="categoryFilter" class="faq-category-filter"><option value="all">Tất cả chủ đề</option></select></div>
+        <div class="faq-list" id="faqList"><div class="status-box">Đang tải danh sách câu hỏi...</div></div>
+        <div id="noResults" class="status-box" style="display:none;">Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.</div>
+      </section>
+    </main>
+  </div>
+</div>
+<button class="ai-floating-button" id="aiFloatingButton" type="button" title="Hỏi trợ lý AI" aria-label="Mở trợ lý AI">AI</button>
+<section class="ai-chat" id="aiChat" aria-label="Trợ lý AI">
+  <div class="ai-header"><div class="ai-header-left"><div class="ai-avatar">AI</div><div><div class="ai-title">CS Center AI</div><div class="ai-status">Trợ lý hỗ trợ học viên</div></div></div><div class="ai-header-buttons"><button class="ai-header-button" id="clearChatButton" type="button" title="Xóa cuộc trò chuyện">⌫</button><button class="ai-header-button" id="closeAiButton" type="button" title="Đóng">×</button></div></div>
+  <div class="ai-messages" id="aiMessages"><div class="ai-message bot">Xin chào!<br><br>Mình là trợ lý AI của CS Center. Bạn có thể hỏi về lịch học, học phí, tài khoản, bảo lưu, chuyển lớp hoặc chứng chỉ.</div></div>
+  <div class="ai-input-area"><textarea id="aiInput" class="ai-input" rows="2" placeholder="Nhập câu hỏi của bạn..."></textarea><button id="aiSend" class="ai-send" type="button" title="Gửi">➤</button></div>
+</section>
+<script>
+/* =====================================================
+     CONFIG
+  ===================================================== */
+  const AI_WEB_APP_URL =
+    "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  /* =====================================================
+     FAQ VARIABLES
+  ===================================================== */
+  let faqData = [];
+  const faqListContainer =
+    document.getElementById('faqList');
+  const searchInput =
+    document.getElementById('searchInput');
+  const categoryFilter =
+    document.getElementById('categoryFilter');
+  const noResults =
+    document.getElementById('noResults');
+  /* =====================================================
+     AI VARIABLES
+  ===================================================== */
+  const aiFloatingButton =
+    document.getElementById('aiFloatingButton');
+  const aiChat =
+    document.getElementById('aiChat');
+  const closeAiButton =
+    document.getElementById('closeAiButton');
+  const clearChatButton =
+    document.getElementById('clearChatButton');
+  const aiMessages =
+    document.getElementById('aiMessages');
+  const aiInput =
+    document.getElementById('aiInput');
+  const aiSend =
+    document.getElementById('aiSend');
+  // Lịch sử hội thoại
+  let conversationHistory = [];
+  // Những FAQ người dùng vừa tìm/xem
+  let learnedFAQContext = [];
+  /* =====================================================
+     LOCAL STORAGE
+  ===================================================== */
+  function loadAIHistory() {
+    try {
+      const savedConversation =
+        localStorage.getItem('cs_ai_conversation');
+      const savedContext =
+        localStorage.getItem('cs_ai_faq_context');
+      if (savedConversation) {
+        conversationHistory =
+          JSON.parse(savedConversation);
+      }
+      if (savedContext) {
+        learnedFAQContext =
+          JSON.parse(savedContext);
+      }
+    } catch (error) {
+      console.error(
+        "Không thể tải lịch sử AI:",
+        error
+      );
+    }
+  }
+  function saveAIHistory() {
+    try {
+      localStorage.setItem(
+        'cs_ai_conversation',
+        JSON.stringify(conversationHistory)
+      );
+      localStorage.setItem(
+        'cs_ai_faq_context',
+        JSON.stringify(learnedFAQContext)
+      );
+    } catch (error) {
+      console.error(
+        "Không thể lưu lịch sử AI:",
+        error
+      );
+    }
+  }
+  loadAIHistory();
+  /* =====================================================
+     VIETNAMESE SEARCH
+  ===================================================== */
+  function removeVietnameseTones(str) {
+    if (!str) return '';
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toLowerCase();
+  }
+  /* =====================================================
+     ESCAPE HTML
+  ===================================================== */
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+      .replace(/\n/g, "<br>");
+  }
+  /* =====================================================
+     FIREBASE TIMESTAMP
+  ===================================================== */
+  function getTimestampMillis(ts) {
+    if (!ts) return 0;
+    if (typeof ts.toMillis === 'function') {
+      return ts.toMillis();
+    }
+    if (ts.seconds) {
+      return ts.seconds * 1000;
+    }
+    if (ts instanceof Date) {
+      return ts.getTime();
+    }
+    return new Date(ts).getTime() || 0;
+  }
+  /* =====================================================
+     SAVE FAQ INTO AI MEMORY
+  ===================================================== */
+  function rememberFAQ(item) {
+    if (!item || !item.question) return;
+    const exists =
+      learnedFAQContext.some(
+        faq =>
+          faq.question === item.question
+      );
+    if (!exists) {
+      learnedFAQContext.push({
+        question: item.question,
+        answer: item.answer || '',
+        category: item.category || ''
+      });
+    }
+    // Không cho bộ nhớ quá lớn
+    if (learnedFAQContext.length > 15) {
+      learnedFAQContext =
+        learnedFAQContext.slice(-15);
+    }
+    saveAIHistory();
+  }
+  /* =====================================================
+     FIRESTORE
+  ===================================================== */
+  if (typeof db === 'undefined') {
+    faqListContainer.innerHTML = `
+      <div class="status-box error-box">
+        ⚠️
+        <b>Chưa cấu hình Firebase:</b>
+        Vui lòng kiểm tra lại file
+        <code>firebase-config.js</code>.
+      </div>
+    `;
+  } else {
+    db.collection('faqs')
+      .onSnapshot(
+        snapshot => {
+          let rawData =
+            snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+          rawData.sort(
+            (a, b) =>
+              getTimestampMillis(b.createdAt) -
+              getTimestampMillis(a.createdAt)
+          );
+          faqData =
+            rawData.map(
+              (item, index) => ({
+                ...item,
+                stt: index + 1
+              })
+            );
+          initCategories();
+          filterData();
+        },
+        error => {
+          console.error(
+            "Lỗi Realtime Firestore:",
+            error
+          );
+          faqListContainer.innerHTML = `
+            <div class="status-box error-box">
+              <b>Lỗi kết nối dữ liệu:</b>
+              ${escapeHTML(error.message)}
+            </div>
+          `;
+        }
+      );
+  }
+  /* =====================================================
+     CATEGORIES
+  ===================================================== */
+  function initCategories() {
+    const selected =
+      categoryFilter.value;
+    categoryFilter.innerHTML =
+      '<option value="all">Tất cả chủ đề</option>';
+    const categories = [
+      ...new Set(
+        faqData
+          .map(item => item.category)
+          .filter(Boolean)
+      )
+    ];
+    categories.forEach(cat => {
+      const option =
+        document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      categoryFilter.appendChild(option);
+    });
+    categoryFilter.value =
+      categories.includes(selected)
+        ? selected
+        : 'all';
+  }
+  /* =====================================================
+     RENDER FAQ
+  ===================================================== */
+  function renderFAQ(data) {
+    faqListContainer.innerHTML = '';
+    if (data.length === 0) {
+      noResults.style.display = 'block';
+      return;
+    }
+    noResults.style.display = 'none';
+    data.forEach(item => {
+      const faqItem =
+        document.createElement('div');
+      faqItem.className =
+        'faq-item';
+      faqItem.innerHTML = `
+        <div
+          class="faq-header"
+          onclick="toggleFAQ(this)"
+        >
+          <div>
+            <span class="faq-badge">
+              ${escapeHTML(
+                item.category ||
+                'Thông thường'
+              )}
+            </span>
+            <div class="faq-question-text">
+              ${item.stt}.
+              ${escapeHTML(item.question)}
+            </div>
+          </div>
+          <span class="faq-icon">
+            +
+          </span>
+        </div>
+        <div class="faq-answer">
+          ${escapeHTML(item.answer)}
+        </div>
+      `;
+      faqListContainer.appendChild(
+        faqItem
+      );
+    });
+  }
+  /* =====================================================
+     TOGGLE FAQ
+  ===================================================== */
+  function toggleFAQ(headerElement) {
+    const faqItem =
+      headerElement.parentElement;
+    const isActive =
+      faqItem.classList.contains('active');
+    document
+      .querySelectorAll('.faq-item')
+      .forEach(item => {
+        item.classList.remove('active');
+      });
+    if (!isActive) {
+      faqItem.classList.add('active');
+      /*
+       * Lấy câu hỏi đang được mở
+       * để AI có thể nhớ.
+       */
+      const questionText =
+        faqItem.querySelector(
+          '.faq-question-text'
+        );
+      if (questionText) {
+        const question =
+          questionText.textContent
+            .replace(/^\d+\.\s*/, '')
+            .trim();
+        const found =
+          faqData.find(
+            item =>
+              item.question &&
+              removeVietnameseTones(
+                item.question
+              ) ===
+              removeVietnameseTones(
+                question
+              )
+          );
+        if (found) {
+          rememberFAQ(found);
+        }
+      }
+    }
+  }
+  /* =====================================================
+     FILTER FAQ
+  ===================================================== */
+  function filterData() {
+    const rawSearch =
+      searchInput.value.trim();
+    const searchTerm =
+      removeVietnameseTones(
+        rawSearch
+      );
+    const selectedCategory =
+      categoryFilter.value;
+    const filtered =
+      faqData.filter(item => {
+        const q =
+          removeVietnameseTones(
+            item.question || ''
+          );
+        const a =
+          removeVietnameseTones(
+            item.answer || ''
+          );
+        const matchesSearch =
+          q.includes(searchTerm) ||
+          a.includes(searchTerm);
+        const matchesCategory =
+          selectedCategory === 'all' ||
+          item.category === selectedCategory;
+        return (
+          matchesSearch &&
+          matchesCategory
+        );
+      });
+    /*
+     * Nếu người dùng tìm kiếm,
+     * ghi nhớ những FAQ phù hợp.
+     */
+    if (searchTerm && filtered.length > 0) {
+      filtered
+        .slice(0, 5)
+        .forEach(item => {
+          rememberFAQ(item);
+        });
+    }
+    renderFAQ(filtered);
+  }
+  searchInput.addEventListener(
+    'input',
+    filterData
+  );
+  categoryFilter.addEventListener(
+    'change',
+    filterData
+  );
+  /* =====================================================
+     AI OPEN / CLOSE
+  ===================================================== */
+  aiFloatingButton.addEventListener(
+    'click',
+    () => {
+      aiChat.classList.toggle('open');
+      if (aiChat.classList.contains('open')) {
+        setTimeout(() => {
+          aiInput.focus();
+        }, 100);
+      }
+    }
+  );
+  closeAiButton.addEventListener(
+    'click',
+    () => {
+      aiChat.classList.remove('open');
+    }
+  );
+  /* =====================================================
+     CLEAR AI
+  ===================================================== */
+  clearChatButton.addEventListener(
+    'click',
+    () => {
+      conversationHistory = [];
+      learnedFAQContext = [];
+      localStorage.removeItem(
+        'cs_ai_conversation'
+      );
+      localStorage.removeItem(
+        'cs_ai_faq_context'
+      );
+      aiMessages.innerHTML = `
+        <div class="ai-message bot">
+          Đã xóa lịch sử trò chuyện. 🗑️
+          <br><br>
+          Bạn có thể bắt đầu cuộc trò chuyện mới.
+        </div>
+      `;
+    }
+  );
+  /* =====================================================
+     ADD CHAT MESSAGE
+  ===================================================== */
+  function addChatMessage(
+    text,
+    type
+  ) {
+    const message =
+      document.createElement('div');
+    message.className =
+      `ai-message ${type}`;
+    message.innerHTML =
+      escapeHTML(text);
+    aiMessages.appendChild(
+      message
+    );
+    aiMessages.scrollTop =
+      aiMessages.scrollHeight;
+  }
+  /* =====================================================
+     TYPING
+  ===================================================== */
+  function showTyping() {
+    const typing =
+      document.createElement('div');
+    typing.className =
+      'ai-typing';
+    typing.id =
+      'aiTyping';
+    typing.textContent =
+      '🤖 AI đang suy nghĩ...';
+    aiMessages.appendChild(
+      typing
+    );
+    aiMessages.scrollTop =
+      aiMessages.scrollHeight;
+  }
+  function hideTyping() {
+    const typing =
+      document.getElementById(
+        'aiTyping'
+      );
+    if (typing) {
+      typing.remove();
+    }
+  }
+  /* =====================================================
+     FIND RELATED FAQ
+  ===================================================== */
+  function findRelatedFAQs(question) {
+    const words =
+      removeVietnameseTones(question)
+        .split(/\s+/)
+        .filter(word => word.length >= 3);
+    if (words.length === 0) {
+      return [];
+    }
+    const results =
+      faqData.map(item => {
+        const text =
+          removeVietnameseTones(
+            `${item.question || ''} ${
+              item.answer || ''
+            }`
+          );
+        let score = 0;
+        words.forEach(word => {
+          if (text.includes(word)) {
+            score++;
+          }
+        });
+        return {
+          item,
+          score
+        };
+      });
+    return results
+      .filter(result => result.score > 0)
+      .sort(
+        (a, b) =>
+          b.score - a.score
+      )
+      .slice(0, 5)
+      .map(result => result.item);
+  }
+  /* =====================================================
+     SEND TO AI
+  ===================================================== */
+  async function askAI(question) {
+    const relatedFAQs =
+      findRelatedFAQs(question);
+    /*
+     * Gộp FAQ vừa tìm được
+     * với FAQ người dùng đã xem trước.
+     */
+    const allContext = [
+      ...relatedFAQs,
+      ...learnedFAQContext
+    ];
+    const uniqueContext = [];
+    allContext.forEach(item => {
+      if (!item) return;
+      const exists =
+        uniqueContext.some(
+          x =>
+            x.question === item.question
+        );
+      if (!exists) {
+        uniqueContext.push(item);
+      }
+    });
+    const faqContext =
+      uniqueContext
+        .slice(0, 12)
+        .map(item => ({
+          category:
+            item.category || '',
+          question:
+            item.question || '',
+          answer:
+            item.answer || ''
+        }));
+    /*
+     * Lưu câu hỏi vào lịch sử.
+     */
+    conversationHistory.push({
+      role: 'user',
+      text: question
+    });
+    /*
+     * Chỉ gửi khoảng 10 lượt gần nhất
+     * để tránh request quá lớn.
+     */
+    const recentHistory =
+      conversationHistory
+        .slice(-10);
+    saveAIHistory();
+    const response =
+      await fetch(
+        AI_WEB_APP_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/x-www-form-urlencoded;charset=UTF-8'
+          },
+          body:
+            new URLSearchParams({
+              question: question,
+              history:
+                JSON.stringify(
+                  recentHistory
+                ),
+              faqContext:
+                JSON.stringify(
+                  faqContext
+                )
+            })
+        }
+      );
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+    }
+    const data =
+      await response.json();
+    if (!data.success) {
+      throw new Error(
+        data.error ||
+        'AI không thể trả lời.'
+      );
+    }
+    const answer =
+      data.answer || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
+    /*
+     * Lưu câu trả lời vào lịch sử.
+     */
+    conversationHistory.push({
+      role: 'assistant',
+      text: answer
+    });
+    saveAIHistory();
+    return answer;
+  }
+  /* =====================================================
+     SEND MESSAGE
+  ===================================================== */
+  async function sendAIMessage() {
+    const question =
+      aiInput.value.trim();
+    if (!question) return;
+    /*
+     * Hiện câu hỏi của user.
+     */
+    addChatMessage(
+      question,
+      'user'
+    );
+    aiInput.value = '';
+    aiSend.disabled = true;
+    showTyping();
+    try {
+      const answer =
+        await askAI(question);
+      hideTyping();
+      addChatMessage(
+        answer,
+        'bot'
+      );
+    } catch (error) {
+      console.error(
+        'AI ERROR:',
+        error
+      );
+      hideTyping();
+      addChatMessage(
+        'Xin lỗi, hiện tại AI chưa thể trả lời. Vui lòng thử lại sau.',
+        'bot'
+      );
+    }
+    aiSend.disabled = false;
+    aiInput.focus();
+  }
+  /* =====================================================
+     SEND BUTTON
+  ===================================================== */
+  aiSend.addEventListener(
+    'click',
+    sendAIMessage
+  );
+  /* =====================================================
+     ENTER TO SEND
+  ===================================================== */
+  aiInput.addEventListener(
+    'keydown',
+    event => {
+      if (
+        event.key === 'Enter' &&
+        !event.shiftKey
+      ) {
+        event.preventDefault();
+        sendAIMessage();
+      }
+    }
+  );
+</script>
+<script src="/HỌC VIÊN/sidebar.js"></script>
+</body>
+</html>

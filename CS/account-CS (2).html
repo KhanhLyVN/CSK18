@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản CS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/HỌC VIÊN/Trang chủ/homepage.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="/firebase-config.js"></script>
+    <style>
+        :root {
+            --maroon: #5D0703;
+            --maroon-deep: #3E0402;
+            --cream: #EEDCC8;
+            --cream-pale: #FBF4E9;
+            --paper: #FFFBF5;
+            --line: rgba(93, 7, 3, 0.18);
+            --text: #2B211D;
+            --text-soft: #76665D;
+            --white: #FFFFFF;
+            --danger: #991B1B;
+            --edit: #8A5A00;
+            --success: #3F6F4F;
+            --shadow: 0 8px 25px rgba(93, 7, 3, 0.07);
+            --radius: 12px;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: var(--cream-pale);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .topbar {
+            height: 70px;
+            background: var(--maroon);
+            color: var(--white);
+            display: flex;
+            padding: 0 40px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--cream);
+            color: var(--maroon);
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .brand-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .brand-subtitle {
+            font-size: 11px;
+            opacity: .7;
+            margin-top: 2px;
+        }
+        .back-btn {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .back-btn:hover {
+            opacity: .75;
+        }
+        .container {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 40px 0 70px;
+        }
+        .page-header {
+            margin-bottom: 25px;
+        }
+        .page-header h1 {
+            margin: 0;
+            color: var(--maroon);
+            font-family: 'Fraunces', serif;
+            font-size: 34px;
+            font-weight: 700;
+        }
+        .page-header p {
+            margin: 7px 0 0;
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: var(--maroon);
+            color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+        .avatar {
+            width: 75px;
+            height: 75px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--maroon);
+            font-family: 'Fraunces', serif;
+            font-size: 30px;
+            font-weight: 700;
+        }
+        .profile-info h2 {
+            margin: 0;
+            font-family: 'Fraunces', serif;
+            font-size: 25px;
+        }
+        .profile-info p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: .8;
+        }
+        .role-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .card {
+            padding: 25px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .card.full {
+            grid-column: 1 / -1;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--cream);
+            color: var(--maroon);
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .card-title h2 {
+            margin: 0;
+            color: var(--maroon);
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+        }
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 13px;
+            border-bottom: 1px solid var(--line);
+        }
+        .info-item:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .info-label {
+            color: var(--text-soft);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .info-value {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: right;
+        }
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--maroon);
+        }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--success);
+        }
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        .security-box {
+            padding: 15px;
+            background: var(--cream-pale);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .security-box strong {
+            display: block;
+            color: var(--maroon);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .security-box span {
+            color: var(--text-soft);
+            font-size: 12px;
+        }
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+        .password-form label {
+            color: var(--text-soft);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .password-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .password-input-wrap > .fa-lock {
+            position: absolute;
+            left: 13px;
+            z-index: 1;
+            color: var(--text-soft);
+            font-size: 13px;
+            pointer-events: none;
+        }
+        .password-form input {
+            width: 100%;
+            padding: 10px 42px 10px 36px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            color: var(--text-soft);
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .toggle-password:hover {
+            color: var(--maroon);
+        }
+        .password-form input:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(93, 7, 3, .08);
+        }
+        .password-hint {
+            margin: -2px 0 2px;
+            color: var(--text-soft);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .btn {
+            width: 100%;
+            padding: 11px 15px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--maroon);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--maroon-deep);
+        }
+        .btn-danger {
+            margin-top: 10px;
+            background: transparent;
+            border-color: rgba(153, 27, 27, .25);
+            color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: rgba(153, 27, 27, .06);
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-soft);
+        }
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            transform: translateX(-50%) translateY(20px);
+            padding: 11px 18px;
+            background: var(--maroon);
+            color: var(--white);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: .2s ease;
+            z-index: 9999;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        @media (max-width: 700px) {
+            .topbar {
+                padding: 0 18px;
+            }
+            .container {
+                width: calc(100% - 24px);
+                padding-top: 25px;
+            }
+            .page-header h1 {
+                font-size: 28px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .card.full {
+                grid-column: auto;
+            }
+            .profile-card {
+                padding: 20px;
+            }
+            .avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            .profile-info h2 {
+                font-size: 20px;
+            }
+            .info-item {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .info-value {
+                text-align: left;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/CS/navbar.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc thu gọn Sidebar" title="Mở hoặc thu gọn Sidebar">☰</button>
+    <div class="mark">CS</div>
+    <div class="titles">
+        <h1>Hệ thống Hỗ trợ CS</h1>
+        <span>Tài khoản CS</span>
+    </div>
+</header>
+<div class="body" id="bodyEl">
+    <aside class="sidebar" id="sidebarEl">
+        <nav class="sidebar-menu" aria-label="Điều hướng CS">
+            <a href="/CS/homepageCS/trangchu-cs.html" class="menu-item active">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Trang chủ</span>
+              </a>
+              <a href="/CS/Ticket Management/cs-ticket.html" class="menu-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Quản lý Ticket</span>
+              </a>
+              <a href="/CS/tickets/phieuhotro-cs.html" class="menu-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>Tạo phiếu hỗ trợ</span>
+              </a>
+              <a href="/CS/Dashboard/cs-dashboard.html" class="menu-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 16l4-5 3 3 5-7"></path></svg>
+                <span>Báo cáo thống kê</span>
+              </a>
+              <a href="/FAQs/CS-FAQ.html" class="menu-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span>FAQs</span>
+              </a>
+              <a href="/CS/account-CS.html" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Cài đặt hệ thống</span>
+              </a>
+        </nav>
+    </aside>
+    <main class="main">
+<!-- <header class="topbar">
+    <div class="brand">
+        <div class="brand-logo">HV</div>
+        <div>
+            <div class="brand-title">Student Account</div>
+            <div class="brand-subtitle">Thông tin học viên</div>
+        </div>
+    </div>
+    <a href="javascript:history.back()" class="back-btn">
+        ← Quay lại
+    </a>
+</header> -->
+<div class="container">
+    <div class="page-header">
+        <h1>Tài khoản của tôi</h1>
+        <p>Quản lý thông tin và bảo mật tài khoản CS.</p>
+    </div>
+    <section class="profile-card">
+        <div class="avatar" id="avatar">
+            CS
+        </div>
+        <div class="profile-info">
+            <h2 id="profileName">
+                Đang tải...
+            </h2>
+            <p id="profileEmail">
+                Đang tải...
+            </p>
+            <span class="role-badge">
+                CS
+            </span>
+        </div>
+    </section>
+    <div class="grid">
+        <section class="card">
+            <div class="card-title">
+                <div class="card-icon">
+                    01
+                </div>
+                <h2>Thông tin CS</h2>
+            </div>
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="info-label">
+                        Họ tên
+                    </span>
+                    <span class="info-value" id="name">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Lớp
+                    </span>
+                    <span class="info-value" id="class">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Cơ sở
+                    </span>
+                    <span class="info-value" id="campus">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Vai trò
+                    </span>
+                    <span class="info-value">
+                        CS
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section class="card">
+            <div class="card-title">
+                <div class="card-icon">
+                    02
+                </div>
+                <h2>Tài khoản</h2>
+            </div>
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="info-label">
+                        Username
+                    </span>
+                    <span class="info-value mono" id="username">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Email
+                    </span>
+                    <span class="info-value" id="email">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Phone
+                    </span>
+                    <span class="info-value" id="phone">
+                        —
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        Trạng thái
+                    </span>
+                    <span class="info-value status">
+                        <span class="status-dot"></span>
+                        Đang hoạt động
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section class="card full">
+            <div class="card-title">
+                <div class="card-icon">
+                    03
+                </div>
+                <h2>Bảo mật tài khoản</h2>
+            </div>
+            <div class="security-box">
+                <strong>
+                    Mật khẩu
+                </strong>
+                <span>
+                    Mật khẩu của bạn được bảo vệ bởi Firebase Authentication.
+                </span>
+            </div>
+            <form class="password-form" id="changePasswordForm">
+                <label>
+                    Mật khẩu mới
+                    <span class="password-input-wrap">
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        <input
+                            type="password"
+                            id="newPassword"
+                            minlength="6"
+                            autocomplete="new-password"
+                            placeholder="Nhập mật khẩu mới"
+                            required>
+                        <button
+                            class="toggle-password"
+                            type="button"
+                            data-target="newPassword"
+                            aria-label="Hiện mật khẩu"
+                            title="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </label>
+                <label>
+                    Xác nhận mật khẩu mới
+                    <span class="password-input-wrap">
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            minlength="6"
+                            autocomplete="new-password"
+                            placeholder="Nhập lại mật khẩu mới"
+                            required>
+                        <button
+                            class="toggle-password"
+                            type="button"
+                            data-target="confirmPassword"
+                            aria-label="Hiện mật khẩu"
+                            title="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </label>
+                <p class="password-hint">Mật khẩu cần có ít nhất 6 ký tự.</p>
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+                    Đổi mật khẩu
+                </button>
+            </form>
+            <button
+                class="btn btn-danger"
+                id="logoutBtn">
+                Đăng xuất
+            </button>
+        </section>
+    </div>
+</div>
+    </main>
+</div>
+</div>
+<div id="toast"></div>
+<script>
+/* firebase-config.js đã khởi tạo sẵn: firebase.initializeApp(...),
+   và các biến global auth / db / storage.
+   Vì vậy ở đây KHÔNG khai báo lại const auth / const db để tránh
+   lỗi "Identifier has already been declared". */
+const $ = id => document.getElementById(id);
+/* =========================
+   SHOW / HIDE PASSWORD
+========================= */
+document.querySelectorAll(".toggle-password").forEach(button => {
+    button.addEventListener("click", () => {
+        const input = $(button.dataset.target);
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        const icon = button.querySelector("i");
+        icon.classList.toggle("fa-eye", !isHidden);
+        icon.classList.toggle("fa-eye-slash", isHidden);
+        button.setAttribute(
+            "aria-label",
+            isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+        );
+        button.setAttribute(
+            "title",
+            isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+        );
+    });
+});
+/* =========================
+   TOAST
+========================= */
+function toast(message) {
+    const element = $("toast");
+    element.textContent = message;
+    element.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => {
+        element.classList.remove("show");
+    }, 2200);
+}
+/* =========================
+   LOAD ACCOUNT
+========================= */
+auth.onAuthStateChanged(async user => {
+    if (!user) {
+        toast("Bạn chưa đăng nhập.");
+        return;
+    }
+    try {
+        const doc = await db
+            .collection("users")
+            .doc(user.uid)
+            .get();
+        if (!doc.exists) {
+            toast("Không tìm thấy thông tin học viên.");
+            return;
+        }
+        const data = doc.data();
+        const name = data.name || "Học viên";
+        const email = data.email || user.email || "";
+        const username = data.username || "";
+        const phone = data.phone || "";
+        const studentClass = data.class || "";
+        const campus = data.campus || "";
+        /* PROFILE */
+        $("profileName").textContent = name;
+        $("profileEmail").textContent = email;
+        /* AVATAR */
+        const parts = name
+            .trim()
+            .split(/\s+/);
+        let initials = "CS";
+        if (parts.length >= 2) {
+            initials =
+                parts[0][0] +
+                parts[parts.length - 1][0];
+        } else if (parts.length === 1) {
+            initials = parts[0][0];
+        }
+        $("avatar").textContent =
+            initials.toUpperCase();
+        /* PERSONAL */
+        $("name").textContent =
+            name;
+        $("class").textContent =
+            studentClass || "Chưa cập nhật";
+        $("campus").textContent =
+            campus || "Chưa cập nhật";
+        /* ACCOUNT */
+        $("username").textContent =
+            username || "Chưa cập nhật";
+        $("email").textContent =
+            email;
+        $("phone").textContent =
+            phone || "Chưa cập nhật";
+    } catch (error) {
+        console.error(error);
+        toast(
+            "Không thể tải thông tin tài khoản."
+        );
+    }
+});
+/* =========================
+   CHANGE PASSWORD
+========================= */
+$("changePasswordForm")
+    .addEventListener("submit", async event => {
+        event.preventDefault();
+        const user = auth.currentUser;
+        const newPassword = $("newPassword").value;
+        const confirmPassword = $("confirmPassword").value;
+
+        if (!user) {
+            toast("Bạn chưa đăng nhập.");
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast("Mật khẩu phải có ít nhất 6 ký tự.");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            toast("Mật khẩu xác nhận không khớp.");
+            return;
+        }
+        try {
+            await user.updatePassword(newPassword);
+            $("changePasswordForm").reset();
+            toast("Đổi mật khẩu thành công.");
+        } catch (error) {
+            console.error(error);
+            if (error.code === "auth/requires-recent-login") {
+                toast("Vui lòng đăng nhập lại rồi thử lại.");
+            } else {
+                toast("Không thể đổi mật khẩu. Vui lòng thử lại.");
+            }
+        }
+    });
+/* =========================
+   LOGOUT
+========================= */
+$("logoutBtn")
+    .addEventListener("click", async () => {
+        try {
+            await auth.signOut();
+            window.location.href =
+                "/CS/Đăng nhập/login.html";
+        } catch (error) {
+            console.error(error);
+            toast(
+                "Đăng xuất thất bại."
+            );
+        }
+    });
+</script>
+<script src="/CS/navbar.js"></script>
+</body>
+</html>
