@@ -187,7 +187,6 @@ select:focus-visible {
 .main-content {
   width: 100%;
   padding-left: 250px;
-  font-size: 0.85em;
 }
 
 .topbar {
@@ -979,11 +978,11 @@ tbody tr:hover {
 .main-content .filters,
 .main-content table,
 .main-content .architecture-card {
-  font-size: 0.92em;
+  font-size: 1.08em;
 }
 
 .main-content .hero h1 {
-  font-size: clamp(2.12rem, 2.9vw, 3.4rem);
+  font-size: clamp(2.5rem, 3.4vw, 4rem);
 }
 
 .main-content .hero-copy,
@@ -999,15 +998,15 @@ tbody tr:hover {
 .main-content .panel-foot,
 .main-content .detail-box strong,
 .main-content .detail-box small {
-  font-size: 0.94em;
+  font-size: 1.1em;
 }
 
 .main-content .stat-card strong {
-  font-size: 2.12rem;
+  font-size: 2.5rem;
 }
 
 .main-content .title-line h2 {
-  font-size: 1.7rem;
+  font-size: 2rem;
 }
 
 .main-content th {

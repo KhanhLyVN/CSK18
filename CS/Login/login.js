@@ -176,7 +176,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/HỌC VIÊN/account-HV.html";
+                window.location.href = "/CS/account-CS.html";
             }, 400);
 
         } catch (error) {
@@ -212,41 +212,21 @@ if (loginForm) {
 
             loginBtn.textContent = "Thành công!";
 
-            setTimeout(() => {
+            setTimeout(async () => {
+                const role = await CSK18.getRole(user);
 
-                // ==========================================
-                // PHÂN QUYỀN THEO EMAIL
-                // ==========================================
-
-                if (email.endsWith("@student.edu.vn")) {
-
-                    // Học viên
+                if (role === "admin") {
+                    window.location.href = "/ADMIN/homepage-ad.html";
+                } else if (role === "cs") {
+                    window.location.href = "/CS/homepageCS/trangchu-cs.html";
+                } else if (role === "student") {
                     window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
-
-                } else if (email.endsWith("@gmail.com")) {
-
-                    // CS
-                    window.location.href = "/CS/Trang chủ CS/trangchu-cs.html";
-
-                } else if (email.endsWith("adminhcm@gmai.com")) {
-
-                    // Admin
-                    window.location.href = "/ADMIN/Trang chủ.html";
-
                 } else {
-
-                    // Email không thuộc hệ thống
-                    auth.signOut();
-
-                    toast(
-                        "Email không được phép đăng nhập vào hệ thống.",
-                        "error"
-                    );
-
+                    await auth.signOut();
+                    toast("Tài khoản chưa được phân quyền trong hệ thống.", "error");
                     loginBtn.disabled = false;
                     loginBtn.textContent = "Đăng nhập";
                 }
-
             }, 400);
 
         } catch (error) {
