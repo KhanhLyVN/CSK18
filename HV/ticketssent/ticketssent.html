@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tổng quan hỗ trợ | Hệ thống hỗ trợ học viên</title>
     <link rel="stylesheet" href="/HV/ticketssent/ticketssent.css">
     <link rel="stylesheet" href="/HV/homepage-hv/homepage.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
         <div class="body" id="bodyEl">
           <aside class="sidebar" id="sidebarEl">
             <nav class="sidebar-menu" aria-label="Điều hướng học viên">
-              <a class="menu-item" href="/HV/homepage-hv/homepage.html">
+              <a class="menu-item active" href="/HV/homepage-hv/homepage.html">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V9"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 <span>Trang chủ</span>
             </a>
@@ -45,7 +45,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 <span>Hỏi đáp (Q&A)</span>
             </a>
-            <a class="menu-item active" href="/HV/account-HV.html">
+            <a class="menu-item" href="/HV/account-HV.html">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span>Tài khoản</span>
             </a>
@@ -55,30 +55,24 @@
 
     <main class="sent-tickets-page">
         <section class="sent-page-head">
-          <div>
-            <span class="sent-eyebrow">LƯU TRỮ YÊU CẦU</span>
-            <h2>Những phiếu bạn đã gửi.</h2>
-            <p>Mỗi ticket là một hồ sơ có mã, trạng thái và vùng phản hồi riêng.</p>
-          </div>
-          <div class="sent-count">
-            <strong id="sentTicketCount">0</strong>
-            <span>phiếu đã tạo</span>
-          </div>
+          <div><span class="sent-eyebrow">TỔNG QUAN HỖ TRỢ</span><h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2><p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p></div>
+          <div class="sent-count"><strong id="todayLabel">—</strong><span>Cập nhật realtime</span></div>
         </section>
-      
-        <div id="sentError" class="sent-error" hidden></div>
-        <section id="sentLoading" class="sent-panel">Đang đồng bộ hồ sơ...</section>
-      
-        <section id="sentEmpty" class="sent-panel" hidden>
-          <div class="sent-empty-icon">⌁</div>
-          <p>Phiếu hỗ trợ đầu tiên của bạn sẽ xuất hiện tại đây.</p>
-          <a href="/HV/tickets/phieuhotro.html" class="sent-create-link">Tạo phiếu hỗ trợ <span>→</span></a>
+
+        <section class="stats-grid" aria-label="Thống kê ticket">
+          <article class="stat-card stat-open"><span class="stat-title">Ticket đang mở</span><strong class="stat-num" id="openTicketsCount">—</strong><span class="stat-desc">Chưa đóng hoặc đang xử lý</span></article>
+          <article class="stat-card stat-progress"><span class="stat-title">Đang xử lý</span><strong class="stat-num" id="progressTicketsCount">—</strong><span class="stat-desc">Đang được Customer Success tiếp nhận</span></article>
+          <article class="stat-card stat-resolved"><span class="stat-title">Đã giải quyết</span><strong class="stat-num" id="resolvedTicketsCount">—</strong><span class="stat-desc">Đã có hướng xử lý</span></article>
+          <article class="stat-card stat-closed"><span class="stat-title">Tổng ticket</span><strong class="stat-num" id="totalTicketsCount">—</strong><span class="stat-desc">Tất cả yêu cầu đã gửi</span></article>
         </section>
-      
-        <section id="sentTicketGrid" class="sent-ticket-grid" hidden></section>
+
+        <section class="content-grid">
+          <div class="panel recent-panel"><div class="panel-head"><div><span class="panel-kicker">THEO DÕI YÊU CẦU</span><h3>Ticket gần đây</h3></div><a href="../Trao đổi ticket/trao-doi-ticket.html">Xem tất cả →</a></div><div class="recent-list" id="recentTicketList"><div class="loading-state">Đang tải ticket...</div></div></div>
+          <div class="panel help-panel"><div class="panel-head"><div><span class="panel-kicker">GỢI Ý NHANH</span><h3>Bạn có thể làm gì?</h3></div></div><div class="help-list"><a class="help-item" href="/FAQs/faq.html"><span class="help-icon">?</span><span><strong>Tra cứu FAQ</strong><small>Tìm câu trả lời trong kho kiến thức.</small></span><b>→</b></a><a class="help-item" href="../Phiếu hỗ trợ/phieuhotro.html"><span class="help-icon">＋</span><span><strong>Gửi yêu cầu mới</strong><small>Mô tả vấn đề để được hỗ trợ.</small></span><b>→</b></a><a class="help-item" href="../Trao đổi ticket/trao-doi-ticket.html"><span class="help-icon">✦</span><span><strong>Trao đổi với CS</strong><small>Xem phản hồi và nhắn tin.</small></span><b>→</b></a></div></div>
+        </section>
       </main>
         </div>
-    <script type="module" src="/HV/ticketssent/ticketssent.js"></script>
+    <script src="/HV/homepage-hv/homepage.js"></script>
     <script type="module" src="/HV/sidebar.js"></script>
 </body>
 </html>
