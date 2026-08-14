@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // ======================================================
 // EMAILJS
 // ======================================================
@@ -700,8 +699,6 @@ document
       .forEach((input) => {
         input.value = "";
       });
-=======
->>>>>>> a182206d0091be53d18d6b83c22b70e812326ef8
     document.getElementById(
       "fileName"
     ).textContent = "";
@@ -743,9 +740,5 @@ document
       .classList.remove("show");
     document
       .getElementById("formView")
-<<<<<<< HEAD
       .classList.remove("hide");
   });
-=======
-      .classList.remove("hide");
->>>>>>> a182206d0091be53d18d6b83c22b70e812326ef8
