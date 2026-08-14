@@ -176,7 +176,7 @@ if (googleLogin) {
 
             toast("Đăng nhập thành công!", "success");
             setTimeout(() => {
-                window.location.href = "/CS/homepageCS/trangchu-cs.html";
+                window.location.href = "/CS/account-CS.html";
             }, 400);
 
         } catch (error) {
