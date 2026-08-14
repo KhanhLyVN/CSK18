@@ -1,300 +1,610 @@
 // ======================================================
+// PHIEU HO TRO CS
+// TẠO TICKET + PHÂN PHÒNG BAN
+// ======================================================
+
+
+// ======================================================
 // EMAILJS
 // ======================================================
+
 const EMAILJS_PUBLIC_KEY = "dmcYr1M1K9V45Q18B";
 const EMAILJS_SERVICE_ID = "service_ts3osyy";
 const EMAILJS_TEMPLATE_ID = "template_2bntc3p";
+
 if (window.emailjs) {
-  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  window.emailjs.init({
+    publicKey: EMAILJS_PUBLIC_KEY
+  });
 }
+
+
 // ======================================================
 // ICONS
 // ======================================================
+
 const ICONS = {
+
   bug:
     '<path d="M12 8v8M8 12h8"/>' +
     '<path d="M9 4h6l1 3H8l1-3z"/>' +
     '<rect x="6" y="7" width="12" height="12" rx="4"/>' +
     '<path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>',
+
   calendar:
     '<rect x="3" y="5" width="18" height="16" rx="2"/>' +
     '<path d="M16 3v4M8 3v4M3 10h18"/>',
+
   wallet:
     '<path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/>' +
     '<path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5a2 2 0 0 0 0 4h6"/>',
+
   cert:
     '<circle cx="12" cy="8" r="5"/>' +
     '<path d="M9 12.5L7 21l5-3 5 3-2-8.5"/>',
+
   swap:
     '<path d="M7 4v10M7 4L4 7M7 4l3 3"/>' +
     '<path d="M17 20V10M17 20l3-3M17 20l-3-3"/>',
+
   chat:
     '<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.6-3.8A8.5 8.5 0 1 1 21 11.5z"/>' +
     '<path d="M12 9v4M12 15.5h.01"/>',
+
   scale:
     '<path d="M12 3v18M5 8l-3 6a4 4 0 0 0 6 0zM19 8l-3 6a4 4 0 0 0 6 0zM5 8h14M9 3h6"/>',
+
   mentor:
     '<circle cx="9" cy="8" r="3"/>' +
     '<path d="M4 20c0-3.3 2.7-5.5 5-5.5s5 2.2 5 5.5"/>' +
     '<path d="M15 8h6M18 5v6"/>',
+
   book:
     '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/>' +
     '<path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/>',
+
   other:
     '<circle cx="5" cy="12" r="1.4"/>' +
     '<circle cx="12" cy="12" r="1.4"/>' +
     '<circle cx="19" cy="12" r="1.4"/>'
 };
+
+
+// ======================================================
+// CẤU TRÚC TICKET
+// PHẢI ĐỒNG BỘ VỚI TRANG HỌC VIÊN
+// ======================================================
+
 const TICKET_CATEGORIES = [
+
   {
     id: "system",
     label: "Hệ thống",
     icon: "bug",
+
     issues: [
-      { value: "system-login", label: "Đăng nhập / xác thực" },
-      { value: "system-password", label: "Mật khẩu" },
-      { value: "system-account", label: "Tài khoản học viên" },
-      { value: "system-website-access", label: "Website không truy cập được" },
-      { value: "system-page-error", label: "Một trang bị lỗi" },
-      { value: "system-browser-device", label: "Lỗi thiết bị / trình duyệt" },
-      { value: "system-video-playback", label: "Lỗi phát video" },
-      { value: "system-file-upload", label: "Không tải được tệp" },
-      { value: "system-notification", label: "Email / thông báo" },
-      { value: "system-data-sync", label: "Dữ liệu chưa đồng bộ" },
-      { value: "system-security", label: "Bảo mật tài khoản" },
-      { value: "system-other", label: "Khác" }
+      {
+        value: "system-login",
+        label: "Đăng nhập / xác thực",
+        department: "IT"
+      },
+      {
+        value: "system-password",
+        label: "Mật khẩu",
+        department: "IT"
+      },
+      {
+        value: "system-account",
+        label: "Tài khoản học viên",
+        department: "IT"
+      },
+      {
+        value: "system-website-access",
+        label: "Website không truy cập được",
+        department: "IT"
+      },
+      {
+        value: "system-page-error",
+        label: "Một trang bị lỗi",
+        department: "IT"
+      },
+      {
+        value: "system-browser-device",
+        label: "Lỗi thiết bị / trình duyệt",
+        department: "IT"
+      },
+      {
+        value: "system-video-playback",
+        label: "Lỗi phát video",
+        department: "IT"
+      },
+      {
+        value: "system-file-upload",
+        label: "Không tải được tệp",
+        department: "IT"
+      },
+      {
+        value: "system-notification",
+        label: "Email / thông báo",
+        department: "IT"
+      },
+      {
+        value: "system-data-sync",
+        label: "Dữ liệu chưa đồng bộ",
+        department: "IT"
+      },
+      {
+        value: "system-security",
+        label: "Bảo mật tài khoản",
+        department: "IT"
+      },
+      {
+        value: "system-other",
+        label: "Khác",
+        department: "IT"
+      }
     ]
   },
+
+
   {
     id: "learning",
     label: "Khóa học",
     icon: "book",
+
     issues: [
-      { value: "learning-registration", label: "Đăng ký khóa học" },
-      { value: "learning-course-access", label: "Quyền truy cập khóa học" },
-      { value: "learning-fee", label: "Học phí" },
-      { value: "learning-payment-method", label: "Phương thức thanh toán" },
-      { value: "learning-payment-confirmation", label: "Xác nhận thanh toán" },
-      { value: "learning-invoice", label: "Hóa đơn / biên nhận" },
-      { value: "learning-refund", label: "Hoàn tiền / hủy đăng ký" },
-      { value: "learning-promotion", label: "Mã giảm giá / ưu đãi" },
-      { value: "learning-certificate", label: "Chứng chỉ" },
-      { value: "learning-result", label: "Kết quả học tập" },
-      { value: "learning-other", label: "Khác" }
+      {
+        value: "learning-registration",
+        label: "Đăng ký khóa học",
+        department: "CS"
+      },
+      {
+        value: "learning-course-access",
+        label: "Quyền truy cập khóa học",
+        department: "CS"
+      },
+      {
+        value: "learning-fee",
+        label: "Học phí",
+        department: "SALE"
+      },
+      {
+        value: "learning-payment-method",
+        label: "Phương thức thanh toán",
+        department: "SALE"
+      },
+      {
+        value: "learning-payment-confirmation",
+        label: "Xác nhận thanh toán",
+        department: "SALE"
+      },
+      {
+        value: "learning-invoice",
+        label: "Hóa đơn / biên nhận",
+        department: "SALE"
+      },
+      {
+        value: "learning-refund",
+        label: "Hoàn tiền / hủy đăng ký",
+        department: "SALE"
+      },
+      {
+        value: "learning-promotion",
+        label: "Mã giảm giá / ưu đãi",
+        department: "SALE"
+      },
+      {
+        value: "learning-certificate",
+        label: "Chứng chỉ",
+        department: "CS"
+      },
+      {
+        value: "learning-result",
+        label: "Kết quả học tập",
+        department: "CS"
+      },
+      {
+        value: "learning-other",
+        label: "Khác",
+        department: "CS"
+      }
     ]
   },
+
+
   {
-    // Giữ id account để CS vẫn đọc được ticket cũ; nhãn nghiệp vụ là Vận hành.
+    // Giữ ID account để đọc ticket cũ
     id: "account",
     label: "Vận hành",
     icon: "mentor",
+
     issues: [
-      { value: "operations-schedule", label: "Lịch học" },
-      { value: "operations-attendance", label: "Điểm danh và vắng học" },
-      { value: "operations-mentor", label: "Mentor / giáo viên" },
-      { value: "operations-mentor-feedback", label: "Phản hồi về mentor" },
-      { value: "operations-video-quality", label: "Chất lượng hình ảnh / video" },
-      { value: "operations-video-access", label: "Không xem được bài giảng" },
-      { value: "operations-material", label: "Tài liệu và bài giảng" },
-      { value: "operations-assignment", label: "Bài tập và hỗ trợ bài giảng" },
-      { value: "operations-classroom", label: "Phòng học và buổi học" },
-      { value: "operations-support", label: "Hỗ trợ trong quá trình học" },
-      { value: "operations-other", label: "Khác" }
+      {
+        value: "operations-schedule",
+        label: "Lịch học",
+        department: "CS"
+      },
+      {
+        value: "operations-attendance",
+        label: "Điểm danh và vắng học",
+        department: "CS"
+      },
+      {
+        value: "operations-mentor",
+        label: "Mentor / giáo viên",
+        department: "TEACH"
+      },
+      {
+        value: "operations-mentor-feedback",
+        label: "Phản hồi về mentor",
+        department: "TEACH"
+      },
+      {
+        value: "operations-video-quality",
+        label: "Chất lượng hình ảnh / video",
+        department: "CS"
+      },
+      {
+        value: "operations-video-access",
+        label: "Không xem được bài giảng",
+        department: "CS"
+      },
+      {
+        value: "operations-material",
+        label: "Tài liệu và bài giảng",
+        department: "RND"
+      },
+      {
+        value: "operations-assignment",
+        label: "Bài tập và hỗ trợ bài giảng",
+        department: "RND"
+      },
+      {
+        value: "operations-classroom",
+        label: "Phòng học và buổi học",
+        department: "CS"
+      },
+      {
+        value: "operations-support",
+        label: "Hỗ trợ trong quá trình học",
+        department: "CS"
+      },
+      {
+        value: "operations-other",
+        label: "Khác",
+        department: "CS"
+      }
     ]
   },
+
+
   {
     id: "other",
     label: "Khác",
     icon: "other",
+
     issues: [
-      { value: "other-feedback", label: "Góp ý / phản hồi" },
-      { value: "other-complaint", label: "Khiếu nại" },
-      { value: "other-request", label: "Yêu cầu hỗ trợ khác" }
+      {
+        value: "other-feedback",
+        label: "Góp ý / phản hồi",
+        department: "CS"
+      },
+      {
+        value: "other-complaint",
+        label: "Khiếu nại",
+        department: "CS"
+      },
+      {
+        value: "other-request",
+        label: "Yêu cầu hỗ trợ khác",
+        department: "CS"
+      }
     ]
   }
+
 ];
-const svgIcon = (key) => {
+
+
+// ======================================================
+// PHÒNG BAN MẶC ĐỊNH
+// ======================================================
+
+const CATEGORY_DEFAULT_DEPARTMENT = {
+  system: "IT",
+  learning: "CS",
+  account: "CS",
+  other: "CS"
+};
+
+
+// ======================================================
+// TÌM CATEGORY
+// ======================================================
+
+function getCategory(categoryId) {
+
+  return TICKET_CATEGORIES.find(
+    item => item.id === categoryId
+  ) || null;
+
+}
+
+
+// ======================================================
+// TÌM ISSUE
+// ======================================================
+
+function getIssue(categoryId, issueValue) {
+
+  const category = getCategory(categoryId);
+
+  if (!category) {
+    return null;
+  }
+
+  return category.issues.find(
+    item => item.value === issueValue
+  ) || null;
+
+}
+
+
+// ======================================================
+// XÁC ĐỊNH PHÒNG BAN
+// ======================================================
+
+function resolveTicketDepartment(
+  categoryId,
+  issueValue
+) {
+
+  const issue = getIssue(
+    categoryId,
+    issueValue
+  );
+
+  if (issue?.department) {
+    return issue.department;
+  }
+
+  return (
+    CATEGORY_DEFAULT_DEPARTMENT[categoryId]
+    || "CS"
+  );
+
+}
+
+
+// ======================================================
+// HELPER DOM
+// ======================================================
+
+function $(id) {
+
+  return document.getElementById(id);
+
+}
+
+
+// ======================================================
+// SAFE VALUE
+// QUAN TRỌNG: KHÔNG CÒN LỖI NULL.VALUE
+// ======================================================
+
+function getValue(id) {
+
+  const element = $(id);
+
+  if (!element) {
+    return "";
+  }
+
+  return String(element.value || "").trim();
+
+}
+
+
+// ======================================================
+// SAFE TEXT
+// ======================================================
+
+function setText(id, value) {
+
+  const element = $(id);
+
+  if (element) {
+    element.textContent = value ?? "";
+  }
+
+}
+
+
+// ======================================================
+// ESCAPE HTML
+// ======================================================
+
+function escapeHTML(value) {
+
+  const div = document.createElement("div");
+
+  div.textContent = value ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+// ======================================================
+// SVG ICON
+// ======================================================
+
+function svgIcon(key) {
+
   return `
     <svg
       viewBox="0 0 24 24"
       fill="none"
+      stroke="currentColor"
       stroke-width="1.8"
       stroke-linecap="round"
-      stroke-linejoin="round">
-      ${ICONS[key]}
+      stroke-linejoin="round"
+      aria-hidden="true">
+
+      ${ICONS[key] || ICONS.other}
+
     </svg>
   `;
-};
-const issueField = document.getElementById("issueField");
-const issueSelect = document.getElementById("issueSelect");
 
-function renderIssueOptions(categoryId) {
-  const category = TICKET_CATEGORIES.find((item) => item.id === categoryId);
-
-  if (!category || category.id === "other") {
-    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
-    issueField.classList.remove("show");
-    issueSelect.disabled = true;
-    issueSelect.value = "";
-    return;
-  }
-
-  issueSelect.innerHTML = `
-    <option value="">-- Chọn chi tiết vấn đề --</option>
-    ${category.issues
-      .map(
-        (issue) => `<option value="${issue.value}">${issue.label}</option>`
-      )
-      .join("")}
-  `;
-  issueField.classList.add("show");
-  issueSelect.disabled = false;
-  issueSelect.value = "";
 }
 
-// ======================================================
-// RENDER LOẠI YÊU CẦU
-// ======================================================
-const chipGrid = document.getElementById("chipGrid");
-TICKET_CATEGORIES.forEach((t) => {
-  const el = document.createElement("label");
-  el.className = "chip";
-  el.innerHTML = `
-    <input
-      type="radio"
-      name="ticketMainType"
-      value="${t.id}"
-      data-label="${t.label}"
-      data-icon="${t.icon}">
-    ${svgIcon(t.icon)}
-    <span>${t.label}</span>
-    <span class="mark"></span>
-  `;
-  chipGrid.appendChild(el);
-});
 
 // ======================================================
-// CHỌN LOẠI TICKET
+// ELEMENTS
 // ======================================================
-const chips = () => Array.from(document.querySelectorAll(".chip"));
-chips().forEach((chip) => {
-  chip.addEventListener("click", () => {
-    chips().forEach((x) => x.classList.remove("active"));
-    chip.classList.add("active");
-    const radio = chip.querySelector("input");
-    radio.checked = true;
-    renderIssueOptions(radio.value);
 
-    const categoryValue = radio.value;
-    const categoryLabel = radio.dataset.label;
-    const selectedIssueValue = categoryValue === "other" ? "" : issueSelect.value;
-    if (categoryValue === "other") {
-      ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
-    } else if (categoryValue && selectedIssueValue) {
-      ticketNum = genTicketNum(`${categoryValue}-${selectedIssueValue}`);
-    } else {
-      ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
-    }
-    updateStub();
-  });
-});
+const issueField = $("issueField");
+const issueSelect = $("issueSelect");
+const chipGrid = $("chipGrid");
 
-issueSelect.addEventListener("change", () => {
-  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
-  if (!selectedRadio) return;
+const chkCourse = $("chkCourse");
+const courseBoxWrap = $("courseBoxWrap");
+const fCourse = $("fCourse");
 
-  const categoryValue = selectedRadio.value;
-  const categoryLabel = selectedRadio.dataset.label;
-  const issueValue = issueSelect.value;
+const fDateEl = $("fDate");
 
-  if (categoryValue === "other") {
-    ticketNum = genTicketNum(categoryLabel || categoryValue || "other");
-  } else {
-    ticketNum = issueValue
-      ? genTicketNum(`${categoryValue}-${issueValue}`)
-      : genTicketNum(categoryLabel || categoryValue || "other");
+const fileDrop = $("fileDrop");
+const fFile = $("fFile");
+const fileNameEl = $("fileName");
+
+const formView = $("formView");
+const successView = $("successView");
+
+const submitBtn = $("submitBtn");
+const againBtn = $("againBtn");
+
+const layoutContainer = $("layoutContainer");
+
+
+// ======================================================
+// STATE
+// ======================================================
+
+let ticketNum = "HV-000000";
+
+let selectedFile = null;
+
+let loggedInUser = null;
+
+
+// ======================================================
+// FIREBASE
+// ======================================================
+
+function getDatabase() {
+
+  if (
+    typeof db !== "undefined" &&
+    db
+  ) {
+    return db;
   }
-  updateStub();
-});
-// ======================================================
-// CHECKBOX HỌC VIÊN
-// ======================================================
-const chkCourse =
-  document.getElementById("chkCourse");
-const courseBoxWrap =
-  document.getElementById("courseBoxWrap");
-const fCourse =
-  document.getElementById("fCourse");
-chkCourse.addEventListener("change", () => {
-  if (chkCourse.checked) {
-    courseBoxWrap.classList.add("show");
-  } else {
-    courseBoxWrap.classList.remove("show");
-    fCourse.value = "";
+
+  if (
+    typeof window.db !== "undefined" &&
+    window.db
+  ) {
+    return window.db;
   }
-  updateStub();
-});
-// ======================================================
-// FILE
-// ======================================================
-const fileDrop =
-  document.getElementById("fileDrop");
-const fFile =
-  document.getElementById("fFile");
-fileDrop.addEventListener("click", () => {
-  fFile.click();
-});
-fFile.addEventListener("change", () => {
-  const fileName =
-    document.getElementById("fileName");
-  fileName.textContent =
-    fFile.files[0]
-      ? "Đã chọn: " + fFile.files[0].name
-      : "";
-});
+
+  return null;
+
+}
+
+
+function getAuth() {
+
+  if (
+    typeof auth !== "undefined" &&
+    auth
+  ) {
+    return auth;
+  }
+
+  if (
+    typeof window.auth !== "undefined" &&
+    window.auth
+  ) {
+    return window.auth;
+  }
+
+  return null;
+
+}
+
+
 // ======================================================
 // TẠO PREFIX
 // ======================================================
+
 function getPrefixFromCategory(label) {
+
   if (!label) {
     return "HV";
   }
-  const cleanStr =
-    label
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D");
-  const words =
-    cleanStr
-      .trim()
-      .split(/\s+/);
+
+  const cleanStr = String(label)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/gi, "d")
+    .trim();
+
+  const words = cleanStr.split(/\s+/);
+
   if (words.length >= 2) {
+
     return (
       words[0][0] +
       words[1][0]
     ).toUpperCase();
+
   }
+
   return cleanStr
     .substring(0, 2)
     .toUpperCase();
+
 }
+
+
 // ======================================================
 // TẠO MÃ TICKET
 // ======================================================
-let ticketNum = "HV-000000";
+
 function genTicketNum(typeLabel) {
-  const prefix = getPrefixFromCategory(typeLabel);
-  const timePart = String(Date.now()).slice(-7);
-  const randomPart = String(Math.floor(Math.random() * 100)).padStart(2, "0");
+
+  const prefix =
+    getPrefixFromCategory(typeLabel);
+
+  const timePart =
+    String(Date.now()).slice(-7);
+
+  const randomPart =
+    String(
+      Math.floor(Math.random() * 100)
+    ).padStart(2, "0");
+
   return `${prefix}-${timePart}${randomPart}`;
+
 }
+
+
 // ======================================================
 // NGÀY
 // ======================================================
+
 function todayLabel() {
-  const d = new Date();
-  return d.toLocaleDateString(
+
+  return new Date().toLocaleDateString(
     "vi-VN",
     {
       weekday: "long",
@@ -303,441 +613,1764 @@ function todayLabel() {
       year: "numeric"
     }
   );
+
 }
-const todayStr =
-  document.getElementById("todayStr");
-if (todayStr) {
-  todayStr.textContent =
-    todayLabel();
-}
+
+
 // ======================================================
-// DATE INPUT
+// ISO TODAY
 // ======================================================
-const fDateEl =
-  document.getElementById("fDate");
+
 function isoToday() {
-  const d = new Date();
-  const off =
-    d.getTimezoneOffset();
+
+  const now = new Date();
+
+  const offset =
+    now.getTimezoneOffset();
+
   return new Date(
-    d.getTime() -
-    off * 60000
+    now.getTime() -
+    offset * 60000
   )
     .toISOString()
     .slice(0, 10);
+
 }
-fDateEl.value =
-  isoToday();
+
+
 // ======================================================
 // FORMAT DATE
 // ======================================================
-function formatDateVN(isoStr) {
-  if (!isoStr) {
+
+function formatDateVN(value) {
+
+  if (!value) {
     return "—";
   }
-  const [y, m, d] =
-    isoStr.split("-");
-  return `${d}/${m}/${y}`;
+
+  const [
+    year,
+    month,
+    day
+  ] = value.split("-");
+
+  return `${day}/${month}/${year}`;
+
 }
+
+
 // ======================================================
-// UPDATE TICKET STUB
+// RENDER ISSUE
 // ======================================================
-function updateStub() {
-  const selectedRadio = document.querySelector(
-    'input[name="ticketMainType"]:checked'
+
+function renderIssueOptions(categoryId) {
+
+  if (!issueSelect) {
+    return;
+  }
+
+  const category =
+    getCategory(categoryId);
+
+  if (
+    !category ||
+    category.id === "other"
+  ) {
+
+    issueSelect.innerHTML =
+      '<option value="">-- Chọn chi tiết vấn đề --</option>';
+
+    issueSelect.disabled = true;
+
+    if (issueField) {
+      issueField.classList.remove("show");
+    }
+
+    issueSelect.value = "";
+
+    return;
+
+  }
+
+
+  issueSelect.innerHTML = `
+    <option value="">
+      -- Chọn chi tiết vấn đề --
+    </option>
+
+    ${category.issues
+      .map(issue => `
+        <option value="${issue.value}">
+          ${escapeHTML(issue.label)}
+        </option>
+      `)
+      .join("")}
+  `;
+
+  issueSelect.disabled = false;
+
+  if (issueField) {
+    issueField.classList.add("show");
+  }
+
+  issueSelect.value = "";
+
+}
+
+
+// ======================================================
+// RENDER CATEGORY
+// ======================================================
+
+function renderCategories() {
+
+  if (!chipGrid) {
+    return;
+  }
+
+  chipGrid.innerHTML = "";
+
+  TICKET_CATEGORIES.forEach(category => {
+
+    const el =
+      document.createElement("label");
+
+    el.className = "chip";
+
+    el.innerHTML = `
+
+      <input
+        type="radio"
+        name="ticketMainType"
+        value="${category.id}"
+        data-label="${escapeHTML(category.label)}"
+        data-icon="${category.icon}"
+      >
+
+      ${svgIcon(category.icon)}
+
+      <span>
+        ${escapeHTML(category.label)}
+      </span>
+
+      <span class="mark"></span>
+    `;
+
+    chipGrid.appendChild(el);
+
+  });
+
+
+  chips().forEach(chip => {
+
+    chip.addEventListener(
+      "click",
+      () => {
+
+        chips().forEach(item => {
+          item.classList.remove("active");
+        });
+
+        chip.classList.add("active");
+
+        const radio =
+          chip.querySelector(
+            'input[name="ticketMainType"]'
+          );
+
+        if (!radio) {
+          return;
+        }
+
+        radio.checked = true;
+
+        renderIssueOptions(
+          radio.value
+        );
+
+        const category =
+          getCategory(radio.value);
+
+        const categoryLabel =
+          category?.label ||
+          radio.value ||
+          "Khác";
+
+        ticketNum =
+          genTicketNum(categoryLabel);
+
+        updateStub();
+
+      }
+    );
+
+  });
+
+}
+
+
+// ======================================================
+// GET CHIPS
+// ======================================================
+
+function chips() {
+
+  return Array.from(
+    document.querySelectorAll(".chip")
   );
 
-  const selectedIssue = issueSelect.value;
+}
 
-  const selectedIssueLabel =
-    issueSelect.selectedOptions[0]
-      ? issueSelect.selectedOptions[0].textContent.trim()
-      : "";
 
-  const catLabel = selectedRadio
-    ? selectedRadio.dataset.label
-    : "";
+// ======================================================
+// ISSUE CHANGE
+// ======================================================
 
-  const displayLabel = selectedIssueLabel
-    ? `${catLabel || "Khác"} · ${selectedIssueLabel}`
-    : catLabel || "Chưa chọn loại";
+if (issueSelect) {
 
-  const stubNum = document.getElementById("stubNum");
-  const stubName = document.getElementById("stubName");
-  const stubTitle = document.getElementById("stubTitle");
-  const stubCat = document.getElementById("stubCat");
-  const stubDate = document.getElementById("stubDate");
+  issueSelect.addEventListener(
+    "change",
+    () => {
 
-  if (stubNum) {
-    stubNum.textContent = ticketNum;
+      const selectedRadio =
+        document.querySelector(
+          'input[name="ticketMainType"]:checked'
+        );
+
+      if (!selectedRadio) {
+        return;
+      }
+
+      const category =
+        getCategory(
+          selectedRadio.value
+        );
+
+      const issue =
+        getIssue(
+          selectedRadio.value,
+          issueSelect.value
+        );
+
+      const label =
+        issue
+          ? `${category?.label || ""}-${issue.value}`
+          : category?.label || "Khác";
+
+      ticketNum =
+        genTicketNum(label);
+
+      updateStub();
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// CHECKBOX KHÓA HỌC
+// ======================================================
+
+if (chkCourse) {
+
+  chkCourse.addEventListener(
+    "change",
+    () => {
+
+      if (courseBoxWrap) {
+
+        courseBoxWrap.classList.toggle(
+          "show",
+          chkCourse.checked
+        );
+
+      }
+
+      if (
+        !chkCourse.checked &&
+        fCourse
+      ) {
+
+        fCourse.value = "";
+
+      }
+
+      updateStub();
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// FILE
+// ======================================================
+
+function setSelectedFile(file) {
+
+  if (!file) {
+    return;
   }
 
-  const name =
-    document.getElementById("fName")?.value.trim() || "";
+  const maxSize =
+    10 * 1024 * 1024;
 
-  if (stubName) {
-    stubName.textContent = name || "—";
+  if (file.size > maxSize) {
+
+    const errorEl =
+      $("errorText");
+
+    if (errorEl) {
+
+      errorEl.textContent =
+        "Tệp đính kèm không được vượt quá 10 MB.";
+
+      errorEl.classList.add("show");
+
+    }
+
+    return;
+
   }
 
-  const title =
-    document.getElementById("fTitle")?.value.trim() || "";
+  selectedFile = file;
 
-  if (stubTitle) {
-    stubTitle.textContent = title || "—";
+  if (fileNameEl) {
+
+    fileNameEl.textContent =
+      `Đã chọn: ${file.name}`;
+
   }
 
-  const catIconKey = selectedRadio
-    ? selectedRadio.dataset.icon
-    : "other";
+  const errorEl =
+    $("errorText");
+
+  if (errorEl) {
+    errorEl.classList.remove("show");
+  }
+
+}
+
+
+if (fileDrop && fFile) {
+
+  fileDrop.addEventListener(
+    "click",
+    () => {
+      fFile.click();
+    }
+  );
+
+
+  fFile.addEventListener(
+    "change",
+    () => {
+
+      if (fFile.files?.[0]) {
+
+        setSelectedFile(
+          fFile.files[0]
+        );
+
+      }
+
+    }
+  );
+
+
+  fileDrop.addEventListener(
+    "dragover",
+    event => {
+
+      event.preventDefault();
+
+      fileDrop.classList.add(
+        "dragover"
+      );
+
+    }
+  );
+
+
+  fileDrop.addEventListener(
+    "dragleave",
+    event => {
+
+      event.preventDefault();
+
+      fileDrop.classList.remove(
+        "dragover"
+      );
+
+    }
+  );
+
+
+  fileDrop.addEventListener(
+    "drop",
+    event => {
+
+      event.preventDefault();
+
+      fileDrop.classList.remove(
+        "dragover"
+      );
+
+      const file =
+        event.dataTransfer.files?.[0];
+
+      if (file) {
+        setSelectedFile(file);
+      }
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// UPDATE STUB
+// ======================================================
+
+function updateStub() {
+
+  const selectedRadio =
+    document.querySelector(
+      'input[name="ticketMainType"]:checked'
+    );
+
+  const selectedIssue =
+    issueSelect?.value || "";
+
+  const category =
+    selectedRadio
+      ? getCategory(
+          selectedRadio.value
+        )
+      : null;
+
+  const issue =
+    selectedRadio
+      ? getIssue(
+          selectedRadio.value,
+          selectedIssue
+        )
+      : null;
+
+  const displayLabel =
+    issue && selectedRadio?.value !== "other"
+      ? `${category?.label || "Khác"} · ${issue.label}`
+      : category?.label ||
+        "Chưa chọn loại";
+
+
+  setText(
+    "stubNum",
+    ticketNum
+  );
+
+
+  setText(
+    "stubName",
+    getValue("fName") || "—"
+  );
+
+
+  setText(
+    "stubTitle",
+    getValue("fTitle") || "—"
+  );
+
+
+  setText(
+    "stubDate",
+    formatDateVN(
+      fDateEl?.value || ""
+    )
+  );
+
+
+  const stubCourse =
+    $("stubCourse");
+
+  const stubCourseBody =
+    $("stubCourseBody");
+
+  if (chkCourse?.checked) {
+
+    const course =
+      getValue("fCourse");
+
+    if (stubCourse) {
+
+      stubCourse.textContent =
+        course
+          ? `Khóa học: ${course}`
+          : "";
+
+    }
+
+    if (stubCourseBody) {
+
+      stubCourseBody.textContent =
+        course || "Chưa nhập";
+
+    }
+
+  } else {
+
+    if (stubCourse) {
+      stubCourse.textContent = "";
+    }
+
+    if (stubCourseBody) {
+      stubCourseBody.textContent =
+        "Không có";
+    }
+
+  }
+
+
+  const stubCat =
+    $("stubCat");
 
   if (stubCat) {
+
     stubCat.innerHTML =
-      svgIcon(catIconKey) +
-      `<span>${displayLabel}</span>`;
+      svgIcon(
+        selectedRadio?.dataset.icon ||
+        "other"
+      ) +
+      `<span>${escapeHTML(
+        displayLabel
+      )}</span>`;
+
   }
 
-  if (stubDate && fDateEl) {
-    stubDate.textContent =
-      formatDateVN(fDateEl.value);
-  }
 }
+
+
 // ======================================================
 // INPUT → UPDATE STUB
 // ======================================================
+
 [
   "fName",
   "fTitle",
   "fCourse"
-].forEach((id) => {
-  const el =
-    document.getElementById(id);
-  if (el) {
-    el.addEventListener(
+].forEach(id => {
+
+  const element = $(id);
+
+  if (element) {
+
+    element.addEventListener(
       "input",
       updateStub
     );
+
   }
+
 });
 
-if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "function") {
-  auth.onAuthStateChanged(async (user) => {
-    const nameInput = document.getElementById("fName");
-    const emailInput = document.getElementById("fEmail");
 
-    if (!user) {
-      if (nameInput) nameInput.value = "";
-      if (emailInput) emailInput.value = "";
-      return;
-    }
+// ======================================================
+// FIREBASE AUTH
+// ======================================================
 
-    try {
-      const doc = await db
-      .collection("users")
-      .doc(user.uid)
-      .get();
-      const data = doc.exists ? doc.data() : {};
-      const name = data.name || user.displayName || "Học viên";
-      const email = data.email || user.email || "";
+const authClient =
+  getAuth();
 
-      if (nameInput) {
-        if (!nameInput.value.trim()) nameInput.value = name;
-        nameInput.readOnly = true;
+if (
+  authClient &&
+  typeof authClient.onAuthStateChanged ===
+  "function"
+) {
+
+  authClient.onAuthStateChanged(
+    async user => {
+
+      const nameInput =
+        $("fName");
+
+      const emailInput =
+        $("fEmail");
+
+      const campusInput =
+        $("fCampus");
+
+      if (!user) {
+
+        loggedInUser = null;
+
+        if (nameInput) {
+
+          nameInput.value = "";
+          nameInput.readOnly = false;
+
+        }
+
+        if (emailInput) {
+
+          emailInput.value = "";
+          emailInput.readOnly = false;
+
+        }
+
+        if (campusInput) {
+
+          campusInput.value = "";
+          campusInput.readOnly = false;
+
+        }
+
+        updateStub();
+
+        return;
+
       }
-      if (emailInput) {
-        if (!emailInput.value.trim()) emailInput.value = email;
-        emailInput.readOnly = true;
+
+
+      const database =
+        getDatabase();
+
+      if (!database) {
+        return;
       }
-      updateStub();
-    } catch (error) {
-      console.error("Không thể lấy thông tin tài khoản hiện tại:", error);
+
+
+      try {
+
+        const profileSnapshot =
+          await database
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
+
+        const data =
+          profileSnapshot.exists
+            ? profileSnapshot.data()
+            : {};
+
+
+        const name =
+          data.name ||
+          user.displayName ||
+          "Học viên";
+
+
+        const email =
+          data.email ||
+          user.email ||
+          "";
+
+
+        const phone =
+          data.phone ||
+          "";
+
+
+        const campus =
+          data.campus ||
+          "";
+
+
+        const role =
+          data.role ||
+          "student";
+
+
+        loggedInUser = {
+
+          uid: user.uid,
+
+          name,
+
+          email,
+
+          phone,
+
+          campus,
+
+          role
+
+        };
+
+
+        if (nameInput) {
+
+          nameInput.value =
+            name;
+
+          nameInput.readOnly =
+            true;
+
+        }
+
+
+        if (emailInput) {
+
+          emailInput.value =
+            email;
+
+          emailInput.readOnly =
+            true;
+
+        }
+
+
+        if (campusInput) {
+
+          campusInput.value =
+            campus;
+
+          campusInput.readOnly =
+            Boolean(campus);
+
+        }
+
+
+        updateStub();
+
+
+      } catch (error) {
+
+        console.error(
+          "Không thể lấy thông tin tài khoản hiện tại:",
+          error
+        );
+
+      }
+
     }
-  });
+  );
+
 }
 
-updateStub();
+
+// ======================================================
+// DATE INIT
+// ======================================================
+
+if ($("todayStr")) {
+
+  $("todayStr").textContent =
+    todayLabel();
+
+}
+
+
+if (fDateEl) {
+
+  fDateEl.value =
+    isoToday();
+
+}
+
+
 // ======================================================
 // SUBMIT TICKET
 // ======================================================
-const submitBtn =
-  document.getElementById("submitBtn");
-const layoutContainer =
-  document.getElementById(
-    "layoutContainer"
-  );
-submitBtn.addEventListener(
-  "click",
-  async () => {
-    const database = typeof db !== "undefined" ? db : window.db;
-    const name =
-      document
-        .getElementById("fName")
-        .value
-        .trim();
-    const email =
-      document
-        .getElementById("fEmail")
-        .value
-        .trim();
-    const phone =
-      document
-        .getElementById("fPhone")
-        .value
-        .trim();
-    const isStudent =
-      chkCourse.checked;
-    const course =
-      isStudent
-        ? fCourse.value.trim()
-        : "Không áp dụng";
-    const title =
-      document
-        .getElementById("fTitle")
-        .value
-        .trim();
-    const desc =
-      document
-        .getElementById("fDesc")
-        .value
-        .trim();
-    const selectedMainType = document.querySelector('input[name="ticketMainType"]:checked');
-    const selectedIssue = issueSelect.value;
-    const errEl = document.getElementById("errorText");
-    const requiresIssue = selectedMainType && selectedMainType.value !== "other";
-    if (!database) {
-      errEl.textContent = "Chưa kết nối được với hệ thống. Vui lòng tải lại trang và thử lại.";
-      errEl.classList.add("show");
-      return;
+
+async function submitTicket() {
+
+  const database =
+    getDatabase();
+
+
+  // --------------------------------------------------
+  // LẤY DỮ LIỆU FORM AN TOÀN
+  // --------------------------------------------------
+
+  const name =
+    getValue("fName");
+
+  const email =
+    getValue("fEmail");
+
+  /*
+   * KHÔNG DÙNG:
+   *
+   * document.getElementById("fPhone").value
+   *
+   * vì trang CS hiện tại không có fPhone.
+   *
+   * Nếu sau này có fPhone thì getValue()
+   * vẫn tự động đọc được.
+   */
+
+  const phone =
+    loggedInUser?.phone ||
+    getValue("fPhone") ||
+    "";
+
+
+  const campus =
+    loggedInUser?.campus ||
+    getValue("fCampus") ||
+    "";
+
+
+  const isStudent =
+    chkCourse?.checked || false;
+
+
+  const course =
+    isStudent
+      ? getValue("fCourse")
+      : "Không áp dụng";
+
+
+  const title =
+    getValue("fTitle");
+
+
+  const description =
+    getValue("fDesc");
+
+
+  const selectedMainType =
+    document.querySelector(
+      'input[name="ticketMainType"]:checked'
+    );
+
+
+  const selectedIssue =
+    issueSelect?.value || "";
+
+
+  const errorEl =
+    $("errorText");
+
+
+  const requiresIssue =
+    selectedMainType &&
+    selectedMainType.value !== "other";
+
+
+  // --------------------------------------------------
+  // CHECK DATABASE
+  // --------------------------------------------------
+
+  if (!database) {
+
+    if (errorEl) {
+
+      errorEl.textContent =
+        "Chưa kết nối được với hệ thống. Vui lòng tải lại trang và thử lại.";
+
+      errorEl.classList.add("show");
+
     }
-    // ================================
-    // VALIDATE
-    // ================================
-    if (
-      !name ||
-      !email ||
-      (isStudent && !course) ||
-      !selectedMainType ||
-      (requiresIssue && !selectedIssue)
-    ) {
-      errEl.textContent =
+
+    return;
+
+  }
+
+
+  // --------------------------------------------------
+  // VALIDATE
+  // --------------------------------------------------
+
+  if (
+    !name ||
+    !email ||
+    (isStudent && !course) ||
+    !selectedMainType ||
+    (requiresIssue && !selectedIssue)
+  ) {
+
+    if (errorEl) {
+
+      errorEl.textContent =
         "Vui lòng điền đầy đủ các trường bắt buộc (*) và chọn loại yêu cầu.";
-      errEl.classList.add("show");
-      return;
+
+      errorEl.classList.add("show");
+
     }
-    // ================================
-    // EMAIL
-    // ================================
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      errEl.textContent =
+
+    return;
+
+  }
+
+
+  // --------------------------------------------------
+  // VALIDATE EMAIL
+  // --------------------------------------------------
+
+  const emailRegex =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+  if (!emailRegex.test(email)) {
+
+    if (errorEl) {
+
+      errorEl.textContent =
         "Email không hợp lệ.";
-      errEl.classList.add("show");
-      return;
+
+      errorEl.classList.add("show");
+
     }
-    errEl.classList.remove("show");
-    // ================================
-    // NẾU CHƯA CÓ MÃ TICKET
-    // ================================
+
+    return;
+
+  }
+
+
+  if (errorEl) {
+    errorEl.classList.remove("show");
+  }
+
+
+  // --------------------------------------------------
+  // CATEGORY
+  // --------------------------------------------------
+
+  const category =
+    getCategory(
+      selectedMainType.value
+    );
+
+
+  // --------------------------------------------------
+  // ISSUE
+  // --------------------------------------------------
+
+  const issue =
+    getIssue(
+      selectedMainType.value,
+      selectedIssue
+    );
+
+
+  const ticketIssueLabel =
+    selectedMainType.value === "other"
+      ? "Khác"
+      : issue?.label ||
+        issueSelect
+          ?.selectedOptions?.[0]
+          ?.textContent
+          ?.trim() ||
+        "Khác";
+
+
+  // --------------------------------------------------
+  // PHÒNG BAN
+  // --------------------------------------------------
+
+  const departmentCode =
+    resolveTicketDepartment(
+      selectedMainType.value,
+      selectedIssue
+    );
+
+
+  // --------------------------------------------------
+  // TICKET NUMBER
+  // --------------------------------------------------
+
+  if (
+    ticketNum ===
+    "HV-000000"
+  ) {
+
     const ticketValue =
       selectedMainType.value === "other"
         ? "other"
         : `${selectedMainType.value}-${selectedIssue}`;
-    const ticketIssueLabel =
-      selectedMainType.value === "other"
-        ? "Khác"
-        : issueSelect.selectedOptions[0].textContent.trim();
-    if (ticketNum === "HV-000000") {
-      ticketNum = genTicketNum(ticketValue);
-      updateStub();
-    }
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Đang gửi...";
-    try {
-      // ==================================
-      // DATA TICKET
-      // ==================================
-      const authClient = typeof auth !== "undefined" ? auth : window.auth;
-      const currentUser = authClient?.currentUser || null;
-      const databaseForProfile = typeof db !== "undefined" ? db : window.db;
-      let userProfile = {};
-      if (currentUser?.uid && databaseForProfile) {
-        try {
-          const profileSnapshot = await databaseForProfile.collection("users").doc(currentUser.uid).get();
-          if (profileSnapshot.exists) userProfile = profileSnapshot.data() || {};
-        } catch (profileError) {
-          console.warn("Không đọc được hồ sơ học viên, tiếp tục dùng thông tin form:", profileError);
-        }
-      }
-      const ticketData = {
-        ticketNum: ticketNum,
-        studentId: currentUser?.uid || "",
-        name: userProfile.name || name,
-        email: userProfile.email || email,
-        phone: userProfile.phone || phone || "",
-        campus: userProfile.campus || document.getElementById("fCampus")?.value?.trim() || "",
-        createdByRole: "student",
-        isStudent: isStudent,
-        course: course,
-        date: fDateEl.value,
-        ticketType: ticketValue,
-        ticketCategoryId: selectedMainType.value,
-        ticketIssueId: selectedIssue || "",
-        ticketCategory: selectedMainType.dataset.label || "Khác",
-        ticketIssue: ticketIssueLabel,
-        ticketSchemaVersion: 2,
-        title: title,
-        description: desc,
-        attachmentName: fFile.files?.[0]?.name || "",
-        attachmentType: fFile.files?.[0]?.type || "",
-        attachmentSize: fFile.files?.[0]?.size || 0,
-        status: "open",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      // ==================================
-      // LƯU TICKET
-      // ==================================
-      await database
-        .collection("tickets")
-        .doc(ticketNum)
-        .set(ticketData);
-      // ==================================
-      // TẠO MESSAGE ĐẦU TIÊN
-      // ==================================
-      await database
-        .collection("tickets")
-        .doc(ticketNum)
-        .collection("messages")
-        .add({
-          sender: "student",
-          senderType: "student",
-          senderName: ticketData.name,
-          message: desc,
-          text: desc,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      // ==================================
-      // EMAILJS
-      // ==================================
-      const templateParams = {
-        ticket_num: ticketNum,
-        name: ticketData.name,
-        email: ticketData.email,
-        phone: ticketData.phone || "Không cung cấp",
-        course: course,
-        date:
-          formatDateVN(
-            fDateEl.value
-          ),
-        ticket_type:
-          selectedMainType.value === "other"
-            ? selectedMainType.dataset.label
-            : `${selectedMainType.dataset.label} · ${ticketIssueLabel}`,
-        title: title,
-        message: desc
-      };
-      if (window.emailjs) {
-        try {
-          await window.emailjs.send(
-            EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
-            templateParams
-          );
-        } catch (emailError) {
-          console.warn("Ticket đã lưu nhưng EmailJS không gửi được:", emailError);
-        }
-      }
-      // ==================================
-      // THÀNH CÔNG
-      // ==================================
-      document.getElementById(
-        "successText"
-      ).innerHTML =
-        `Phiếu <strong>${ticketNum}</strong> —
-        "<em>${title}</em>" đã được gửi thành công.
-        Chúng tôi sẽ phản hồi lại
-        <strong>${email}</strong>
-        trong thời gian sớm nhất.`;
-      document
-        .getElementById("formView")
-        .classList.add("hide");
-      document
-        .getElementById("successView")
-        .classList.add("show");
-      if (layoutContainer) {
-        layoutContainer.classList.add(
-          "has-submitted"
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Ticket error:",
-        error
+
+
+    ticketNum =
+      genTicketNum(
+        ticketValue
       );
-      errEl.textContent =
+
+
+    updateStub();
+
+  }
+
+
+  // --------------------------------------------------
+  // DISABLE BUTTON
+  // --------------------------------------------------
+
+  if (submitBtn) {
+
+    submitBtn.disabled =
+      true;
+
+    submitBtn.textContent =
+      "Đang gửi...";
+
+  }
+
+
+  try {
+
+    // ==================================================
+    // USER AUTH
+    // ==================================================
+
+    const auth =
+      getAuth();
+
+    const currentUser =
+      auth?.currentUser ||
+      null;
+
+
+    // ==================================================
+    // LẤY PROFILE FIREBASE
+    // ==================================================
+
+    let userProfile = {};
+
+
+    if (
+      currentUser?.uid &&
+      database
+    ) {
+
+      try {
+
+        const profileSnapshot =
+          await database
+            .collection("users")
+            .doc(currentUser.uid)
+            .get();
+
+
+        if (
+          profileSnapshot.exists
+        ) {
+
+          userProfile =
+            profileSnapshot.data() ||
+            {};
+
+        }
+
+      } catch (profileError) {
+
+        console.warn(
+          "Không đọc được hồ sơ học viên, tiếp tục dùng thông tin form:",
+          profileError
+        );
+
+      }
+
+    }
+
+
+    // ==================================================
+    // TICKET DATA
+    // ==================================================
+
+    const ticketData = {
+
+      // ----------------------------------------------
+      // ID
+      // ----------------------------------------------
+
+      ticketNum:
+
+
+        ticketNum,
+
+
+      studentId:
+
+
+        currentUser?.uid ||
+        loggedInUser?.uid ||
+        "",
+
+
+      // ----------------------------------------------
+      // NGƯỜI GỬI
+      // ----------------------------------------------
+
+      name:
+
+
+        userProfile.name ||
+        loggedInUser?.name ||
+        name,
+
+
+      email:
+
+
+        userProfile.email ||
+        loggedInUser?.email ||
+        email,
+
+
+      phone:
+
+
+        userProfile.phone ||
+        loggedInUser?.phone ||
+        phone ||
+        "",
+
+
+      // ----------------------------------------------
+      // CAMPUS
+      // ----------------------------------------------
+
+      campus:
+
+
+        userProfile.campus ||
+        loggedInUser?.campus ||
+        campus ||
+        "",
+
+
+      // ----------------------------------------------
+      // ROLE
+      // ----------------------------------------------
+
+      createdByRole:
+
+
+        userProfile.role ||
+        loggedInUser?.role ||
+        "student",
+
+
+      // ----------------------------------------------
+      // KHÓA HỌC
+      // ----------------------------------------------
+
+      isStudent:
+
+
+        isStudent,
+
+
+      course:
+
+
+        course,
+
+
+      // ----------------------------------------------
+      // DATE
+      // ----------------------------------------------
+
+      date:
+
+
+        fDateEl?.value ||
+        isoToday(),
+
+
+      // ----------------------------------------------
+      // TICKET TYPE
+      // ----------------------------------------------
+
+      ticketType:
+
+
+        selectedIssue ||
+        selectedMainType.value,
+
+
+      // ----------------------------------------------
+      // CATEGORY ID
+      // ----------------------------------------------
+
+      ticketCategoryId:
+
+
+        selectedMainType.value,
+
+
+      // ----------------------------------------------
+      // ISSUE ID
+      // ----------------------------------------------
+
+      ticketIssueId:
+
+
+        selectedIssue ||
+        "",
+
+
+      // ----------------------------------------------
+      // CATEGORY NAME
+      // ----------------------------------------------
+
+      ticketCategory:
+
+
+        category?.label ||
+        selectedMainType.dataset.label ||
+        "Khác",
+
+
+      // ----------------------------------------------
+      // ISSUE NAME
+      // ----------------------------------------------
+
+      ticketIssue:
+
+
+        ticketIssueLabel,
+
+
+      // ----------------------------------------------
+      // PHÒNG BAN
+      // ----------------------------------------------
+
+      departmentCode:
+
+
+        departmentCode,
+
+
+      // ----------------------------------------------
+      // SCHEMA VERSION
+      // ----------------------------------------------
+
+      ticketSchemaVersion:
+
+
+        2,
+
+
+      // ----------------------------------------------
+      // CONTENT
+      // ----------------------------------------------
+
+      title:
+
+
+        title,
+
+
+      description:
+
+
+        description,
+
+
+      // ----------------------------------------------
+      // FILE
+      // ----------------------------------------------
+
+      attachmentName:
+
+
+        selectedFile?.name ||
+        fFile?.files?.[0]?.name ||
+        "",
+
+
+      attachmentType:
+
+
+        selectedFile?.type ||
+        fFile?.files?.[0]?.type ||
+        "",
+
+
+      attachmentSize:
+
+
+        selectedFile?.size ||
+        fFile?.files?.[0]?.size ||
+        0,
+
+
+      // ----------------------------------------------
+      // STATUS
+      // ----------------------------------------------
+
+      status:
+
+
+        "open",
+
+
+      // ----------------------------------------------
+      // TIMESTAMP
+      // ----------------------------------------------
+
+      createdAt:
+
+
+        firebase.firestore.FieldValue.serverTimestamp(),
+
+
+      updatedAt:
+
+
+        firebase.firestore.FieldValue.serverTimestamp()
+
+    };
+
+
+    // ==================================================
+    // DEBUG
+    // ==================================================
+
+    console.log(
+      "========== TICKET DATA =========="
+    );
+
+    console.log(
+      ticketData
+    );
+
+    console.log(
+      "Department:",
+      departmentCode
+    );
+
+
+    // ==================================================
+    // LƯU TICKET
+    // ==================================================
+
+    await database
+      .collection("tickets")
+      .doc(ticketNum)
+      .set(ticketData);
+
+
+    // ==================================================
+    // MESSAGE ĐẦU TIÊN
+    // ==================================================
+
+    await database
+      .collection("tickets")
+      .doc(ticketNum)
+      .collection("messages")
+      .add({
+
+        sender:
+          "student",
+
+        senderType:
+          "student",
+
+        senderName:
+          ticketData.name,
+
+        message:
+          description,
+
+        text:
+          description,
+
+        createdAt:
+          firebase.firestore.FieldValue.serverTimestamp()
+
+      });
+
+
+    // ==================================================
+    // EMAILJS
+    // ==================================================
+
+    const templateParams = {
+
+      ticket_num:
+        ticketNum,
+
+      name:
+        ticketData.name,
+
+      email:
+        ticketData.email,
+
+      phone:
+        ticketData.phone ||
+        "Không cung cấp",
+
+      course:
+        course,
+
+      date:
+        formatDateVN(
+          ticketData.date
+        ),
+
+      ticket_type:
+        selectedMainType.value === "other"
+          ? ticketData.ticketCategory
+          : `${ticketData.ticketCategory} · ${ticketIssueLabel}`,
+
+      title:
+        title,
+
+      message:
+        description
+
+    };
+
+
+    if (window.emailjs) {
+
+      try {
+
+        await window.emailjs.send(
+
+          EMAILJS_SERVICE_ID,
+
+          EMAILJS_TEMPLATE_ID,
+
+          templateParams
+
+        );
+
+      } catch (emailError) {
+
+        console.warn(
+          "Ticket đã lưu nhưng EmailJS không gửi được:",
+          emailError
+        );
+
+      }
+
+    }
+
+
+    // ==================================================
+    // SUCCESS
+    // ==================================================
+
+    const successText =
+      $("successText");
+
+
+    if (successText) {
+
+      successText.innerHTML = `
+        Phiếu
+        <strong>
+          ${escapeHTML(ticketNum)}
+        </strong>
+        —
+        "<em>
+          ${escapeHTML(title)}
+        </em>"
+        đã được gửi thành công.
+
+        Chúng tôi sẽ phản hồi lại
+        <strong>
+          ${escapeHTML(email)}
+        </strong>
+        trong thời gian sớm nhất.
+      `;
+
+    }
+
+
+    if (formView) {
+
+      formView.classList.add(
+        "hide"
+      );
+
+    }
+
+
+    if (successView) {
+
+      successView.classList.add(
+        "show"
+      );
+
+    }
+
+
+    if (layoutContainer) {
+
+      layoutContainer.classList.add(
+        "has-submitted"
+      );
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Ticket error:",
+      error
+    );
+
+
+    if (errorEl) {
+
+      errorEl.textContent =
         "Không thể gửi phiếu. Vui lòng kiểm tra kết nối và thử lại.";
-      errEl.classList.add("show");
-    } finally {
-      submitBtn.disabled = false;
+
+      errorEl.classList.add(
+        "show"
+      );
+
+    }
+
+  } finally {
+
+    if (submitBtn) {
+
+      submitBtn.disabled =
+        false;
+
       submitBtn.textContent =
         "Gửi yêu cầu";
+
     }
+
   }
-);
+
+}
+
+
 // ======================================================
-// TẠO PHIẾU MỚI
+// SUBMIT EVENT
 // ======================================================
-document
-  .getElementById("againBtn")
-  .addEventListener("click", () => {
-    document
-      .querySelectorAll(
-        'input[type="text"], input[type="email"], input[type="tel"], textarea'
-      )
-      .forEach((input) => {
-        input.value = "";
-      });
-    document.getElementById(
-      "fileName"
-    ).textContent = "";
-    if (fFile) {
-      fFile.value = "";
-    }
+
+if (submitBtn) {
+
+  submitBtn.addEventListener(
+    "click",
+    submitTicket
+  );
+
+}
+
+
+// ======================================================
+// RESET FORM
+// ======================================================
+
+function resetForm() {
+
+  document
+    .querySelectorAll(
+      "#formView input:not([type=checkbox]):not([type=radio]), #formView textarea"
+    )
+    .forEach(input => {
+
+      /*
+       * Nếu đang đăng nhập thì
+       * không xóa name/email/campus.
+       */
+
+      if (
+        loggedInUser &&
+        (
+          input.id === "fName" ||
+          input.id === "fEmail" ||
+          input.id === "fCampus"
+        )
+      ) {
+
+        return;
+
+      }
+
+      input.value = "";
+
+    });
+
+
+  // --------------------------------------------------
+  // FILE
+  // --------------------------------------------------
+
+  if (fFile) {
+    fFile.value = "";
+  }
+
+  selectedFile = null;
+
+
+  if (fileNameEl) {
+    fileNameEl.textContent = "";
+  }
+
+
+  // --------------------------------------------------
+  // COURSE
+  // --------------------------------------------------
+
+  if (chkCourse) {
     chkCourse.checked = false;
+  }
+
+
+  if (courseBoxWrap) {
+
     courseBoxWrap.classList.remove(
       "show"
     );
-    chips().forEach((chip) => {
+
+  }
+
+
+  // --------------------------------------------------
+  // CATEGORY
+  // --------------------------------------------------
+
+  chips().forEach(
+    chip => {
       chip.classList.remove(
         "active"
       );
+    }
+  );
+
+
+  document
+    .querySelectorAll(
+      'input[name="ticketMainType"]'
+    )
+    .forEach(input => {
+
+      input.checked =
+        false;
+
     });
-    document
-      .querySelectorAll(
-        'input[name="ticketMainType"]'
-      )
-      .forEach((input) => {
-        input.checked = false;
-      });
-    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
-    issueField.classList.remove("show");
-    issueSelect.disabled = true;
+
+
+  // --------------------------------------------------
+  // ISSUE
+  // --------------------------------------------------
+
+  if (issueSelect) {
+
+    issueSelect.innerHTML =
+      '<option value="">-- Chọn chi tiết vấn đề --</option>';
+
+    issueSelect.disabled =
+      true;
+
     issueSelect.value = "";
+
+  }
+
+
+  if (issueField) {
+
+    issueField.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // DATE
+  // --------------------------------------------------
+
+  if (fDateEl) {
+
     fDateEl.value =
       isoToday();
-    ticketNum =
-      "HV-000000";
-    updateStub();
-    if (layoutContainer) {
-      layoutContainer.classList.remove(
-        "has-submitted"
-      );
-    }
-    document
-      .getElementById("successView")
-      .classList.remove("show");
-    document
-      .getElementById("formView")
-      .classList.remove("hide");
-  });
-  
+
+  }
+
+
+  // --------------------------------------------------
+  // TICKET NUMBER
+  // --------------------------------------------------
+
+  ticketNum =
+    "HV-000000";
+
+
+  // --------------------------------------------------
+  // ERROR
+  // --------------------------------------------------
+
+  const errorEl =
+    $("errorText");
+
+  if (errorEl) {
+
+    errorEl.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // LAYOUT
+  // --------------------------------------------------
+
+  if (layoutContainer) {
+
+    layoutContainer.classList.remove(
+      "has-submitted"
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // VIEW
+  // --------------------------------------------------
+
+  if (successView) {
+
+    successView.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  if (formView) {
+
+    formView.classList.remove(
+      "hide"
+    );
+
+  }
+
+
+  updateStub();
+
+}
+
+
+// ======================================================
+// AGAIN BUTTON
+// ======================================================
+
+if (againBtn) {
+
+  againBtn.addEventListener(
+    "click",
+    resetForm
+  );
+
+}
+
+
+// ======================================================
+// INIT
+// ======================================================
+
+renderCategories();
+
+updateStub();
+
+console.log(
+  "phieuhotro-cs.js đã khởi tạo thành công."
+);
