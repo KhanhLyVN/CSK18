@@ -213,17 +213,26 @@ if (loginForm) {
             loginBtn.textContent = "Thành công!";
 
             setTimeout(async () => {
-                const role = await CSK18.getRole(user);
+                try {
+                    const userDoc = await db.collection("users").doc(user.uid).get();
+                    const role = userDoc.exists ? String(userDoc.data().role || "").trim().toLowerCase() : "";
 
-                if (role === "admin") {
-                    window.location.href = "/ADMIN/homepage-ad.html";
-                } else if (role === "cs") {
-                    window.location.href = "/CS/homepageCS/trangchu-cs.html";
-                } else if (role === "student") {
-                    window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
-                } else {
+                    if (role === "admin" || role === "customer success admin" || role === "cs_admin") {
+                        window.location.href = "/ADMIN/homepage-ad.html";
+                    } else if (role === "cs" || role === "customer success" || role === "customer_success" || role === "staff") {
+                        window.location.href = "/CS/homepageCS/trangchu-cs.html";
+                    } else if (role === "student") {
+                        window.location.href = "/HV/homepage-hv/homepage.html";
+                    } else {
+                        await auth.signOut();
+                        toast("Tài khoản chưa được phân quyền trong hệ thống.", "error");
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = "Đăng nhập";
+                    }
+                } catch (error) {
+                    console.error("Lỗi xác định role:", error);
                     await auth.signOut();
-                    toast("Tài khoản chưa được phân quyền trong hệ thống.", "error");
+                    toast("Không xác định được quyền tài khoản.", "error");
                     loginBtn.disabled = false;
                     loginBtn.textContent = "Đăng nhập";
                 }
