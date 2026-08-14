@@ -354,7 +354,7 @@ document.querySelectorAll('.stat-card').forEach(card => {
   card.addEventListener('click', () => {
     const filter = card.dataset.filter || 'all';
     const status = card.dataset.status;
-    let url = `/CS/Ticket Management/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
+    let url = `/CS/TicketManagement/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
     if(status) url += `&status=${encodeURIComponent(status)}`;
     window.location.href = url;
   });
