@@ -968,14 +968,17 @@ document.getElementById('confirmAccountsBtn').addEventListener('click', async ()
                             : '',
                         email: row.studentEmail,
                         username: row.username,
-                        password: row.password,
-                        role: 'cs',
-                        roleLabel: 'CS',
+
+                        // Xác định loại tài khoản
                         accountType: 'customer_success',
+
                         provider: 'e-mail',
+
+                        // Thông tin nhân sự
                         phone: row.phone || '',
                         department: row.department || '',
                         campus: row.campus || '',
+
                         passwordCreated: true,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -1175,10 +1178,16 @@ Vui lòng bảo mật thông tin đăng nhập.
 }
 async function getAllCsAccountsFromFirebase() {
     try {
-        const snapshot = await accountDb.collection('users').where('role', '==', 'cs').get();
+        const snapshot = await accountDb
+            .collection('users')
+            .where('accountType', '==', 'customer_success')
+            .get();
+
         const accounts = [];
+
         snapshot.forEach(doc => {
             const data = doc.data();
+
             accounts.push({
                 name: data.name || '',
                 email: data.email || '',
@@ -1190,10 +1199,19 @@ async function getAllCsAccountsFromFirebase() {
                 uid: data.uid || ''
             });
         });
+
         return accounts;
+
     } catch (error) {
-        console.error('Lỗi lấy danh sách tài khoản CS:', error);
-        toast('Không thể lấy danh sách tài khoản CS từ Firebase.');
+        console.error(
+            'Lỗi lấy danh sách tài khoản CS:',
+            error
+        );
+
+        toast(
+            'Không thể lấy danh sách tài khoản CS từ Firebase.'
+        );
+
         return [];
     }
 }
