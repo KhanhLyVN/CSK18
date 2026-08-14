@@ -120,3 +120,294 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--maroon); outlin
   .recent-item > .status-badge { grid-column: 2; grid-row: 1; }
   .recent-date { grid-column: 1; grid-row: 3; }
 }
+
+/* ============================================================
+ 12. NOTIFICATION DRAWER
+ Nút thông báo nằm trong topbar; panel trượt từ phải và chỉ
+ hiển thị thay đổi trạng thái của ticket thuộc học viên hiện tại.
+============================================================ */
+
+.notification-button {
+  position: relative;
+
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: 8px;
+  padding: 0;
+
+  color: var(--cream-pale);
+  background: rgba(255, 255, 255, .08);
+
+  border: 1px solid rgba(251, 244, 233, .24);
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  transition: background .16s ease, transform .16s ease;
+}
+
+.notification-button:hover,
+.notification-button:focus-visible {
+  background: rgba(255, 255, 255, .18);
+}
+
+.notification-button:active {
+  transform: scale(.95);
+}
+
+.notification-button svg {
+  width: 17px;
+  height: 17px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 17px;
+  height: 17px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  color: var(--maroon-deep);
+  background: var(--gold);
+
+  border: 2px solid var(--maroon);
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.notification-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 80;
+
+  width: min(390px, 100vw);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+  box-shadow: 0 20px 55px rgba(42, 23, 18, .22);
+
+  transform: translateX(105%);
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+.notification-panel.open {
+  transform: translateX(0);
+}
+
+.notification-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 22px 20px 18px;
+
+  color: var(--cream-pale);
+  background: linear-gradient(135deg, var(--maroon), var(--maroon-soft));
+}
+
+.notification-kicker {
+  display: block;
+  color: rgba(251, 244, 233, .72);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.notification-panel h2 {
+  margin: 4px 0 0;
+  color: var(--cream-pale);
+  font: 600 24px/1.1 "Fraunces", serif;
+}
+
+.notification-panel-head p {
+  margin: 7px 0 0;
+  color: rgba(251, 244, 233, .76);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.notification-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--cream-pale);
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(251, 244, 233, .28);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.notification-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  color: var(--muted);
+  background: var(--cream-pale);
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+}
+
+.notification-toolbar button {
+  padding: 0;
+  color: var(--maroon);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.notification-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 10px;
+  background: #fffaf4;
+}
+
+.notification-list:empty {
+  display: none;
+}
+
+.notification-item {
+  display: block;
+  margin-bottom: 8px;
+  padding: 13px 14px;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 9px;
+  text-decoration: none;
+  transition: background .16s ease, transform .16s ease, border-color .16s ease;
+}
+
+.notification-item:hover {
+  background: #fffdf9;
+  border-color: var(--maroon);
+  transform: translateY(-1px);
+}
+
+.notification-item.is-read {
+  border-left-color: rgba(93, 7, 3, .2);
+  opacity: .7;
+}
+
+.notification-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.notification-item-code {
+  color: var(--maroon);
+  font: 600 10px/1 "IBM Plex Mono", monospace;
+}
+
+.notification-item-time {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.notification-item-title {
+  margin-top: 7px;
+  color: var(--maroon-deep);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.notification-item-message {
+  margin-top: 5px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.notification-item-status {
+  display: inline-flex;
+  margin-top: 9px;
+  padding: 4px 8px;
+  color: var(--maroon);
+  background: var(--cream);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.notification-empty {
+  display: none;
+  padding: 48px 26px;
+  color: var(--muted);
+  background: #fffaf4;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.notification-empty.show {
+  display: block;
+}
+
+.notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(42, 23, 18, .24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.notification-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 600px) {
+  .notification-button { margin-left: 3px; }
+  .topbar-status { display: inline-flex; gap: 0; }
+  .topbar-status > #connectionDot, .topbar-status > #connectionLabel { display: none; }
+  .notification-panel { width: 100vw; }
+  .notification-panel-head { padding: 18px 16px 15px; }
+  .notification-list { padding: 9px; }
+}
+  

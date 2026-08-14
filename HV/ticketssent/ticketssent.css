@@ -56,7 +56,7 @@
 
 .sent-count strong {
   color: var(--maroon);
-  font: 600 32px / 1 Fraunces, serif;
+  font: 800 9px / 1 F  serif;
 }
 
 .sent-count span { margin-top: 4px; font-size: 11px; }

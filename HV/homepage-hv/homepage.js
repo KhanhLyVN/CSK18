@@ -9,6 +9,96 @@ document.addEventListener("DOMContentLoaded", () => {
   const connectionLabelEl = document.getElementById("connectionLabel");
   const todayLabelEl = document.getElementById("todayLabel");
   const welcomeNameEl = document.getElementById("welcomeName");
+  const notificationButton = document.getElementById("notificationButton");
+  const notificationCountEl = document.getElementById("notificationCount");
+  const notificationPanel = document.getElementById("notificationPanel");
+  const notificationClose = document.getElementById("notificationClose");
+  const notificationBackdrop = document.getElementById("notificationBackdrop");
+  const notificationList = document.getElementById("notificationList");
+  const notificationEmpty = document.getElementById("notificationEmpty");
+  const notificationUnreadLabel = document.getElementById("notificationUnreadLabel");
+
+  let currentStudentUid = "";
+  let notificationRecords = [];
+
+  function renderNotifications() {
+    if (!notificationList) return;
+
+    const unreadCount = notificationRecords.length;
+
+    if (notificationCountEl) {
+      notificationCountEl.hidden = unreadCount === 0;
+      notificationCountEl.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+    }
+
+    if (notificationUnreadLabel) {
+      notificationUnreadLabel.textContent = unreadCount
+        ? `${unreadCount} thông báo mới nhất`
+        : "Chưa có thông báo";
+    }
+
+    if (notificationEmpty) notificationEmpty.classList.toggle("show", notificationRecords.length === 0);
+    notificationList.innerHTML = notificationRecords.map(item => `
+      <a class="notification-item" href="/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(item.ticketId)}">
+        <div class="notification-item-head"><span class="notification-item-code">${escapeHTML(item.ticketNum)}</span><span class="notification-item-time">${escapeHTML(formatDate(item.createdAt || item.updatedAt))}</span></div>
+        <div class="notification-item-title">${escapeHTML(item.title || "Ticket hỗ trợ")}</div>
+        <div class="notification-item-message">${escapeHTML(item.preview || (item.type === "message" ? "Customer Success đã gửi tin nhắn mới." : "Customer Success đã cập nhật trạng thái ticket."))}</div>
+        <span class="notification-item-status">${escapeHTML(item.type === "message" ? "Tin nhắn mới" : (item.statusLabel || "Cập nhật trạng thái"))}</span>
+      </a>
+    `).join("");
+  }
+
+  function readTicketNotificationHistory(tickets) {
+    notificationRecords = tickets
+      .flatMap(ticket => {
+        const history = Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : [];
+        return history.map(item => ({
+          ...item,
+          ticketId: item.ticketId || ticket.id,
+          ticketNum: item.ticketNum || firstValue(ticket, "ticketNum", "ticket_num", "id") || "Ticket",
+          title: item.title || firstValue(ticket, "title", "subject") || "Ticket hỗ trợ"
+        }));
+      })
+      .sort((a, b) => getMillis(b.createdAt) - getMillis(a.createdAt))
+      .slice(0, 50);
+
+    renderNotifications();
+  }
+
+  function openNotifications() {
+    if (!notificationPanel) return;
+
+    notificationPanel.classList.add("open");
+    notificationPanel.setAttribute("aria-hidden", "false");
+    notificationButton?.setAttribute("aria-expanded", "true");
+    if (notificationBackdrop) {
+      notificationBackdrop.hidden = false;
+      requestAnimationFrame(() => notificationBackdrop.classList.add("show"));
+    }
+  }
+
+  function closeNotifications() {
+    if (!notificationPanel) return;
+
+    notificationPanel.classList.remove("open");
+    notificationPanel.setAttribute("aria-hidden", "true");
+    notificationButton?.setAttribute("aria-expanded", "false");
+    notificationBackdrop?.classList.remove("show");
+    window.setTimeout(() => {
+      if (notificationBackdrop) notificationBackdrop.hidden = true;
+    }, 200);
+  }
+
+  notificationButton?.addEventListener("click", () => {
+    notificationPanel?.classList.contains("open") ? closeNotifications() : openNotifications();
+  });
+  notificationClose?.addEventListener("click", closeNotifications);
+  notificationBackdrop?.addEventListener("click", closeNotifications);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeNotifications();
+  });
+
+  renderNotifications();
 
   // ======================================================
   // STATUS
@@ -17,6 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const STATUS_META = {
     open: {
       label: "Đang mở",
+      className: "status-open"
+    },
+
+    pending: {
+      label: "Đang chờ",
       className: "status-open"
     },
 
@@ -87,10 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function normalizeStatus(status) {
 
-    if (
-      status === "pending" ||
-      !STATUS_META[status]
-    ) {
+    if (!STATUS_META[status]) {
 
       return "open";
 
@@ -399,6 +491,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ----------------------------------------------------
 
     if (!user) {
+      currentStudentUid = "";
+      notificationRecords = [];
+      renderNotifications();
 
       updateWelcomeName("Học viên");
 
@@ -437,6 +532,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const currentUid =
       user.uid;
+
+    currentStudentUid = currentUid;
 
 
     console.log(
@@ -561,6 +658,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           open: 0,
 
+          pending: 0,
+
           in_progress: 0,
 
           resolved: 0,
@@ -589,6 +688,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setText(
           openTicketsEl,
           counts.open +
+          counts.pending +
           counts.in_progress +
           counts.resolved
         );
@@ -630,6 +730,9 @@ document.addEventListener("DOMContentLoaded", () => {
           tickets
         );
 
+        if (notificationPanel) {
+          readTicketNotificationHistory(tickets);
+        }
 
         console.log(
           `Đã tải ${tickets.length} ticket của user ${currentUid}`

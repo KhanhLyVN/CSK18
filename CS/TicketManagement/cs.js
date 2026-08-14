@@ -538,6 +538,60 @@
 
 
   /* =========================================================
+     STUDENT NOTIFICATIONS
+     CS tạo notification cùng transaction với status/message.
+  ========================================================= */
+
+  function getTicketStudentId(ticket) {
+      return String(
+          ticket?.studentId ||
+          ticket?.studentUid ||
+          ticket?.userId ||
+          ""
+      ).trim();
+  }
+
+
+  function notificationPreview(value) {
+      return String(value || "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 160);
+  }
+
+
+  function createNotificationData(ticket, options) {
+      const status = normalizeStatus(ticket.status);
+
+      return {
+          id: `${ticket.id}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`,
+          type: options.type,
+          studentId: getTicketStudentId(ticket),
+          ticketId: ticket.id,
+          ticketNum: getTicketNum(ticket),
+          title: getTicketTitle(ticket),
+          campus: getTicketCampus(ticket),
+          status,
+          statusLabel: getStatusLabel(status),
+          preview: notificationPreview(options.preview),
+          createdAt: firebase.firestore.Timestamp.now(),
+          createdByUid: currentCSUser?.uid || "",
+          createdByEmail: currentCSUser?.email || "",
+          createdByName: currentCSProfile?.name || currentCSUser?.displayName || "Customer Success"
+      };
+  }
+
+
+  function appendNotificationHistory(ticketData, notification) {
+      const history = Array.isArray(ticketData?.notificationHistory)
+          ? ticketData.notificationHistory
+          : [];
+
+      return [...history, notification].slice(-50);
+  }
+
+
+  /* =========================================================
      DATE
   ========================================================= */
 
@@ -2581,32 +2635,30 @@
 
       try {
 
-          await db
-              .collection(
-                  TICKET_COLLECTION
-              )
-              .doc(
-                  ticket.id
-              )
-              .update({
+          const ticketRef = db
+              .collection(TICKET_COLLECTION)
+              .doc(ticket.id);
 
-                  status:
-                      normalizedStatus,
+          const notification = createNotificationData(
+              { ...ticket, status: normalizedStatus },
+              {
+                  type: "status",
+                  preview: `Customer Success đã cập nhật trạng thái thành ${getStatusLabel(normalizedStatus)}.`
+              }
+          );
 
-                  updatedAt:
-                      firebase
-                          .firestore
-                          .FieldValue
-                          .serverTimestamp(),
+          await db.runTransaction(async transaction => {
+              const snapshot = await transaction.get(ticketRef);
+              const latestTicket = snapshot.exists ? snapshot.data() : {};
 
-                  updatedByUid:
-                      currentCSUser?.uid ||
-                      "",
-
-                  updatedByEmail:
-                      currentCSUser?.email ||
-                      ""
+              transaction.update(ticketRef, {
+                  status: normalizedStatus,
+                  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  updatedByUid: currentCSUser?.uid || "",
+                  updatedByEmail: currentCSUser?.email || "",
+                  notificationHistory: appendNotificationHistory(latestTicket, notification)
               });
+          });
 
 
           ticket.status =
@@ -3162,47 +3214,38 @@
               true;
 
 
-          await db
-              .collection(
-                  TICKET_COLLECTION
-              )
-              .doc(
-                  selectedTicket.id
-              )
-              .collection(
-                  CHAT_SUBCOLLECTION
-              )
-              .add({
+          const ticketRef = db
+              .collection(TICKET_COLLECTION)
+              .doc(selectedTicket.id);
 
-                  text: text,
+          const messageRef = ticketRef.collection(CHAT_SUBCOLLECTION).doc();
+          const notification = createNotificationData(selectedTicket, {
+              type: "message",
+              preview: text
+          });
 
-                  senderUid:
-                      currentCSUser.uid,
+          await db.runTransaction(async transaction => {
+              const snapshot = await transaction.get(ticketRef);
+              const latestTicket = snapshot.exists ? snapshot.data() : {};
 
-                  senderId:
-                      currentCSUser.uid,
-
-                  senderEmail:
-                      currentCSUser.email ||
-                      "",
-
-                  senderName:
-                      currentCSProfile?.name ||
-                      currentCSUser.displayName ||
-                      "Customer Success",
-
-                  senderRole:
-                      "cs",
-
-                  senderType:
-                      "cs",
-
-                  createdAt:
-                      firebase
-                          .firestore
-                          .FieldValue
-                          .serverTimestamp()
+              transaction.set(messageRef, {
+                  text,
+                  senderUid: currentCSUser.uid,
+                  senderId: currentCSUser.uid,
+                  senderEmail: currentCSUser.email || "",
+                  senderName: currentCSProfile?.name || currentCSUser.displayName || "Customer Success",
+                  senderRole: "cs",
+                  senderType: "cs",
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp()
               });
+
+              transaction.update(ticketRef, {
+                  lastMessage: text,
+                  lastCSReply: text,
+                  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  notificationHistory: appendNotificationHistory(latestTicket, notification)
+              });
+          });
 
 
           chatInput.value =
