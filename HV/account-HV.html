@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/HV/homepage-hvhomepage.css">
+    <!-- <link rel="stylesheet" href="/HV/homepage-hvhomepage.css"> -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -186,6 +186,79 @@
             color: var(--maroon);
             font-family: 'Fraunces', serif;
             font-size: 20px;
+        }
+        /* =========================
+        AUTH EMPTY STATE
+        ========================= */
+
+        .auth-empty-state {
+            display: none;
+            padding: 55px 30px;
+            text-align: center;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .auth-empty-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--maroon);
+            font-size: 28px;
+        }
+
+        .auth-empty-state h2 {
+            margin: 0;
+            color: var(--maroon);
+            font-family: 'Fraunces', serif;
+            font-size: 25px;
+        }
+
+        .auth-empty-state p {
+            max-width: 480px;
+            margin: 9px auto 22px;
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .auth-login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 150px;
+            padding: 11px 18px;
+            border-radius: 8px;
+            background: var(--maroon);
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: .2s ease;
+        }
+
+        .auth-login-btn:hover {
+            background: var(--maroon-deep);
+            transform: translateY(-1px);
+        }
+
+        /* Khi chưa đăng nhập */
+        .container.auth-logged-out .page-header,
+        .container.auth-logged-out .profile-card,
+        .container.auth-logged-out .grid {
+            display: none;
+        }
+
+        .container.auth-logged-out .auth-empty-state {
+            display: block;
         }
         .info-list {
             display: flex;
@@ -461,10 +534,27 @@
         ← Quay lại
     </a>
 </header> -->
-<div class="container">
+<div class="container" id="accountContainer">
     <div class="page-header">
         <h1>Tài khoản của tôi</h1>
         <p>Quản lý thông tin và bảo mật tài khoản học viên.</p>
+    </div>
+    <div class="auth-empty-state" id="authEmptyState">
+        <div class="auth-empty-icon">
+            <i class="fa-solid fa-user-lock"></i>
+        </div>
+
+        <h2>Bạn chưa đăng nhập</h2>
+
+        <p>
+            Vui lòng đăng nhập vào tài khoản học viên để xem
+            thông tin cá nhân và quản lý tài khoản của bạn.
+        </p>
+
+        <a href="/CS/login/login.html" class="auth-login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Đăng nhập
+        </a>
     </div>
     <section class="profile-card">
         <div class="avatar" id="avatar">
@@ -477,8 +567,8 @@
             <p id="profileEmail">
                 Đang tải...
             </p>
-            <span class="role-badge">
-                HỌC VIÊN
+            <span class="role-badge" id="roleBadge">
+                —
             </span>
         </div>
     </section>
@@ -519,8 +609,8 @@
                     <span class="info-label">
                         Vai trò
                     </span>
-                    <span class="info-value">
-                        Student
+                    <span class="info-value" id="role">
+                        —
                     </span>
                 </div>
             </div>
@@ -638,58 +728,175 @@
 </div>
 <div id="toast"></div>
 <script>
-/* firebase-config.js đã khởi tạo sẵn: firebase.initializeApp(...),
-   và các biến global auth / db / storage.
-   Vì vậy ở đây KHÔNG khai báo lại const auth / const db để tránh
-   lỗi "Identifier has already been declared". */
 const $ = id => document.getElementById(id);
+
+const accountContainer = $("accountContainer");
+const authEmptyState = $("authEmptyState");
+
 /* =========================
    SHOW / HIDE PASSWORD
 ========================= */
+
 document.querySelectorAll(".toggle-password").forEach(button => {
+
     button.addEventListener("click", () => {
+
         const input = $(button.dataset.target);
+
+        if (!input) return;
+
         const isHidden = input.type === "password";
+
         input.type = isHidden ? "text" : "password";
+
         const icon = button.querySelector("i");
+
         icon.classList.toggle("fa-eye", !isHidden);
         icon.classList.toggle("fa-eye-slash", isHidden);
+
         button.setAttribute(
             "aria-label",
             isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
         );
+
         button.setAttribute(
             "title",
             isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
         );
     });
+
 });
+
+
 /* =========================
    TOAST
 ========================= */
+
 function toast(message) {
+
     const element = $("toast");
+
+    if (!element) return;
+
     element.textContent = message;
+
     element.classList.add("show");
+
     clearTimeout(window.toastTimer);
+
     window.toastTimer = setTimeout(() => {
+
         element.classList.remove("show");
+
     }, 2200);
 }
+
+
+/* =========================
+   ROLE FORMAT
+========================= */
+
+function formatRole(role) {
+
+    if (!role) return "Chưa xác định";
+
+    const value = String(role)
+        .trim()
+        .toLowerCase();
+
+    const roleMap = {
+
+        student: "Học viên",
+        hocvien: "Học viên",
+        "học viên": "Học viên",
+
+        cs: "Customer Success",
+        customer_success: "Customer Success",
+        customersuccess: "Customer Success",
+
+        admin: "Quản trị viên",
+        administrator: "Quản trị viên",
+
+        manager: "Quản lý",
+
+        teacher: "Giảng viên",
+        instructor: "Giảng viên",
+
+        seller: "Seller",
+
+        staff: "Nhân viên"
+
+    };
+
+    return roleMap[value] || role;
+}
+
+
+/* =========================
+   RESET ACCOUNT UI
+========================= */
+
+function showLoggedOutState() {
+
+    accountContainer.classList.add("auth-logged-out");
+
+    $("profileName").textContent = "Chưa đăng nhập";
+    $("profileEmail").textContent = "Vui lòng đăng nhập để xem tài khoản";
+
+    $("avatar").textContent = "HV";
+
+    $("name").textContent = "—";
+    $("class").textContent = "—";
+    $("campus").textContent = "—";
+    $("username").textContent = "—";
+    $("email").textContent = "—";
+    $("role").textContent = "—";
+    $("roleBadge").textContent = "CHƯA ĐĂNG NHẬP";
+}
+
+
+/* =========================
+   SHOW ACCOUNT
+========================= */
+
+function showLoggedInState() {
+
+    accountContainer.classList.remove("auth-logged-out");
+
+}
+
+
 /* =========================
    LOAD ACCOUNT
 ========================= */
+
 auth.onAuthStateChanged(async user => {
 
     console.log("Auth state:", user);
 
+    /*
+     * KHÔNG ĐĂNG NHẬP
+     */
+
     if (!user) {
+
         console.log("Không có Firebase session.");
-        toast("Bạn chưa đăng nhập.");
+
+        showLoggedOutState();
+
         return;
     }
 
-    console.log("Đã đăng nhập:", user.uid, user.email);
+
+    /*
+     * ĐÃ ĐĂNG NHẬP
+     */
+
+    console.log(
+        "Đã đăng nhập:",
+        user.uid,
+        user.email
+    );
 
     try {
 
@@ -698,78 +905,158 @@ auth.onAuthStateChanged(async user => {
             .doc(user.uid)
             .get();
 
+
         if (!doc.exists) {
+
             console.error(
                 "Không tìm thấy users/" + user.uid
             );
 
-            toast("Không tìm thấy thông tin học viên.");
+            showLoggedOutState();
+
+            toast("Không tìm thấy thông tin tài khoản.");
+
             return;
         }
 
+
         const data = doc.data();
 
-        console.log("Thông tin user:", data);
+        console.log(
+            "Thông tin user:",
+            data
+        );
+
+
+        /* =========================
+           USER DATA
+        ========================= */
 
         const name =
             data.name ||
             user.displayName ||
             "Học viên";
 
+
         const email =
             data.email ||
             user.email ||
             "";
 
+
         const username =
             data.username ||
             "";
+
 
         const studentClass =
             data.class ||
             "";
 
+
         const campus =
             data.campus ||
             "";
 
-        $("profileName").textContent = name;
-        $("profileEmail").textContent = email;
 
-        const parts = name
-            .trim()
-            .split(/\s+/);
+        const role =
+            data.role ||
+            "student";
+
+
+        const formattedRole =
+            formatRole(role);
+
+
+        /* =========================
+           PROFILE
+        ========================= */
+
+        $("profileName").textContent =
+            name;
+
+
+        $("profileEmail").textContent =
+            email;
+
+
+        /*
+         * Avatar initials
+         */
+
+        const parts =
+            name
+                .trim()
+                .split(/\s+/);
+
 
         let initials = "HV";
 
+
         if (parts.length >= 2) {
+
             initials =
                 parts[0][0] +
                 parts[parts.length - 1][0];
+
         } else if (parts.length === 1) {
-            initials = parts[0][0];
+
+            initials =
+                parts[0][0];
+
         }
+
 
         $("avatar").textContent =
             initials.toUpperCase();
 
+
+        /* =========================
+           INFORMATION
+        ========================= */
+
         $("name").textContent =
             name;
+
 
         $("class").textContent =
             studentClass ||
             "Chưa cập nhật";
 
+
         $("campus").textContent =
             campus ||
             "Chưa cập nhật";
+
 
         $("username").textContent =
             username ||
             "Chưa cập nhật";
 
+
         $("email").textContent =
-            email;
+            email ||
+            "Chưa cập nhật";
+
+
+        /* =========================
+           ROLE
+        ========================= */
+
+        $("role").textContent =
+            formattedRole;
+
+
+        $("roleBadge").textContent =
+            formattedRole.toUpperCase();
+
+
+        /*
+         * Hiển thị lại account
+         */
+
+        showLoggedInState();
+
 
     } catch (error) {
 
@@ -781,60 +1068,126 @@ auth.onAuthStateChanged(async user => {
         toast(
             "Không thể tải thông tin tài khoản."
         );
+
     }
+
 });
+
+
 /* =========================
    CHANGE PASSWORD
 ========================= */
+
 $("changePasswordForm")
     .addEventListener("submit", async event => {
+
         event.preventDefault();
+
         const user = auth.currentUser;
-        const newPassword = $("newPassword").value;
-        const confirmPassword = $("confirmPassword").value;
+
+        const newPassword =
+            $("newPassword").value;
+
+        const confirmPassword =
+            $("confirmPassword").value;
+
 
         if (!user) {
+
             toast("Bạn chưa đăng nhập.");
+
             return;
         }
+
+
         if (newPassword.length < 6) {
-            toast("Mật khẩu phải có ít nhất 6 ký tự.");
+
+            toast(
+                "Mật khẩu phải có ít nhất 6 ký tự."
+            );
+
             return;
         }
+
+
         if (newPassword !== confirmPassword) {
-            toast("Mật khẩu xác nhận không khớp.");
+
+            toast(
+                "Mật khẩu xác nhận không khớp."
+            );
+
             return;
         }
+
+
         try {
-            await user.updatePassword(newPassword);
+
+            await user.updatePassword(
+                newPassword
+            );
+
+
             $("changePasswordForm").reset();
-            toast("Đổi mật khẩu thành công.");
+
+
+            toast(
+                "Đổi mật khẩu thành công."
+            );
+
+
         } catch (error) {
+
             console.error(error);
-            if (error.code === "auth/requires-recent-login") {
-                toast("Vui lòng đăng nhập lại rồi thử lại.");
+
+
+            if (
+                error.code ===
+                "auth/requires-recent-login"
+            ) {
+
+                toast(
+                    "Vui lòng đăng nhập lại rồi thử lại."
+                );
+
             } else {
-                toast("Không thể đổi mật khẩu. Vui lòng thử lại.");
+
+                toast(
+                    "Không thể đổi mật khẩu. Vui lòng thử lại."
+                );
+
             }
+
         }
+
     });
+
+
 /* =========================
    LOGOUT
 ========================= */
+
 $("logoutBtn")
     .addEventListener("click", async () => {
+
         try {
+
             await auth.signOut();
+
             window.location.href =
-                "/CS/Đăng nhập/login.html";
+                "/CS/login/login.html";
+
         } catch (error) {
+
             console.error(error);
+
             toast(
                 "Đăng xuất thất bại."
             );
+
         }
+
     });
 </script>
-<script type="module" src="/HỌC VIÊN/sidebar.js"></script>
+<script type="module" src="/HV/sidebar.js"></script>
 </body>
 </html>
