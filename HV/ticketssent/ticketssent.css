@@ -38,7 +38,7 @@
   .sent-page-head h2 {
     margin: 0;
     color: var(--maroon-deep);
-    font: 700 clamp(24px, 3vw, 40px) / 1.06 Fraunces, serif;
+    font: 700 clamp(28px, 3vw, 40px) / 1.06 Fraunces, serif;
   }
   
   .sent-page-head p {

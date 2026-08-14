@@ -12,15 +12,6 @@
 (function () {
     "use strict";
   
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8Ex-7oQyKEn56NHynpYomwpc6-F1pxzA",
-      authDomain: "csk18-cafee.firebaseapp.com",
-      projectId: "csk18-cafee",
-      storageBucket: "csk18-cafee.firebasestorage.app",
-      messagingSenderId: "323107048224",
-      appId: "1:323107048224:web:96a5fb888393bf6a5fe081"
-    };
-  
     if (!window.firebase) {
       console.error("Firebase Compat SDK chưa được tải.");
       return;
@@ -171,7 +162,7 @@
             </div>
             <div class="${footClass}">
               <span>Giữ lại mã yêu cầu để tra cứu</span>
-              <a href="/exchange?ticket=${ticketId}">Mở trao đổi →</a>
+              <a href="/HV/chat-hv/trao-doi-ticket.html?ticket=${ticketId}">Mở trao đổi →</a>
             </div>
           </article>`;
       }).join("");
