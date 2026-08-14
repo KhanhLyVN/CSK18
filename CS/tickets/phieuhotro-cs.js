@@ -65,6 +65,8 @@ const TICKET_CATEGORIES = [
       { value: "system-other", label: "Khác" }
     ]
   },
+
+
   {
     id: "learning",
     label: "Khóa học",
@@ -83,6 +85,8 @@ const TICKET_CATEGORIES = [
       { value: "learning-other", label: "Khác" }
     ]
   },
+
+
   {
     // Giữ id account để CS vẫn đọc được ticket cũ; nhãn nghiệp vụ là Vận hành.
     id: "account",
@@ -124,6 +128,225 @@ const svgIcon = (key) => {
       ${ICONS[key]}
     </svg>
   `;
+};
+
+// ======================================================
+// ĐỊNH TUYẾN TICKET
+// campus      = cơ sở của người gửi
+// department  = phòng ban xử lý ticket
+// issueId     = mã chi tiết vấn đề
+// ======================================================
+
+const ISSUE_ROUTING = {
+
+  // ====================================================
+  // HỆ THỐNG → IT
+  // ====================================================
+
+  "system-login": {
+    department: "IT",
+    issueId: "SYS-001"
+  },
+
+  "system-password": {
+    department: "IT",
+    issueId: "SYS-002"
+  },
+
+  "system-account": {
+    department: "IT",
+    issueId: "SYS-003"
+  },
+
+  "system-website-access": {
+    department: "IT",
+    issueId: "SYS-004"
+  },
+
+  "system-page-error": {
+    department: "IT",
+    issueId: "SYS-005"
+  },
+
+  "system-browser-device": {
+    department: "IT",
+    issueId: "SYS-006"
+  },
+
+  "system-video-playback": {
+    department: "IT",
+    issueId: "SYS-007"
+  },
+
+  "system-file-upload": {
+    department: "IT",
+    issueId: "SYS-008"
+  },
+
+  "system-notification": {
+    department: "IT",
+    issueId: "SYS-009"
+  },
+
+  "system-data-sync": {
+    department: "IT",
+    issueId: "SYS-010"
+  },
+
+  "system-security": {
+    department: "IT",
+    issueId: "SYS-011"
+  },
+
+  "system-other": {
+    department: "IT",
+    issueId: "SYS-012"
+  },
+
+
+  // ====================================================
+  // KHÓA HỌC → CS
+  // ====================================================
+
+  "learning-registration": {
+    department: "CS",
+    issueId: "COURSE-001"
+  },
+
+  "learning-course-access": {
+    department: "CS",
+    issueId: "COURSE-002"
+  },
+
+  "learning-certificate": {
+    department: "CS",
+    issueId: "COURSE-003"
+  },
+
+  "learning-result": {
+    department: "CS",
+    issueId: "COURSE-004"
+  },
+
+  "learning-other": {
+    department: "CS",
+    issueId: "COURSE-005"
+  },
+
+
+  // ====================================================
+  // KHÓA HỌC - TIỀN BẠC → SALE
+  // ====================================================
+
+  "learning-fee": {
+    department: "Sale",
+    issueId: "SALE-001"
+  },
+
+  "learning-payment-method": {
+    department: "Sale",
+    issueId: "SALE-002"
+  },
+
+  "learning-payment-confirmation": {
+    department: "Sale",
+    issueId: "SALE-003"
+  },
+
+  "learning-invoice": {
+    department: "Sale",
+    issueId: "SALE-004"
+  },
+
+  "learning-refund": {
+    department: "Sale",
+    issueId: "SALE-005"
+  },
+
+  "learning-promotion": {
+    department: "Sale",
+    issueId: "SALE-006"
+  },
+
+
+  // ====================================================
+  // VẬN HÀNH - MENTOR → TEACH
+  // ====================================================
+
+  "operations-mentor": {
+    department: "Teach",
+    issueId: "TEACH-001"
+  },
+
+  "operations-mentor-feedback": {
+    department: "Teach",
+    issueId: "TEACH-002"
+  },
+
+
+  // ====================================================
+  // VẬN HÀNH - TÀI LIỆU → RnD
+  // ====================================================
+
+  "operations-material": {
+    department: "RnD",
+    issueId: "RND-001"
+  },
+
+  "operations-assignment": {
+    department: "RnD",
+    issueId: "RND-002"
+  },
+
+
+  // ====================================================
+  // VẬN HÀNH → CS
+  // ====================================================
+
+  "operations-schedule": {
+    department: "CS",
+    issueId: "CS-001"
+  },
+
+  "operations-attendance": {
+    department: "CS",
+    issueId: "CS-002"
+  },
+
+  "operations-classroom": {
+    department: "CS",
+    issueId: "CS-003"
+  },
+
+  "operations-support": {
+    department: "CS",
+    issueId: "CS-004"
+  },
+
+  "operations-other": {
+    department: "CS",
+    issueId: "CS-005"
+  },
+
+
+  // ====================================================
+  // KHÁC → CS
+  // ====================================================
+
+  "other-feedback": {
+    department: "CS",
+    issueId: "OTHER-001"
+  },
+
+  "other-complaint": {
+    department: "CS",
+    issueId: "OTHER-002"
+  },
+
+  "other-request": {
+    department: "CS",
+    issueId: "OTHER-003"
+  }
 };
 const issueField = document.getElementById("issueField");
 const issueSelect = document.getElementById("issueSelect");
@@ -419,42 +642,201 @@ function updateStub() {
   }
 });
 
-if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "function") {
+// ======================================================
+// LẤY ACCOUNT ĐANG ĐĂNG NHẬP
+// ======================================================
+
+let currentUserProfile = null;
+
+if (
+  typeof auth !== "undefined" &&
+  auth &&
+  typeof auth.onAuthStateChanged === "function"
+) {
+
   auth.onAuthStateChanged(async (user) => {
-    const nameInput = document.getElementById("fName");
-    const emailInput = document.getElementById("fEmail");
+
+    const nameInput =
+      document.getElementById("fName");
+
+    const emailInput =
+      document.getElementById("fEmail");
+
+    const campusInput =
+      document.getElementById("fCampus");
+
+    // ------------------------------------------
+    // CHƯA ĐĂNG NHẬP
+    // ------------------------------------------
 
     if (!user) {
-      if (nameInput) nameInput.value = "";
-      if (emailInput) emailInput.value = "";
+
+      currentUserProfile = null;
+
+      if (nameInput) {
+        nameInput.value = "";
+        nameInput.readOnly = false;
+      }
+
+      if (emailInput) {
+        emailInput.value = "";
+        emailInput.readOnly = false;
+      }
+
+      if (campusInput) {
+        campusInput.value = "";
+        campusInput.readOnly = true;
+      }
+
+      updateStub();
+
       return;
     }
 
+
+    // ------------------------------------------
+    // ĐÃ ĐĂNG NHẬP
+    // ------------------------------------------
+
     try {
-      const doc = await db
-      .collection("accounts")
-      .doc(user.uid)
-      .get();
-      const data = doc.exists ? doc.data() : {};
-      const name = data.name || user.displayName || "Học viên";
-      const email = data.email || user.email || "";
+
+      const database =
+        typeof db !== "undefined"
+          ? db
+          : window.db;
+
+      if (!database) {
+        console.error("Firebase Firestore chưa sẵn sàng.");
+        return;
+      }
+
+
+      // ----------------------------------------
+      // ĐỌC ACCOUNT
+      // ----------------------------------------
+
+      let snapshot =
+        await database
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+
+      // Nếu hệ thống của bé đang lưu account
+      // trong collection "accounts" thì fallback
+      if (!snapshot.exists) {
+
+        snapshot =
+          await database
+            .collection("accounts")
+            .doc(user.uid)
+            .get();
+      }
+
+
+      const data =
+        snapshot.exists
+          ? snapshot.data()
+          : {};
+
+
+      // ----------------------------------------
+      // LƯU PROFILE TOÀN CỤC
+      // ----------------------------------------
+
+      currentUserProfile = {
+        uid: user.uid,
+
+        name:
+          data.name ||
+          user.displayName ||
+          "",
+
+        email:
+          data.email ||
+          user.email ||
+          "",
+
+        phone:
+          data.phone ||
+          "",
+
+        campus:
+          data.campus ||
+          "",
+
+        role:
+          data.role ||
+          "",
+
+        department:
+          data.department ||
+          "",
+
+        accountType:
+          data.accountType ||
+          ""
+      };
+
+
+      // ----------------------------------------
+      // ĐIỀN TÊN
+      // ----------------------------------------
 
       if (nameInput) {
-        if (!nameInput.value.trim()) nameInput.value = name;
+
+        nameInput.value =
+          currentUserProfile.name;
+
         nameInput.readOnly = true;
       }
+
+
+      // ----------------------------------------
+      // ĐIỀN EMAIL
+      // ----------------------------------------
+
       if (emailInput) {
-        if (!emailInput.value.trim()) emailInput.value = email;
+
+        emailInput.value =
+          currentUserProfile.email;
+
         emailInput.readOnly = true;
       }
+
+
+      // ----------------------------------------
+      // ĐIỀN CAMPUS
+      // ----------------------------------------
+
+      if (campusInput) {
+
+        campusInput.value =
+          currentUserProfile.campus;
+
+        campusInput.readOnly = true;
+      }
+
+
+      console.log(
+        "Account hiện tại:",
+        currentUserProfile
+      );
+
+
       updateStub();
+
     } catch (error) {
-      console.error("Không thể lấy thông tin tài khoản hiện tại:", error);
+
+      console.error(
+        "Không thể lấy thông tin account hiện tại:",
+        error
+      );
+
     }
+
   });
 }
-
-updateStub();
 // ======================================================
 // SUBMIT TICKET
 // ======================================================
@@ -558,43 +940,163 @@ submitBtn.addEventListener(
       // ==================================
       // DATA TICKET
       // ==================================
-      const authClient = typeof auth !== "undefined" ? auth : window.auth;
-      const currentUser = authClient?.currentUser || null;
-      const databaseForProfile = typeof db !== "undefined" ? db : window.db;
-      let userProfile = {};
+      const authClient =
+        typeof auth !== "undefined" ? auth : window.auth;
+
+      const currentUser =
+        authClient?.currentUser || null;
+
+      const userProfile =
+        currentUserProfile || {};
+      const userCampus =
+        userProfile.campus ||
+        document.getElementById("fCampus")?.value?.trim() ||
+        "";
+      // ==================================
+      // LẤY PROFILE NGƯỜI DÙNG
+      // ==================================
+      const databaseForProfile =
+        typeof db !== "undefined"
+          ? db
+          : window.db;
+
+      let userProfile =
+        currentUserProfile || {};
+
       if (currentUser?.uid && databaseForProfile) {
         try {
-          const profileSnapshot = await databaseForProfile.collection("users").doc(currentUser.uid).get();
-          if (profileSnapshot.exists) userProfile = profileSnapshot.data() || {};
+          let profileSnapshot = await databaseForProfile
+            .collection("users")
+            .doc(currentUser.uid)
+            .get();
+
+          // fallback nếu account nằm trong accounts
+          if (!profileSnapshot.exists) {
+            profileSnapshot = await databaseForProfile
+              .collection("accounts")
+              .doc(currentUser.uid)
+              .get();
+          }
+
+          if (profileSnapshot.exists) {
+            userProfile = {
+              ...userProfile,
+              ...profileSnapshot.data()
+            };
+          }
+
         } catch (profileError) {
-          console.warn("Không đọc được hồ sơ học viên, tiếp tục dùng thông tin form:", profileError);
+          console.warn(
+            "Không đọc được hồ sơ người dùng:",
+            profileError
+          );
         }
       }
+
+      // ==================================
+      // CAMPUS CỦA NGƯỜI ĐĂNG NHẬP
+      // ==================================
+      const userCampus =
+        userProfile.campus ||
+        currentUserProfile?.campus ||
+        document
+          .getElementById("fCampus")
+          ?.value
+          ?.trim() ||
+        "";
+
+      // ================================================
+      // XÁC ĐỊNH PHÒNG BAN XỬ LÝ
+      // ================================================
+
+      const routing =
+        ISSUE_ROUTING[selectedIssue] || {
+          department: "CS",
+          issueId: "OTHER-000"
+        };
+
+      const assignedDepartment =
+        routing.department;
+
+      const issueId =
+        routing.issueId;
+
+
+      // ================================================
+      // CAMPUS CỦA ACCOUNT ĐANG ĐĂNG NHẬP
+      // ================================================
+
+      const userCampus =
+        userProfile.campus ||
+        currentUserProfile?.campus ||
+        document.getElementById("fCampus")?.value?.trim() ||
+        "";
+
       const ticketData = {
         ticketNum: ticketNum,
+
         studentId: currentUser?.uid || "",
+
         name: userProfile.name || name,
+
         email: userProfile.email || email,
+
         phone: userProfile.phone || phone || "",
-        campus: userProfile.campus || document.getElementById("fCampus")?.value?.trim() || "",
-        createdByRole: "student",
+
+        campus: userCampus,
+
+        createdByRole:
+          userProfile.role || "student",
+
         isStudent: isStudent,
+
         course: course,
+
         date: fDateEl.value,
+
         ticketType: ticketValue,
-        ticketCategoryId: selectedMainType.value,
-        ticketIssueId: selectedIssue || "",
-        ticketCategory: selectedMainType.dataset.label || "Khác",
+
+        ticketCategoryId:
+          selectedMainType.value,
+
+        ticketIssueId:
+          selectedIssue || "",
+
+        ticketCategory:
+          selectedMainType.dataset.label || "Khác",
+
         ticketIssue: ticketIssueLabel,
+
         ticketSchemaVersion: 2,
+
         title: title,
+
         description: desc,
-        attachmentName: fFile.files?.[0]?.name || "",
-        attachmentType: fFile.files?.[0]?.type || "",
-        attachmentSize: fFile.files?.[0]?.size || 0,
+
+        attachmentName:
+          fFile.files?.[0]?.name || "",
+
+        attachmentType:
+          fFile.files?.[0]?.type || "",
+
+        attachmentSize:
+          fFile.files?.[0]?.size || 0,
+
         status: "open",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+
+        createdAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
+
+        updatedAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
+
+        issueId: issueId,
+
+        assignedDepartment:
+          assignedDepartment,
+
+        assignedCampus:
+          userCampus
       };
       // ==================================
       // LƯU TICKET
@@ -742,4 +1244,3 @@ document
       .getElementById("formView")
       .classList.remove("hide");
   });
-  
