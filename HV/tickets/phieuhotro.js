@@ -188,7 +188,7 @@ async function submitTicket() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   if (!database) { errorEl.textContent = "Chưa kết nối được với hệ thống. Vui lòng thử lại sau."; errorEl.classList.add("show"); return; }
-  if (!name || !email || (isStudent && !course) || !title || !description || !selectedMainType || (requiresIssue && !selectedIssue)) { errorEl.textContent = "Vui lòng điền đầy đủ thông tin bắt buộc và chọn loại yêu cầu."; errorEl.classList.add("show"); return; }
+  if (!name || !email || (isStudent && !course) || !selectedMainType || (requiresIssue && !selectedIssue)) { errorEl.textContent = "Vui lòng điền đầy đủ thông tin bắt buộc và chọn loại yêu cầu."; errorEl.classList.add("show"); return; }
   if (!emailValid) { errorEl.textContent = "Email không hợp lệ."; errorEl.classList.add("show"); return; }
   errorEl.classList.remove("show");
 
