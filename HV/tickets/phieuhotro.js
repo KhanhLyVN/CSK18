@@ -15,11 +15,79 @@ const ICONS = {
 };
 
 const TICKET_CATEGORIES = [
-  { id: "system", label: "Hệ thống", icon: "bug", issues: [{ value: "system-login", label: "Đăng nhập" }, { value: "account", label: "Tài khoản học viên" }, { value: "system-web", label: "Trang web không truy cập được" }, { value: "system-technical", label: "Lỗi kỹ thuật" }, { value: "system-other", label: "Khác" }] },
-  { id: "learning", label: "Khóa học", icon: "book", issues: [{ value: "learning-class", label: "Đăng ký khóa học" }, { value: "learning-cost", label: "Học phí" }, { value: "learning-paymentmentol", label: "Phương thức thanh toán" }, { value: "learning-confirm", label: "Xác nhận thanh toán" }, { value: "learning-other", label: "Khác" }] },
-  { id: "account", label: "Vận hành", icon: "work", issues: [{ value: "account-schedule", label: "Lịch học" }, { value: "account-qualities", label: "Chất lượng hình ảnh và video" }, { value: "account-mentor", label: "Giáo viên" }, { value: "account-certificate", label: "Hỗ trợ bài" }, { value: "account-other", label: "Khác" }] },
-  { id: "other", label: "Khác", icon: "other", issues: [{ value: "other-feedback", label: "Góp ý / phản hồi" }, { value: "other-complaint", label: "Khiếu nại" }, { value: "other-request", label: "Yêu cầu hỗ trợ khác" }] }
+  {
+    id: "system", label: "Hệ thống", icon: "bug",
+    // Toàn bộ chi tiết trong "Hệ thống" -> IT
+    issues: [
+      { value: "system-login", label: "Đăng nhập", department: "IT" },
+      { value: "account", label: "Tài khoản học viên", department: "IT" },
+      { value: "system-web", label: "Trang web không truy cập được", department: "IT" },
+      { value: "system-technical", label: "Lỗi kỹ thuật", department: "IT" },
+      { value: "system-other", label: "Khác", department: "IT" }
+    ]
+  },
+  {
+    id: "learning", label: "Khóa học", icon: "book",
+    // Vấn đề liên quan lớp học -> CS, vấn đề liên quan tiền bạc -> SALE
+    issues: [
+      { value: "learning-class", label: "Đăng ký khóa học", department: "CS" },
+      { value: "learning-cost", label: "Học phí", department: "SALE" },
+      { value: "learning-paymentmentol", label: "Phương thức thanh toán", department: "SALE" },
+      { value: "learning-confirm", label: "Xác nhận thanh toán", department: "SALE" },
+      { value: "learning-other", label: "Khác", department: "CS" }
+    ]
+  },
+  {
+    id: "account", label: "Vận hành", icon: "work",
+    // Giáo viên/mentor -> TEACH, tài liệu/hỗ trợ bài -> RND, còn lại mặc định CS
+    issues: [
+      { value: "account-schedule", label: "Lịch học", department: "CS" },
+      { value: "account-qualities", label: "Chất lượng hình ảnh và video", department: "CS" },
+      { value: "account-mentor", label: "Giáo viên", department: "TEACH" },
+      { value: "account-certificate", label: "Hỗ trợ bài", department: "RND" },
+      { value: "account-other", label: "Khác", department: "CS" }
+    ]
+  },
+  {
+    id: "other", label: "Khác", icon: "other",
+    // Toàn bộ mục "Khác" -> CS
+    issues: [
+      { value: "other-feedback", label: "Góp ý / phản hồi", department: "CS" },
+      { value: "other-complaint", label: "Khiếu nại", department: "CS" },
+      { value: "other-request", label: "Yêu cầu hỗ trợ khác", department: "CS" }
+    ]
+  }
 ];
+
+/*
+ * Fallback: dùng khi mainType không có issue được chọn
+ * (ví dụ mục "Khác" không có dropdown chi tiết),
+ * hoặc issue không tra được department ở trên.
+ */
+const CATEGORY_DEFAULT_DEPARTMENT = {
+  system: "IT",
+  learning: "CS",
+  account: "CS",
+  other: "CS"
+};
+
+/*
+ * Tra department (phòng ban) cho ticket dựa trên
+ * loại yêu cầu (mainType) + chi tiết vấn đề (issue).
+ *
+ * Ưu tiên:
+ * 1. department gắn sẵn trên issue đã chọn.
+ * 2. department mặc định của mainType (CATEGORY_DEFAULT_DEPARTMENT).
+ * 3. CS (mặc định cuối cùng, không để trống).
+ */
+function resolveTicketDepartment(mainTypeValue, issueValue) {
+  const category = getCategory(mainTypeValue);
+  const issue = category?.issues?.find(item => item.value === issueValue);
+  if (issue?.department) {
+    return issue.department;
+  }
+  return CATEGORY_DEFAULT_DEPARTMENT[mainTypeValue] || "CS";
+}
 
 const $ = id => document.getElementById(id);
 const issueField = $("issueField");
@@ -143,7 +211,7 @@ function setupForm() {
         $("fEmail").value = email;
         $("fEmail").readOnly = true;
         $('fCampus').value = campus;
-        $('fCampus').readOnly = true;
+        $('fCampus').readOnly = Boolean(campus);
         updateStub();
       } catch (e) {
         console.error("Không thể lấy thông tin người dùng:", e);
@@ -194,6 +262,7 @@ async function submitTicket() {
 
   const category = getCategory(selectedMainType.value);
   const issueLabel = selectedMainType.value === "other" ? "Khác" : issueSelect.selectedOptions[0]?.textContent?.trim() || "Khác";
+  const departmentCode = resolveTicketDepartment(selectedMainType.value, selectedIssue);
   if (ticketNum === "HV-000000") updateTicketNumber();
   const submitButton = $("submitBtn");
   submitButton.disabled = true;
@@ -219,6 +288,12 @@ async function submitTicket() {
       ticketType: selectedIssue || selectedMainType.value,
       ticketCategory: category?.label || "Khác",
       ticketIssue: issueLabel,
+
+      // Phòng ban phụ trách ticket này, tính từ
+      // loại yêu cầu + chi tiết vấn đề đã chọn.
+      // CS dashboard (trangchu-cs.js) sẽ ưu tiên
+      // dùng đúng field này để định tuyến ticket.
+      departmentCode,
 
       title,
       description,
@@ -253,7 +328,7 @@ async function submitTicket() {
       } catch (emailError) { console.warn("Không gửi được email thông báo, ticket vẫn đã được lưu:", emailError); }
     }
 
-    $("successText").innerHTML = `Phiếu <strong>${escapeHTML(ticketNum)}</strong> — “<em>${escapeHTML(title)}</em>” đã được ghi nhận. Bạn có thể theo dõi phản hồi trong mục Trao đổi Ticket.`;
+    $("successText").innerHTML = `Phiếu <strong>${escapeHTML(ticketNum)}</strong> — "<em>${escapeHTML(title)}</em>" đã được ghi nhận. Bạn có thể theo dõi phản hồi trong mục Trao đổi Ticket.`;
     formView.classList.add("hide");
     successView.classList.add("show");
   } catch (error) {

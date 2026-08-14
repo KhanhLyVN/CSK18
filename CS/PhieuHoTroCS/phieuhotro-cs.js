@@ -515,8 +515,6 @@ submitBtn.addEventListener(
       !name ||
       !email ||
       (isStudent && !course) ||
-      !title ||
-      !desc ||
       !selectedMainType ||
       (requiresIssue && !selectedIssue)
     ) {
