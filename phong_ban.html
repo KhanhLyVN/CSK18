@@ -717,14 +717,14 @@
               placeholder="Nhập mô tả về phòng ban..."
             ></textarea>
           </div>
-          <!-- FACILITY: tự động lấy theo người phụ trách -->
+          <!-- CAMPUS: tự động lấy theo người phụ trách -->
           <div class="form-group">
             <label>
               Cơ sở
             </label>
             <input
               type="text"
-              id="departmentFacility"
+              id="departmentCampus"
               placeholder="Tự động lấy theo người phụ trách"
               readonly
             >
@@ -940,19 +940,19 @@
               rows="4"
             ></textarea>
           </div>
-          <!-- FACILITY: tự động lấy theo người phụ trách -->
+          <!-- CAMPUS: tự động lấy theo người phụ trách -->
           <div class="form-group">
             <label>
               Cơ sở
             </label>
             <input
               type="text"
-              id="editFacility"
+              id="editCampus"
               placeholder="Tự động lấy theo người phụ trách"
               readonly
             >
             <small>
-              Cơ sở được lấy từ tài khoản của người phụ trách.
+              Campus được lấy từ tài khoản của người phụ trách.
             </small>
           </div>
           <!-- STATUS -->
@@ -1029,10 +1029,10 @@
     const db =
       firebase.firestore();
     /* =====================================================
-       COLLECTION
+       COLLECTION: CAMPUS
     ====================================================== */
     const DEPARTMENT_COLLECTION =
-      "departments";
+      "campus";
     const ACCOUNT_COLLECTION =
       "users";
     /* =====================================================
@@ -1060,9 +1060,9 @@
       document.getElementById(
         "departmentDescription"
       );
-    const departmentFacility =
+    const departmentCampus =
       document.getElementById(
-        "departmentFacility"
+        "departmentCampus"
       );
     const departmentStatus =
       document.getElementById(
@@ -1164,9 +1164,9 @@
       document.getElementById(
         "editDescription"
       );
-    const editFacility =
+    const editCampus =
       document.getElementById(
-        "editFacility"
+        "editCampus"
       );
     const editStatus =
       document.getElementById(
@@ -1288,28 +1288,66 @@
         String(email || "").trim()
       );
     }
-    function getUserFacility(user) {
+    function getUserCampus(user) {
       if (!user) return "";
+
+      const campus = user.campus;
+
+      // Hỗ trợ cả campus là string và campus là object.
+      if (campus && typeof campus === "object") {
+        return String(
+          campus.name ||
+          campus.campusName ||
+          campus.title ||
+          ""
+        ).trim();
+      }
+
       return String(
-        user.facility ||
-        user.facilityName ||
-        user.coSo ||
-        user.coSoName ||
-        user.cơSở ||
-        user.cơSởName ||
-        user.branch ||
-        user.branchName ||
-        user.campus ||
-        user.location ||
+        campus ||
+        user.campusName ||
         ""
       ).trim();
     }
+
+    function getUserCampusId(user) {
+      if (!user) return "";
+
+      const campus = user.campus;
+
+      if (campus && typeof campus === "object") {
+        return String(
+          campus.campusId ||
+          campus.id ||
+          ""
+        ).trim();
+      }
+
+      return String(
+        user.campusId ||
+        ""
+      ).trim();
+    }
+
     function findUserForDepartment(data) {
       return users.find(
         user =>
           user.uid === data.managerUid ||
           user.email === String(data.managerEmail || "").toLowerCase()
       ) || null;
+    }
+
+    /* =====================================================
+       CAMPUS ID
+       Document ID và campusId có dạng: CODE-CAMPUS
+       Ví dụ: CS-Hà Nội
+    ====================================================== */
+    function buildCampusId(code, campus) {
+      const safeCode = String(code || "").trim().toUpperCase();
+      const safeCampus = String(campus || "")
+        .trim()
+        .replace(/[\\/]/g, "-");
+      return `${safeCode}-${safeCampus}`;
     }
     /* =====================================================
        LOAD USERS
@@ -1366,8 +1404,10 @@
                 String(name),
               email:
                 email,
-              facility:
-                getUserFacility(data)
+              campus:
+                getUserCampus(data),
+              campusId:
+                getUserCampusId(data)
             });
           }
         );
@@ -1590,8 +1630,8 @@
           user.name;
         createEmailText.textContent =
           user.email;
-        departmentFacility.value =
-          getUserFacility(user);
+        departmentCampus.value =
+          getUserCampus(user);
         createManagerSelect
           .classList.add(
             "has-value"
@@ -1626,8 +1666,8 @@
           user.name;
         editEmailText.textContent =
           user.email;
-        editFacility.value =
-          getUserFacility(user);
+        editCampus.value =
+          getUserCampus(user);
         editManagerSelect
           .classList.add(
             "has-value"
@@ -1830,7 +1870,7 @@
         "Chọn người phụ trách";
       createEmailText.textContent =
         "Chọn tài khoản Gmail";
-      departmentFacility.value =
+      departmentCampus.value =
         "";
       createManagerSearch.value =
         "";
@@ -1879,6 +1919,9 @@
             .trim();
         const status =
           departmentStatus.value;
+        const campus =
+          getUserCampus(createSelectedManager);
+
         /* VALIDATION */
         if (!name) {
           showToast(
@@ -1903,6 +1946,13 @@
           );
           return;
         }
+        if (!campus) {
+          showToast(
+            "Người phụ trách chưa có thông tin cơ sở.",
+            "error"
+          );
+          return;
+        }
         if (
           !isGmail(
             createSelectedManager.email
@@ -1914,32 +1964,46 @@
           );
           return;
         }
+
+        const campusId =
+          buildCampusId(
+            code,
+            campus
+          );
+
         submitBtn.disabled =
           true;
         submitBtn.textContent =
           "Đang kiểm tra...";
+
         try {
-          /* CHECK CODE */
-          const codeExists =
+          /* CHECK CODE-CAMPUS */
+          const campusExists =
             await isDepartmentCodeExists(
-              code
+              campusId
             );
-          if (codeExists) {
+          if (campusExists) {
             showToast(
-              `Mã "${code}" đã tồn tại.`,
+              `Cơ sở "${campusId}" đã tồn tại.`,
               "error"
             );
-            departmentCode.focus();
             return;
           }
-          /* SAVE */
+
+          /* SAVE
+             Collection: campus
+             Document ID: CODE-CAMPUS
+             campusId: CODE-CAMPUS
+          */
           submitBtn.textContent =
             "Đang tạo...";
+
           await db
             .collection(
               DEPARTMENT_COLLECTION
             )
-            .add({
+            .doc(campusId)
+            .set({
               name:
                 name,
               code:
@@ -1952,8 +2016,10 @@
                 createSelectedManager.email,
               managerUid:
                 createSelectedManager.uid,
-              facility:
-                getUserFacility(createSelectedManager),
+              campus:
+                campus,
+              campusId:
+                campusId,
               status:
                 status,
               createdAt:
@@ -1962,6 +2028,7 @@
                   .FieldValue
                   .serverTimestamp()
             });
+
           showToast(
             "✓ Tạo phòng ban thành công."
           );
@@ -1988,36 +2055,28 @@
       }
     );
     /* =====================================================
-       CHECK CODE
+       CHECK CODE-CAMPUS
     ====================================================== */
     async function isDepartmentCodeExists(
-      code,
+      campusId,
       ignoreId = null
     ) {
-      const snapshot =
+      if (
+        ignoreId &&
+        campusId === ignoreId
+      ) {
+        return false;
+      }
+
+      const doc =
         await db
           .collection(
             DEPARTMENT_COLLECTION
           )
-          .where(
-            "code",
-            "==",
-            code
-          )
+          .doc(campusId)
           .get();
-      for (
-        const doc
-        of snapshot.docs
-      ) {
-        if (
-          ignoreId &&
-          doc.id === ignoreId
-        ) {
-          continue;
-        }
-        return true;
-      }
-      return false;
+
+      return doc.exists;
     }
     /* =====================================================
        LOAD DEPARTMENTS
@@ -2133,12 +2192,17 @@
             Cơ sở:
             <strong>
               ${escapeHTML(
-                data.facility ||
-                data.facilityName ||
-                (findUserForDepartment(data) && getUserFacility(findUserForDepartment(data))) ||
+                data.campus ||
+                data.campusName ||
+                (findUserForDepartment(data) && getUserCampus(findUserForDepartment(data))) ||
                 "Chưa có"
               )}
             </strong>
+            ${
+              data.campusId
+                ? `<br>Mã cơ sở: <strong>${escapeHTML(data.campusId)}</strong>`
+                : ""
+            }
             <br>
             Người phụ trách:
             <strong>
@@ -2220,9 +2284,9 @@
             data.code || "";
           editDescription.value =
             data.description || "";
-          editFacility.value =
-            data.facility ||
-            data.facilityName ||
+          editCampus.value =
+            data.campus ||
+            data.campusName ||
             "";
           editStatus.value =
             data.status || "active";
@@ -2244,8 +2308,8 @@
           if (
             editSelectedManager
           ) {
-            editFacility.value =
-              getUserFacility(editSelectedManager);
+            editCampus.value =
+              getUserCampus(editSelectedManager);
             editManagerText.textContent =
               editSelectedManager.name;
             editEmailText.textContent =
@@ -2302,6 +2366,7 @@
           editDescription.value.trim();
         const status =
           editStatus.value;
+
         if (
           !name ||
           !code
@@ -2312,6 +2377,7 @@
           );
           return;
         }
+
         if (!editSelectedManager) {
           showToast(
             "Vui lòng chọn người phụ trách.",
@@ -2319,47 +2385,107 @@
           );
           return;
         }
+
+        const campus =
+          getUserCampus(editSelectedManager);
+
+        if (!campus) {
+          showToast(
+            "Người phụ trách chưa có thông tin cơ sở.",
+            "error"
+          );
+          return;
+        }
+
+        const campusId =
+          buildCampusId(
+            code,
+            campus
+          );
+
         try {
-          const codeExists =
+          const campusExists =
             await isDepartmentCodeExists(
-              code,
+              campusId,
               id
             );
-          if (codeExists) {
+
+          if (campusExists) {
             showToast(
-              `Mã "${code}" đã tồn tại.`,
+              `Cơ sở "${campusId}" đã tồn tại.`,
               "error"
             );
             return;
           }
-          await db
-            .collection(
-              DEPARTMENT_COLLECTION
-            )
-            .doc(id)
-            .update({
-              name:
-                name,
-              code:
-                code,
-              description:
-                description,
-              managerName:
-                editSelectedManager.name,
-              managerEmail:
-                editSelectedManager.email,
-              managerUid:
-                editSelectedManager.uid,
-              facility:
-                getUserFacility(editSelectedManager),
-              status:
-                status,
-              updatedAt:
-                firebase
-                  .firestore
-                  .FieldValue
-                  .serverTimestamp()
-            });
+
+          const oldRef =
+            db
+              .collection(
+                DEPARTMENT_COLLECTION
+              )
+              .doc(id);
+
+          const newRef =
+            db
+              .collection(
+                DEPARTMENT_COLLECTION
+              )
+              .doc(campusId);
+
+          const updateData = {
+            name:
+              name,
+            code:
+              code,
+            description:
+              description,
+            managerName:
+              editSelectedManager.name,
+            managerEmail:
+              editSelectedManager.email,
+            managerUid:
+              editSelectedManager.uid,
+            campus:
+              campus,
+            campusId:
+              campusId,
+            status:
+              status,
+            updatedAt:
+              firebase
+                .firestore
+                .FieldValue
+                .serverTimestamp()
+          };
+
+          /*
+           * Nếu code/campus thay đổi thì ID cũng phải đổi
+           * theo CODE-CAMPUS. Dùng batch để tạo ID mới
+           * và xóa ID cũ trong cùng một lần ghi.
+           */
+          const batch =
+            db.batch();
+
+          if (campusId !== id) {
+            batch.set(
+              newRef,
+              updateData,
+              { merge: true }
+            );
+            batch.delete(
+              oldRef
+            );
+          }
+          else {
+            batch.set(
+              oldRef,
+              updateData,
+              { merge: true }
+            );
+          }
+
+          await batch.commit();
+
           showToast(
             "✓ Cập nhật thành công."
           );
