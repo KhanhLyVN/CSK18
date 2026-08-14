@@ -224,9 +224,9 @@ body{
 .stat-card.resolved{ border-left-color: #4C6B3C; }
 .stat-card.closed{ border-left-color: #8A7A6D; }
 .stat-num{
-  font-family:'Fraunces', serif;
+  font-family:'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 2.2rem;
+  font-size: 1.85rem;
   color: var(--maroon-deep);
   line-height: 1;
   margin-bottom: 4px;
@@ -269,7 +269,7 @@ body{
 .panel-head h2{
   font-family:'Fraunces', serif;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--maroon-deep);
   margin: 0;
 }
@@ -315,7 +315,7 @@ body{
 
 /* ---------- Bar list ---------- */
 .bar-list{ display:flex; flex-direction:column; gap: 14px; }
-.bar-row .br-top{ display:flex; justify-content:space-between; font-size:0.93rem; margin-bottom:6px; }
+.bar-row .br-top{ display:flex; justify-content:space-between; font-size:0.87rem; margin-bottom:6px; }
 .bar-row .br-label{ font-weight:700; color: var(--ink); }
 .bar-row .br-count{ color: var(--ink-soft); font-weight:600; }
 .bar-track{ height: 8px; background: var(--cream); border-radius: 999px; overflow:hidden; }

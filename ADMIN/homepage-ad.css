@@ -522,7 +522,7 @@ select:focus-visible {
   border-radius: 8px;
   background: var(--paper);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 35px;
   outline: none;
 }
 
@@ -970,6 +970,7 @@ tbody tr:hover {
   }
 }
 
+/* Main-content font sizing (scaled to ~80% of previous values) */
 .main-content .content-wrap,
 .main-content .hero,
 .main-content .stats-grid,
@@ -978,11 +979,11 @@ tbody tr:hover {
 .main-content .filters,
 .main-content table,
 .main-content .architecture-card {
-  font-size: 1.08em;
+  font-size: .864em;
 }
 
 .main-content .hero h1 {
-  font-size: clamp(2.5rem, 3.4vw, 4rem);
+  font-size: clamp(2rem, 2.72vw, 3.2rem);
 }
 
 .main-content .hero-copy,
@@ -998,35 +999,35 @@ tbody tr:hover {
 .main-content .panel-foot,
 .main-content .detail-box strong,
 .main-content .detail-box small {
-  font-size: 1.1em;
+  font-size: 1.45em;
 }
 
 .main-content .stat-card strong {
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .main-content .title-line h2 {
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
 
 .main-content th {
-  font-size: .76rem;
+  font-size: .608rem;
 }
 
 .main-content td {
-  font-size: .95rem;
+  font-size: .76rem;
 }
 
 .main-content .account-cell strong {
-  font-size: 1.05rem;
+  font-size: .84rem;
 }
 
 .main-content .architecture-card h2 {
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
 
 .main-content .status {
-  font-size: .72rem;
+  font-size: .576rem;
 }
 
   .hero h1 {

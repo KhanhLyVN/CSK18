@@ -177,20 +177,41 @@ function renderUnanswered(tickets){
     `;
   }).join("");
 }
+
+/* ===================== Phân loại yêu cầu (paginated) ===================== */
+let typeBreakdownPage = 1;
+const TYPE_PAGE_SIZE = 7;
+let typeBreakdownEntries = [];
+
 function renderTypeBreakdown(tickets){
   const counts = {};
   tickets.forEach(t => {
     const key = getTicketType(t);
     counts[key] = (counts[key] || 0) + 1;
   });
-  const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-  const max = entries.length ? entries[0][1] : 1;
+  typeBreakdownEntries = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+
+  const totalPages = Math.max(1, Math.ceil(typeBreakdownEntries.length / TYPE_PAGE_SIZE));
+  if (typeBreakdownPage > totalPages) typeBreakdownPage = 1;
+
+  renderTypeBreakdownPage();
+}
+
+function renderTypeBreakdownPage(){
   const el = document.getElementById('typeBarList');
-  if(entries.length === 0){
+  const entries = typeBreakdownEntries;
+
+  if (entries.length === 0) {
     el.innerHTML = `<div class="empty-note">Chưa có dữ liệu phân loại.</div>`;
     return;
   }
-  el.innerHTML = entries.map(([label, count]) => `
+
+  const max = entries[0][1];
+  const totalPages = Math.max(1, Math.ceil(entries.length / TYPE_PAGE_SIZE));
+  const startIdx = (typeBreakdownPage - 1) * TYPE_PAGE_SIZE;
+  const pageEntries = entries.slice(startIdx, startIdx + TYPE_PAGE_SIZE);
+
+  const rowsHtml = pageEntries.map(([label, count]) => `
     <div class="bar-row">
       <div class="br-top">
         <span class="br-label">${escapeHtml(label)}</span>
@@ -199,7 +220,99 @@ function renderTypeBreakdown(tickets){
       <div class="bar-track"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
     </div>
   `).join("");
+
+  let paginationHtml = "";
+  if (totalPages > 1) {
+    const prevDisabled = typeBreakdownPage === 1;
+    const nextDisabled = typeBreakdownPage === totalPages;
+
+    paginationHtml = `
+      <div class="type-pagination" tabindex="0" style="
+        display:flex;justify-content:center;align-items:center;gap:10px;
+        margin-top:14px;outline:none;
+      ">
+        <button
+          class="type-page-arrow"
+          data-dir="prev"
+          ${prevDisabled ? 'disabled' : ''}
+          aria-label="Trang trước"
+          style="
+            width:30px;height:30px;border-radius:8px;
+            border:1px solid #e0d9d2;background:#fff;
+            display:flex;align-items:center;justify-content:center;
+            cursor:${prevDisabled ? 'default' : 'pointer'};
+            opacity:${prevDisabled ? '0.35' : '1'};
+          ">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5D0703" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <span class="type-page-indicator" style="font-size:13px;font-weight:600;color:#5D0703;min-width:52px;text-align:center;">
+          ${typeBreakdownPage} / ${totalPages}
+        </span>
+
+        <button
+          class="type-page-arrow"
+          data-dir="next"
+          ${nextDisabled ? 'disabled' : ''}
+          aria-label="Trang sau"
+          style="
+            width:30px;height:30px;border-radius:8px;
+            border:1px solid #e0d9d2;background:#fff;
+            display:flex;align-items:center;justify-content:center;
+            cursor:${nextDisabled ? 'default' : 'pointer'};
+            opacity:${nextDisabled ? '0.35' : '1'};
+          ">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5D0703" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    `;
+  }
+
+  el.innerHTML = rowsHtml + paginationHtml;
+
+  if (totalPages > 1) {
+    const goPrev = () => {
+      if (typeBreakdownPage > 1) {
+        typeBreakdownPage--;
+        renderTypeBreakdownPage();
+        focusPaginationBar();
+      }
+    };
+    const goNext = () => {
+      if (typeBreakdownPage < totalPages) {
+        typeBreakdownPage++;
+        renderTypeBreakdownPage();
+        focusPaginationBar();
+      }
+    };
+
+    el.querySelector('[data-dir="prev"]').addEventListener('click', goPrev);
+    el.querySelector('[data-dir="next"]').addEventListener('click', goNext);
+
+    // Điều hướng bằng bàn phím khi thanh phân trang đang được focus
+    const paginationBar = el.querySelector('.type-pagination');
+    paginationBar.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goPrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goNext();
+      }
+    });
+  }
 }
+
+function focusPaginationBar(){
+  const bar = document.querySelector('#typeBarList .type-pagination');
+  if (bar) bar.focus();
+}
+/* =================== /Phân loại yêu cầu (paginated) ==================== */
+
 function renderRecent(tickets){
   document.getElementById('recentCount').textContent = tickets.length;
   const el = document.getElementById('recentList');
@@ -241,7 +354,7 @@ document.querySelectorAll('.stat-card').forEach(card => {
   card.addEventListener('click', () => {
     const filter = card.dataset.filter || 'all';
     const status = card.dataset.status;
-    let url = `/CS/Ticket Management/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
+    let url = `/CS/TicketManagement/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
     if(status) url += `&status=${encodeURIComponent(status)}`;
     window.location.href = url;
   });
