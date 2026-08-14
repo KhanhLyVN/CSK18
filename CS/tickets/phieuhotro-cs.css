@@ -21,7 +21,7 @@ body{
   color: var(--ink);
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
-  padding: 48px 20px 80px;
+  /* padding: 48px 20px 80px; */
 }
 .page{
   /* Độ rộng trang bằng 80% ban đầu */
