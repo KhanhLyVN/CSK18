@@ -197,46 +197,171 @@ if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-        const password = document.getElementById("loginPassword").value;
+        const email = document
+            .getElementById("loginEmail")
+            .value
+            .trim()
+            .toLowerCase();
+
+        const password =
+            document.getElementById("loginPassword").value;
 
         loginBtn.disabled = true;
         loginBtn.textContent = "Đang xử lý...";
 
         try {
-            // Đăng nhập Firebase
-            const result = await auth.signInWithEmailAndPassword(email, password);
+            // ================================
+            // FIREBASE LOGIN
+            // ================================
+            const result =
+                await auth.signInWithEmailAndPassword(
+                    email,
+                    password
+                );
+
             const user = result.user;
 
-            toast("Đăng nhập thành công!", "success");
+            toast(
+                "Đăng nhập thành công!",
+                "success"
+            );
 
             loginBtn.textContent = "Thành công!";
 
+            // ================================
+            // LẤY ROLE TỪ FIRESTORE
+            // ================================
             setTimeout(async () => {
-                const role = await CSK18.getRole(user);
+                try {
 
-                if (role === "admin") {
-                    window.location.href = "/ADMIN/homepage-ad.html";
-                } else if (role === "cs") {
-                    window.location.href = "/CS/homepageCS/trangchu-cs.html";
-                } else if (role === "student") {
-                    window.location.href = "/HỌC VIÊN/Trang chủ/homepage.html";
-                } else {
-                    await auth.signOut();
-                    toast("Tài khoản chưa được phân quyền trong hệ thống.", "error");
+                    const userSnap = await db
+                        .collection("users")
+                        .doc(user.uid)
+                        .get();
+
+                    if (!userSnap.exists) {
+
+                        await auth.signOut();
+
+                        toast(
+                            "Không tìm thấy thông tin tài khoản.",
+                            "error"
+                        );
+
+                        loginBtn.disabled = false;
+                        loginBtn.textContent =
+                            "Đăng nhập";
+
+                        return;
+                    }
+
+                    const userData =
+                        userSnap.data() || {};
+
+                    const role =
+                        String(
+                            userData.role || ""
+                        )
+                        .toLowerCase()
+                        .trim();
+
+                    console.log(
+                        "Thông tin tài khoản:",
+                        userData
+                    );
+
+                    console.log(
+                        "Role:",
+                        role
+                    );
+
+                    // ================================
+                    // ADMIN
+                    // ================================
+                    if (role === "admin") {
+
+                        window.location.href =
+                            "/ADMIN/homepage-ad.html";
+
+                    }
+
+                    // ================================
+                    // CS
+                    // ================================
+                    else if (
+                        role === "cs" ||
+                        role === "customer_success"
+                    ) {
+
+                        window.location.href =
+                            "/CS/homepageCS/trangchu-cs.html";
+
+                    }
+
+                    // ================================
+                    // HỌC VIÊN
+                    // ================================
+                    else if (
+                        role === "student" ||
+                        role === "hocvien"
+                    ) {
+
+                        window.location.href =
+                            "/HV/homepage-hv/homepage.html";
+
+                    }
+
+                    // ================================
+                    // ROLE KHÔNG HỢP LỆ
+                    // ================================
+                    else {
+
+                        await auth.signOut();
+
+                        toast(
+                            "Tài khoản chưa được phân quyền trong hệ thống.",
+                            "error"
+                        );
+
+                        loginBtn.disabled = false;
+                        loginBtn.textContent =
+                            "Đăng nhập";
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Lỗi kiểm tra quyền:",
+                        error
+                    );
+
+                    toast(
+                        "Không thể kiểm tra quyền tài khoản.",
+                        "error"
+                    );
+
                     loginBtn.disabled = false;
-                    loginBtn.textContent = "Đăng nhập";
+                    loginBtn.textContent =
+                        "Đăng nhập";
                 }
+
             }, 400);
 
         } catch (error) {
-            console.error("Lỗi đăng nhập:", error);
 
-            toast(getAuthErrorMessage(error), "error");
+            console.error(
+                "Lỗi đăng nhập:",
+                error
+            );
+
+            toast(
+                getAuthErrorMessage(error),
+                "error"
+            );
 
             loginBtn.disabled = false;
-            loginBtn.textContent = "Đăng nhập";
+            loginBtn.textContent =
+                "Đăng nhập";
         }
     });
 }
-
