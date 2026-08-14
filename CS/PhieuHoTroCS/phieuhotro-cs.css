@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 :root{
   --maroon: #5D0703;
   --maroon-deep: #3E0402;
@@ -533,6 +534,8 @@ body{
   background:
     radial-gradient(circle 5px at 0 0, transparent 5px, var(--maroon) 5.5px) 0 0/20px 10px repeat-x;
   transform: translateY(1px) rotate(180deg);
+=======
+>>>>>>> a182206d0091be53d18d6b83c22b70e812326ef8
 }
 .stub-top .k1{
   font-size: 10px;
@@ -615,5 +618,9 @@ body{
   color: var(--ink-soft);
   line-height:1.4;
   border-top: 1px dashed var(--line);
+<<<<<<< HEAD
   padding-top: 10px;
 }
+=======
+  padding-top: 10px;
+>>>>>>> a182206d0091be53d18d6b83c22b70e812326ef8
