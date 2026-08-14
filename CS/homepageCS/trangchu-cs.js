@@ -166,7 +166,7 @@ function renderUnanswered(tickets){
   el.innerHTML = list.slice(0, 10).map(t => {
     const tNum = getTicketNum(t);
     return `
-      <a class="mini-item" href="/CS/Ticket Management/cs-ticket.html?ticket=${encodeURIComponent(tNum)}">
+      <a class="mini-item" href="/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(tNum)}">
         <div class="mi-top">
           <span class="mi-num">${escapeHtml(tNum)}</span>
           <span class="mi-date">${t.date || 'Hôm nay'}</span>
@@ -258,7 +258,7 @@ function goToTicket(){
     return;
   }
   quickFindErr.classList.remove('show');
-  window.location.href = `/CS/Ticket Management/cs-ticket.html?ticket=${encodeURIComponent(val)}`;
+  window.location.href = `/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(val)}`;
 }
 quickFindBtn.addEventListener('click', goToTicket);
 quickFindInput.addEventListener('keydown', (e) => {
