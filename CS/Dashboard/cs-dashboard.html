@@ -363,38 +363,6 @@
     color: var(--maroon);
     font-style: normal;
   }
-  .sidebar {
-    width: 260px;
-    flex: none;
-    background: var(--paper);
-    border-right: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    transition: width 0.25s ease, transform 0.25s ease;
-    z-index: 90;
-  }
-
-  /* Trạng thái thu gọn Sidebar */
-  .sidebar.collapsed { width: 70px; }
-  .sidebar.collapsed .menu-item span { display: none; }
-  .sidebar.collapsed .menu-item { justify-content: center; padding: 12px; }
-
-  .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .menu-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-size: 13.5px;
-    font-weight: 600;
-    transition: background 0.15s ease, color 0.15s ease;
-    white-space: nowrap;
-  }
-  .menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
-  .menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
-  .menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
 
 </style>
   <!-- <link rel="stylesheet" href="cs-dashboard.css"> -->
