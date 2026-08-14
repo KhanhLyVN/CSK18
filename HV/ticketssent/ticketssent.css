@@ -20,7 +20,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 450px;
+    gap: 445px;
     padding-bottom: 19px;
     margin-bottom: 20px;
     border-bottom: 3px solid var(--maroon);
@@ -56,7 +56,7 @@
   
   .sent-count strong {
     color: var(--maroon);
-    font: 700 32px / 1 Fraunces, serif;
+    font: 600 32px / 1 Fraunces, serif;
   }
   
   .sent-count span { margin-top: 4px; font-size: 11px; }
