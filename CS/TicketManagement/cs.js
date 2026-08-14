@@ -80,6 +80,26 @@ function firstValue(ticket, ...keys) {
   return "";
 }
 
+function normalizeRole(role) {
+  return String(role || "").trim().toLowerCase().replace(/[_\s-]+/g, " ").trim();
+}
+
+function isAuthorizedCsRole(role) {
+  const normalized = normalizeRole(role);
+  const allowed = new Set([
+    "cs",
+    "customer success",
+    "customer_success",
+    "staff",
+    "support",
+    "support staff",
+    "admin",
+    "cs_admin",
+    "customer success admin"
+  ]);
+  return !normalized || allowed.has(normalized) || normalized.includes("customer success") || normalized.includes("support");
+}
+
 function normalizeStatus(status) {
   if (!status || status === "pending") return "open";
   return STATUS_META[status] ? status : "open";
@@ -435,7 +455,7 @@ async function startRealtimeTickets(user) {
     }
 
     const staff = staffSnapshot.exists ? staffSnapshot.data() : {};
-    const role = String(staff.role || "").trim().toLowerCase();
+    const role = normalizeRole(staff.role);
     const campus = String(staff.campus || "").trim();
     const isAdmin = ["admin", "cs_admin", "customer success admin"].includes(role);
 
@@ -445,7 +465,7 @@ async function startRealtimeTickets(user) {
       return;
     }
 
-    if (!isAdmin && role && !["cs", "customer success", "customer_success", "staff"].includes(role)) {
+    if (!isAdmin && role && !isAuthorizedCsRole(role)) {
       $("#connLabel").textContent = "Không có quyền CS";
       console.error("Tài khoản không có quyền truy cập CS", role);
       return;
