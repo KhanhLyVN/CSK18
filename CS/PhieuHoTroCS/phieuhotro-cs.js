@@ -432,7 +432,7 @@ if (typeof auth !== "undefined" && auth && typeof auth.onAuthStateChanged === "f
 
     try {
       const doc = await db
-      .collection("accounts")
+      .collection("users")
       .doc(user.uid)
       .get();
       const data = doc.exists ? doc.data() : {};
