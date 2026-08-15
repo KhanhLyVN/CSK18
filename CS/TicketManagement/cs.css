@@ -767,7 +767,7 @@ textarea:focus-visible {
 .ticket-table {
   width: 100%;
 
-  min-width: 1020px;
+  min-width: 1120px;
 
   border-collapse: separate;
 
@@ -949,6 +949,20 @@ textarea:focus-visible {
       "IBM Plex Mono", monospace;
 
   white-space: nowrap;
+}
+
+.student-message-count {
+  min-width: 28px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  color: var(--maroon);
+  background: var(--cream-pale);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font: 700 10px/1 "IBM Plex Mono", monospace;
 }
 
 
