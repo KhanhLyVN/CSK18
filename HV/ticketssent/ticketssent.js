@@ -106,6 +106,81 @@
     return `<span class="${className} ${normalized}">${dot}${STATUS_LABELS[normalized]}</span>`;
   }
 
+  function hasChatThread(ticket) {
+    return ticket?.chatThreadCreated === true;
+  }
+
+  async function openOrCreateStudentChat(link) {
+    const ticketId = link.dataset.ticketId;
+    const user = auth.currentUser;
+    if (!ticketId || !user) {
+      setError("Bạn cần đăng nhập để mở trao đổi.");
+      return;
+    }
+
+    link.setAttribute("aria-busy", "true");
+    link.classList.add("is-opening-chat");
+    const originalText = link.textContent;
+    link.textContent = "Đang mở...";
+
+    try {
+      const ticketRef = db.collection("tickets").doc(ticketId);
+      await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(ticketRef);
+        if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
+
+        const ticket = snapshot.data();
+        if (ticket.studentId !== user.uid) {
+          throw new Error("Bạn không có quyền mở đoạn chat của ticket này.");
+        }
+
+        if (ticket.chatThreadCreated === true) return;
+
+        transaction.update(ticketRef, {
+          chatThreadCreated: true,
+          chatThreadCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          chatThreadCreatedBy: "student",
+          chatThreadCreatedByUid: user.uid,
+          studentMessageCount: Number.isInteger(ticket.studentMessageCount) ? ticket.studentMessageCount : 0,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+      });
+
+      window.location.assign(link.href);
+    } catch (error) {
+      console.error("Không thể tạo đoạn chat:", error);
+      setError(error?.message || "Không thể mở đoạn chat. Vui lòng thử lại.");
+      link.textContent = originalText;
+    } finally {
+      link.removeAttribute("aria-busy");
+      link.classList.remove("is-opening-chat");
+    }
+  }
+
+  function renderSatisfaction(ticket, status) {
+    const hasCSReply = Boolean(readValue(ticket, "lastCSReply"));
+    const satisfactionStatus = readValue(ticket, "satisfactionStatus");
+
+    if (!hasCSReply || status === "closed") return "";
+
+    if (satisfactionStatus === "awaiting") {
+      return `
+        <div class="sent-satisfaction" aria-label="Đánh giá phản hồi Customer Success">
+          <p>Bạn có hài lòng với câu trả lời này chưa?</p>
+          <div class="sent-satisfaction-actions">
+            <button type="button" class="sent-satisfaction-button is-positive" data-satisfaction="satisfied" data-ticket-id="${escapeHtml(ticket.id)}">Hài lòng</button>
+            <button type="button" class="sent-satisfaction-button is-negative" data-satisfaction="unsatisfied" data-ticket-id="${escapeHtml(ticket.id)}">Không hài lòng</button>
+          </div>
+        </div>`;
+    }
+
+    if (satisfactionStatus === "unsatisfied") {
+      return `<div class="sent-satisfaction-result">Bạn đã chọn chưa hài lòng. Hãy tiếp tục trao đổi để Customer Success hỗ trợ thêm.</div>`;
+    }
+
+    return "";
+  }
+
   function renderTickets(tickets) {
     if (!nodes.grid) {
       console.error("Không tìm thấy #sentTicketGrid hoặc #stTicketGrid.");
@@ -158,15 +233,60 @@
             <div class="${responseClass}">
               <div class="${responseTitleClass}"><span>Phản hồi của CS</span></div>
               <p>${escapeHtml(response)}</p>
+              ${renderSatisfaction(ticket, status)}
             </div>
           </div>
           <div class="${footClass}">
             <span>Giữ lại mã yêu cầu để tra cứu</span>
-            <a href="/HV/chat-hv/trao-doi-ticket.html?ticket=${ticketId}">Mở trao đổi →</a>
+            <a href="/HV/chat-hv/trao-doi-ticket.html?ticket=${ticketId}" data-open-exchange data-ticket-id="${escapeHtml(ticket.id)}">${hasChatThread(ticket) ? "Mở trao đổi →" : "Mở trao đổi →"}</a>
           </div>
         </article>`;
     }).join("");
   }
+
+  async function submitSatisfaction(button) {
+    const ticketId = button.dataset.ticketId;
+    const choice = button.dataset.satisfaction;
+    if (!ticketId || !choice) return;
+
+    const card = button.closest(".sent-ticket-card, .st-ticket-card");
+    const buttons = card ? card.querySelectorAll("[data-satisfaction]") : [];
+    buttons.forEach((item) => { item.disabled = true; });
+
+    try {
+      const update = {
+        satisfactionStatus: choice,
+        satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (choice === "satisfied") update.status = "closed";
+
+      await db.collection("tickets").doc(ticketId).update(update);
+
+      if (choice === "unsatisfied") {
+        window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
+      }
+    } catch (error) {
+      console.error("Không thể lưu đánh giá phản hồi:", error);
+      setError("Không thể lưu đánh giá. Vui lòng thử lại.");
+      buttons.forEach((item) => { item.disabled = false; });
+    }
+  }
+
+  nodes.grid?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-satisfaction]");
+    if (button) {
+      event.preventDefault();
+      submitSatisfaction(button);
+      return;
+    }
+
+    const chatLink = event.target.closest("[data-open-exchange]");
+    if (!chatLink) return;
+    event.preventDefault();
+    openOrCreateStudentChat(chatLink);
+  });
 
   function watchMyTickets(user) {
     if (unsubscribeTickets) unsubscribeTickets();
@@ -219,3 +339,4 @@
   // Export để trang Exchange hoặc code khác có thể dùng cùng Firebase instance.
   window.studentTicketsFirebase = { auth, db, storage, watchMyTickets };
 })();
+

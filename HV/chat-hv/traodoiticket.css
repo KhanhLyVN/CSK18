@@ -120,6 +120,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .message-time { margin-top: 7px; color: inherit; font-size: 9.5px; opacity: .65; text-align: right; }
 .loading-message, .empty-message { margin: auto; padding: 24px; color: var(--muted); text-align: center; font-size: 12px; }
 
+.thread-setup { min-height: 0; flex: 1; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 38px 24px; color: var(--ink-soft); text-align: center; }
+.thread-setup-mark { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--maroon); background: var(--cream); font: 700 20px/1 "Fraunces", serif; }
+.thread-setup h3 { margin: 4px 0 0; color: var(--maroon-deep); font: 600 19px/1.2 "Fraunces", serif; }
+.thread-setup p { max-width: 42ch; margin: 0; font-size: 12px; line-height: 1.6; }
+.thread-setup button { min-height: 40px; margin-top: 5px; padding: 0 16px; border: 0; border-radius: 8px; color: var(--cream-pale); background: var(--maroon); cursor: pointer; font-size: 12px; font-weight: 800; }
+.thread-setup button:hover { background: var(--maroon-deep); }
+.thread-setup button:disabled { cursor: wait; opacity: .6; }
+
 /* Composer */
 .message-input { flex: none; display: flex; align-items: flex-end; gap: 10px; padding: 12px 28px 16px; background: var(--paper); border-top: 1px solid var(--line); }
 .message-input textarea { min-height: 44px; max-height: 130px; flex: 1; resize: none; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; outline: none; background: #fff; color: var(--ink); font-size: 13px; line-height: 1.45; }

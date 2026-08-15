@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tổng quan hỗ trợ | Hệ thống hỗ trợ học viên</title>
-    <link rel="stylesheet" href="/HV/ticketssent/ticketssent.css">  
+    <link rel="stylesheet" href="/HV/ticketssent/ticketssent.css">
     <link rel="stylesheet" href="/HV/homepage-hv/homepage.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
     <main class="sent-tickets-page">
         <section class="sent-page-head">
           <div><span class="sent-eyebrow">TỔNG QUAN HỖ TRỢ</span><h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2><p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p></div>
-          <div class="sent-count"><span>Cập nhật realtime</span></div>
+          <div class="sent-count"><strong id="todayLabel">—</strong><span>Cập nhật realtime</span></div>
         </section>
 
         <section class="stats-grid" aria-label="Thống kê ticket">
@@ -67,12 +67,13 @@
         </section>
 
         <section class="content-grid">
-          <div class="panel recent-panel"><div class="panel-head"><div><span class="panel-kicker">THEO DÕI YÊU CẦU</span><h3>Ticket gần đây</h3></div><a href="/HV/chat-hv/trao-doi-ticket.html">Xem tất cả →</a></div><div class="recent-list" id="recentTicketList"><div class="loading-state">Đang tải ticket...</div></div></div>
-          <div class="panel help-panel"><div class="panel-head"><div><span class="panel-kicker">GỢI Ý NHANH</span><h3>Bạn có thể làm gì?</h3></div></div><div class="help-list"><a class="help-item" href="/FAQs/faq.html"><span class="help-icon">?</span><span><strong>Tra cứu FAQ</strong><small>Tìm câu trả lời trong kho kiến thức.</small></span><b>→</b></a><a class="help-item" href="/HV/tickets/phieuhotro.html"><span class="help-icon">＋</span><span><strong>Gửi yêu cầu mới</strong><small>Mô tả vấn đề để được hỗ trợ.</small></span><b>→</b></a><a class="help-item" href="/HV/chat-hv/trao-doi-ticket.html"><span class="help-icon">✦</span><span><strong>Trao đổi với CS</strong><small>Xem phản hồi và nhắn tin.</small></span><b>→</b></a></div></div>
+          <div class="panel recent-panel"><div class="panel-head"><div><span class="panel-kicker">THEO DÕI YÊU CẦU</span><h3>Ticket gần đây</h3></div><a href="../Trao đổi ticket/trao-doi-ticket.html">Xem tất cả →</a></div><div class="recent-list" id="recentTicketList"><div class="loading-state">Đang tải ticket...</div></div></div>
+          <div class="panel help-panel"><div class="panel-head"><div><span class="panel-kicker">GỢI Ý NHANH</span><h3>Bạn có thể làm gì?</h3></div></div><div class="help-list"><a class="help-item" href="/FAQs/faq.html"><span class="help-icon">?</span><span><strong>Tra cứu FAQ</strong><small>Tìm câu trả lời trong kho kiến thức.</small></span><b>→</b></a><a class="help-item" href="../Phiếu hỗ trợ/phieuhotro.html"><span class="help-icon">＋</span><span><strong>Gửi yêu cầu mới</strong><small>Mô tả vấn đề để được hỗ trợ.</small></span><b>→</b></a><a class="help-item" href="../Trao đổi ticket/trao-doi-ticket.html"><span class="help-icon">✦</span><span><strong>Trao đổi với CS</strong><small>Xem phản hồi và nhắn tin.</small></span><b>→</b></a></div></div>
         </section>
       </main>
         </div>
     <script src="/HV/homepage-hv/homepage.js"></script>
     <script type="module" src="/HV/sidebar.js"></script>
+    <script type="module" src="/HV/ticketssent/useticket.js"></script>
 </body>
 </html>
