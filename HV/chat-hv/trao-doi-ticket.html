@@ -1,60 +1,21 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trao đổi trên Ticket | Học viên</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="/HV/chat-hv/traodoiticket.css">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="/firebase-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trao đổi trên Ticket | Học viên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/HV/chat-hv/traodoiticket.css">
+  <link rel="stylesheet" href="/HV/navbar.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="/firebase-config.js"></script>
 </head>
-<body>
-<div class="app">
-  <!-- <header class="topbar">
-    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Mở hoặc đóng menu">☰</button>
-    <button class="back-btn" id="backButtonEl" type="button" aria-label="Quay lại danh sách">←</button>
-    <div class="mark">HV</div>
-    <div class="titles">
-      <h1>Trao đổi trên Ticket</h1>
-      <span>Học viên &amp; Customer Success</span>
-    </div>
-  </header>
-
-  <div class="body" id="bodyEl">
-    <aside class="nav-sidebar" id="navSidebarEl">
-      <nav class="nav-menu" aria-label="Điều hướng học viên">
-        <a class="menu-item" href="/HV/homepage-hv/homepage.html">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V9"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-          <span>Trang chủ</span>
-      </a>
-      <a class="menu-item" href="/HV/tickets/phieuhotro.html">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-          <span>Tạo phiếu hỗ trợ</span>
-      </a>
-      <a class="menu-item" href="/HV/ticketssent/ticketssent.html">
-        <svg xmlns="http://www.w3.org/2000/svg"width="24"height="24"viewBox="0 0 24 24"fill="none"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"aria-label="Tickets đã gửi"role="img"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg><span>Ticket đã gửi</span>
-      </a>
-      <a class="menu-item" href="/HV/chat-hv/trao-doi-ticket.html">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          <span>Trao đổi Ticket</span>
-      </a>
-      <a class="menu-item" href="/FAQs/faq.html">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          <span>Hỏi đáp (Q&A)</span>
-      </a>
-      <a class="menu-item active" href="/HV/account-HV.html">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <span>Tài khoản</span>
-      </a>
-      </nav>
-    </aside> -->
-
+<body data-nav-page="chat">
+  <div class="app">
     <div class="exchange-shell" id="bodyLayoutEl">
       <aside class="ticket-browser" aria-label="Danh sách ticket của tôi">
         <div class="browser-head">
@@ -64,15 +25,12 @@
         </div>
         <div class="ticket-list" id="ticketListEl"></div>
       </aside>
-
       <main class="main" id="mainPaneEl">
         <div class="empty-conversation"><div class="empty-conversation-icon">⌁</div><h2>Chọn một ticket để trao đổi</h2><p>Danh sách các phiếu hỗ trợ của bạn nằm ở bên trái.</p></div>
       </main>
     </div>
   </div>
-</div>
-
-<script src="/Hv/chat-hv/traodoiticket.js"></script>
-<script type="module" src="/HV/sidebar.js"></script>
+  <script src="/HV/navbar.js"></script>
+  <script src="/HV/chat-hv/traodoiticket.js"></script>
 </body>
 </html>

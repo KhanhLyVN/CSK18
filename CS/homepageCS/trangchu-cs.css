@@ -25,6 +25,9 @@ body{
 
 }
 
+.main {
+  margin: 30px;
+}
 /* ---------- Header ---------- */
 .masthead{
   display:flex;
@@ -145,15 +148,6 @@ body{
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 
-.menu-item {
-  min-height: 42px; display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px; border-left: 3px solid transparent; border-radius: 8px;
-  color: var(--ink-soft); text-decoration: none; white-space: nowrap;
-  font-size: 13px; font-weight: 600; transition: background .15s ease, color .15s ease;
-}
-.menu-item svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.menu-item:hover { color: var(--maroon); background: var(--cream-pale); }
-.menu-item.active { color: var(--maroon-deep); background: var(--cream); border-left-color: var(--maroon); font-weight: 700; }
 .qf-icon{ font-size: 16px; }
 .quick-find input{
   flex: 1;

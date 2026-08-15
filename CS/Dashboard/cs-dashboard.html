@@ -50,6 +50,9 @@
     width: 100%;
   }
 
+  .main {
+    margin: 50px;
+  }
   /* ---------- Masthead ---------- */
   .masthead{
     display:flex;
@@ -243,6 +246,20 @@
     flex-direction: column;
     justify-content: center;
   }
+  .satisfaction-card { min-height: 0; }
+  .satisfaction-card .chart-head { margin-bottom: 4px; }
+  .satisfaction-card .chart-title { font-size: 17px; }
+  .satisfaction-chart-wrap { position: relative; min-height: 145px; display: flex; align-items: center; justify-content: center; }
+  .satisfaction-chart-wrap canvas { max-height: 145px; }
+  .satisfaction-empty { position: absolute; color: #C9BCAE; font-size: 12px; font-style: italic; }
+  .satisfaction-summary { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .satisfaction-rate { color: var(--maroon-deep); font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 800; line-height: 1; white-space: nowrap; }
+  .satisfaction-rate .unit { font-family: 'Inter', sans-serif; font-size: 12px; }
+  .satisfaction-breakdown { display: grid; gap: 5px; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+  .satisfaction-breakdown span { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .satisfaction-breakdown span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+  .satisfaction-breakdown span:last-child::before { background: var(--danger); }
+  .satisfaction-breakdown strong { color: var(--ink); font-family: 'JetBrains Mono', monospace; }
 
   /* ---------- Chart section ---------- */
   .chart-section{
@@ -399,7 +416,7 @@
 </style>
   <!-- <link rel="stylesheet" href="cs-dashboard.css"> -->
 </head>
-<body>
+<body data-nav-page="reports">
   <div class="app">
     <div class="topbar">
       <button class="menu-toggle" id="menuToggle" title="Thu gọn / Mở rộng Sidebar">&#9776;</button>
@@ -521,14 +538,21 @@
         <div class="stat-sub" id="subAvgTime">Tính từ lúc tạo đến khi hoàn thành</div>
       </div>
 
-      <!-- Box 2: Mức độ hài lòng -->
-      <div class="stat-card">
-        <div class="stat-top">
-          <div class="stat-label">Mức độ hài lòng<br>(1-5)</div>
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <!-- Biểu đồ đánh giá học viên -->
+      <div class="pie-card satisfaction-card">
+        <div class="chart-head"><div class="chart-title">Phản hồi sau hỗ trợ</div></div>
+        <p class="chart-desc" id="subSatisfaction" style="margin-bottom: 2px;">Chờ phản hồi đánh giá từ học viên</p>
+        <div class="satisfaction-chart-wrap">
+          <canvas id="satisfactionChart"></canvas>
+          <div class="satisfaction-empty" id="satisfactionEmptyNote">Chưa có phản hồi đánh giá</div>
         </div>
-        <div class="stat-value" id="valSatisfaction"><span class="stat-empty">—</span></div>
-        <div class="stat-sub" id="subSatisfaction">Đánh giá trung bình từ học viên</div>
+        <div class="satisfaction-summary">
+          <div class="satisfaction-rate" id="valSatisfaction"><span class="stat-empty">—</span></div>
+          <div class="satisfaction-breakdown">
+            <span>Hài lòng <strong id="satisfiedCount">0</strong></span>
+            <span>Không hài lòng <strong id="unsatisfiedCount">0</strong></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

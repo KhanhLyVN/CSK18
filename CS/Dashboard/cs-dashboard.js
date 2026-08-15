@@ -5,6 +5,7 @@
 ===================================================== */
 (function () {
     let pieChartInstance = null;
+    let satisfactionChartInstance = null;
 
     /* =====================================================
        HELPER
@@ -57,6 +58,21 @@
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
         return Math.floor((d - monday) / (1000 * 60 * 60 * 24));
+    }
+
+    function toValidDate(value) {
+        if (!value) return null;
+        const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function formatDuration(minutes) {
+        if (minutes < 60) return `${minutes}m`;
+        const days = Math.floor(minutes / (60 * 24));
+        const hours = Math.floor((minutes % (60 * 24)) / 60);
+        const mins = minutes % 60;
+        if (days > 0) return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+        return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
     }
 
     /* =====================================================
@@ -206,6 +222,60 @@
         }
     }
 
+    function renderSatisfactionChart(satisfiedCount, unsatisfiedCount) {
+        const canvas = el("satisfactionChart");
+        const emptyNote = el("satisfactionEmptyNote");
+        const total = satisfiedCount + unsatisfiedCount;
+        const satisfiedCountEl = el("satisfiedCount");
+        const unsatisfiedCountEl = el("unsatisfiedCount");
+
+        if (satisfiedCountEl) satisfiedCountEl.textContent = String(satisfiedCount);
+        if (unsatisfiedCountEl) unsatisfiedCountEl.textContent = String(unsatisfiedCount);
+        if (!canvas) return;
+
+        if (total === 0) {
+            if (satisfactionChartInstance) {
+                satisfactionChartInstance.destroy();
+                satisfactionChartInstance = null;
+            }
+            canvas.style.display = "none";
+            if (emptyNote) emptyNote.style.display = "block";
+            return;
+        }
+
+        canvas.style.display = "block";
+        if (emptyNote) emptyNote.style.display = "none";
+        const data = [satisfiedCount, unsatisfiedCount];
+
+        if (satisfactionChartInstance) {
+            satisfactionChartInstance.data.datasets[0].data = data;
+            satisfactionChartInstance.update();
+            return;
+        }
+
+        satisfactionChartInstance = new Chart(canvas.getContext("2d"), {
+            type: "doughnut",
+            data: {
+                labels: ["Hài lòng", "Không hài lòng"],
+                datasets: [{
+                    data,
+                    backgroundColor: ["#4C6B3C", "#A23B2E"],
+                    borderColor: "#FFFBF5",
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "64%",
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => `${context.label}: ${context.raw} phản hồi` } }
+                }
+            }
+        });
+    }
+
     /* =====================================================
        RESET BIỂU ĐỒ CỘT
     ===================================================== */
@@ -268,6 +338,7 @@
         setStat("valCompletionRate", "subCompletionRate", null, null, "%");
         setStat("valAvgTime", "subAvgTime", null);
         setStat("valSatisfaction", "subSatisfaction", null);
+        renderSatisfactionChart(0, 0);
 
         setProgress(null);
         resetBarsEmpty();
@@ -299,18 +370,16 @@
         let totalTimeMinutes = 0;
         let resolvedCount = 0;
 
-        // Mức độ hài lòng
-        let totalRating = 0;
-        let ratingCount = 0;
+        // Phản hồi hài lòng sau khi CS đóng ticket.
+        let satisfiedCount = 0;
+        let unsatisfiedCount = 0;
 
         tickets.forEach(ticket => {
             if (!ticket) return;
 
             // 1. LẤY NGÀY TẠO
-            let createdAt = ticket.createdAt;
+            const createdAt = toValidDate(ticket.createdAt);
             if (!createdAt) return;
-            createdAt = typeof createdAt.toDate === "function" ? createdAt.toDate() : new Date(createdAt);
-            if (isNaN(createdAt.getTime())) return;
 
             // 2. PHÂN LOẠI TICKET (hệ thống / khóa học / tài khoản / khác)
             const categoryKey = normalizeCategoryKey(ticket);
@@ -318,19 +387,18 @@
                 typeCounts[categoryKey]++;
             }
 
-            // 3. ĐÁNH GIÁ HÀI LÒNG (1-5)
-            const rating = Number(ticket.rating || ticket.satisfaction);
-            if (rating >= 1 && rating <= 5) {
-                totalRating += rating;
-                ratingCount++;
-            }
+            // 3. ĐÁNH GIÁ HÀI LÒNG: lấy từ hai nút học viên đã chọn.
+            const satisfactionStatus = String(ticket.satisfactionStatus || "").toLowerCase();
+            if (satisfactionStatus === "satisfied") satisfiedCount++;
+            if (satisfactionStatus === "unsatisfied") unsatisfiedCount++;
 
-            // 4. THỜI GIAN XỬ LÝ (Khi ticket đã xong)
-            let resolvedAt = ticket.resolvedAt || ticket.completedAt;
-            if (resolvedAt) {
-                resolvedAt = typeof resolvedAt.toDate === "function" ? resolvedAt.toDate() : new Date(resolvedAt);
-                if (!isNaN(resolvedAt.getTime()) && resolvedAt >= createdAt) {
-                    const diffMs = resolvedAt - createdAt;
+            // 4. THỜI GIAN XỬ LÝ: chỉ ticket đã đóng.
+            // `updatedAt` chỉ là fallback cho ticket legacy chưa có `closedAt`.
+            const status = String(ticket.status || "").toLowerCase();
+            if (status === "closed") {
+                const closedAt = toValidDate(ticket.closedAt || ticket.statusClosedAt || ticket.updatedAt);
+                if (closedAt && closedAt >= createdAt) {
+                    const diffMs = closedAt - createdAt;
                     totalTimeMinutes += Math.floor(diffMs / (1000 * 60));
                     resolvedCount++;
                 }
@@ -353,7 +421,6 @@
             }
 
             // STATUS
-            const status = String(ticket.status || "").toLowerCase();
             if (status === "in_progress" || status === "processing" || status === "pending") {
                 inProgress++;
             }
@@ -377,26 +444,26 @@
         // Hiển thị Thời gian trung bình
         if (resolvedCount > 0) {
             const avgMinutes = Math.round(totalTimeMinutes / resolvedCount);
-            let displayTime = "";
-            if (avgMinutes < 60) {
-                displayTime = `${avgMinutes}m`;
-            } else {
-                const hours = Math.floor(avgMinutes / 60);
-                const mins = avgMinutes % 60;
-                displayTime = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-            }
-            setStat("valAvgTime", "subAvgTime", displayTime, `Tính trên ${resolvedCount} ticket hoàn thành`);
+            setStat("valAvgTime", "subAvgTime", formatDuration(avgMinutes), `Từ lúc tạo đến khi đóng · ${resolvedCount} ticket`);
         } else {
             setStat("valAvgTime", "subAvgTime", null);
         }
 
-        // Hiển thị Mức độ hài lòng (1-5)
-        if (ratingCount > 0) {
-            const avgRating = (totalRating / ratingCount).toFixed(1);
-            setStat("valSatisfaction", "subSatisfaction", `${avgRating}/5`, `Dựa trên ${ratingCount} lượt đánh giá`);
+        // Hiển thị tỷ lệ hài lòng trên các đánh giá đã phản hồi.
+        const satisfactionResponses = satisfiedCount + unsatisfiedCount;
+        if (satisfactionResponses > 0) {
+            const satisfactionRate = Math.round((satisfiedCount / satisfactionResponses) * 100);
+            setStat(
+                "valSatisfaction",
+                "subSatisfaction",
+                satisfactionRate,
+                `${satisfiedCount} hài lòng · ${unsatisfiedCount} không hài lòng`,
+                "%"
+            );
         } else {
             setStat("valSatisfaction", "subSatisfaction", null);
         }
+        renderSatisfactionChart(satisfiedCount, unsatisfiedCount);
 
         // Cập nhật biểu đồ
         renderPieChart(typeCounts);

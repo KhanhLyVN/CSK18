@@ -177,6 +177,131 @@ function normalizeStatus(status) {
 }
 
 
+function renderStudentChatSetup(ticketRecord) {
+
+  return `
+    <section class="thread-setup" aria-label="Tạo đoạn chat">
+      <div class="thread-setup-mark">↔</div>
+      <h3>Chưa có lịch sử trao đổi</h3>
+      <p>Ticket này chưa có đoạn chat. Nhấn nút bên dưới để bắt đầu trao đổi trực tiếp với Customer Success.</p>
+      <button type="button" id="createChatThreadButton">Tạo đoạn chat</button>
+    </section>
+  `;
+}
+
+
+async function createStudentChatThread(ticketRecord) {
+
+  if (!database || !firebaseCurrentUser || !ticketRecord?.id) return;
+
+  const button = document.getElementById("createChatThreadButton");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Đang tạo...";
+  }
+
+  try {
+    const ticketRef = database.collection("tickets").doc(ticketRecord.id);
+    await database.runTransaction(async transaction => {
+      const snapshot = await transaction.get(ticketRef);
+      if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
+      const latestTicket = snapshot.data();
+      if (!isMyTicket({ id: ticketRecord.id, ...latestTicket })) {
+        throw new Error("Bạn không có quyền mở đoạn chat này.");
+      }
+      if (latestTicket.chatThreadCreated === true) return;
+      transaction.update(ticketRef, {
+        chatThreadCreated: true,
+        chatThreadCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        chatThreadCreatedBy: "student",
+        chatThreadCreatedByUid: firebaseCurrentUser.uid,
+        studentMessageCount: Number.isInteger(latestTicket.studentMessageCount) ? latestTicket.studentMessageCount : 0,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    openSelectedTicket({ ...ticketRecord, chatThreadCreated: true });
+  } catch (error) {
+    console.error("Không thể tạo đoạn chat:", error);
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Tạo đoạn chat";
+    }
+    window.alert(error?.message || "Không thể tạo đoạn chat. Vui lòng thử lại.");
+  }
+}
+
+
+function renderClosedTicketSatisfaction(ticketRecord, status) {
+
+  if (status !== "closed" || ticketRecord.satisfactionStatus !== "awaiting") {
+    return "";
+  }
+
+  return `
+    <section class="conversation-satisfaction" aria-label="Xác nhận kết quả hỗ trợ">
+      <p>Customer Success đã đóng ticket. Bạn có hài lòng với kết quả hỗ trợ không?</p>
+      <div class="conversation-satisfaction-actions">
+        <button type="button" class="conversation-satisfaction-button is-positive" data-closed-satisfaction="satisfied" data-satisfaction-round="${Number(ticketRecord.satisfactionRound) || 1}">Hài lòng</button>
+        <button type="button" class="conversation-satisfaction-button is-negative" data-closed-satisfaction="unsatisfied" data-satisfaction-round="${Number(ticketRecord.satisfactionRound) || 1}">Không hài lòng</button>
+      </div>
+    </section>
+  `;
+}
+
+
+async function submitClosedTicketSatisfaction(ticketRecord, choice, satisfactionRound) {
+
+  if (!database || !firebaseCurrentUser || !ticketRecord?.id) return;
+
+  const buttons = document.querySelectorAll("[data-closed-satisfaction]");
+  buttons.forEach(item => { item.disabled = true; });
+
+  try {
+    const ticketRef = database.collection("tickets").doc(ticketRecord.id);
+
+    await database.runTransaction(async transaction => {
+      const snapshot = await transaction.get(ticketRef);
+      if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
+
+      const latestTicket = snapshot.data();
+      if (!isMyTicket({ id: ticketRecord.id, ...latestTicket })) {
+        throw new Error("Bạn không có quyền xác nhận ticket này.");
+      }
+      if (normalizeStatus(latestTicket.status) !== "closed") {
+        throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
+      }
+      if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
+        throw new Error("Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.");
+      }
+
+      const update = {
+        satisfactionStatus: choice,
+        satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        satisfactionRespondedRound: satisfactionRound,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (choice === "satisfied") {
+        update.status = "closed";
+        update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+      } else {
+        update.status = "in_progress";
+        update.closedAt = null;
+        update.reopenedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.reopenedBy = "student";
+        update.reopenedToStatus = "in_progress";
+      }
+
+      transaction.update(ticketRef, update);
+    });
+  } catch (error) {
+    console.error("Không thể lưu xác nhận đóng ticket:", error);
+    buttons.forEach(item => { item.disabled = false; });
+    window.alert(error?.message || "Không thể lưu xác nhận. Vui lòng thử lại.");
+  }
+}
+
+
 function getTimestampMillis(value) {
 
   if (!value) {
@@ -872,6 +997,8 @@ function openSelectedTicket(
   activeTicketItem =
     ticketRecord;
 
+  const hasChatThread = ticketRecord.chatThreadCreated === true;
+
 
   renderTicketsList();
 
@@ -1175,20 +1302,18 @@ function openSelectedTicket(
       </div>
 
 
-      <div
-        class="messages"
-        id="messagesContainerEl"
-      >
-
-        <div class="loading-message">
-          Đang tải trao đổi...
+      ${hasChatThread ? `
+        <div class="messages" id="messagesContainerEl">
+          <div class="loading-message">Đang tải trao đổi...</div>
         </div>
+      ` : renderStudentChatSetup(ticketRecord)}
 
-      </div>
+
+      ${hasChatThread ? renderClosedTicketSatisfaction(ticketRecord, status) : ""}
 
 
       ${
-        status !== "closed"
+        hasChatThread && status !== "closed"
 
           ? `
 
@@ -1227,12 +1352,18 @@ function openSelectedTicket(
   `;
 
 
-  loadTicketMessagesRealtime(
-    ticketRecord.id
-  );
+    if (hasChatThread) {
+    loadTicketMessagesRealtime(ticketRecord.id);
+  } else {
+    const createChatButton = document.getElementById("createChatThreadButton");
+    if (createChatButton) {
+      createChatButton.addEventListener("click", () => createStudentChatThread(ticketRecord));
+    }
+  }
 
 
   const sendButton =
+
     document.getElementById(
       "sendMessageButton"
     );
@@ -1703,6 +1834,21 @@ async function sendNewMessage(
 /* =====================================================
    NAVIGATION
 ===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+    const button = event.target.closest("[data-closed-satisfaction]");
+    if (!button || !activeTicketItem) return;
+
+    event.preventDefault();
+    submitClosedTicketSatisfaction(
+      activeTicketItem,
+      button.dataset.closedSatisfaction,
+      Number(button.dataset.satisfactionRound) || 1
+    );
+  }
+);
 
 if (menuToggleEl) {
 

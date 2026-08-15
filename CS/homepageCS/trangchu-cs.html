@@ -1,161 +1,43 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trang chủ Customer Success | Dashboard</title>
-<link rel="stylesheet" href="/CS/homepageCS/trangchu-cs.css">
-<link rel="stylesheet" href="/CS/navbar.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script>
-  window.db = window.db || (typeof db !== "undefined" ? db : null);
-  window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ Customer Success | Dashboard</title>
+  <link rel="stylesheet" href="/CS/homepageCS/trangchu-cs.css">
+  <link rel="stylesheet" href="/CS/navbar.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="/firebase-config.js"></script>
+  <script>window.db = window.db || (typeof db !== "undefined" ? db : null); window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);</script>
 </head>
-<body>
+<body data-nav-page="home">
   <div class="app">
-    <!-- <div class="topbar">
-      <button class="menu-toggle" id="menuToggle" title="Thu gọn / Mở rộng Sidebar">&#9776;</button>
-      <div class="mark">CS</div>
-      <div class="titles">
-        <h1>Hệ thống Quản lý Hỗ trợ</h1>
-        <span>Trang tổng quan Customer Success</span>
+    <main class="main">
+      <div class="masthead">
+        <div class="masthead-left"><div class="eyebrow">Hệ thống Quản lý Hỗ trợ</div><h1>Trang Chủ Customer Success</h1><p id="greetingLine">Đang tải thông tin chào buổi...</p></div>
+        <div class="masthead-right"><div class="clock-badge"><span class="live-dot"></span><span id="todayStr">--/--/----</span></div><div class="action-buttons"><a class="btn-main" href="/CS/TicketManagement/cs-ticket.html">Quản lý Trao đổi →</a><a class="btn-sub" href="/CS/PhieuHoTroCS/phieuhotro-cs.html" target="_blank">+ Tạo phiếu mới</a></div></div>
       </div>
-    </div>
-
-    <div class="body" id="bodyEl">
-      <div class="sidebar" id="sidebarEl">
-        <div class="sidebar-menu">
-          <a href="/CS/homepageCS/trangchu-cs.html" class="menu-item active">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Trang chủ</span>
-          </a>
-          <a href="/CS/TicketManagement/cs-ticket.html" class="menu-item">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <span>Quản lý Ticket</span>
-          </a>
-          <a href="/CS/PhieuHoTroCS/phieuhotro-cs.html" class="menu-item">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>Tạo phiếu hỗ trợ</span>
-          </a>
-          <a href="/CS/Dashboard/cs-dashboard.html" class="menu-item">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 16l4-5 3 3 5-7"></path></svg>
-            <span>Báo cáo thống kê</span>
-          </a>
-          <a href="/FAQs/CS-FAQ.html" class="menu-item">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <span>FAQs</span>
-          </a>
-          <a href="/CS/account-CS.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Cài đặt hệ thống</span>
-          </a>
-        </div>
-      </div> -->
-
-      <!-- MAIN CONTENT -->
-      <div class="main">
-        <!-- Header Section -->
-        <div class="masthead">
-          <div class="masthead-left">
-            <div class="eyebrow">Hệ thống Quản lý Hỗ trợ</div>
-            <h1>Trang Chủ Customer Success</h1>
-            <p id="greetingLine">Đang tải thông tin chào buổi...</p>
-          </div>
-          <div class="masthead-right">
-            <div class="clock-badge">
-              <span class="live-dot"></span>
-              <span id="todayStr">--/--/----</span>
-            </div>
-            <div class="action-buttons">
-              <a class="btn-main" href="/CS/TicketManagement/cs-ticket.html">Quản lý Trao đổi &rarr;</a>
-              <a class="btn-sub" href="/CS/PhieuHoTroCS/phieuhotro-cs.html" target="_blank">+ Tạo phiếu mới</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Search Section -->
-        <div class="quick-find">
-          <input type="text" id="quickFindInput" placeholder="Nhập mã ticket cần tra cứu nhanh (VD: BL-482910 hoặc ID)...">
-          <button id="quickFindBtn">Mở Ticket</button>
-          <div class="quick-find-err" id="quickFindErr">Vui lòng nhập mã ticket hợp lệ.</div>
-        </div>
-
-        <!-- Metric Statistics Grid -->
-        <div class="stat-grid" id="statGrid">
-          <div class="stat-card" data-filter="all">
-            <div class="stat-num" id="statAll">0</div>
-            <div class="stat-label">Tổng số phiếu</div>
-            <div class="stat-trend">Tất cả trạng thái</div>
-          </div>
-          <div class="stat-card open" data-filter="open" data-status="open">
-            <div class="stat-num" id="statOpen">0</div>
-            <div class="stat-label">Đang mở</div>
-            <div class="stat-trend">Cần tiếp nhận</div>
-          </div>
-          <div class="stat-card progress" data-filter="open" data-status="in_progress">
-            <div class="stat-num" id="statProgress">0</div>
-            <div class="stat-label">Đang xử lý</div>
-            <div class="stat-trend">Đang giải quyết</div>
-          </div>
-          <div class="stat-card resolved" data-filter="closed" data-status="resolved">
-            <div class="stat-num" id="statResolved">0</div>
-            <div class="stat-label">Đã giải quyết</div>
-            <div class="stat-trend">Chờ xác nhận đóng</div>
-          </div>
-          <div class="stat-card closed" data-filter="closed" data-status="closed">
-            <div class="stat-num" id="statClosed">0</div>
-            <div class="stat-label">Đã đóng</div>
-            <div class="stat-trend">Hoàn tất</div>
-          </div>
-        </div>
-
-        <!-- Dashboard Split Columns -->
-        <div class="dash-columns">
-          <div class="panel">
-            <div class="panel-head">
-              <h2>Cần phản hồi gấp</h2>
-              <span class="panel-count" id="unansweredCount">0</span>
-            </div>
-            <p class="panel-desc">Các phiếu mới gửi hoặc đang mở cần Customer Success tương tác.</p>
-            <div class="mini-list" id="unansweredList">
-              <div class="empty-note">Đang đồng bộ dữ liệu...</div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-head">
-              <h2>Phân loại yêu cầu</h2>
-              <span class="panel-count-sub">Tỷ trọng</span>
-            </div>
-            <p class="panel-desc">Thống kê các nhóm vấn đề học viên gặp phải trên hệ thống.</p>
-            <div class="bar-list" id="typeBarList">
-              <div class="empty-note">Đang phân tích dữ liệu...</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel: Ticket gần đây (Wide) -->
-        <div class="panel panel-wide">
-          <div class="panel-head">
-            <h2>Danh sách Ticket Gần đây</h2>
-            <span class="panel-count" id="recentCount">0</span>
-          </div>
-          <p class="panel-desc" style="margin-bottom: 16px;">10 yêu cầu hỗ trợ mới nhất ghi nhận từ học viên.</p>
-          <div class="recent-list" id="recentList">
-            <div class="empty-note">Đang tải danh sách ticket...</div>
-          </div>
-        </div>
+      <div class="quick-find"><input type="text" id="quickFindInput" placeholder="Nhập mã ticket cần tra cứu nhanh (VD: BL-482910 hoặc ID)..."><button id="quickFindBtn">Mở Ticket</button><div class="quick-find-err" id="quickFindErr">Vui lòng nhập mã ticket hợp lệ.</div></div>
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card" data-filter="all"><div class="stat-num" id="statAll">0</div><div class="stat-label">Tổng số phiếu</div><div class="stat-trend">Tất cả trạng thái</div></div>
+        <div class="stat-card open" data-filter="open" data-status="open"><div class="stat-num" id="statOpen">0</div><div class="stat-label">Đang mở</div><div class="stat-trend">Cần tiếp nhận</div></div>
+        <div class="stat-card progress" data-filter="open" data-status="in_progress"><div class="stat-num" id="statProgress">0</div><div class="stat-label">Đang xử lý</div><div class="stat-trend">Đang giải quyết</div></div>
+        <div class="stat-card resolved" data-filter="closed" data-status="resolved"><div class="stat-num" id="statResolved">0</div><div class="stat-label">Đã giải quyết</div><div class="stat-trend">Chờ xác nhận đóng</div></div>
+        <div class="stat-card closed" data-filter="closed" data-status="closed"><div class="stat-num" id="statClosed">0</div><div class="stat-label">Đã đóng</div><div class="stat-trend">Hoàn tất</div></div>
       </div>
-    </div>
+      <div class="dash-columns">
+        <div class="panel"><div class="panel-head"><h2>Cần phản hồi gấp</h2><span class="panel-count" id="unansweredCount">0</span></div><p class="panel-desc">Các phiếu mới gửi hoặc đang mở cần Customer Success tương tác.</p><div class="mini-list" id="unansweredList"><div class="empty-note">Đang đồng bộ dữ liệu...</div></div></div>
+        <div class="panel"><div class="panel-head"><h2>Phân loại yêu cầu</h2><span class="panel-count-sub">Tỷ trọng</span></div><p class="panel-desc">Thống kê các nhóm vấn đề học viên gặp phải trên hệ thống.</p><div class="bar-list" id="typeBarList"><div class="empty-note">Đang phân tích dữ liệu...</div></div></div>
+      </div>
+      <div class="panel panel-wide"><div class="panel-head"><h2>Danh sách Ticket Gần đây</h2><span class="panel-count" id="recentCount">0</span></div><p class="panel-desc" style="margin-bottom: 16px;">10 yêu cầu hỗ trợ mới nhất ghi nhận từ học viên.</p><div class="recent-list" id="recentList"><div class="empty-note">Đang tải danh sách ticket...</div></div></div>
+    </main>
   </div>
-<script type="module" src="/CS/homepageCS/trangchu-cs.js"></script>
-<script type="module" src="/CS/navbar.js"></script>
+  <script src="/CS/navbar.js"></script>
+  <script type="module" src="/CS/homepageCS/trangchu-cs.js"></script>
 </body>
 </html>

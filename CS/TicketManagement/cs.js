@@ -2691,13 +2691,30 @@
                 const snapshot = await transaction.get(ticketRef);
                 const latestTicket = snapshot.exists ? snapshot.data() : {};
   
-                transaction.update(ticketRef, {
+                const statusUpdate = {
                     status: normalizedStatus,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedByUid: currentCSUser?.uid || "",
                     updatedByEmail: currentCSUser?.email || "",
                     notificationHistory: appendNotificationHistory(latestTicket, notification)
-                });
+                };
+
+                if (normalizedStatus === "closed" && latestTicket.status !== "closed") {
+                    const satisfactionAttemptCount = Number(latestTicket.satisfactionAttemptCount) || 0;
+                    statusUpdate.closedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+                    if (latestTicket.satisfactionStatus === "unsatisfied" && satisfactionAttemptCount < 2) {
+                        statusUpdate.satisfactionAttemptCount = satisfactionAttemptCount + 1;
+                        statusUpdate.satisfactionRound = satisfactionAttemptCount + 1;
+                        statusUpdate.satisfactionStatus = "awaiting";
+                        statusUpdate.satisfactionAskedAt = firebase.firestore.FieldValue.serverTimestamp();
+                        statusUpdate.satisfactionRespondedAt = null;
+                    }
+                } else if (normalizedStatus !== "closed" && latestTicket.status === "closed") {
+                    statusUpdate.closedAt = null;
+                }
+
+                transaction.update(ticketRef, statusUpdate);
             });
   
   
@@ -3268,9 +3285,12 @@
   
             await db.runTransaction(async transaction => {
                 const snapshot = await transaction.get(ticketRef);
-                const latestTicket = snapshot.exists ? snapshot.data() : {};
+                                const latestTicket = snapshot.exists ? snapshot.data() : {};
+                const satisfactionAttemptCount = Number(latestTicket.satisfactionAttemptCount) || 0;
+                const shouldAskAfterReply = latestTicket.status !== "closed" && satisfactionAttemptCount === 0 && latestTicket.satisfactionStatus !== "awaiting";
   
                 transaction.set(messageRef, {
+
                     text,
                     senderUid: currentCSUser.uid,
                     senderId: currentCSUser.uid,
@@ -3281,16 +3301,23 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
   
-                transaction.update(ticketRef, {
+                const messageUpdate = {
                     lastMessage: text,
                     lastCSReply: text,
                     lastCSReplyAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    satisfactionStatus: "awaiting",
-                    satisfactionAskedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    satisfactionRespondedAt: null,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     notificationHistory: appendNotificationHistory(latestTicket, notification)
-                });
+                };
+
+                if (shouldAskAfterReply) {
+                    messageUpdate.satisfactionAttemptCount = 1;
+                    messageUpdate.satisfactionRound = 1;
+                    messageUpdate.satisfactionStatus = "awaiting";
+                    messageUpdate.satisfactionAskedAt = firebase.firestore.FieldValue.serverTimestamp();
+                    messageUpdate.satisfactionRespondedAt = null;
+                }
+
+                transaction.update(ticketRef, messageUpdate);
             });
   
   

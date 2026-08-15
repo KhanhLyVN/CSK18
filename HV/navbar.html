@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/HV/navbar.css">
+</head>
+<body>
+  <template id="studentNavbarTemplate">
+    <header class="student-navbar-topbar">
+      <button class="student-navbar-toggle" type="button" aria-label="Mở điều hướng" aria-expanded="false" aria-controls="studentNavbarSidebar">☰</button>
+      <a class="student-navbar-brand" href="/HV/homepage-hv/homepage.html" aria-label="Trang chủ Hệ thống Hỗ trợ Học viên">
+        <span class="student-navbar-mark">HV</span>
+        <span class="student-navbar-brand-copy"><strong>Hệ thống Hỗ trợ Học viên</strong><small>Trung tâm Customer Success</small></span>
+      </a>
+      <div class="student-navbar-actions" data-navbar-actions></div>
+    </header>
+    <aside class="student-navbar-sidebar" id="studentNavbarSidebar" aria-label="Điều hướng học viên">
+      <nav class="student-navbar-menu">
+        <a data-nav-page="home" href="/HV/homepage-hv/homepage.html">Trang chủ</a>
+        <a data-nav-page="create" href="/HV/tickets/phieuhotro.html">Tạo phiếu hỗ trợ</a>
+        <a data-nav-page="sent" href="/HV/ticketssent/ticketssent.html">Ticket đã gửi</a>
+        <a data-nav-page="chat" href="/HV/chat-hv/trao-doi-ticket.html">Trao đổi ticket</a>
+        <a data-nav-page="faq" href="/FAQs/faq.html">Hỏi đáp</a>
+        <a data-nav-page="account" href="/HV/account-HV.html">Tài khoản</a>
+      </nav>
+      <div class="student-navbar-note"><i></i><span>Hỗ trợ trực tuyến</span></div>
+    </aside>
+  </template>
+  <script type="module" src="/HV/sidebar.js"></script>
+</body>
+</html>

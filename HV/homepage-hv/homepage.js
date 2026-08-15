@@ -297,6 +297,77 @@ document.addEventListener("DOMContentLoaded", () => {
   // RENDER TICKET
   // ======================================================
 
+  function renderHomepageSatisfaction(ticket, status) {
+    if (status !== "closed" || ticket.satisfactionStatus !== "awaiting") return "";
+    const round = Number(ticket.satisfactionRound) || 1;
+    return `
+      <div class="homepage-satisfaction" aria-label="Đánh giá phản hồi Customer Success">
+        <p>Customer Success đã phản hồi. Bạn có hài lòng với kết quả hỗ trợ không?</p>
+        <div class="homepage-satisfaction-actions">
+          <button type="button" class="homepage-satisfaction-button is-positive" data-home-satisfaction="satisfied" data-ticket-id="${escapeHTML(ticket.id)}" data-satisfaction-round="${round}">Hài lòng</button>
+          <button type="button" class="homepage-satisfaction-button is-negative" data-home-satisfaction="unsatisfied" data-ticket-id="${escapeHTML(ticket.id)}" data-satisfaction-round="${round}">Không hài lòng</button>
+        </div>
+      </div>
+    `;
+  }
+
+  async function submitHomepageSatisfaction(button) {
+    const ticketId = button.dataset.ticketId;
+    const choice = button.dataset.homeSatisfaction;
+    const satisfactionRound = Number(button.dataset.satisfactionRound) || 1;
+    const database = getDatabase();
+    const user = getAuth()?.currentUser;
+    if (!ticketId || !choice || !database || !user) return;
+
+    const card = button.closest(".homepage-ticket-card, .recent-item-wrap");
+    card?.querySelectorAll("[data-home-satisfaction]").forEach(item => { item.disabled = true; });
+
+    try {
+      await database.runTransaction(async transaction => {
+        const ticketRef = database.collection("tickets").doc(ticketId);
+        const snapshot = await transaction.get(ticketRef);
+        if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
+        const latestTicket = snapshot.data();
+        if (latestTicket.studentId !== user.uid || normalizeStatus(latestTicket.status) !== "closed") {
+          throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
+        }
+        if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
+          throw new Error("Yêu cầu đánh giá không còn hiệu lực. Vui lòng tải lại.");
+        }
+
+        const update = {
+          satisfactionStatus: choice,
+          satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          satisfactionRespondedRound: satisfactionRound,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (choice === "satisfied") {
+          update.status = "closed";
+          update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+        } else {
+          update.status = "in_progress";
+          update.closedAt = null;
+          update.reopenedAt = firebase.firestore.FieldValue.serverTimestamp();
+          update.reopenedBy = "student";
+          update.reopenedToStatus = "in_progress";
+          update.chatThreadCreated = true;
+          update.chatThreadCreatedAt = firebase.firestore.FieldValue.serverTimestamp();
+          update.chatThreadCreatedBy = "student";
+          update.chatThreadCreatedByUid = user.uid;
+        }
+        transaction.update(ticketRef, update);
+      });
+
+      if (choice === "unsatisfied") {
+        window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
+      }
+    } catch (error) {
+      console.error("Không thể lưu đánh giá trang chủ:", error);
+      card?.querySelectorAll("[data-home-satisfaction]").forEach(item => { item.disabled = false; });
+      window.alert(error?.message || "Không thể lưu đánh giá. Vui lòng thử lại.");
+    }
+  }
+
   function renderRecentTickets(tickets) {
 
     if (!recentListEl) {
@@ -378,10 +449,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           return `
 
-            <a
-              class="recent-item"
-              href="/HV/chat-hv/trao-doi-ticket.html?ticket=${query}"
-            >
+            <div class="recent-item-wrap">
+              <a
+                class="recent-item"
+                href="/HV/chat-hv/trao-doi-ticket.html?ticket=${query}"
+              >
 
               <span class="recent-code">
                 ${escapeHTML(number)}
@@ -408,14 +480,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${meta.label}
               </span>
 
-              <span class="recent-date">
-                ${escapeHTML(
-                  firstValue(ticket, "date") ||
-                  formatDate(ticket.createdAt)
-                )}
-              </span>
-
-            </a>
+                <span class="recent-date">
+                  ${escapeHTML(
+                    firstValue(ticket, "date") ||
+                    formatDate(ticket.createdAt)
+                  )}
+                </span>
+              </a>
+              ${renderHomepageSatisfaction(ticket, status)}
+            </div>
 
           `;
 
@@ -425,11 +498,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+    recentListEl?.addEventListener("click", event => {
+    const button = event.target.closest("[data-home-satisfaction]");
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    submitHomepageSatisfaction(button);
+  });
+
+
   // ======================================================
   // FIREBASE
   // ======================================================
 
   const database =
+
     getDatabase();
 
   const authInstance =

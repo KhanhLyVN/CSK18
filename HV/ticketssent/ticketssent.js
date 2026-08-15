@@ -158,24 +158,19 @@
   }
 
   function renderSatisfaction(ticket, status) {
-    const hasCSReply = Boolean(readValue(ticket, "lastCSReply"));
     const satisfactionStatus = readValue(ticket, "satisfactionStatus");
 
-    if (!hasCSReply || status === "closed") return "";
+    if (status !== "closed") return "";
 
     if (satisfactionStatus === "awaiting") {
       return `
         <div class="sent-satisfaction" aria-label="Đánh giá phản hồi Customer Success">
-          <p>Bạn có hài lòng với câu trả lời này chưa?</p>
+          <p>Customer Success đã đóng ticket. Bạn có hài lòng với kết quả hỗ trợ không?</p>
           <div class="sent-satisfaction-actions">
-            <button type="button" class="sent-satisfaction-button is-positive" data-satisfaction="satisfied" data-ticket-id="${escapeHtml(ticket.id)}">Hài lòng</button>
-            <button type="button" class="sent-satisfaction-button is-negative" data-satisfaction="unsatisfied" data-ticket-id="${escapeHtml(ticket.id)}">Không hài lòng</button>
+            <button type="button" class="sent-satisfaction-button is-positive" data-satisfaction="satisfied" data-ticket-id="${escapeHtml(ticket.id)}" data-satisfaction-round="${Number(ticket.satisfactionRound) || 1}">Hài lòng</button>
+            <button type="button" class="sent-satisfaction-button is-negative" data-satisfaction="unsatisfied" data-ticket-id="${escapeHtml(ticket.id)}" data-satisfaction-round="${Number(ticket.satisfactionRound) || 1}">Không hài lòng</button>
           </div>
         </div>`;
-    }
-
-    if (satisfactionStatus === "unsatisfied") {
-      return `<div class="sent-satisfaction-result">Bạn đã chọn chưa hài lòng. Hãy tiếp tục trao đổi để Customer Success hỗ trợ thêm.</div>`;
     }
 
     return "";
@@ -247,27 +242,64 @@
   async function submitSatisfaction(button) {
     const ticketId = button.dataset.ticketId;
     const choice = button.dataset.satisfaction;
+    const satisfactionRound = Number(button.dataset.satisfactionRound) || 1;
     if (!ticketId || !choice) return;
 
     const card = button.closest(".sent-ticket-card, .st-ticket-card");
     const buttons = card ? card.querySelectorAll("[data-satisfaction]") : [];
     buttons.forEach((item) => { item.disabled = true; });
 
-    try {
+        try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Bạn cần đăng nhập để xác nhận ticket.");
+
       const update = {
+
         satisfactionStatus: choice,
         satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        satisfactionRespondedRound: satisfactionRound,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
 
-      if (choice === "satisfied") update.status = "closed";
+      if (choice === "satisfied") {
+        update.status = "closed";
+        update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+      } else if (choice === "unsatisfied") {
+        update.status = "in_progress";
+        update.closedAt = null;
+        update.reopenedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.reopenedBy = "student";
+        update.reopenedToStatus = "in_progress";
+        update.chatThreadCreated = true;
+        update.chatThreadCreatedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.chatThreadCreatedBy = "student";
+        update.chatThreadCreatedByUid = user.uid;
+      }
 
-      await db.collection("tickets").doc(ticketId).update(update);
+      await db.runTransaction(async (transaction) => {
+        const ticketRef = db.collection("tickets").doc(ticketId);
+        const snapshot = await transaction.get(ticketRef);
+        if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
+
+        const latestTicket = snapshot.data();
+        if (latestTicket.studentId !== user.uid) {
+          throw new Error("Bạn không có quyền xác nhận ticket này.");
+        }
+        if (normalizedStatus(latestTicket.status) !== "closed") {
+          throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
+        }
+        if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
+          throw new Error("Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.");
+        }
+
+                transaction.update(ticketRef, update);
+      });
 
       if (choice === "unsatisfied") {
         window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
       }
     } catch (error) {
+
       console.error("Không thể lưu đánh giá phản hồi:", error);
       setError("Không thể lưu đánh giá. Vui lòng thử lại.");
       buttons.forEach((item) => { item.disabled = false; });
