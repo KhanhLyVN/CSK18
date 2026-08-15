@@ -1506,25 +1506,6 @@
                             </div>
 
 
-                            <!-- CLASS -->
-
-                            <div class="info-item">
-
-                                <span class="info-label">
-                                    Lớp
-                                </span>
-
-                                <span
-                                    class="info-value"
-                                    id="class">
-
-                                    —
-
-                                </span>
-
-                            </div>
-
-
                             <!-- CAMPUS -->
 
                             <div class="info-item">
@@ -2260,12 +2241,6 @@ if (
                     "Chưa cập nhật";
 
 
-                const studentClass =
-                    data.class ||
-                    data.className ||
-                    "Chưa cập nhật";
-
-
                 const campus =
                     data.campus ||
                     data.campusName ||
@@ -2326,11 +2301,6 @@ if (
                 $("name")
                     .textContent =
                     name;
-
-
-                $("class")
-                    .textContent =
-                    studentClass;
 
 
                 $("campus")
