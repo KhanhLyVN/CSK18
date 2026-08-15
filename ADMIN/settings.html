@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cài đặt hệ thống - Admin</title>
+  <link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="settings.css">
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+
+  <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+    <!-- BRAND -->
+    <div class="admin-sidebar-brand">
+        <div class="admin-brand-mark">
+        HV
+        </div>
+        <div class="admin-brand-text">
+        <strong>Học Viện</strong>
+        <small>ADMIN CENTER</small>
+        </div>
+    </div>
+    <!-- NAVIGATION -->
+    <nav class="admin-sidebar-nav">
+        <div class="admin-nav-label">
+        Tổng quan
+        </div>
+        <a
+        href="/ADMIN/homepage-ad.html"
+        class="admin-nav-item"
+        data-page="overview"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            dashboard
+        </span>
+        <span class="admin-nav-text">
+            Tổng quan
+        </span>
+        </a>
+        <div class="admin-nav-label">
+        Quản lý
+        </div>
+        <a
+        href="/ADMIN/homepage-ad.html#accounts"
+        class="admin-nav-item"
+        data-page="accounts"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            manage_accounts
+        </span>
+        <span class="admin-nav-text">
+            Tài khoản CS
+        </span>
+        <b
+            class="admin-nav-badge"
+            id="sidebarAccountCount"
+        >
+            0
+        </b>
+        </a>
+        <a
+        href="/ADMIN/activity-report.html"
+        class="admin-nav-item"
+        data-page="reports"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            analytics
+        </span>
+        <span class="admin-nav-text">
+            Báo cáo hoạt động
+        </span>
+        </a>
+        <div class="admin-nav-label">
+        Hệ thống
+        </div>
+        <a
+        href="/ADMIN/settings.html"
+        class="admin-nav-item"
+        data-page="settings"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            settings
+        </span>
+        <span class="admin-nav-text">
+            Cài đặt
+        </span>
+        </a>
+        <a
+        href="/ADMIN/system-log.html"
+        class="admin-nav-item"
+        data-page="logs"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            history
+        </span>
+        <span class="admin-nav-text">
+            Nhật ký hệ thống
+        </span>
+        </a>
+    </nav>
+    <!-- USER -->
+    <div class="admin-sidebar-user">
+        <div
+        class="admin-user-avatar"
+        id="sidebarAvatar"
+        >
+        AD
+        </div>
+        <div class="admin-user-info">
+        <strong id="sidebarUserName">
+            Administrator
+        </strong>
+        <small id="sidebarUserRole">
+            System Admin
+        </small>
+        </div>
+        <button
+        type="button"
+        class="admin-user-menu"
+        id="sidebarLogoutBtn"
+        title="Đăng xuất"
+        >
+        <span class="material-symbols-rounded">
+            logout
+        </span>
+        </button>
+    </div>
+    </aside>
+    <!-- MOBILE BACKDROP -->
+    <div
+    class="admin-sidebar-backdrop"
+    id="adminSidebarBackdrop"
+    hidden
+    ></div>
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button
+        class="icon-btn mobile-only"
+        id="menuBtn"
+        aria-label="Mở menu"
+      >
+        ☰
+      </button>
+      <div class="connection">
+        <i id="connectionDot"></i>
+        <span id="connectionLabel">
+          Đang kiểm tra kết nối...
+        </span>
+      </div>
+      <div class="top-actions">
+        <span
+          class="top-admin"
+          id="topAdminName"
+        >
+          Administrator
+        </span>
+        <button
+          class="icon-btn"
+          id="noticeBtn"
+          title="Thông báo"
+        >
+          ♢
+          <em></em>
+        </button>
+        <div class="avatar small-mark" id="topAvatar">
+          AD
+        </div>
+      </div>
+    </header>
+    <!-- ===================================================
+         CONTENT
+    ==================================================== -->
+    <div class="content-wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <p class="eyebrow">
+            SYSTEM CONFIGURATION
+          </p>
+          <h1>
+            Cài đặt
+            <span>hệ thống.</span>
+          </h1>
+          <p class="hero-copy">
+            Quản lý thông tin quản trị viên,
+            thông báo, giao diện và các cấu hình
+            hoạt động của hệ thống Customer Success.
+          </p>
+        </div>
+        <div class="hero-art">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="node node-a">
+            ADMIN
+          </div>
+          <div class="node node-b">
+            SYSTEM
+          </div>
+          <div class="node node-c">
+            FIREBASE
+          </div>
+          <div class="connector connector-one"></div>
+          <div class="connector connector-two"></div>
+        </div>
+      </section>
+      <!-- =================================================
+           SETTINGS GRID
+      ================================================== -->
+      <section class="settings-grid">
+        <!-- ===============================================
+             ADMIN PROFILE
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                ADMIN ACCOUNT
+              </p>
+              <h2>
+                Thông tin quản trị viên
+              </h2>
+              <p>
+                Thông tin tài khoản đang đăng nhập.
+              </p>
+            </div>
+            <span class="card-icon">
+              ♙
+            </span>
+          </div>
+          <div class="profile-preview">
+            <div
+              class="profile-avatar"
+              id="profileAvatar"
+            >
+              AD
+            </div>
+            <div>
+              <strong id="profileName">
+                Administrator
+              </strong>
+              <small id="profileEmail">
+                Chưa đăng nhập
+              </small>
+              <span class="profile-status">
+                <i></i>
+                Đang hoạt động
+              </span>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>
+                Họ và tên
+              </label>
+              <input
+                type="text"
+                id="adminName"
+                placeholder="Nhập họ tên"
+              >
+            </div>
+            <div class="form-group">
+              <label>
+                Email
+              </label>
+              <input
+                type="email"
+                id="adminEmail"
+                placeholder="admin@example.com"
+                disabled
+              >
+            </div>
+          </div>
+          <div class="card-actions">
+            <button
+              class="primary-btn"
+              id="saveProfileBtn"
+            >
+              Lưu thông tin
+            </button>
+          </div>
+        </div>
+        <!-- ===============================================
+             NOTIFICATION
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                NOTIFICATIONS
+              </p>
+              <h2>
+                Thông báo
+              </h2>
+              <p>
+                Kiểm soát các thông báo của Admin.
+              </p>
+            </div>
+            <span class="card-icon">
+              ♢
+            </span>
+          </div>
+          <div class="setting-list">
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Thông báo tài khoản mới
+                </strong>
+                <small>
+                  Nhận thông báo khi có tài khoản CS mới.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="notifyNewAccount"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Tài khoản chưa kích hoạt
+                </strong>
+                <small>
+                  Cảnh báo khi tài khoản chưa tạo mật khẩu.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="notifyPending"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Hoạt động hệ thống
+                </strong>
+                <small>
+                  Thông báo các hoạt động quan trọng.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="notifySystem"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Âm thanh thông báo
+                </strong>
+                <small>
+                  Phát âm thanh khi nhận thông báo.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="notificationSound"
+              >
+              <span class="switch"></span>
+            </label>
+          </div>
+        </div>
+        <!-- ===============================================
+             SYSTEM
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                SYSTEM
+              </p>
+              <h2>
+                Cài đặt hệ thống
+              </h2>
+              <p>
+                Điều chỉnh cách hệ thống hoạt động.
+              </p>
+            </div>
+            <span class="card-icon">
+              ⚙
+            </span>
+          </div>
+          <div class="setting-list">
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Cập nhật realtime
+                </strong>
+                <small>
+                  Tự động cập nhật dữ liệu từ Firestore.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="realtimeEnabled"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Tự động tải dữ liệu
+                </strong>
+                <small>
+                  Tải dữ liệu khi mở trang Admin.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="autoLoad"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Ghi nhật ký hoạt động
+                </strong>
+                <small>
+                  Lưu lại hoạt động quản trị.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="activityLogging"
+              >
+              <span class="switch"></span>
+            </label>
+            <label class="setting-row">
+              <div>
+                <strong>
+                  Xác nhận trước khi đăng xuất
+                </strong>
+                <small>
+                  Hiển thị xác nhận khi Admin đăng xuất.
+                </small>
+              </div>
+              <input
+                type="checkbox"
+                id="confirmLogout"
+              >
+              <span class="switch"></span>
+            </label>
+          </div>
+        </div>
+        <!-- ===============================================
+             APPEARANCE
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                APPEARANCE
+              </p>
+              <h2>
+                Giao diện
+              </h2>
+              <p>
+                Tùy chỉnh giao diện quản trị.
+              </p>
+            </div>
+            <span class="card-icon">
+              ◐
+            </span>
+          </div>
+          <div class="form-group">
+            <label>
+              Kích thước giao diện
+            </label>
+            <select id="interfaceSize">
+              <option value="compact">
+                Compact
+              </option>
+              <option value="normal" selected>
+                Normal
+              </option>
+              <option value="large">
+                Large
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>
+              Ngôn ngữ
+            </label>
+            <select id="language">
+              <option value="vi">
+                Tiếng Việt
+              </option>
+              <option value="en">
+                English
+              </option>
+            </select>
+          </div>
+          <div class="setting-row static-row">
+            <div>
+              <strong>
+                Chế độ giao diện
+              </strong>
+              <small>
+                Hệ thống hiện sử dụng giao diện sáng.
+              </small>
+            </div>
+            <span class="mode-badge">
+              LIGHT
+            </span>
+          </div>
+        </div>
+        <!-- ===============================================
+             FIREBASE
+        ================================================ -->
+        <div class="settings-card full-width">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                DATABASE
+              </p>
+              <h2>
+                Firebase
+              </h2>
+              <p>
+                Thông tin kết nối cơ sở dữ liệu.
+              </p>
+            </div>
+            <span class="card-icon">
+              ◈
+            </span>
+          </div>
+          <div class="firebase-grid">
+            <div class="firebase-box">
+              <span>
+                CONNECTION
+              </span>
+              <strong id="firebaseStatus">
+                Đang kiểm tra...
+              </strong>
+              <small>
+                Trạng thái Firebase
+              </small>
+            </div>
+            <div class="firebase-box">
+              <span>
+                AUTHENTICATION
+              </span>
+              <strong id="authStatus">
+                Đang kiểm tra...
+              </strong>
+              <small>
+                Firebase Authentication
+              </small>
+            </div>
+            <div class="firebase-box">
+              <span>
+                DATABASE
+              </span>
+              <strong>
+                Firestore
+              </strong>
+              <small>
+                Cloud Firestore
+              </small>
+            </div>
+            <div class="firebase-box">
+              <span>
+                COLLECTION
+              </span>
+              <strong>
+                users
+              </strong>
+              <small>
+                Customer Success accounts
+              </small>
+            </div>
+          </div>
+          <div class="info-box">
+            <strong>
+              Lưu ý
+            </strong>
+            <p>
+              Không chỉnh sửa Firebase configuration trực tiếp
+              từ trang này. Cấu hình Firebase được quản lý
+              trong file <code>firebase-config.js</code>.
+            </p>
+          </div>
+        </div>
+        <!-- ===============================================
+             SESSION
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                SECURITY
+              </p>
+              <h2>
+                Phiên đăng nhập
+              </h2>
+              <p>
+                Kiểm tra phiên Firebase Authentication hiện tại.
+              </p>
+            </div>
+            <span class="card-icon">
+              ◉
+            </span>
+          </div>
+          <div class="session-info">
+            <div>
+              <span>
+                UID
+              </span>
+              <strong id="sessionUid">
+                —
+              </strong>
+            </div>
+            <div>
+              <span>
+                Provider
+              </span>
+              <strong id="sessionProvider">
+                —
+              </strong>
+            </div>
+            <div>
+              <span>
+                Trạng thái
+              </span>
+              <strong class="session-active">
+                Đang đăng nhập
+              </strong>
+            </div>
+          </div>
+          <button
+            class="danger-btn"
+            id="logoutSessionBtn"
+          >
+            Đăng xuất khỏi phiên này
+          </button>
+        </div>
+        <!-- ===============================================
+             RESET
+        ================================================ -->
+        <div class="settings-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">
+                MAINTENANCE
+              </p>
+              <h2>
+                Quản lý cài đặt
+              </h2>
+              <p>
+                Khôi phục cấu hình mặc định của trình duyệt.
+              </p>
+            </div>
+            <span class="card-icon">
+              ↻
+            </span>
+          </div>
+          <div class="reset-box">
+            <p>
+              Các cài đặt cá nhân được lưu trên trình duyệt
+              hiện tại. Khôi phục mặc định sẽ không xóa
+              dữ liệu Firebase.
+            </p>
+            <button
+              class="secondary-btn"
+              id="resetSettingsBtn"
+            >
+              Khôi phục mặc định
+            </button>
+          </div>
+        </div>
+      </section>
+      <!-- GLOBAL SAVE -->
+      <section class="save-bar">
+        <div>
+          <strong>
+            Cài đặt đã thay đổi?
+          </strong>
+          <span>
+            Nhấn lưu để áp dụng các thay đổi.
+          </span>
+        </div>
+        <div>
+          <button
+            class="secondary-btn"
+            id="resetAllBtn"
+          >
+            Hủy thay đổi
+          </button>
+          <button
+            class="primary-btn"
+            id="saveSettingsBtn"
+          >
+            Lưu cài đặt
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<!-- =======================================================
+     TOAST
+======================================================== -->
+<div
+  id="toast"
+  class="toast"
+  hidden
+></div>
+<!-- =======================================================
+     BACKDROP
+======================================================== -->
+<div
+  id="sidebarBackdrop"
+  class="sidebar-backdrop"
+  hidden
+></div>
+<script src="settings.js"></script>
+</body>
+</html>

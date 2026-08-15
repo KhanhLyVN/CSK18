@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Báo cáo hoạt động - Admin</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+
+  <!-- Firebase Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase config -->
+  <script src="../firebase-config.js"></script>
+  <link rel="stylesheet" href="activity-report.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+    <!-- BRAND -->
+    <div class="admin-sidebar-brand">
+        <div class="admin-brand-mark">
+        HV
+        </div>
+        <div class="admin-brand-text">
+        <strong>Học Viện</strong>
+        <small>ADMIN CENTER</small>
+        </div>
+    </div>
+    <!-- NAVIGATION -->
+    <nav class="admin-sidebar-nav">
+        <div class="admin-nav-label">
+        Tổng quan
+        </div>
+        <a
+        href="/ADMIN/homepage-ad.html"
+        class="admin-nav-item"
+        data-page="overview"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            dashboard
+        </span>
+        <span class="admin-nav-text">
+            Tổng quan
+        </span>
+        </a>
+        <div class="admin-nav-label">
+        Quản lý
+        </div>
+        <a
+        href="/ADMIN/homepage-ad.html#accounts"
+        class="admin-nav-item"
+        data-page="accounts"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            manage_accounts
+        </span>
+        <span class="admin-nav-text">
+            Tài khoản CS
+        </span>
+        <b
+            class="admin-nav-badge"
+            id="sidebarAccountCount"
+        >
+            0
+        </b>
+        </a>
+        <a
+        href="/ADMIN/activity-report.html"
+        class="admin-nav-item"
+        data-page="reports"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            analytics
+        </span>
+        <span class="admin-nav-text">
+            Báo cáo hoạt động
+        </span>
+        </a>
+        <div class="admin-nav-label">
+        Hệ thống
+        </div>
+        <a
+        href="/ADMIN/settings.html"
+        class="admin-nav-item"
+        data-page="settings"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            settings
+        </span>
+        <span class="admin-nav-text">
+            Cài đặt
+        </span>
+        </a>
+        <a
+        href="/ADMIN/system-log.html"
+        class="admin-nav-item"
+        data-page="logs"
+        >
+        <span class="admin-nav-icon material-symbols-rounded">
+            history
+        </span>
+        <span class="admin-nav-text">
+            Nhật ký hệ thống
+        </span>
+        </a>
+    </nav>
+    <!-- USER -->
+    <div class="admin-sidebar-user">
+        <div
+        class="admin-user-avatar"
+        id="sidebarAvatar"
+        >
+        AD
+        </div>
+        <div class="admin-user-info">
+        <strong id="sidebarUserName">
+            Administrator
+        </strong>
+        <small id="sidebarUserRole">
+            System Admin
+        </small>
+        </div>
+        <button
+        type="button"
+        class="admin-user-menu"
+        id="sidebarLogoutBtn"
+        title="Đăng xuất"
+        >
+        <span class="material-symbols-rounded">
+            logout
+        </span>
+        </button>
+    </div>
+    </aside>
+    <!-- MOBILE BACKDROP -->
+    <div
+    class="admin-sidebar-backdrop"
+    id="adminSidebarBackdrop"
+    hidden
+    ></div>
+    <!-- ADMIN -->
+    <!-- <div class="admin-chip">
+      <div class="avatar">
+        AD
+      </div>
+      <div>
+        <strong id="sidebarAdminName">
+          Administrator
+        </strong>
+        <small>
+          SYSTEM ADMIN
+        </small>
+      </div>
+      <button
+        id="logoutBtn"
+        title="Đăng xuất"
+      >
+        ↪
+      </button>
+    </div> -->
+  <!-- </aside> -->
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button
+        id="menuBtn"
+        class="icon-btn mobile-only"
+      >
+        ☰
+      </button>
+      <div class="connection">
+        <i id="connectionDot"></i>
+        <span id="connectionLabel">
+          Đang kết nối Firebase...
+        </span>
+      </div>
+      <div class="top-actions">
+        <span
+          id="todayLabel"
+          class="today"
+        >
+        </span>
+        <button
+          id="noticeBtn"
+          class="icon-btn"
+          title="Thông báo"
+        >
+          ♢
+          <em></em>
+        </button>
+        <div class="small-mark avatar">
+          AD
+        </div>
+      </div>
+    </header>
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+    <div class="content-wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <p class="eyebrow">
+            ACTIVITY REPORT
+          </p>
+          <h1>
+            Báo cáo
+            <span>hoạt động</span>
+          </h1>
+          <p class="hero-copy">
+            Theo dõi tình trạng tài khoản, hoạt động đăng nhập
+            và phân bổ đội ngũ Customer Success theo cơ sở
+            và phòng ban.
+          </p>
+        </div>
+        <div class="hero-art">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="connector connector-one"></div>
+          <div class="connector connector-two"></div>
+          <div class="node node-a">
+            USERS
+          </div>
+          <div class="node node-b">
+            ACTIVE
+          </div>
+          <div class="node node-c">
+            REPORT
+          </div>
+        </div>
+      </section>
+      <!-- ===================================================
+           STATS
+      ==================================================== -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span>
+            TỔNG TÀI KHOẢN CS
+          </span>
+          <strong id="totalCount">
+            0
+          </strong>
+          <small>
+            Toàn bộ Customer Success
+          </small>
+        </div>
+        <div class="stat-card">
+          <span>
+            ĐANG HOẠT ĐỘNG
+          </span>
+          <strong id="activeCount">
+            0
+          </strong>
+          <small id="activePercent">
+            0% tổng đội ngũ
+          </small>
+        </div>
+        <div class="stat-card">
+          <span>
+            CHƯA KÍCH HOẠT
+          </span>
+          <strong id="pendingCount">
+            0
+          </strong>
+          <small>
+            Cần kiểm tra
+          </small>
+        </div>
+        <div class="stat-card">
+          <span>
+            TẠO TRONG KỲ
+          </span>
+          <strong id="newCount">
+            0
+          </strong>
+          <small id="periodLabel">
+            30 ngày gần nhất
+          </small>
+        </div>
+      </section>
+      <!-- ===================================================
+           FILTER
+      ==================================================== -->
+      <section class="filter-panel">
+        <div class="panel-head">
+          <div>
+            <div class="title-line">
+              <h2>
+                Bộ lọc báo cáo
+              </h2>
+            </div>
+            <p>
+              Lọc dữ liệu hoạt động theo thời gian,
+              campus và phòng ban.
+            </p>
+          </div>
+          <div class="panel-actions">
+            <button
+              class="secondary-btn"
+              id="clearFilters"
+            >
+              Xóa bộ lọc
+            </button>
+            <button
+              class="primary-btn"
+              id="exportBtn"
+            >
+              Xuất CSV
+            </button>
+          </div>
+        </div>
+        <div class="filters">
+          <div class="filter-field">
+            <label>
+              Khoảng thời gian
+            </label>
+            <select id="periodFilter">
+              <option value="7">
+                7 ngày gần nhất
+              </option>
+              <option
+                value="30"
+                selected
+              >
+                30 ngày gần nhất
+              </option>
+              <option value="90">
+                90 ngày gần nhất
+              </option>
+              <option value="all">
+                Toàn bộ
+              </option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>
+              Campus
+            </label>
+            <select id="campusFilter">
+              <option value="all">
+                Tất cả campus
+              </option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>
+              Phòng ban
+            </label>
+            <select id="departmentFilter">
+              <option value="all">
+                Tất cả phòng ban
+              </option>
+            </select>
+          </div>
+          <div class="filter-field search-field">
+            <label>
+              Tìm kiếm
+            </label>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Tên, username, email..."
+            >
+          </div>
+        </div>
+      </section>
+      <!-- ===================================================
+           DISTRIBUTION
+      ==================================================== -->
+      <section class="report-grid">
+        <!-- CAMPUS -->
+        <div class="report-card">
+          <div class="report-card-head">
+            <div>
+              <p class="eyebrow">
+                CAMPUS
+              </p>
+              <h2>
+                Phân bổ theo cơ sở
+              </h2>
+            </div>
+          </div>
+          <div
+            id="campusReport"
+            class="distribution-list"
+          >
+            <div class="loading">
+              Đang tải dữ liệu...
+            </div>
+          </div>
+        </div>
+        <!-- DEPARTMENT -->
+        <div class="report-card">
+          <div class="report-card-head">
+            <div>
+              <p class="eyebrow">
+                DEPARTMENT
+              </p>
+              <h2>
+                Phân bổ phòng ban
+              </h2>
+            </div>
+          </div>
+          <div
+            id="departmentReport"
+            class="distribution-list"
+          >
+            <div class="loading">
+              Đang tải dữ liệu...
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ===================================================
+           ACTIVITY TABLE
+      ==================================================== -->
+      <section class="account-panel">
+        <div class="panel-head">
+          <div>
+            <div class="title-line">
+              <h2>
+                Hoạt động tài khoản
+              </h2>
+              <span id="recordBadge">
+                0 hồ sơ
+              </span>
+            </div>
+            <p>
+              Danh sách Customer Success và trạng thái
+              hoạt động hiện tại.
+            </p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  TÀI KHOẢN
+                </th>
+                <th>
+                  CAMPUS
+                </th>
+                <th>
+                  PHÒNG BAN
+                </th>
+                <th>
+                  TRẠNG THÁI
+                </th>
+                <th>
+                  ĐĂNG NHẬP GẦN NHẤT
+                </th>
+                <th>
+                  NGÀY TẠO
+                </th>
+              </tr>
+            </thead>
+            <tbody id="activityBody">
+              <tr>
+                <td
+                  colspan="6"
+                  class="loading-cell"
+                >
+                  Đang tải dữ liệu Firebase...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-foot">
+          <span id="entriesNote">
+            Đang tải...
+          </span>
+          <span class="realtime">
+            <i></i>
+            Realtime Firebase
+          </span>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<!-- =======================================================
+     MOBILE BACKDROP
+======================================================== -->
+<div
+  id="mobileBackdrop"
+  class="mobile-backdrop"
+  hidden
+></div>
+<!-- =======================================================
+     TOAST
+======================================================== -->
+<div
+  id="toast"
+  class="toast"
+  hidden
+></div>
+<script src="activity-report.js"></script>
+</body>
+</html>

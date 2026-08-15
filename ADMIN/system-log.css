@@ -1,0 +1,1853 @@
+/* =========================================================
+   ADMIN HOME PAGE
+   Trang chủ Admin
+
+   QUAN TRỌNG:
+   - Sidebar dùng chung từ admin.css
+   - Không viết lại .admin-sidebar ở file này
+   - admin.css phải được load TRƯỚC file này
+========================================================= */
+
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root {
+  --maroon: #5D0703;
+  --maroon-deep: #3E0402;
+  --maroon-soft: #7A1410;
+
+  --cream: #EEDCC8;
+  --cream-pale: #FBF4E9;
+  --paper: #FFFBF5;
+  --canvas: #F7F1E8;
+
+  --ink: #2A1712;
+  --ink-soft: #6B5348;
+  --soft: #6B5348;
+  --muted: #8A7A6D;
+
+  --gold: #B08A4E;
+  --green: #5E7F52;
+  --danger: #A23B2E;
+
+  --line: rgba(93, 7, 3, .13);
+  --line-soft: rgba(93, 7, 3, .08);
+
+  --shadow:
+    0 8px 28px rgba(62, 4, 2, .055);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: var(--canvas);
+  color: var(--ink);
+
+  font-family: Inter, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--maroon);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   APP SHELL
+   Sidebar được quản lý bởi admin.css
+========================================================= */
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--canvas);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   Sidebar = 250px
+========================================================= */
+
+.main-content {
+  width: auto;
+  min-width: 0;
+  min-height: 100vh;
+
+  margin-left: 250px;
+
+  background: var(--canvas);
+
+  transition: margin-left .25s ease;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  position: sticky;
+  top: 0;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  min-height: 66px;
+
+  padding: 14px 42px;
+
+  background: rgba(255, 251, 245, .96);
+
+  border-bottom: 1px solid var(--line);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+
+/* =========================================================
+   TOPBAR LEFT
+========================================================= */
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+
+/* =========================================================
+   CONNECTION
+========================================================= */
+
+.connection {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.connection i,
+#connectionDot {
+  width: 8px;
+  height: 8px;
+
+  flex: 0 0 8px;
+
+  border-radius: 50%;
+
+  background: #A99B90;
+
+  transition:
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+.connection i.live,
+#connectionDot.live {
+  background: var(--green);
+
+  box-shadow:
+    0 0 0 3px rgba(76, 107, 60, .15);
+}
+
+
+/* =========================================================
+   TOPBAR ACTIONS
+========================================================= */
+
+.top-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-left: auto;
+}
+
+
+/* =========================================================
+   TODAY
+========================================================= */
+
+.today {
+  color: var(--muted);
+
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ADMIN NAME
+========================================================= */
+
+.top-admin {
+  color: var(--ink);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ICON BUTTON
+========================================================= */
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: inline-grid;
+  place-items: center;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: var(--paper);
+  color: var(--ink-soft);
+
+  font-size: 16px;
+  line-height: 1;
+
+  transition:
+    border-color .16s ease,
+    color .16s ease,
+    background .16s ease,
+    transform .16s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--maroon-soft);
+
+  color: var(--maroon);
+
+  background: var(--cream);
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+#noticeBtn {
+  position: relative;
+}
+
+#noticeBtn em {
+  position: absolute;
+
+  top: 5px;
+  right: 6px;
+
+  width: 7px;
+  height: 7px;
+
+  display: none;
+
+  border-radius: 50%;
+
+  background: #8B3027;
+
+  font-style: normal;
+}
+
+#noticeBtn.has-notice em {
+  display: block;
+}
+
+
+/* =========================================================
+   MOBILE BUTTON
+========================================================= */
+
+.mobile-only {
+  display: none;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content-wrap {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto;
+
+  padding: 38px 40px 55px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 40px;
+
+  min-height: 190px;
+
+  padding: 6px 0 34px;
+
+  border-bottom: 2px solid var(--maroon);
+
+  overflow: hidden;
+}
+
+.hero > div:first-child {
+  position: relative;
+
+  z-index: 2;
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+/* =========================================================
+   HERO EYEBROW
+========================================================= */
+
+.eyebrow {
+  margin: 0 0 11px;
+
+  color: var(--maroon-soft);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: .18em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   HERO TITLE
+========================================================= */
+
+.hero h1 {
+  margin: 0;
+
+  color: var(--maroon);
+
+  font-family: Fraunces, Georgia, serif;
+
+  font-size: clamp(36px, 4vw, 52px);
+
+  font-weight: 700;
+
+  line-height: .98;
+
+  letter-spacing: -.045em;
+}
+
+.hero h1 span {
+  color: var(--maroon-soft);
+}
+
+
+/* =========================================================
+   HERO COPY
+========================================================= */
+
+.hero-copy {
+  max-width: 650px;
+
+  margin: 19px 0 0;
+
+  color: var(--ink-soft);
+
+  font-size: 13px;
+
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   HERO ART
+========================================================= */
+
+.hero-art {
+  position: relative;
+
+  width: 300px;
+  height: 210px;
+
+  flex: 0 0 300px;
+
+  margin-right: 18px;
+
+  opacity: .9;
+}
+
+
+/* =========================================================
+   ORBIT
+========================================================= */
+
+.orbit {
+  position: absolute;
+
+  border: 1px solid rgba(93, 7, 3, .14);
+
+  border-radius: 50%;
+}
+
+.orbit-one {
+  inset: 18px 0 0 25px;
+}
+
+.orbit-two {
+  inset: 44px 24px 22px 52px;
+}
+
+
+/* =========================================================
+   HERO NODES
+========================================================= */
+
+.node {
+  position: absolute;
+
+  display: grid;
+  place-items: center;
+
+  width: 54px;
+  height: 41px;
+
+  border: 1px solid rgba(93, 7, 3, .15);
+
+  border-radius: 8px;
+
+  background: rgba(255, 251, 245, .9);
+
+  box-shadow:
+    0 7px 18px rgba(62, 4, 2, .07);
+
+  color: var(--maroon);
+
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.node-a {
+  left: 8px;
+  top: 75px;
+}
+
+.node-b {
+  right: 12px;
+  top: 35px;
+
+  color: var(--green);
+}
+
+.node-c {
+  right: 50px;
+  bottom: 18px;
+
+  color: var(--gold);
+}
+
+
+/* =========================================================
+   HERO CONNECTORS
+========================================================= */
+
+.connector {
+  position: absolute;
+
+  height: 1px;
+
+  background: rgba(93, 7, 3, .22);
+
+  transform-origin: left center;
+}
+
+.connector-one {
+  left: 59px;
+  top: 95px;
+
+  width: 154px;
+
+  transform: rotate(-19deg);
+}
+
+.connector-two {
+  left: 59px;
+  top: 95px;
+
+  width: 160px;
+
+  transform: rotate(21deg);
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 14px;
+
+  padding: 27px 0;
+
+  margin-bottom: 0;
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.stat-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 145px;
+
+  padding: 20px 21px;
+
+  background: var(--paper);
+
+  border: 1px solid var(--line);
+
+  border-radius: 12px;
+
+  box-shadow: var(--shadow);
+
+  overflow: hidden;
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease;
+}
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+
+  background: var(--maroon);
+
+  opacity: .85;
+}
+
+.stat-card::after {
+  content: "";
+
+  position: absolute;
+
+  right: -30px;
+  bottom: -35px;
+
+  width: 100px;
+  height: 100px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 50%;
+
+  opacity: .45;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(93, 7, 3, .2);
+
+  box-shadow:
+    0 13px 35px rgba(62, 4, 2, .08);
+}
+
+
+/* =========================================================
+   STAT LABEL
+========================================================= */
+
+.stat-card span {
+  position: relative;
+
+  z-index: 2;
+
+  display: block;
+
+  color: var(--ink-soft);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: .14em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   STAT NUMBER
+========================================================= */
+
+.stat-card strong {
+  position: relative;
+
+  z-index: 2;
+
+  display: block;
+
+  margin-top: 12px;
+
+  color: var(--maroon);
+
+  font-family: Fraunces, Georgia, serif;
+
+  font-size: 37px;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================================================
+   STAT DESCRIPTION
+========================================================= */
+
+.stat-card small {
+  position: relative;
+
+  z-index: 2;
+
+  display: block;
+
+  margin-top: 9px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   ATTENTION CARD
+========================================================= */
+
+.stat-card.attention {
+  border-color: rgba(162, 59, 46, .28);
+}
+
+.stat-card.attention strong {
+  color: var(--danger);
+}
+
+
+/* =========================================================
+   COMMON PANELS
+========================================================= */
+
+.filter-panel,
+.report-card,
+.account-panel {
+  background: var(--paper);
+
+  border: 1px solid var(--line);
+
+  border-radius: 14px;
+
+  box-shadow: var(--shadow);
+}
+
+
+/* =========================================================
+   PANEL HEADER
+========================================================= */
+
+.panel-head {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 21px 24px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-head h2 {
+  margin: 0;
+
+  color: var(--maroon);
+
+  font-family: Fraunces, Georgia, serif;
+
+  font-size: 24px;
+
+  font-weight: 700;
+}
+
+.panel-head p {
+  margin: 5px 0 0;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TITLE LINE
+========================================================= */
+
+.title-line {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  min-width: 0;
+}
+
+.title-line h2 {
+  margin: 0;
+}
+
+.title-line > span {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 4px 8px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 999px;
+
+  background: var(--cream);
+
+  color: var(--maroon);
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PANEL ACTIONS
+========================================================= */
+
+.panel-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.primary-btn,
+.secondary-btn {
+  min-height: 38px;
+
+  padding: 0 15px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  transition:
+    background .18s ease,
+    color .18s ease,
+    border-color .18s ease,
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+
+/* =========================================================
+   PRIMARY
+========================================================= */
+
+.primary-btn {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 0;
+
+  background: var(--maroon);
+
+  color: #fff;
+
+  box-shadow:
+    0 1px 2px rgba(62, 4, 2, .25);
+}
+
+.primary-btn:hover {
+  background: var(--maroon-deep);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 16px -6px rgba(62, 4, 2, .4);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   SECONDARY
+========================================================= */
+
+.secondary-btn {
+  border: 1px solid var(--line);
+
+  background: transparent;
+
+  color: var(--maroon);
+}
+
+.secondary-btn:hover {
+  background: var(--cream-pale);
+
+  border-color: rgba(93, 7, 3, .22);
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   FILTER PANEL
+========================================================= */
+
+.filter-panel {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.filters {
+  display: grid;
+
+  grid-template-columns:
+    180px
+    180px
+    180px
+    minmax(180px, 1fr);
+
+  gap: 12px;
+
+  padding: 18px 24px 22px;
+
+  background: var(--paper);
+}
+
+
+/* =========================================================
+   FILTER FIELD
+========================================================= */
+
+.filter-field {
+  min-width: 0;
+}
+
+.filter-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: .08em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   INPUT / SELECT
+========================================================= */
+
+.filter-field select,
+.filter-field input {
+  width: 100%;
+  height: 39px;
+
+  padding: 0 11px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 8px;
+
+  background: var(--paper);
+
+  color: var(--ink);
+
+  outline: none;
+
+  font-size: 11px;
+
+  transition:
+    border-color .16s ease,
+    box-shadow .16s ease;
+}
+
+.filter-field select:hover,
+.filter-field input:hover {
+  border-color: rgba(93, 7, 3, .22);
+}
+
+.filter-field select:focus,
+.filter-field input:focus {
+  border-color: var(--maroon);
+
+  box-shadow:
+    0 0 0 3px rgba(238, 220, 200, .8);
+}
+
+
+/* =========================================================
+   REPORT GRID
+========================================================= */
+
+.report-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   REPORT CARD
+========================================================= */
+
+.report-card {
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   REPORT HEADER
+========================================================= */
+
+.report-card-head {
+  padding: 20px 22px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.report-card-head .eyebrow {
+  margin-bottom: 6px;
+}
+
+.report-card-head h2 {
+  margin: 0;
+
+  color: var(--maroon);
+
+  font-family: Fraunces, Georgia, serif;
+
+  font-size: 21px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   DISTRIBUTION LIST
+========================================================= */
+
+.distribution-list {
+  min-height: 160px;
+
+  padding: 20px 22px;
+}
+
+.distribution-row {
+  margin-bottom: 18px;
+}
+
+.distribution-row:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =========================================================
+   DISTRIBUTION HEADER
+========================================================= */
+
+.distribution-head {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 7px;
+
+  color: var(--ink-soft);
+
+  font-size: 11px;
+}
+
+.distribution-head strong {
+  color: var(--maroon);
+
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress {
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: var(--cream);
+}
+
+.progress i {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: var(--maroon);
+
+  transition: width .35s ease;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading {
+  padding: 30px 15px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   ACCOUNT PANEL / TABLE
+========================================================= */
+
+.account-panel {
+  overflow: hidden;
+}
+
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+table {
+  width: 100%;
+
+  min-width: 900px;
+
+  border-collapse: collapse;
+}
+
+thead {
+  background: rgba(238, 220, 200, .22);
+}
+
+th {
+  padding: 13px 18px;
+
+  border-bottom: 1px solid var(--line);
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: .13em;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+td {
+  padding: 14px 18px;
+
+  border-bottom: 1px solid var(--line-soft);
+
+  color: var(--ink);
+
+  font-size: 11px;
+}
+
+tbody tr {
+  transition: background .15s ease;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(238, 220, 200, .06);
+}
+
+tbody tr:hover {
+  background: #FFFDF9;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   ACCOUNT CELL
+========================================================= */
+
+.account-cell {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+.account-cell strong {
+  display: block;
+
+  color: var(--ink);
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.account-cell small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+.account-cell code {
+  color: var(--maroon-soft);
+
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   CAMPUS / DEPARTMENT
+========================================================= */
+
+.campus-text,
+.department-text {
+  color: var(--ink-soft);
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status i {
+  width: 6px;
+  height: 6px;
+
+  flex: 0 0 6px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+.status-active {
+  color: #48613E;
+
+  background: #E9F0E5;
+}
+
+.status-away {
+  color: #846523;
+
+  background: #F6EEDC;
+}
+
+.status-pending {
+  color: #75685E;
+
+  background: #EFEAE4;
+}
+
+
+/* =========================================================
+   LAST ACTIVE / JOINED
+========================================================= */
+
+.last-active,
+.joined {
+  color: var(--ink-soft);
+
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 9px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING CELL
+========================================================= */
+
+.loading-cell,
+.empty-cell {
+  padding: 55px 20px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   PANEL FOOTER
+========================================================= */
+
+.panel-foot {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 13px 24px;
+
+  border-top: 1px solid var(--line);
+
+  color: var(--muted);
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+.realtime {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.realtime i {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 7px;
+
+  border-radius: 50%;
+
+  background: var(--green);
+
+  box-shadow:
+    0 0 0 3px rgba(76, 107, 60, .15);
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast {
+  position: fixed;
+
+  left: 50%;
+  bottom: 26px;
+
+  z-index: 1200;
+
+  padding: 12px 18px;
+
+  border-radius: 10px;
+
+  background: var(--ink);
+
+  color: #fff;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  box-shadow:
+    0 14px 30px -10px rgba(42, 23, 18, .4);
+
+  transform: translate(-50%, 10px);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity .2s ease,
+    transform .2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+
+  transform: translate(-50%, 0);
+
+  pointer-events: auto;
+}
+
+
+/* =========================================================
+   MOBILE BACKDROP
+   Sidebar backdrop do admin.css quản lý
+========================================================= */
+
+.mobile-backdrop,
+.admin-sidebar-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 19;
+
+  background: rgba(42, 23, 18, .35);
+
+  backdrop-filter: blur(2px);
+}
+
+
+/* =========================================================
+   TABLE SCROLLBAR
+========================================================= */
+
+.table-wrap::-webkit-scrollbar {
+  height: 7px;
+}
+
+.table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(93, 7, 3, .18);
+
+  border-radius: 999px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(93, 7, 3, .28);
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1100px
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .content-wrap {
+    padding: 34px 30px 48px;
+  }
+
+  .filters {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-art {
+    width: 260px;
+
+    flex-basis: 260px;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 900px
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .hero {
+    min-height: 0;
+  }
+
+  .hero-art {
+    display: none;
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 780px
+========================================================= */
+
+@media (max-width: 780px) {
+
+  /*
+   * Sidebar mobile nằm trong admin.css.
+   * Main chỉ cần bỏ margin 250px.
+   */
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .mobile-only {
+    display: inline-grid;
+  }
+
+
+  /* TOPBAR */
+
+  .topbar {
+    min-height: 62px;
+
+    padding: 14px 16px;
+  }
+
+  .top-admin {
+    display: none;
+  }
+
+
+  /* CONTENT */
+
+  .content-wrap {
+    padding: 26px 15px 40px;
+  }
+
+
+  /* HERO */
+
+  .hero {
+    display: block;
+
+    padding-bottom: 28px;
+  }
+
+  .hero-copy {
+    font-size: 12px;
+
+    line-height: 1.7;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+  }
+
+
+  /* STATS */
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    padding: 20px 0;
+  }
+
+  .stat-card {
+    min-height: 125px;
+
+    padding: 16px;
+  }
+
+  .stat-card strong {
+    font-size: 30px;
+  }
+
+
+  /* PANEL */
+
+  .panel-head {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    padding: 18px;
+  }
+
+  .panel-actions {
+    width: 100%;
+  }
+
+  .panel-actions button {
+    flex: 1;
+  }
+
+
+  /* FILTER */
+
+  .filters {
+    grid-template-columns: 1fr;
+
+    padding: 17px 18px 20px;
+  }
+
+
+  /* REPORT */
+
+  .report-card-head {
+    padding: 18px;
+  }
+
+  .distribution-list {
+    padding: 18px;
+  }
+
+
+  /* FOOTER */
+
+  .panel-foot {
+    padding: 12px 18px;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 560px
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .today {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 8px;
+  }
+
+  .hero h1 {
+    font-size: 37px;
+  }
+
+  .title-line {
+    flex-wrap: wrap;
+  }
+
+  .panel-actions {
+    flex-direction: column;
+  }
+
+  .panel-actions button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 480px
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .content-wrap {
+    padding:
+      22px 14px 35px;
+  }
+
+  .hero {
+    padding-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero-copy {
+    margin-top: 15px;
+
+    font-size: 11px;
+  }
+
+
+  /* STATS 1 COLUMN */
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+  }
+
+  .stat-card {
+    min-height: 105px;
+
+    padding: 15px;
+  }
+
+  .stat-card strong {
+    font-size: 29px;
+  }
+
+
+  /* PANEL */
+
+  .panel-head {
+    gap: 14px;
+
+    padding: 17px;
+  }
+
+  .title-line h2 {
+    font-size: 21px;
+  }
+
+  .panel-head p {
+    font-size: 10px;
+  }
+
+
+  /* FILTER */
+
+  .filters {
+    padding: 16px 17px 19px;
+  }
+
+
+  /* REPORT */
+
+  .report-card-head {
+    padding: 17px;
+  }
+
+  .distribution-list {
+    padding: 17px;
+  }
+
+
+  /* FOOTER */
+
+  .panel-foot {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 12px 17px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
