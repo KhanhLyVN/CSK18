@@ -41,7 +41,7 @@ body{
 }
 .masthead-left .eyebrow{
   font-family:'Inter', sans-serif;
-  font-size: 12.5px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -62,7 +62,7 @@ body{
   font-family:'Fraunces', serif;
   font-optical-sizing: auto;
   font-weight: 700;
-  font-size: clamp(28px, 3.8vw, 42px);
+  font-size: clamp(24px, 3vw, 32px);
   line-height: 1.05;
   margin: 0;
   color: var(--maroon-deep);
@@ -74,7 +74,7 @@ body{
   color: var(--maroon);
 }
 .masthead-right .clock{
-  font-size: 14px;
+  font-size: 11px;
   font-family:'Inter',sans-serif;
   color: var(--ink-soft);
   letter-spacing: 0.02em;
@@ -100,7 +100,7 @@ body{
   border-radius: 8px;
   background: #fffaf1;
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.6;
   font-weight: 500;
   box-shadow: 0 1px 2px rgba(93,7,3,0.03);
@@ -115,7 +115,7 @@ body{
   border-radius: 50%;
   background: rgba(176, 138, 78, 0.15);
   color: var(--maroon);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -176,7 +176,7 @@ body{
 .section-title{
   font-family:'Fraunces', serif;
   font-weight:600;
-  font-size: 19px;
+  font-size: 18px;
   color: var(--maroon-deep);
   margin: 0 0 4px;
   display:flex;
@@ -184,14 +184,14 @@ body{
   gap: 10px;
 }
 .section-title .idx{
-  font-size: 13px;
+  font-size: 11px;
   color: var(--gold);
   font-family:'Inter',sans-serif;
   font-weight:700;
   letter-spacing: 0.06em;
 }
 .section-desc{
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--ink-soft);
   margin: 0 0 16px;
 }
@@ -212,7 +212,7 @@ body{
 .field{ margin-bottom: 14px; }
 .field label{
   display:block;
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -233,7 +233,7 @@ body{
 .field textarea{
   width:100%;
   font-family:'Inter',sans-serif;
-  font-size: 14.5px;
+  font-size: 13px;
   color: var(--ink);
   background: #fff;
   border: 1.4px solid var(--line);
@@ -280,7 +280,7 @@ body{
 }
 .field select option {
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
   color: var(--ink);
@@ -311,7 +311,7 @@ body{
   cursor: pointer;
 }
 .checkbox-field span {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--maroon-deep);
 }
@@ -345,7 +345,7 @@ body{
   width: 100%;
   min-height: 52px;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink);
   background: #fff;
@@ -377,7 +377,7 @@ body{
 }
 .issue-field select option {
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
   color: var(--ink);
@@ -405,7 +405,7 @@ body{
 }
 .chip:hover{ border-color: var(--maroon-soft); background: #FFFDFA; }
 .chip svg{ width:19px; height:19px; flex:none; stroke: var(--maroon); }
-.chip span{ font-size: 13.6px; font-weight: 600; color: var(--ink); }
+.chip span{ font-size: 13px; font-weight: 600; color: var(--ink); }
 .chip input{ position:absolute; opacity:0; pointer-events:none; }
 .chip.active{
   border-color: var(--maroon);
@@ -436,14 +436,14 @@ body{
   border-radius: 4px;
   padding: 20px;
   text-align:center;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--ink-soft);
   cursor:pointer;
   background: #fff;
 }
 .file-drop:hover{ border-color: var(--maroon-soft); }
 .file-drop strong{ color: var(--maroon); }
-.file-name{ margin-top:8px; font-size:12.5px; color: var(--maroon-deep); font-weight:600; }
+.file-name{ margin-top:8px; font-size:11px; color: var(--maroon-deep); font-weight:600; }
 
 .submit-row{
   display:flex;
@@ -454,7 +454,7 @@ body{
 .btn-submit{
   font-family:'Inter',sans-serif;
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: 12px;
   letter-spacing:0.02em;
   color: var(--cream-pale);
   background: var(--maroon);
@@ -466,9 +466,9 @@ body{
 }
 .btn-submit:hover{ background: var(--maroon-deep); }
 .btn-submit:active{ transform: translateY(1px); }
-.submit-hint{ font-size: 12.5px; color: var(--ink-soft); }
+.submit-hint{ font-size: 11px; color: var(--ink-soft); }
 .error-text{
-  font-size: 12.5px;
+  font-size: 11px;
   color: var(--maroon-soft);
   margin-top: 8px;
   font-weight:600;
@@ -489,11 +489,11 @@ body{
 .success-view .check svg{ width:26px; height:26px; stroke: var(--maroon); }
 .success-view h2{
   font-family:'Fraunces', serif;
-  font-size: 26px;
+  font-size: 22px;
   color: var(--maroon-deep);
   margin: 0 0 8px;
 }
-.success-view p{ color: var(--ink-soft); font-size:14px; max-width: 42ch; margin: 0 auto 22px; }
+.success-view p{ color: var(--ink-soft); font-size:13px; max-width: 42ch; margin: 0 auto 22px; }
 .success-view .btn-again{
   border: 1.4px solid var(--maroon);
   color: var(--maroon);
@@ -501,7 +501,7 @@ body{
   padding: 11px 22px;
   border-radius:3px;
   font-weight:700;
-  font-size:13.5px;
+  font-size:12px;
   cursor:pointer;
 }
 .success-view .btn-again:hover{ background: var(--cream); }
@@ -548,13 +548,13 @@ body{
 .stub-top .num{
   font-family:'Fraunces', serif;
   font-weight:700;
-  font-size: 26px;
+  font-size: 22px;
   line-height:1.1;
   margin: 4px 0 2px;
   letter-spacing: -0.01em;
 }
 .stub-top .cat{
-  font-size: 12px;
+  font-size: 11px;
   font-weight:600;
   opacity: 0.92;
   display:flex;
@@ -563,7 +563,7 @@ body{
 }
 .stub-top .cat svg{ width:14px; height:14px; stroke: var(--cream-pale); flex:none; }
 .stub-top .course{
-  font-size: 11px;
+  font-size: 10px;
   opacity: 0.75;
   margin-top: 6px;
   padding-top: 6px;
@@ -595,7 +595,7 @@ body{
   gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid rgba(93,7,3,0.10);
-  font-size: 12px;
+  font-size: 11px;
 }
 .stub-row:last-child{ border-bottom:none; }
 .stub-row .k{ color: var(--ink-soft); font-weight:600; }
@@ -605,7 +605,7 @@ body{
   display:flex;
   align-items:center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight:700;
   color: var(--gold);
 }
@@ -615,7 +615,7 @@ body{
 }
 .stub-note{
   margin-top: 12px;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--ink-soft);
   line-height:1.4;
   border-top: 1px dashed var(--line);
