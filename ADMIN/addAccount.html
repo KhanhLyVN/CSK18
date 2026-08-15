@@ -13,7 +13,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
 <script src="/firebase-config.js"></script>
-<style>
+<link rel="stylesheet" href="admin.css">
+<!-- <style>
 :root {
     --maroon: #5D0703;
     --maroon-deep: #3E0402;
@@ -614,7 +615,7 @@ tbody tr:hover {
         width: 100%;
     }
 }
-</style>
+</style> -->
 </head>
 <body>
 <div class="wrap">
@@ -645,7 +646,6 @@ tbody tr:hover {
     <div class="grid-map" id="mapGrid"></div>
     <div style="margin-top:20px;">
         <label class="field-label">Quy tắc sinh Gmail tài khoản CS</label>
-
         <div class="row-inline">
             <div>
                 <input
@@ -654,7 +654,6 @@ tbody tr:hover {
                     readonly
                 >
             </div>
-
             <div>
                 <input
                     type="text"
@@ -845,7 +844,6 @@ document.getElementById('generateBtn').addEventListener('click', () => {
         toast('Vui lòng chọn cột Họ tên trước.');
         return;
     }
-
     const pwLen = Math.max(
         6,
         Math.min(
@@ -968,17 +966,13 @@ document.getElementById('confirmAccountsBtn').addEventListener('click', async ()
                             : '',
                         email: row.studentEmail,
                         username: row.username,
-
                         // Xác định loại tài khoản
                         accountType: 'customer_success',
-
                         provider: 'e-mail',
-
                         // Thông tin nhân sự
                         phone: row.phone || '',
                         department: row.department || '',
                         campus: row.campus || '',
-
                         passwordCreated: true,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -1017,7 +1011,6 @@ function buildUsernameBase(fullName) {
     const clean = stripAccents(fullName);
     const parts = clean.split(/\s+/).filter(Boolean);
     if (!parts.length) return 'cs';
-
     // Nguyễn Văn Anh -> anh.nv
     const firstName = parts[parts.length - 1];
     const nameInitials = parts.slice(0, -1).map(part => part[0]).join('');
@@ -1182,12 +1175,9 @@ async function getAllCsAccountsFromFirebase() {
             .collection('users')
             .where('accountType', '==', 'customer_success')
             .get();
-
         const accounts = [];
-
         snapshot.forEach(doc => {
             const data = doc.data();
-
             accounts.push({
                 name: data.name || '',
                 email: data.email || '',
@@ -1199,19 +1189,15 @@ async function getAllCsAccountsFromFirebase() {
                 uid: data.uid || ''
             });
         });
-
         return accounts;
-
     } catch (error) {
         console.error(
             'Lỗi lấy danh sách tài khoản CS:',
             error
         );
-
         toast(
             'Không thể lấy danh sách tài khoản CS từ Firebase.'
         );
-
         return [];
     }
 }
