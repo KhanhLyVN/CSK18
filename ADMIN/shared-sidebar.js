@@ -6,6 +6,7 @@
     ({
       '/ADMIN/homepage-ad.html': 'overview',
       '/ADMIN/accounts.html': 'accounts',
+      '/ADMIN/add-cs.html': 'add-cs',
       '/ADMIN/activity-report.html': 'reports',
       '/ADMIN/settings.html': 'settings',
       '/ADMIN/system-log.html': 'logs'
@@ -50,5 +51,5 @@
   fetch('sidebar.html')
     .then(response => response.text())
     .then(install)
-    .catch(error => console.error('Không thể nạp sidebar dùng chung.', error));
+
 })();

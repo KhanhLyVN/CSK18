@@ -67,33 +67,126 @@ button {
 ========================================================= */
 
 .topbar {
-  background: rgba(255, 253, 249, .94);
-  backdrop-filter: blur(12px);
-}
+  position: sticky;
 
-/* connection */
+  top: 0;
+
+  z-index: 50;
+
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    0 42px;
+
+  border-bottom:
+    1px solid var(--line);
+
+  background:
+    rgba(255,253,249,.92);
+
+  backdrop-filter:
+    blur(14px);
+}
 
 .connection {
   display: flex;
   align-items: center;
-  gap: 9px;
+
+  gap: 8px;
+
   color: var(--soft);
+
   font-size: 11px;
-  font-weight: 600;
 }
 
 .connection i {
   width: 8px;
   height: 8px;
-  display: block;
+
   border-radius: 50%;
-  background: #aaa099;
+
+  background: #b7aaa0;
 }
 
 .connection i.live {
   background: var(--green);
+
   box-shadow:
-    0 0 0 4px rgba(94, 127, 82, .12);
+    0 0 0 4px
+    rgba(93,133,87,.13);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-left: auto;
+}
+
+.top-admin {
+  color: var(--maroon);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: var(--cream);
+  color: var(--maroon);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.small-mark {
+  width: 34px;
+  height: 34px;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+
+  display: inline-grid;
+  place-items: center;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: var(--soft);
+
+  font-size: 17px;
+
+  transition: .18s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--line);
+
+  background: var(--cream);
+
+  color: var(--maroon);
+}
+
+.mobile-only {
+  display: none;
 }
 
 /* =========================================================
@@ -132,7 +225,7 @@ button {
   width: 90px;
   height: 3px;
 
-  background: var(--maroon);
+  /* background: var(--maroon); */
   border-radius: 999px;
 }
 

@@ -1,237 +1,186 @@
 /* =========================================================
    ADMIN SETTINGS
-   Firebase:
-   - Authentication
-   - Firestore
-   Collection: users
+   ADMIN ACCOUNT:
+   hcm@admin.com
 ========================================================= */
 
 (() => {
-
   "use strict";
 
+  /* =======================================================
+     CONFIG
+  ======================================================= */
+
+  const ADMIN_EMAIL = "hcm@admin.com";
+  const ADMIN_CAMPUS = "HCM";
+  const USER_COLLECTION = "users";
 
   /* =======================================================
-     STATE
+     DEFAULT SETTINGS
   ======================================================= */
 
   const DEFAULT_SETTINGS = {
-
     notifyNewAccount: true,
-
     notifyPending: true,
-
     notifySystem: true,
-
     notificationSound: false,
 
     realtimeEnabled: true,
-
     autoLoad: true,
-
     activityLogging: true,
-
     confirmLogout: true,
 
     interfaceSize: "normal",
-
     language: "vi"
-
   };
-
 
   let settings = {
     ...DEFAULT_SETTINGS
   };
 
-
   /* =======================================================
-     DOM
+     DOM HELPER
   ======================================================= */
 
-  const $ = id =>
-    document.getElementById(id);
-
+  const $ = id => document.getElementById(id);
 
   /* =======================================================
      FIREBASE
   ======================================================= */
 
-  function getFirestore() {
-
-    if (
-      typeof db !== "undefined" &&
-      db
-    ) {
-      return db;
-    }
-
-
-    if (
-      typeof firebase !== "undefined" &&
-      firebase.apps &&
-      firebase.apps.length
-    ) {
-      return firebase.firestore();
-    }
-
-
-    return null;
-  }
-
-
   function getAuth() {
+    try {
+      if (typeof auth !== "undefined" && auth) {
+        return auth;
+      }
 
-    if (
-      typeof auth !== "undefined" &&
-      auth
-    ) {
-      return auth;
+      if (
+        typeof firebase !== "undefined" &&
+        firebase.apps &&
+        firebase.apps.length
+      ) {
+        return firebase.auth();
+      }
+    } catch (error) {
+      console.error("Firebase Auth:", error);
     }
-
-
-    if (
-      typeof firebase !== "undefined" &&
-      firebase.apps &&
-      firebase.apps.length
-    ) {
-      return firebase.auth();
-    }
-
 
     return null;
   }
 
+  function getFirestore() {
+    try {
+      if (typeof db !== "undefined" && db) {
+        return db;
+      }
+
+      if (
+        typeof firebase !== "undefined" &&
+        firebase.apps &&
+        firebase.apps.length
+      ) {
+        return firebase.firestore();
+      }
+    } catch (error) {
+      console.error("Firestore:", error);
+    }
+
+    return null;
+  }
 
   /* =======================================================
      TOAST
   ======================================================= */
 
-  function toast(message) {
-
-    const node =
-      $("toast");
-
+  function toast(message, type = "success") {
+    const node = $("toast");
 
     if (!node) return;
 
-
-    node.textContent =
-      message;
-
-
+    node.textContent = message;
     node.hidden = false;
 
-
-    clearTimeout(
-      window.__settingsToastTimer
+    node.classList.remove(
+      "toast-success",
+      "toast-error"
     );
 
+    node.classList.add(
+      type === "error"
+        ? "toast-error"
+        : "toast-success"
+    );
 
-    window.__settingsToastTimer =
-      setTimeout(() => {
+    clearTimeout(window.__settingsToastTimer);
 
-        node.hidden = true;
-
-      }, 2400);
+    window.__settingsToastTimer = setTimeout(() => {
+      node.hidden = true;
+    }, 2600);
   }
-
 
   /* =======================================================
      INITIALS
   ======================================================= */
 
   function initials(name) {
+    const text = String(name || "AD").trim();
 
-    const text =
-      String(name || "AD")
-        .trim();
+    if (!text) return "AD";
 
-
-    if (!text) {
-      return "AD";
-    }
-
-
-    const parts =
-      text
-        .split(/\s+/)
-        .filter(Boolean);
-
+    const parts = text
+      .split(/\s+/)
+      .filter(Boolean);
 
     if (parts.length === 1) {
-
       return parts[0]
         .substring(0, 2)
         .toUpperCase();
-
     }
-
 
     return parts
       .slice(-2)
-      .map(
-        item =>
-          item.charAt(0)
-      )
+      .map(item => item.charAt(0))
       .join("")
       .toUpperCase();
   }
-
 
   /* =======================================================
      LOAD LOCAL SETTINGS
   ======================================================= */
 
   function loadSettings() {
-
     try {
-
       const saved =
-        localStorage.getItem(
-          "adminSettings"
-        );
-
+        localStorage.getItem("adminSettings");
 
       if (saved) {
-
-        const parsed =
-          JSON.parse(saved);
-
+        const parsed = JSON.parse(saved);
 
         settings = {
           ...DEFAULT_SETTINGS,
           ...parsed
         };
-
       }
-
     } catch (error) {
-
       console.warn(
-        "Không thể đọc settings:",
+        "Không thể đọc Admin Settings:",
         error
       );
 
       settings = {
         ...DEFAULT_SETTINGS
       };
-
     }
-
 
     renderSettings();
   }
-
 
   /* =======================================================
      RENDER SETTINGS
   ======================================================= */
 
   function renderSettings() {
-
     const ids = [
-
       "notifyNewAccount",
       "notifyPending",
       "notifySystem",
@@ -240,50 +189,35 @@
       "autoLoad",
       "activityLogging",
       "confirmLogout"
-
     ];
 
-
     ids.forEach(id => {
-
       const node = $(id);
 
       if (!node) return;
 
-      node.checked =
-        settings[id] === true;
-
+      node.checked = settings[id] === true;
     });
 
-
     if ($("interfaceSize")) {
-
       $("interfaceSize").value =
         settings.interfaceSize;
-
     }
-
 
     if ($("language")) {
-
       $("language").value =
         settings.language;
-
     }
-
 
     applyInterfaceSize();
   }
 
-
   /* =======================================================
-     READ FORM
+     READ SETTINGS
   ======================================================= */
 
   function readSettings() {
-
     const ids = [
-
       "notifyNewAccount",
       "notifyPending",
       "notifySystem",
@@ -292,233 +226,291 @@
       "autoLoad",
       "activityLogging",
       "confirmLogout"
-
     ];
 
-
     ids.forEach(id => {
-
       const node = $(id);
 
       if (!node) return;
 
-      settings[id] =
-        node.checked;
-
+      settings[id] = node.checked;
     });
 
+    if ($("interfaceSize")) {
+      settings.interfaceSize =
+        $("interfaceSize").value;
+    }
 
-    settings.interfaceSize =
-      $("interfaceSize").value;
-
-
-    settings.language =
-      $("language").value;
+    if ($("language")) {
+      settings.language =
+        $("language").value;
+    }
   }
-
 
   /* =======================================================
      SAVE SETTINGS
   ======================================================= */
 
   function saveSettings() {
-
     readSettings();
 
-
     try {
-
       localStorage.setItem(
         "adminSettings",
         JSON.stringify(settings)
       );
 
-
       applyInterfaceSize();
 
-
-      toast(
-        "Đã lưu cài đặt thành công"
-      );
-
+      toast("Đã lưu cài đặt");
     } catch (error) {
-
       console.error(error);
 
       toast(
-        "Không thể lưu cài đặt"
+        "Không thể lưu cài đặt",
+        "error"
       );
-
     }
   }
 
-
   /* =======================================================
-     RESET
+     RESET SETTINGS
   ======================================================= */
 
   function resetSettings() {
-
     settings = {
       ...DEFAULT_SETTINGS
     };
 
-
     try {
-
       localStorage.setItem(
         "adminSettings",
         JSON.stringify(settings)
       );
-
     } catch (error) {
-
       console.warn(error);
-
     }
-
 
     renderSettings();
 
-
-    toast(
-      "Đã khôi phục cài đặt mặc định"
-    );
+    toast("Đã khôi phục mặc định");
   }
 
-
   /* =======================================================
-     APPLY INTERFACE SIZE
+     APPLY SIZE
   ======================================================= */
 
   function applyInterfaceSize() {
-
     document.body.classList.remove(
       "size-compact",
       "size-normal",
       "size-large"
     );
 
-
     document.body.classList.add(
       `size-${settings.interfaceSize}`
     );
   }
 
+  /* =======================================================
+     ADMIN ACCESS
+  ======================================================= */
+
+  async function verifyAdmin(user) {
+    if (!user) {
+      return false;
+    }
+
+    const email =
+      String(user.email || "")
+        .trim()
+        .toLowerCase();
+
+    /*
+     * Admin chính:
+     * hcm@admin.com
+     */
+
+    if (email === ADMIN_EMAIL) {
+      return true;
+    }
+
+    /*
+     * Kiểm tra Firestore nếu sau này
+     * có thêm Admin khác.
+     */
+
+    const database = getFirestore();
+
+    if (!database) {
+      return false;
+    }
+
+    try {
+      const snapshot =
+        await database
+          .collection(USER_COLLECTION)
+          .doc(user.uid)
+          .get();
+
+      if (!snapshot.exists) {
+        return false;
+      }
+
+      const data = snapshot.data() || {};
+
+      return (
+        data.accountType === "admin" &&
+        data.role === "admin" &&
+        data.status !== "disabled"
+      );
+    } catch (error) {
+      console.error(
+        "Không thể kiểm tra quyền Admin:",
+        error
+      );
+
+      return false;
+    }
+  }
+
+  /* =======================================================
+     REDIRECT
+  ======================================================= */
+
+  function redirectToLogin() {
+    window.location.href = "/CS/login/login.html";
+  }
 
   /* =======================================================
      ADMIN PROFILE
   ======================================================= */
 
   async function loadAdminProfile() {
-
-    const firebaseAuth =
-      getAuth();
-
+    const firebaseAuth = getAuth();
 
     if (!firebaseAuth) {
+      updateFirebaseStatus(false, false);
 
       setAdminUI(
         "Administrator",
-        "Chưa kết nối Authentication"
+        "Firebase Auth chưa sẵn sàng",
+        "—"
       );
 
       return;
     }
 
-
     firebaseAuth.onAuthStateChanged(
       async user => {
 
-        if (!user) {
+        /*
+         * Chưa đăng nhập
+         */
 
+        if (!user) {
           setAdminUI(
             "Administrator",
-            "Chưa đăng nhập"
+            "Chưa đăng nhập",
+            "—"
           );
 
           updateSessionUI(null);
 
+          setTimeout(
+            redirectToLogin,
+            700
+          );
+
           return;
         }
 
+        /*
+         * Kiểm tra quyền
+         */
+
+        const isAdmin =
+          await verifyAdmin(user);
+
+        if (!isAdmin) {
+          toast(
+            "Tài khoản này không có quyền Admin",
+            "error"
+          );
+
+          await firebaseAuth.signOut();
+
+          setTimeout(
+            redirectToLogin,
+            900
+          );
+
+          return;
+        }
+
+        /*
+         * Admin hợp lệ
+         */
 
         const email =
           user.email ||
-          "Không có email";
-
+          ADMIN_EMAIL;
 
         let name =
           user.displayName ||
-          "";
+          "HCM Admin";
 
-
-        /*
-         * Thử lấy profile từ users
-         */
+        let campus =
+          ADMIN_CAMPUS;
 
         const database =
           getFirestore();
 
-
-        if (
-          database &&
-          !name
-        ) {
-
+        if (database) {
           try {
-
             const snapshot =
               await database
-                .collection("users")
+                .collection(USER_COLLECTION)
                 .doc(user.uid)
                 .get();
 
-
             if (snapshot.exists) {
-
               const data =
-                snapshot.data();
-
+                snapshot.data() || {};
 
               name =
-                data.name ||
-                data.fullName ||
                 data.displayName ||
-                "";
+                data.name ||
+                user.displayName ||
+                "HCM Admin";
 
+              campus =
+                data.campus ||
+                ADMIN_CAMPUS;
             }
-
           } catch (error) {
-
             console.warn(
-              "Không thể đọc profile:",
+              "Không thể lấy Admin profile:",
               error
             );
-
           }
-
         }
-
-
-        name =
-          name ||
-          email.split("@")[0] ||
-          "Administrator";
-
 
         setAdminUI(
           name,
-          email
+          email,
+          campus
         );
-
 
         updateSessionUI(user);
 
+        updateFirebaseStatus(
+          true,
+          true
+        );
       }
     );
   }
-
 
   /* =======================================================
      SET ADMIN UI
@@ -526,406 +518,357 @@
 
   function setAdminUI(
     name,
-    email
+    email,
+    campus
   ) {
-
     const avatar =
       initials(name);
 
+    const elements = {
+      sidebarAdminName: name,
+      sidebarAdminEmail: email,
+      topAdminName: name,
+      topAdminEmail: email,
+      topAvatar: avatar,
 
-    if ($("sidebarAdminName")) {
+      profileAvatar: avatar,
+      profileName: name,
+      profileEmail: email,
 
-      $("sidebarAdminName")
-        .textContent = name;
+      adminName: name,
+      adminEmail: email,
 
-    }
+      adminCampus: campus
+    };
 
+    Object.entries(elements)
+      .forEach(([id, value]) => {
+        const node = $(id);
 
-    if ($("sidebarAdminEmail")) {
+        if (!node) return;
 
-      $("sidebarAdminEmail")
-        .textContent =
-        email;
+        if (
+          node.tagName === "INPUT"
+        ) {
+          node.value = value;
+        } else {
+          node.textContent = value;
+        }
+      });
 
-    }
-
-
-    if ($("topAdminName")) {
-
-      $("topAdminName")
-        .textContent =
-        name;
-
-    }
-
-
-    if ($("topAvatar")) {
-
-      $("topAvatar")
-        .textContent =
-        avatar;
-
-    }
-
-
-    if ($("profileAvatar")) {
-
-      $("profileAvatar")
-        .textContent =
-        avatar;
-
-    }
-
-
-    if ($("profileName")) {
-
-      $("profileName")
-        .textContent =
-        name;
-
-    }
-
-
-    if ($("profileEmail")) {
-
-      $("profileEmail")
-        .textContent =
-        email;
-
-    }
-
-
-    if ($("adminName")) {
-
-      $("adminName")
-        .value =
-        name;
-
-    }
-
-
-    if ($("adminEmail")) {
-
-      $("adminEmail")
-        .value =
-        email;
-
+    if ($("adminRole")) {
+      $("adminRole").textContent =
+        "SYSTEM ADMIN";
     }
   }
-
 
   /* =======================================================
      SAVE PROFILE
   ======================================================= */
 
   async function saveProfile() {
+    const nameNode =
+      $("adminName");
+
+    if (!nameNode) return;
 
     const name =
-      $("adminName")
-        .value
-        .trim();
-
+      nameNode.value.trim();
 
     if (!name) {
-
       toast(
-        "Vui lòng nhập họ tên"
+        "Vui lòng nhập họ tên",
+        "error"
       );
 
       return;
     }
-
 
     const firebaseAuth =
       getAuth();
 
-
     if (!firebaseAuth) {
-
       toast(
-        "Firebase Auth chưa sẵn sàng"
+        "Firebase Auth chưa sẵn sàng",
+        "error"
       );
 
       return;
     }
-
 
     const user =
       firebaseAuth.currentUser;
 
-
     if (!user) {
-
       toast(
-        "Chưa có tài khoản đăng nhập"
+        "Chưa có phiên đăng nhập",
+        "error"
       );
 
       return;
     }
 
+    const isAdmin =
+      await verifyAdmin(user);
+
+    if (!isAdmin) {
+      toast(
+        "Bạn không có quyền Admin",
+        "error"
+      );
+
+      return;
+    }
 
     try {
 
       /*
-       * Update Firebase Auth
+       * Firebase Authentication
        */
 
       await user.updateProfile({
         displayName: name
       });
 
-
       /*
-       * Update Firestore users
+       * Firestore
        */
 
       const database =
         getFirestore();
 
-
       if (database) {
-
         await database
-          .collection("users")
+          .collection(USER_COLLECTION)
           .doc(user.uid)
           .set(
             {
-              name: name,
+              accountType: "admin",
+              role: "admin",
+              campus: ADMIN_CAMPUS,
+
+              name,
               displayName: name,
+
+              email:
+                user.email ||
+                ADMIN_EMAIL,
+
               updatedAt:
-                firebase.firestore.FieldValue.serverTimestamp()
+                firebase.firestore
+                  .FieldValue
+                  .serverTimestamp()
             },
             {
               merge: true
             }
           );
-
       }
-
 
       setAdminUI(
         name,
-        user.email || ""
+        user.email ||
+          ADMIN_EMAIL,
+        ADMIN_CAMPUS
       );
-
 
       toast(
         "Đã cập nhật thông tin Admin"
       );
 
     } catch (error) {
-
       console.error(
-        "Save profile error:",
+        "Save profile:",
         error
       );
 
-
       toast(
-        "Không thể cập nhật thông tin"
+        "Không thể cập nhật thông tin",
+        "error"
       );
     }
   }
-
 
   /* =======================================================
      FIREBASE STATUS
   ======================================================= */
 
-  function checkFirebase() {
+  function updateFirebaseStatus(
+    connected,
+    authenticated
+  ) {
+    const firebaseStatus =
+      $("firebaseStatus");
 
+    const connectionLabel =
+      $("connectionLabel");
+
+    const connectionDot =
+      $("connectionDot");
+
+    const authStatus =
+      $("authStatus");
+
+    if (firebaseStatus) {
+      firebaseStatus.textContent =
+        connected
+          ? "CONNECTED"
+          : "OFFLINE";
+    }
+
+    if (connectionLabel) {
+      connectionLabel.textContent =
+        connected
+          ? "Firebase đang hoạt động"
+          : "Firebase chưa kết nối";
+    }
+
+    if (connectionDot) {
+      connectionDot.classList.toggle(
+        "live",
+        connected
+      );
+    }
+
+    if (authStatus) {
+      authStatus.textContent =
+        authenticated
+          ? "AUTHORIZED"
+          : "WAITING";
+    }
+  }
+
+  function checkFirebase() {
     const database =
       getFirestore();
-
 
     const firebaseAuth =
       getAuth();
 
-
-    if (database) {
-
-      $("firebaseStatus")
-        .textContent =
-        "Connected";
-
-      $("connectionLabel")
-        .textContent =
-        "Firebase đã kết nối";
-
-      $("connectionDot")
-        .classList
-        .add("live");
-
-    } else {
-
-      $("firebaseStatus")
-        .textContent =
-        "Disconnected";
-
-      $("connectionLabel")
-        .textContent =
-        "Chưa tìm thấy Firebase config";
-
-      $("connectionDot")
-        .classList
-        .remove("live");
-
-    }
-
-
-    if (firebaseAuth) {
-
-      $("authStatus")
-        .textContent =
-        "Ready";
-
-    } else {
-
-      $("authStatus")
-        .textContent =
-        "Unavailable";
-
-    }
+    updateFirebaseStatus(
+      !!database,
+      !!firebaseAuth
+    );
   }
 
-
   /* =======================================================
-     SESSION UI
+     SESSION
   ======================================================= */
 
   function updateSessionUI(user) {
+    const uid =
+      $("sessionUid");
+
+    const provider =
+      $("sessionProvider");
+
+    const sessionEmail =
+      $("sessionEmail");
 
     if (!user) {
-
-      $("sessionUid")
-        .textContent =
-        "—";
-
-      $("sessionProvider")
-        .textContent =
-        "—";
+      if (uid) uid.textContent = "—";
+      if (provider) provider.textContent = "—";
+      if (sessionEmail) sessionEmail.textContent = "—";
 
       return;
     }
 
+    if (uid) {
+      uid.textContent =
+        user.uid;
+    }
 
-    $("sessionUid")
-      .textContent =
-      user.uid;
+    if (sessionEmail) {
+      sessionEmail.textContent =
+        user.email ||
+        ADMIN_EMAIL;
+    }
 
-
-    const provider =
+    const providerId =
       user.providerData &&
       user.providerData.length
         ? user.providerData[0].providerId
         : "password";
 
-
-    $("sessionProvider")
-      .textContent =
-      provider;
+    if (provider) {
+      provider.textContent =
+        providerId;
+    }
   }
-
 
   /* =======================================================
      LOGOUT
   ======================================================= */
 
   async function logout() {
-
     const firebaseAuth =
       getAuth();
 
-
     if (!firebaseAuth) {
-
       toast(
-        "Firebase Auth chưa sẵn sàng"
+        "Firebase Auth chưa sẵn sàng",
+        "error"
       );
 
       return;
     }
 
-
-    if (
-      settings.confirmLogout
-    ) {
-
+    if (settings.confirmLogout) {
       const confirmed =
         confirm(
-          "Bạn có chắc muốn đăng xuất?"
+          "Bạn có chắc muốn đăng xuất khỏi Admin?"
         );
 
-
-      if (!confirmed) {
-        return;
-      }
-
+      if (!confirmed) return;
     }
 
-
     try {
-
       await firebaseAuth.signOut();
 
-
       toast(
-        "Đã đăng xuất"
+        "Đã đăng xuất Admin"
       );
 
-
       setTimeout(() => {
-
-        window.location.href =
-          "../login.html";
-
+        redirectToLogin();
       }, 500);
 
     } catch (error) {
-
       console.error(
-        "Logout error:",
+        "Logout:",
         error
       );
 
-
       toast(
-        "Đăng xuất thất bại"
+        "Đăng xuất thất bại",
+        "error"
       );
     }
   }
-
 
   /* =======================================================
      NOTIFICATION
   ======================================================= */
 
   function showNotification() {
-
-    if (
-      settings.notifySystem
-    ) {
-
-      toast(
-        "Không có thông báo mới"
-      );
-
-    } else {
-
+    if (!settings.notifySystem) {
       toast(
         "Thông báo hệ thống đang tắt"
       );
 
+      return;
     }
-  }
 
+    toast(
+      "Không có thông báo mới"
+    );
+  }
 
   /* =======================================================
      MOBILE MENU
   ======================================================= */
 
   function setupMobileMenu() {
-
     const menuBtn =
       $("menuBtn");
 
@@ -935,107 +878,70 @@
     const backdrop =
       $("sidebarBackdrop");
 
-
-    if (
-      !menuBtn ||
-      !sidebar
-    ) {
+    if (!menuBtn || !sidebar) {
       return;
     }
-
 
     menuBtn.addEventListener(
       "click",
       () => {
-
         sidebar.classList.toggle(
           "open"
         );
 
-
         if (backdrop) {
-
           backdrop.hidden =
             !sidebar.classList.contains(
               "open"
             );
-
         }
-
       }
     );
 
-
     if (backdrop) {
-
       backdrop.addEventListener(
         "click",
         () => {
-
           sidebar.classList.remove(
             "open"
           );
 
           backdrop.hidden = true;
-
         }
       );
-
     }
   }
-
 
   /* =======================================================
      SIDEBAR
   ======================================================= */
 
   function setupSidebar() {
-
     const navItems =
       document.querySelectorAll(
         ".nav-item[data-page]"
       );
 
-
     navItems.forEach(item => {
-
       item.addEventListener(
         "click",
         () => {
-
-          const page =
-            item.dataset.page;
-
-
           try {
-
             localStorage.setItem(
               "adminActivePage",
-              page
+              item.dataset.page
             );
-
           } catch (error) {}
-
         }
       );
 
-    });
-
-
-    /*
-     * Settings luôn active
-     */
-
-    navItems.forEach(item => {
-
       item.classList.toggle(
         "active",
-        item.dataset.page === "settings"
+        item.dataset.page ===
+          "settings"
       );
-
     });
   }
-
 
   /* =======================================================
      EVENTS
@@ -1049,28 +955,23 @@
         saveSettings
       );
 
-
     $("resetSettingsBtn")
       ?.addEventListener(
         "click",
         resetSettings
       );
 
-
     $("resetAllBtn")
       ?.addEventListener(
         "click",
         () => {
-
           renderSettings();
 
           toast(
-            "Đã hủy các thay đổi chưa lưu"
+            "Đã hủy thay đổi"
           );
-
         }
       );
-
 
     $("saveProfileBtn")
       ?.addEventListener(
@@ -1078,13 +979,11 @@
         saveProfile
       );
 
-
     $("logoutBtn")
       ?.addEventListener(
         "click",
         logout
       );
-
 
     $("logoutSessionBtn")
       ?.addEventListener(
@@ -1092,50 +991,37 @@
         logout
       );
 
-
     $("noticeBtn")
       ?.addEventListener(
         "click",
         showNotification
       );
 
-
     $("interfaceSize")
       ?.addEventListener(
         "change",
         () => {
-
           settings.interfaceSize =
             $("interfaceSize").value;
 
           applyInterfaceSize();
-
         }
       );
 
-
     setupMobileMenu();
-
     setupSidebar();
   }
-
 
   /* =======================================================
      INIT
   ======================================================= */
 
   function init() {
-
     loadSettings();
-
     setupEvents();
-
     checkFirebase();
-
     loadAdminProfile();
-
   }
-
 
   init();
 

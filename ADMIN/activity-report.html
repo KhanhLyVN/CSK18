@@ -7,89 +7,153 @@
     content="width=device-width, initial-scale=1.0"
   >
   <title>Báo cáo hoạt động - Admin</title>
-  <!-- Google Fonts -->
+  <!-- =====================================================
+       GOOGLE MATERIAL SYMBOLS
+  ====================================================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
-
-  <!-- Firebase Compat -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="activity-report.css">
+  <link rel="stylesheet" href="admin.css">
+  <!-- =====================================================
+       FIREBASE
+  ====================================================== -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
-  <!-- Firebase config -->
   <script src="../firebase-config.js"></script>
-  <link rel="stylesheet" href="activity-report.css">
-  <link rel="stylesheet" href="admin.css">
+
+  <script src="shared-sidebar.js"></script>
 </head>
 <body data-admin-page="reports">
 <div class="app-shell">
-    <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
-    <!-- ADMIN -->
-    <!-- <div class="admin-chip">
-      <div class="avatar">
-        AD
-      </div>
-      <div>
-        <strong id="sidebarAdminName">
-          Administrator
-        </strong>
-        <small>
-          SYSTEM ADMIN
-        </small>
-      </div>
-      <button
-        id="logoutBtn"
-        title="Đăng xuất"
-      >
-        ↪
-      </button>
-    </div> -->
-  <!-- </aside> -->
-  <!-- =====================================================
+  <!-- ===================================================
+       SIDEBAR
+  ==================================================== -->
+  <div
+    id="sharedSidebar"
+    aria-label="Sidebar quản trị"
+  ></div>
+  <!-- ===================================================
        MAIN
-  ====================================================== -->
+  ==================================================== -->
   <main class="main-content">
-    <!-- TOPBAR -->
+    <!-- =================================================
+         TOPBAR
+    ================================================== -->
     <header class="topbar">
-      <button
-        id="menuBtn"
-        class="icon-btn mobile-only"
-      >
-        ☰
-      </button>
-      <div class="connection">
-        <i id="connectionDot"></i>
-        <span id="connectionLabel">
-          Đang kết nối Firebase...
-        </span>
-      </div>
-      <div class="top-actions">
-        <span
-          id="todayLabel"
-          class="today"
-        >
-        </span>
+      <div class="topbar-left">
         <button
-          id="noticeBtn"
-          class="icon-btn"
-          title="Thông báo"
+          type="button"
+          id="menuBtn"
+          class="icon-btn mobile-only"
+          title="Mở menu"
+          aria-label="Mở menu"
         >
-          ♢
-          <em></em>
+          <span class="material-symbols-rounded">
+            menu
+          </span>
         </button>
-        <div class="small-mark avatar">
+        <div class="connection">
+          <span
+            id="connectionDot"
+            class="connection-dot"
+          ></span>
+          <span id="connectionLabel">
+            Đang kết nối Firebase...
+          </span>
+        </div>
+      </div>
+      <!-- ===============================================
+           TOP ACTIONS
+      ================================================ -->
+      <div class="top-actions">
+        <!-- NOTIFICATION -->
+        <div class="notification-wrapper">
+          <button
+            type="button"
+            class="icon-btn notification-btn"
+            id="noticeBtn"
+            title="Thông báo"
+            aria-label="Thông báo"
+            aria-expanded="false"
+          >
+            <span class="material-symbols-rounded">
+              notifications
+            </span>
+            <span
+              id="noticeBadge"
+              class="notice-badge hidden"
+            >
+              0
+            </span>
+          </button>
+          <!-- ===========================================
+               NOTIFICATION PANEL
+          ============================================ -->
+          <div
+            id="notificationPanel"
+            class="notification-panel"
+            hidden
+          >
+            <div class="notification-header">
+              <div>
+                <strong>Thông báo</strong>
+                <small id="notificationCount">
+                  Không có thông báo mới
+                </small>
+              </div>
+              <button
+                type="button"
+                id="markAllReadBtn"
+                class="notification-action"
+              >
+                Đánh dấu đã đọc
+              </button>
+            </div>
+            <div
+              id="notificationList"
+              class="notification-list"
+            >
+              <div class="notification-empty">
+                <span class="material-symbols-rounded">
+                  notifications_none
+                </span>
+                <p>
+                  Không có thông báo mới
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ADMIN NAME -->
+        <span
+          class="top-admin"
+          id="topAdminName"
+        >
+          Admin
+        </span>
+        <!-- ADMIN AVATAR -->
+        <div
+          class="avatar avatar-admin"
+          id="topAdminAvatar"
+          aria-label="Tài khoản Admin"
+        >
           AD
         </div>
       </div>
     </header>
-    <!-- =====================================================
+    <!-- =================================================
          CONTENT
-    ====================================================== -->
+    ================================================== -->
     <div class="content-wrap">
-      <!-- HERO -->
+      <!-- =================================================
+           HERO
+      ================================================== -->
       <section class="hero">
-        <div>
+        <div class="hero-content">
           <p class="eyebrow">
             ACTIVITY REPORT
           </p>
@@ -99,32 +163,51 @@
           </h1>
           <p class="hero-copy">
             Theo dõi tình trạng tài khoản, hoạt động đăng nhập
-            và phân bổ đội ngũ Customer Success theo cơ sở
+            và phân bổ đội ngũ Customer Success theo campus
             và phòng ban.
           </p>
         </div>
-        <div class="hero-art">
+        <!-- HERO DECORATION -->
+        <div
+          class="hero-art"
+          aria-hidden="true"
+        >
           <div class="orbit orbit-one"></div>
           <div class="orbit orbit-two"></div>
           <div class="connector connector-one"></div>
           <div class="connector connector-two"></div>
           <div class="node node-a">
-            USERS
+            <span class="material-symbols-rounded">
+              group
+            </span>
+            <small>USERS</small>
           </div>
           <div class="node node-b">
-            ACTIVE
+            <span class="material-symbols-rounded">
+              bolt
+            </span>
+            <small>ACTIVE</small>
           </div>
           <div class="node node-c">
-            REPORT
+            <span class="material-symbols-rounded">
+              analytics
+            </span>
+            <small>REPORT</small>
           </div>
         </div>
       </section>
-      <!-- ===================================================
-           STATS
-      ==================================================== -->
+      <!-- =================================================
+           STATISTICS
+      ================================================== -->
       <section class="stats-grid">
+        <!-- TOTAL -->
         <div class="stat-card">
-          <span>
+          <div class="stat-icon">
+            <span class="material-symbols-rounded">
+              group
+            </span>
+          </div>
+          <span class="stat-label">
             TỔNG TÀI KHOẢN CS
           </span>
           <strong id="totalCount">
@@ -134,8 +217,14 @@
             Toàn bộ Customer Success
           </small>
         </div>
+        <!-- ACTIVE -->
         <div class="stat-card">
-          <span>
+          <div class="stat-icon">
+            <span class="material-symbols-rounded">
+              person_check
+            </span>
+          </div>
+          <span class="stat-label">
             ĐANG HOẠT ĐỘNG
           </span>
           <strong id="activeCount">
@@ -145,8 +234,14 @@
             0% tổng đội ngũ
           </small>
         </div>
+        <!-- PENDING -->
         <div class="stat-card">
-          <span>
+          <div class="stat-icon">
+            <span class="material-symbols-rounded">
+              pending
+            </span>
+          </div>
+          <span class="stat-label">
             CHƯA KÍCH HOẠT
           </span>
           <strong id="pendingCount">
@@ -156,8 +251,14 @@
             Cần kiểm tra
           </small>
         </div>
+        <!-- NEW -->
         <div class="stat-card">
-          <span>
+          <div class="stat-icon">
+            <span class="material-symbols-rounded">
+              person_add
+            </span>
+          </div>
+          <span class="stat-label">
             TẠO TRONG KỲ
           </span>
           <strong id="newCount">
@@ -168,13 +269,18 @@
           </small>
         </div>
       </section>
-      <!-- ===================================================
+      <!-- =================================================
            FILTER
-      ==================================================== -->
+      ================================================== -->
       <section class="filter-panel">
         <div class="panel-head">
           <div>
             <div class="title-line">
+              <span class="title-icon">
+                <span class="material-symbols-rounded">
+                  filter_alt
+                </span>
+              </span>
               <h2>
                 Bộ lọc báo cáo
               </h2>
@@ -186,77 +292,121 @@
           </div>
           <div class="panel-actions">
             <button
+              type="button"
               class="secondary-btn"
               id="clearFilters"
             >
+              <span class="material-symbols-rounded">
+                filter_alt_off
+              </span>
               Xóa bộ lọc
             </button>
             <button
+              type="button"
               class="primary-btn"
               id="exportBtn"
             >
+              <span class="material-symbols-rounded">
+                download
+              </span>
               Xuất CSV
             </button>
           </div>
         </div>
         <div class="filters">
+          <!-- PERIOD -->
           <div class="filter-field">
-            <label>
+            <label for="periodFilter">
               Khoảng thời gian
             </label>
-            <select id="periodFilter">
-              <option value="7">
-                7 ngày gần nhất
-              </option>
-              <option
-                value="30"
-                selected
-              >
-                30 ngày gần nhất
-              </option>
-              <option value="90">
-                90 ngày gần nhất
-              </option>
-              <option value="all">
-                Toàn bộ
-              </option>
-            </select>
+            <div class="select-wrap">
+              <select id="periodFilter">
+                <option value="7">
+                  7 ngày gần nhất
+                </option>
+                <option
+                  value="30"
+                  selected
+                >
+                  30 ngày gần nhất
+                </option>
+                <option value="90">
+                  90 ngày gần nhất
+                </option>
+                <option value="all">
+                  Toàn bộ
+                </option>
+              </select>
+              <span class="material-symbols-rounded">
+                expand_more
+              </span>
+            </div>
           </div>
+          <!-- CAMPUS -->
           <div class="filter-field">
-            <label>
+            <label for="campusFilter">
               Campus
             </label>
-            <select id="campusFilter">
-              <option value="all">
-                Tất cả campus
-              </option>
-            </select>
+            <div class="select-wrap">
+              <select id="campusFilter">
+                <option value="all">
+                  Tất cả campus
+                </option>
+              </select>
+              <span class="material-symbols-rounded">
+                expand_more
+              </span>
+            </div>
           </div>
+          <!-- DEPARTMENT -->
           <div class="filter-field">
-            <label>
+            <label for="departmentFilter">
               Phòng ban
             </label>
-            <select id="departmentFilter">
-              <option value="all">
-                Tất cả phòng ban
-              </option>
-            </select>
+            <div class="select-wrap">
+              <select id="departmentFilter">
+                <option value="all">
+                  Tất cả phòng ban
+                </option>
+              </select>
+              <span class="material-symbols-rounded">
+                expand_more
+              </span>
+            </div>
           </div>
+          <!-- SEARCH -->
           <div class="filter-field search-field">
-            <label>
+            <label for="searchInput">
               Tìm kiếm
             </label>
-            <input
-              id="searchInput"
-              type="search"
-              placeholder="Tên, username, email..."
-            >
+            <div class="search-wrap">
+              <span class="material-symbols-rounded">
+                search
+              </span>
+              <input
+                id="searchInput"
+                type="search"
+                autocomplete="off"
+                placeholder="Tên, username, email..."
+              >
+              <button
+                type="button"
+                id="clearSearchBtn"
+                class="search-clear hidden"
+                title="Xóa tìm kiếm"
+                aria-label="Xóa tìm kiếm"
+              >
+                <span class="material-symbols-rounded">
+                  close
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
-      <!-- ===================================================
+      <!-- =================================================
            DISTRIBUTION
-      ==================================================== -->
+      ================================================== -->
       <section class="report-grid">
         <!-- CAMPUS -->
         <div class="report-card">
@@ -269,12 +419,20 @@
                 Phân bổ theo cơ sở
               </h2>
             </div>
+            <span class="report-head-icon">
+              <span class="material-symbols-rounded">
+                location_on
+              </span>
+            </span>
           </div>
           <div
             id="campusReport"
             class="distribution-list"
           >
             <div class="loading">
+              <span class="material-symbols-rounded spin">
+                progress_activity
+              </span>
               Đang tải dữ liệu...
             </div>
           </div>
@@ -290,24 +448,37 @@
                 Phân bổ phòng ban
               </h2>
             </div>
+            <span class="report-head-icon">
+              <span class="material-symbols-rounded">
+                apartment
+              </span>
+            </span>
           </div>
           <div
             id="departmentReport"
             class="distribution-list"
           >
             <div class="loading">
+              <span class="material-symbols-rounded spin">
+                progress_activity
+              </span>
               Đang tải dữ liệu...
             </div>
           </div>
         </div>
       </section>
-      <!-- ===================================================
+      <!-- =================================================
            ACTIVITY TABLE
-      ==================================================== -->
+      ================================================== -->
       <section class="account-panel">
         <div class="panel-head">
           <div>
             <div class="title-line">
+              <span class="title-icon">
+                <span class="material-symbols-rounded">
+                  manage_accounts
+                </span>
+              </span>
               <h2>
                 Hoạt động tài khoản
               </h2>
@@ -325,24 +496,12 @@
           <table>
             <thead>
               <tr>
-                <th>
-                  TÀI KHOẢN
-                </th>
-                <th>
-                  CAMPUS
-                </th>
-                <th>
-                  PHÒNG BAN
-                </th>
-                <th>
-                  TRẠNG THÁI
-                </th>
-                <th>
-                  ĐĂNG NHẬP GẦN NHẤT
-                </th>
-                <th>
-                  NGÀY TẠO
-                </th>
+                <th>TÀI KHOẢN</th>
+                <th>CAMPUS</th>
+                <th>PHÒNG BAN</th>
+                <th>TRẠNG THÁI</th>
+                <th>ĐĂNG NHẬP GẦN NHẤT</th>
+                <th>NGÀY TẠO</th>
               </tr>
             </thead>
             <tbody id="activityBody">
@@ -351,6 +510,9 @@
                   colspan="6"
                   class="loading-cell"
                 >
+                  <span class="material-symbols-rounded spin">
+                    progress_activity
+                  </span>
                   Đang tải dữ liệu Firebase...
                 </td>
               </tr>
@@ -362,7 +524,7 @@
             Đang tải...
           </span>
           <span class="realtime">
-            <i></i>
+            <span class="realtime-dot"></span>
             Realtime Firebase
           </span>
         </div>
@@ -370,15 +532,31 @@
     </div>
   </main>
 </div>
-<!-- =======================================================
+<!-- =====================================================
      TOAST
-======================================================== -->
+====================================================== -->
 <div
   id="toast"
   class="toast"
   hidden
-></div>
+>
+  <span
+    id="toastIcon"
+    class="material-symbols-rounded"
+  >
+    info
+  </span>
+  <span id="toastMessage">
+    Thông báo
+  </span>
+</div>
+<!-- =====================================================
+     SHARED SIDEBAR
+====================================================== -->
 <script src="shared-sidebar.js"></script>
+<!-- =====================================================
+     PAGE JS
+====================================================== -->
 <script src="activity-report.js"></script>
 </body>
 </html>

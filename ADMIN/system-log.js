@@ -1389,16 +1389,7 @@
 
                 <div class="log-user">
 
-                  <div
-                    class="log-user-avatar"
-                    title="${escapeHtml(
-                      item.userName
-                    )}"
-                  >
-                    ${escapeHtml(
-                      item.avatar
-                    )}
-                  </div>
+
 
 
                   <div class="log-user-info">
@@ -1432,12 +1423,6 @@
                       item.typeText
                     )}
                   </strong>
-
-                  <small>
-                    ${escapeHtml(
-                      item.description
-                    )}
-                  </small>
 
                 </div>
 

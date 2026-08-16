@@ -19,6 +19,133 @@
     <script src="../firebase-config.js"></script>
 
 <style id="system-log-detail-overrides">
+  /* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 50;
+
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    0 42px;
+
+  border-bottom:
+    1px solid var(--line);
+
+  background:
+    rgba(255,253,249,.92);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: var(--soft);
+
+  font-size: 11px;
+}
+
+.connection i {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #b7aaa0;
+}
+
+.connection i.live {
+  background: var(--green);
+
+  box-shadow:
+    0 0 0 4px
+    rgba(93,133,87,.13);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-left: auto;
+}
+
+.top-admin {
+  color: var(--maroon);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: var(--cream);
+  color: var(--maroon);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.small-mark {
+  width: 34px;
+  height: 34px;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+
+  display: inline-grid;
+  place-items: center;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: var(--soft);
+
+  font-size: 17px;
+
+  transition: .18s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--line);
+
+  background: var(--cream);
+
+  color: var(--maroon);
+}
+
+.mobile-only {
+  display: none;
+}
+
 .log-detail-hero { display:flex; align-items:center; gap:12px; padding:16px; margin-bottom:14px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(135deg,var(--cream-pale),#fff); }
 .log-detail-hero-copy { min-width:0; flex:1; }
 .log-detail-eyebrow, .log-detail-section-title, .log-detail-summary-label { display:block; color:var(--maroon-soft); font-size:9px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
@@ -41,37 +168,22 @@
 <body data-admin-page="logs">
 <div class="app-shell">
     <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
-  <main class="main-content">
-    <header class="topbar">
-      <button
-        class="icon-btn mobile-only"
-        id="menuBtn"
-      >
-        ☰
-      </button>
-      <div class="connection">
-        <i id="connectionDot"></i>
-        <span id="connectionLabel">
-          Đang kết nối...
-        </span>
-      </div>
-      <div class="top-actions">
-        <span
-          class="top-admin"
-          id="topAdminName"
-        >
-          Administrator
-        </span>
-        <button
-          class="icon-btn"
-          id="noticeBtn"
-          title="Thông báo"
-        >
-          ♢
-          <em></em>
-        </button>
-      </div>
-    </header>
+    <main class="main-content">
+      <!-- Header Topbar -->
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn mobile-only">☰</button>
+        <div class="connection">
+          <i id="connectionDot"></i>
+          <span id="connectionLabel">Đang kết nối Firebase...</span>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="noticeBtn" title="Thông báo">
+            ♧<em></em>
+          </button>
+          <span class="top-admin">T. Admin</span>
+          <div class="avatar avatar-admin small-mark">AC</div>
+        </div>
+      </header>
     <div class="content-wrap">
       <!-- =================================================
            HERO
