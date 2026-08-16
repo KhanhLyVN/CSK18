@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang chủ - Admin</title>
-  <link rel="stylesheet" href="homepage-ad.css">
+  <title>Tài khoản CS - Admin</title>
+  <link rel="stylesheet" href="accounts.css">
   <link rel="stylesheet" href="admin.css">
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="../firebase-config.js"></script>
 </head>
-<body data-admin-page="overview">
+<body data-admin-page="accounts">
   <div class="app-shell">
       <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
     <!-- Main Content Area -->
@@ -44,9 +44,9 @@
         <section class="hero">
           <div>
             <p class="eyebrow">Bàn điều hành · <span id="todayLabel"></span></p>
-            <h1>Tổng quan quản trị,<br><span>trong một góc nhìn.</span></h1>
+            <h1>Tài khoản CS,<br><span>trong một góc nhìn.</span></h1>
             <p class="hero-copy">
-              Theo dõi nhanh tình hình vận hành, số lượng tài khoản và các chỉ số quan trọng của hệ thống.
+              Quản lý hồ sơ, trạng thái, quyền truy cập và hoạt động của đội ngũ Customer Success.
             </p>
           </div>
           <div class="hero-art" aria-hidden="true">
@@ -82,6 +82,59 @@
             <small>Cần kiểm tra hôm nay</small>
           </article>
         </section>
+        <!-- Accounts Data Table Panel -->
+        <section class="account-panel" id="accounts">
+          <div class="panel-head">
+            <div>
+              <div class="title-line">
+                <h2>Danh sách tài khoản</h2>
+                <span id="recordBadge">— hồ sơ</span>
+              </div>
+              <p>Mở hồ sơ để kiểm tra quyền và hoạt động gần đây.</p>
+            </div>
+            <button class="primary-btn" id="addAccountBtn">＋ Thêm tài khoản CS</button>
+          </div>
+          <!-- Filters Bar -->
+          <div class="filters">
+            <div class="search-box">
+              <span>⌕</span>
+              <input id="searchInput" type="search" placeholder="Tìm theo tên, email hoặc mã tài khoản...">
+            </div>
+            <select id="statusFilter">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="active">Đang hoạt động</option>
+              <option value="away">Tạm vắng</option>
+              <option value="pending">Chưa kích hoạt</option>
+            </select>
+            <button class="icon-btn" id="clearFilters" title="Xóa bộ lọc">↺</button>
+          </div>
+          <!-- Table Wrapper -->
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>TÀI KHOẢN</th>
+                  <th>VAI TRÒ</th>
+                  <th>TRẠNG THÁI</th>
+                  <th>HOẠT ĐỘNG</th>
+                  <th>NGÀY THAM GIA</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="accountBody">
+                <tr>
+                  <td colspan="6" class="loading-cell">Đang tải tài khoản từ Firestore...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-foot">
+            <span id="entriesNote">—</span>
+            <span class="realtime">
+              <i></i> Dữ liệu cập nhật theo thời gian thực
+            </span>
+          </div>
+        </section>
         <!-- Architecture Card -->
         <!-- <section class="architecture-card">
           <div>
@@ -103,6 +156,18 @@
       </div>
     </main>
   </div>
+  <!-- Detail Drawer & Overlay -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="accountDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <small>HỒ SƠ TÀI KHOẢN</small>
+        <h2>Chi tiết CS</h2>
+      </div>
+      <button class="close-btn" id="closeDrawer">×</button>
+    </div>
+    <div id="drawerContent"></div>
+  </aside>
   <!-- Toast Notification -->
   <!-- <div class="toast" id="toast"></div> -->
   <!-- App Main Logic -->

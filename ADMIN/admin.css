@@ -99,7 +99,9 @@ a {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 1000;
-  width: var(--sidebar-width);
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -216,7 +218,6 @@ a {
 .admin-nav-item:hover {
   background: rgba(255,255,255,.075);
   color: #fff;
-  transform: translateX(1px);
 }
 .admin-nav-item.active {
   background: rgba(255,255,255,.13);
@@ -253,7 +254,6 @@ a {
   opacity: 1;
 }
 .admin-nav-item:hover .admin-nav-icon {
-  transform: translateX(1px);
 }
 /* =========================================================
    SIDEBAR BADGE
@@ -340,7 +340,6 @@ a {
 .admin-user-menu:hover {
   background: rgba(255,255,255,.11);
   color: #fff;
-  transform: translateX(2px);
 }
 .admin-user-menu .material-symbols-rounded {
   font-size: 21px;
@@ -360,7 +359,7 @@ a {
 ========================================================= */
 .main-content {
   min-height: 100vh;
-  margin-left: var(--sidebar-width);
+  margin-left: 250px;
   background: #f8f1e8;
 }
 /* =========================================================
@@ -919,56 +918,11 @@ textarea:focus {
 }
 
 /* =========================================================
-   ADMIN SIDEBAR - GLOBAL FIX
-   DÙNG CHUNG CHO TẤT CẢ TRANG ADMIN
-========================================================= */
-
-.admin-sidebar {
-    width: 250px !important;
-    min-width: 250px;
-    max-width: 250px;
-}
-
-.admin-sidebar-brand {
-    width: 100%;
-    height: 88px;
-    min-height: 88px;
-    flex: 0 0 88px;
-}
-
-.admin-sidebar-nav {
-    width: 100%;
-}
-
-.admin-nav-item {
-    width: 100%;
-    min-height: 44px;
-    height: 44px;
-}
-
-.admin-nav-icon {
-    width: 22px;
-    min-width: 22px;
-}
-
-.admin-sidebar-user {
-    width: 100%;
-    min-height: 76px;
-    height: 76px;
-    flex: 0 0 76px;
-}
-
-.main-content {
-    margin-left: 250px;
-    min-width: 0;
-}
-
-/* =========================================================
    RESPONSIVE TABLET
 ========================================================= */
 @media (max-width: 1050px) {
   :root {
-    --sidebar-width: 230px;
+    --sidebar-width: 250px;
   }
   .content-wrap {
     width: min(100% - 42px, 1180px);
@@ -1113,3 +1067,39 @@ textarea:focus {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   SIDEBAR OWNERSHIP: ADMIN.CSS ONLY
+========================================================= */
+.admin-sidebar,
+.admin-sidebar-brand,
+.admin-sidebar-nav,
+.admin-nav-item,
+.admin-nav-icon,
+.admin-sidebar-user,
+.main-content {
+  box-sizing: border-box;
+}
+
+.admin-sidebar {
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+}
+
+.main-content {
+  margin-left: 250px !important;
+}
+
+@media (max-width: 780px) {
+  .admin-sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+

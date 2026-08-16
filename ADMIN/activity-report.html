@@ -20,131 +20,9 @@
   <link rel="stylesheet" href="activity-report.css">
   <link rel="stylesheet" href="admin.css">
 </head>
-<body>
+<body data-admin-page="reports">
 <div class="app-shell">
-    <aside class="admin-sidebar" id="adminSidebar">
-    <!-- BRAND -->
-    <div class="admin-sidebar-brand">
-        <div class="admin-brand-mark">
-        HV
-        </div>
-        <div class="admin-brand-text">
-        <strong>Học Viện</strong>
-        <small>ADMIN CENTER</small>
-        </div>
-    </div>
-    <!-- NAVIGATION -->
-    <nav class="admin-sidebar-nav">
-        <div class="admin-nav-label">
-        Tổng quan
-        </div>
-        <a
-        href="/ADMIN/homepage-ad.html"
-        class="admin-nav-item"
-        data-page="overview"
-        >
-        <span class="admin-nav-icon material-symbols-rounded">
-            dashboard
-        </span>
-        <span class="admin-nav-text">
-            Tổng quan
-        </span>
-        </a>
-        <div class="admin-nav-label">
-        Quản lý
-        </div>
-        <a
-        href="/ADMIN/homepage-ad.html#accounts"
-        class="admin-nav-item"
-        data-page="accounts"
-        >
-        <span class="admin-nav-icon material-symbols-rounded">
-            manage_accounts
-        </span>
-        <span class="admin-nav-text">
-            Tài khoản CS
-        </span>
-        <b
-            class="admin-nav-badge"
-            id="sidebarAccountCount"
-        >
-            0
-        </b>
-        </a>
-        <a
-        href="/ADMIN/activity-report.html"
-        class="admin-nav-item"
-        data-page="reports"
-        >
-        <span class="admin-nav-icon material-symbols-rounded">
-            analytics
-        </span>
-        <span class="admin-nav-text">
-            Báo cáo hoạt động
-        </span>
-        </a>
-        <div class="admin-nav-label">
-        Hệ thống
-        </div>
-        <a
-        href="/ADMIN/settings.html"
-        class="admin-nav-item"
-        data-page="settings"
-        >
-        <span class="admin-nav-icon material-symbols-rounded">
-            settings
-        </span>
-        <span class="admin-nav-text">
-            Cài đặt
-        </span>
-        </a>
-        <a
-        href="/ADMIN/system-log.html"
-        class="admin-nav-item"
-        data-page="logs"
-        >
-        <span class="admin-nav-icon material-symbols-rounded">
-            history
-        </span>
-        <span class="admin-nav-text">
-            Nhật ký hệ thống
-        </span>
-        </a>
-    </nav>
-    <!-- USER -->
-    <div class="admin-sidebar-user">
-        <div
-        class="admin-user-avatar"
-        id="sidebarAvatar"
-        >
-        AD
-        </div>
-        <div class="admin-user-info">
-        <strong id="sidebarUserName">
-            Administrator
-        </strong>
-        <small id="sidebarUserRole">
-            System Admin
-        </small>
-        </div>
-        <button
-        type="button"
-        class="admin-user-menu"
-        id="sidebarLogoutBtn"
-        title="Đăng xuất"
-        >
-        <span class="material-symbols-rounded">
-            logout
-        </span>
-        </button>
-    </div>
-    </aside>
-    <!-- MOBILE BACKDROP -->
-    <div
-    class="admin-sidebar-backdrop"
-    id="adminSidebarBackdrop"
-    hidden
-    ></div>
+    <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
     <!-- ADMIN -->
     <!-- <div class="admin-chip">
       <div class="avatar">
@@ -491,14 +369,6 @@
   </main>
 </div>
 <!-- =======================================================
-     MOBILE BACKDROP
-======================================================== -->
-<div
-  id="mobileBackdrop"
-  class="mobile-backdrop"
-  hidden
-></div>
-<!-- =======================================================
      TOAST
 ======================================================== -->
 <div
@@ -506,6 +376,7 @@
   class="toast"
   hidden
 ></div>
+<script src="shared-sidebar.js"></script>
 <script src="activity-report.js"></script>
 </body>
 </html>
