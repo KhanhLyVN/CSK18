@@ -2875,6 +2875,41 @@ function getStudentMessageCount(ticket) {
        UPDATE STATUS
     ========================================================= */
   
+
+    /* =========================================================
+       ADMIN NOTIFICATIONS / SYSTEM LOGS
+    ========================================================= */
+    async function notifyAdminFromCS({ action, actionLabel, ticket, detail = "", severity = "info", type = "update" }) {
+        try {
+            const ticketNum = getTicketNum(ticket);
+            const actorName = currentCSProfile?.name || currentCSUser?.displayName || currentCSUser?.email || "Customer Success";
+            const actorUid = currentCSUser?.uid || "";
+            const actorEmail = currentCSUser?.email || "";
+            const message = detail || `${actorName} đã ${actionLabel} ticket ${ticketNum}.`;
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+            const notification = {
+                type, action, actionLabel, title: message, message, detail: message, severity,
+                isRead: false, read: false, recipientRole: "admin", targetRole: "admin",
+                actorRole: "cs", actorUid, actorEmail, actorName,
+                ticketId: ticket?.id || ticket?.ticketNum || "", ticketNum,
+                ticketTitle: getTicketTitle(ticket), studentName: getStudentName(ticket),
+                departmentCode: ticket?.departmentCode || currentCSProfile?.department || "",
+                campus: ticket?.campus || currentCSProfile?.campus || "",
+                createdAt: timestamp, updatedAt: timestamp
+            };
+            await Promise.all([
+                db.collection("adminNotifications").add(notification),
+                db.collection("systemLogs").add({
+                    ...notification, logType: type, objectType: "ticket",
+                    objectId: ticket?.id || ticket?.ticketNum || "", actor: actorName,
+                    action: message, timestamp, createdAt: timestamp
+                })
+            ]);
+        } catch (error) {
+            console.warn("Không thể gửi thông báo cho admin:", error);
+        }
+    }
+
     async function updateTicketStatus(
         ticket,
         newStatus
@@ -2930,6 +2965,15 @@ function getStudentMessageCount(ticket) {
                     statusUpdate.closedAt = null;
                 }
                 transaction.update(ticketRef, statusUpdate);
+            });
+            const previousStatus = ticket.status || "open";
+            await notifyAdminFromCS({
+                action: normalizedStatus === "in_progress" ? "claim_ticket" : (normalizedStatus === "resolved" || normalizedStatus === "closed" ? "complete_ticket" : "update_status"),
+                actionLabel: normalizedStatus === "in_progress" ? "nhận xử lý" : (normalizedStatus === "resolved" || normalizedStatus === "closed" ? "hoàn thành/cập nhật hoàn tất" : "cập nhật trạng thái"),
+                ticket,
+                detail: `${currentCSProfile?.name || currentCSUser?.displayName || "CS"} đã chuyển ticket ${getTicketNum(ticket)} từ ${getStatusLabel(previousStatus)} sang ${getStatusLabel(normalizedStatus)}.`,
+                severity: "info",
+                type: "update"
             });
   
   
@@ -3679,6 +3723,14 @@ function getStudentMessageCount(ticket) {
                 }
                 transaction.update(ticketRef, messageUpdate);
             });
+            await notifyAdminFromCS({
+                action: "reply_ticket",
+                actionLabel: "phản hồi ticket",
+                ticket: selectedTicket,
+                detail: `${currentCSProfile?.name || currentCSUser?.displayName || "CS"} đã phản hồi ticket ${getTicketNum(selectedTicket)} của ${getStudentName(selectedTicket)}.`,
+                severity: "info",
+                type: "message"
+            });
   
   
             chatInput.value = "";
@@ -3946,7 +3998,8 @@ function getStudentMessageCount(ticket) {
   
         closeChat,
   
-        updateTicketStatus
+        updateTicketStatus,
+        notifyAdminFromCS
     };
   
   

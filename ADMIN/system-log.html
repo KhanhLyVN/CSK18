@@ -17,6 +17,26 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="../firebase-config.js"></script>
+
+<style id="system-log-detail-overrides">
+.log-detail-hero { display:flex; align-items:center; gap:12px; padding:16px; margin-bottom:14px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(135deg,var(--cream-pale),#fff); }
+.log-detail-hero-copy { min-width:0; flex:1; }
+.log-detail-eyebrow, .log-detail-section-title, .log-detail-summary-label { display:block; color:var(--maroon-soft); font-size:9px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+.log-detail-hero h3 { margin:4px 0 3px; color:var(--maroon); font-size:17px; line-height:1.25; }
+.log-detail-hero p { margin:0; color:var(--muted); font-size:11px; }
+.log-detail-severity { flex:none; padding:5px 8px; border-radius:999px; color:var(--maroon); background:var(--cream); font-size:9px; font-weight:800; }
+.log-detail-summary { margin-bottom:18px; padding:13px 15px; border-left:3px solid var(--gold); border-radius:8px; background:var(--cream-pale); }
+.log-detail-summary p { margin:6px 0 0; color:var(--ink); font-size:13px; line-height:1.65; overflow-wrap:anywhere; }
+.log-detail-section-title { margin:18px 0 8px; }
+.log-detail-box.highlight { border-color:rgba(176,138,78,.45); background:#fffaf0; }
+.log-detail-box code { color:var(--maroon); font-family:"IBM Plex Mono",monospace; font-size:11px; }
+.log-raw-collapsible { margin-top:18px; }
+.log-raw-collapsible summary { cursor:pointer; list-style:none; }
+.log-raw-collapsible summary::-webkit-details-marker { display:none; }
+.log-raw-collapsible summary::after { content:"＋"; float:right; color:var(--gold); }
+.log-raw-collapsible[open] summary::after { content:"−"; }
+@media (max-width:600px) { .log-detail-hero { align-items:flex-start; } .log-detail-severity { font-size:8px; } }
+</style>
 </head>
 <body data-admin-page="logs">
 <div class="app-shell">
@@ -194,6 +214,18 @@
             </option>
             <option value="error">
               Lỗi
+            </option>
+            <option value="message">
+              CS phản hồi ticket
+            </option>
+            <option value="claim_ticket">
+              CS nhận ticket
+            </option>
+            <option value="complete_ticket">
+              CS hoàn thành ticket
+            </option>
+            <option value="update_status">
+              CS cập nhật trạng thái
             </option>
           </select>
           <select id="severityFilter">

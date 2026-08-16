@@ -1,0 +1,2768 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý phòng ban</title>
+  <link rel="stylesheet" href="admin.css">
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+
+  <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+  <style>
+    :root {
+      --maroon: #5D0703;
+      --maroon-deep: #3E0402;
+      --maroon-soft: #7A1410;
+      --cream: #EEDCC8;
+      --cream-pale: #FBF4E9;
+      --paper: #FFFBF5;
+      --gold: #B08A4E;
+      --text: #2A1712;
+      --text-soft: #6B5348;
+      --line: rgba(93, 7, 3, 0.15);
+      --danger: #A23B2E;
+      --success: #4C6B3C;
+      --shadow:
+        0 12px 35px rgba(62, 4, 2, 0.08);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
+      background: var(--cream-pale);
+      color: var(--text);
+    }
+    button,
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+    /* =====================================================
+       PAGE
+    ====================================================== */
+    .page {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 45px 0 70px;
+    }
+    /* =====================================================
+       HEADER
+    ====================================================== */
+    .page-header {
+      margin-bottom: 30px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 34px;
+      color: var(--maroon-deep);
+    }
+    .subtitle {
+      margin-top: 10px;
+      color: var(--text-soft);
+      font-size: 15px;
+    }
+    /* =====================================================
+       CARD
+    ====================================================== */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+    }
+    .card-title h2,
+    .list-header h2 {
+      margin: 0;
+      color: var(--maroon-deep);
+      font-size: 22px;
+    }
+    .card-title p,
+    .list-header p {
+      margin: 7px 0 0;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+    /* =====================================================
+       FORM
+    ====================================================== */
+    .form-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+    .form-group label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .form-group label span {
+      color: var(--danger);
+    }
+    .form-group > input,
+    .form-group > textarea,
+    .form-group > select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      color: var(--text);
+      font-size: 14px;
+      padding: 13px 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .form-group textarea {
+      resize: vertical;
+    }
+    .form-group > input:focus,
+    .form-group > textarea:focus,
+    .form-group > select:focus {
+      border-color: var(--maroon);
+      box-shadow:
+        0 0 0 3px rgba(93, 7, 3, 0.08);
+    }
+    .form-group small {
+      color: var(--text-soft);
+      font-size: 12px;
+    }
+    /* =====================================================
+       SEARCH DROPDOWN
+    ====================================================== */
+    .search-select {
+      position: relative;
+      width: 100%;
+    }
+    .select-display {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .select-display:hover {
+      border-color: var(--maroon);
+    }
+    .search-select.open .select-display {
+      border-color: var(--maroon);
+      border-radius: 10px 10px 0 0;
+      box-shadow:
+        0 0 0 3px rgba(93, 7, 3, 0.08);
+    }
+    .select-arrow {
+      color: var(--text-soft);
+      font-size: 18px;
+      transition: 0.2s;
+    }
+    .search-select.open .select-arrow {
+      transform: rotate(180deg);
+    }
+    .selected-text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .select-dropdown {
+      position: absolute;
+      top: calc(100% - 1px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid var(--maroon);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      box-shadow:
+        0 12px 30px rgba(62, 4, 2, 0.14);
+      display: none;
+      z-index: 1000;
+    }
+    .search-select.open .select-dropdown {
+      display: block;
+    }
+    .select-search {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      background: var(--cream-pale);
+    }
+    .select-search input {
+      width: 100%;
+      height: 40px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      outline: none;
+      font-size: 13px;
+    }
+    .select-search input:focus {
+      border-color: var(--maroon);
+      box-shadow:
+        0 0 0 3px rgba(93, 7, 3, 0.06);
+    }
+    .select-options {
+      max-height: 230px;
+      overflow-y: auto;
+    }
+    .select-option {
+      padding: 11px 13px;
+      cursor: pointer;
+      border-bottom: 1px solid
+        rgba(93, 7, 3, 0.06);
+      transition: 0.15s;
+    }
+    .select-option:last-child {
+      border-bottom: none;
+    }
+    .select-option:hover {
+      background: var(--cream-pale);
+    }
+    .select-option.selected {
+      background: rgba(93, 7, 3, 0.07);
+    }
+    .option-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .select-option.selected .option-name {
+      color: var(--maroon);
+    }
+    .option-email {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+    .select-empty,
+    .select-loading {
+      padding: 18px;
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+    .select-options::-webkit-scrollbar {
+      width: 6px;
+    }
+    .select-options::-webkit-scrollbar-thumb {
+      background: var(--cream);
+      border-radius: 10px;
+    }
+    /* =====================================================
+       BUTTON
+    ====================================================== */
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 25px;
+    }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--maroon);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--maroon-deep);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--cream);
+      color: var(--maroon-deep);
+    }
+    .btn-secondary:hover {
+      background: #e5cdb3;
+    }
+    /* =====================================================
+       LIST
+    ====================================================== */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .refresh-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--maroon);
+      border-radius: 9px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .department-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .department-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .department-info {
+      min-width: 0;
+    }
+    .department-name {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--maroon-deep);
+    }
+    .department-code {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--cream-pale);
+      color: var(--maroon);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .department-description {
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+    .manager {
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .manager strong {
+      color: var(--text);
+    }
+    .department-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .status {
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .status.active {
+      background: #e9f2e4;
+      color: var(--success);
+    }
+    .status.inactive {
+      background: #f5e7e5;
+      color: var(--danger);
+    }
+    .action-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .edit-btn {
+      color: var(--gold);
+    }
+    .delete-btn {
+      color: var(--danger);
+    }
+    .loading,
+    .empty {
+      padding: 35px;
+      text-align: center;
+      color: var(--text-soft);
+    }
+    /* =====================================================
+       MODAL
+    ====================================================== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 10, 5, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 5000;
+    }
+    .modal.show {
+      display: flex;
+    }
+    .modal-box {
+      width: min(650px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--paper);
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .modal-header h2 {
+      margin: 0;
+      color: var(--maroon-deep);
+    }
+    .modal-header p {
+      margin: 6px 0 0;
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+    .close-btn {
+      border: none;
+      background: transparent;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-soft);
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    /* =====================================================
+       TOAST
+    ====================================================== */
+    .toast {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      min-width: 280px;
+      max-width: 420px;
+      padding: 14px 18px;
+      background: var(--maroon-deep);
+      color: white;
+      border-radius: 12px;
+      box-shadow:
+        0 15px 40px rgba(0,0,0,0.2);
+      transform: translateY(120px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      z-index: 10000;
+      font-size: 14px;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      background: var(--success);
+    }
+    .toast.error {
+      background: var(--danger);
+    }
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+    @media (max-width: 700px) {
+      .page {
+        width: min(100% - 24px, 1200px);
+        padding-top: 25px;
+      }
+      .page-header h1 {
+        font-size: 27px;
+      }
+      .card {
+        padding: 20px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-group.full {
+        grid-column: auto;
+      }
+      .department-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .department-right {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+      .list-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+      .form-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+    <aside class="admin-sidebar" id="adminSidebar">
+    <!-- BRAND -->
+    <!-- <div class="admin-sidebar-brand">
+        <div class="admin-brand-mark">
+        HV
+        </div>
+        <div class="admin-brand-text">
+        <strong>Học Viện</strong>
+        <small>ADMIN CENTER</small>
+        </div>
+    </div> -->
+    <!-- USER -->
+    <div class="admin-sidebar-user">
+        <div
+        class="admin-user-avatar"
+        id="sidebarAvatar"
+        >
+        AD
+        </div>
+        <div class="admin-user-info">
+        <strong id="sidebarUserName">
+            Administrator
+        </strong>
+        <small id="sidebarUserRole">
+            System Admin
+        </small>
+        </div>
+        <button
+        type="button"
+        class="admin-user-menu"
+        id="sidebarLogoutBtn"
+        title="Đăng xuất"
+        >
+        <span class="material-symbols-rounded">
+            logout
+        </span>
+        </button>
+    </div>
+    </aside>
+    <!-- MOBILE BACKDROP -->
+    <div
+    class="admin-sidebar-backdrop"
+    id="adminSidebarBackdrop"
+    hidden
+    ></div><!-- =========================================================
+          ADMIN SIDEBAR
+      ========================================================= -->
+
+      <aside class="admin-sidebar" id="adminSidebar">
+
+        <!-- BRAND -->
+        <div class="admin-sidebar-brand">
+
+          <div class="admin-brand-mark">
+            HV
+          </div>
+
+          <div class="admin-brand-text">
+            <strong>Học Viện</strong>
+            <small>ADMIN CENTER</small>
+          </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+        <nav class="admin-sidebar-nav">
+
+          <div class="admin-nav-label">
+            Tổng quan
+          </div>
+
+          <a
+            href="/ADMIN/homepage-ad.html"
+            class="admin-nav-item"
+            data-page="overview"
+          >
+            <span class="admin-nav-icon">⌂</span>
+            <span class="admin-nav-text">
+              Tổng quan
+            </span>
+          </a>
+
+
+          <div class="admin-nav-label">
+            Quản lý
+          </div>
+
+          <a
+            href="/ADMIN/homepage-ad.html#accounts"
+            class="admin-nav-item"
+            data-page="accounts"
+          >
+            <span class="admin-nav-icon">♙</span>
+            <span class="admin-nav-text">
+              Tài khoản CS
+            </span>
+
+            <b
+              class="admin-nav-badge"
+              id="sidebarAccountCount"
+            >
+              0
+            </b>
+          </a>
+
+
+          <a
+            href="/ADMIN/activity-report.html"
+            class="admin-nav-item"
+            data-page="reports"
+          >
+            <span class="admin-nav-icon">▥</span>
+            <span class="admin-nav-text">
+              Báo cáo hoạt động
+            </span>
+          </a>
+
+
+          <div class="admin-nav-label">
+            Hệ thống
+          </div>
+
+          <a
+            href="/ADMIN/settings.html"
+            class="admin-nav-item"
+            data-page="settings"
+          >
+            <span class="admin-nav-icon">⚙</span>
+            <span class="admin-nav-text">
+              Cài đặt
+            </span>
+          </a>
+
+
+          <a
+            href="/ADMIN/system-log.html"
+            class="admin-nav-item"
+            data-page="logs"
+          >
+            <span class="admin-nav-icon">▤</span>
+            <span class="admin-nav-text">
+              Nhật ký hệ thống
+            </span>
+          </a>
+
+        </nav>
+
+
+        <!-- USER -->
+        <div class="admin-sidebar-user">
+
+          <div
+            class="admin-user-avatar"
+            id="sidebarAvatar"
+          >
+            AD
+          </div>
+
+          <div class="admin-user-info">
+
+            <strong id="sidebarUserName">
+              Administrator
+            </strong>
+
+            <small id="sidebarUserRole">
+              System Admin
+            </small>
+
+          </div>
+
+          <button
+            type="button"
+            class="admin-user-menu"
+            id="sidebarLogoutBtn"
+            title="Đăng xuất"
+          >
+            ↪
+          </button>
+
+        </div>
+
+      </aside>
+
+
+      <!-- MOBILE BACKDROP -->
+      <div
+        class="admin-sidebar-backdrop"
+        id="adminSidebarBackdrop"
+        hidden
+      ></div>
+  <!-- =====================================================
+       PAGE
+  ====================================================== -->
+  <div class="page">
+    <!-- HEADER -->
+    <header class="page-header">
+      <p class="eyebrow">
+        ADMINISTRATION
+      </p>
+      <h1>
+        Quản lý phòng ban
+      </h1>
+      <p class="subtitle">
+        Tạo và quản lý các phòng ban trong hệ thống.
+      </p>
+    </header>
+    <!-- =====================================================
+         CREATE DEPARTMENT
+    ====================================================== -->
+    <section class="card">
+      <div class="card-title">
+        <h2>
+          Tạo phòng ban
+        </h2>
+        <p>
+          Nhập đầy đủ thông tin phòng ban.
+        </p>
+      </div>
+      <form id="departmentForm">
+        <div class="form-grid">
+          <!-- TÊN -->
+          <div class="form-group">
+            <label>
+              Tên phòng ban
+              <span>*</span>
+            </label>
+            <input
+              type="text"
+              id="departmentName"
+              placeholder="Ví dụ: Customer Success"
+              required
+            >
+          </div>
+          <!-- CODE -->
+          <div class="form-group">
+            <label>
+              Mã phòng ban
+              <span>*</span>
+            </label>
+            <input
+              type="text"
+              id="departmentCode"
+              placeholder="Ví dụ: CS"
+              maxlength="20"
+              required
+            >
+            <small>
+              Mã phòng ban phải là duy nhất.
+            </small>
+          </div>
+          <!-- =================================================
+               MANAGER
+          ================================================== -->
+          <div class="form-group">
+            <label>
+              Người phụ trách
+              <span>*</span>
+            </label>
+            <div
+              class="search-select"
+              id="createManagerSelect"
+            >
+              <div
+                class="select-display"
+                id="createManagerDisplay"
+              >
+                <span
+                  class="selected-text"
+                  id="createManagerText"
+                >
+                  Chọn người phụ trách
+                </span>
+                <span class="select-arrow">
+                  ⌄
+                </span>
+              </div>
+              <div class="select-dropdown">
+                <div class="select-search">
+                  <input
+                    type="text"
+                    id="createManagerSearch"
+                    placeholder="Tìm tên hoặc Gmail..."
+                    autocomplete="off"
+                  >
+                </div>
+                <div
+                  class="select-options"
+                  id="createManagerOptions"
+                >
+                  <div class="select-loading">
+                    Đang tải tài khoản...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- =================================================
+               MANAGER EMAIL
+          ================================================== -->
+          <div class="form-group">
+            <label>
+              Tài khoản người phụ trách
+              <span>*</span>
+            </label>
+            <div
+              class="search-select"
+              id="createEmailSelect"
+            >
+              <div
+                class="select-display"
+                id="createEmailDisplay"
+              >
+                <span
+                  class="selected-text"
+                  id="createEmailText"
+                >
+                  Chọn tài khoản Gmail
+                </span>
+                <span class="select-arrow">
+                  ⌄
+                </span>
+              </div>
+              <div class="select-dropdown">
+                <div class="select-search">
+                  <input
+                    type="text"
+                    id="createEmailSearch"
+                    placeholder="Tìm Gmail..."
+                    autocomplete="off"
+                  >
+                </div>
+                <div
+                  class="select-options"
+                  id="createEmailOptions"
+                >
+                  <div class="select-loading">
+                    Đang tải tài khoản...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- DESCRIPTION -->
+          <div class="form-group full">
+            <label>
+              Mô tả
+            </label>
+            <textarea
+              id="departmentDescription"
+              rows="4"
+              placeholder="Nhập mô tả về phòng ban..."
+            ></textarea>
+          </div>
+          <!-- CAMPUS: tự động lấy theo người phụ trách -->
+          <div class="form-group">
+            <label>
+              Cơ sở
+            </label>
+            <input
+              type="text"
+              id="departmentCampus"
+              placeholder="Tự động lấy theo người phụ trách"
+              readonly
+            >
+          </div>
+          <!-- STATUS -->
+          <div class="form-group">
+            <label>
+              Trạng thái
+            </label>
+            <select id="departmentStatus">
+              <option value="active">
+                Đang hoạt động
+              </option>
+              <option value="inactive">
+                Ngừng hoạt động
+              </option>
+            </select>
+          </div>
+        </div>
+        <!-- ACTION -->
+        <div class="form-actions">
+          <button
+            type="reset"
+            class="btn btn-secondary"
+            id="resetBtn"
+          >
+            Nhập lại
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="submitBtn"
+          >
+            + Tạo phòng ban
+          </button>
+        </div>
+      </form>
+    </section>
+    <!-- =====================================================
+         DEPARTMENT LIST
+    ====================================================== -->
+    <section class="card">
+      <div class="list-header">
+        <div>
+          <h2>
+            Danh sách phòng ban
+          </h2>
+          <p id="departmentCount">
+            Đang tải...
+          </p>
+        </div>
+        <button
+          class="refresh-btn"
+          id="refreshBtn"
+          type="button"
+        >
+          ↻ Làm mới
+        </button>
+      </div>
+      <div
+        id="departmentList"
+        class="department-list"
+      >
+        <div class="loading">
+          Đang tải danh sách phòng ban...
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- =====================================================
+       EDIT MODAL
+  ====================================================== -->
+  <div
+    class="modal"
+    id="editModal"
+  >
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2>
+            Sửa phòng ban
+          </h2>
+          <p>
+            Cập nhật thông tin phòng ban.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="closeModal"
+          class="close-btn"
+        >
+          ×
+        </button>
+      </div>
+      <form id="editForm">
+        <input
+          type="hidden"
+          id="editId"
+        >
+        <div class="form-grid">
+          <!-- NAME -->
+          <div class="form-group">
+            <label>
+              Tên phòng ban
+              <span>*</span>
+            </label>
+            <input
+              type="text"
+              id="editName"
+              required
+            >
+          </div>
+          <!-- CODE -->
+          <div class="form-group">
+            <label>
+              Mã phòng ban
+              <span>*</span>
+            </label>
+            <input
+              type="text"
+              id="editCode"
+              maxlength="20"
+              required
+            >
+          </div>
+          <!-- EDIT MANAGER -->
+          <div class="form-group">
+            <label>
+              Người phụ trách
+              <span>*</span>
+            </label>
+            <div
+              class="search-select"
+              id="editManagerSelect"
+            >
+              <div
+                class="select-display"
+                id="editManagerDisplay"
+              >
+                <span
+                  class="selected-text"
+                  id="editManagerText"
+                >
+                  Chọn người phụ trách
+                </span>
+                <span class="select-arrow">
+                  ⌄
+                </span>
+              </div>
+              <div class="select-dropdown">
+                <div class="select-search">
+                  <input
+                    type="text"
+                    id="editManagerSearch"
+                    placeholder="Tìm tên hoặc Gmail..."
+                    autocomplete="off"
+                  >
+                </div>
+                <div
+                  class="select-options"
+                  id="editManagerOptions"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <!-- EDIT EMAIL -->
+          <div class="form-group">
+            <label>
+              Tài khoản người phụ trách
+              <span>*</span>
+            </label>
+            <div
+              class="search-select"
+              id="editEmailSelect"
+            >
+              <div
+                class="select-display"
+                id="editEmailDisplay"
+              >
+                <span
+                  class="selected-text"
+                  id="editEmailText"
+                >
+                  Chọn tài khoản Gmail
+                </span>
+                <span class="select-arrow">
+                  ⌄
+                </span>
+              </div>
+              <div class="select-dropdown">
+                <div class="select-search">
+                  <input
+                    type="text"
+                    id="editEmailSearch"
+                    placeholder="Tìm Gmail..."
+                    autocomplete="off"
+                  >
+                </div>
+                <div
+                  class="select-options"
+                  id="editEmailOptions"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <!-- DESCRIPTION -->
+          <div class="form-group full">
+            <label>
+              Mô tả
+            </label>
+            <textarea
+              id="editDescription"
+              rows="4"
+            ></textarea>
+          </div>
+          <!-- CAMPUS: tự động lấy theo người phụ trách -->
+          <div class="form-group">
+            <label>
+              Cơ sở
+            </label>
+            <input
+              type="text"
+              id="editCampus"
+              placeholder="Tự động lấy theo người phụ trách"
+              readonly
+            >
+            <small>
+              Campus được lấy từ tài khoản của người phụ trách.
+            </small>
+          </div>
+          <!-- STATUS -->
+          <div class="form-group">
+            <label>
+              Trạng thái
+            </label>
+            <select id="editStatus">
+              <option value="active">
+                Đang hoạt động
+              </option>
+              <option value="inactive">
+                Ngừng hoạt động
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="cancelEdit"
+          >
+            Hủy
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            Lưu thay đổi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+  <div
+    class="toast"
+    id="toast"
+  ></div>
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+  <script>
+    /* =====================================================
+       FIREBASE CONFIG
+    ====================================================== */
+    const firebaseConfig = {
+      apiKey:
+        "AIzaSyDiGtSXQMGEE1YWWfW73enu6PK3zjokrw4",
+      authDomain:
+        "faq-csk18.firebaseapp.com",
+      projectId:
+        "faq-csk18",
+      storageBucket:
+        "faq-csk18.firebasestorage.app",
+      messagingSenderId:
+        "556457828953",
+      appId:
+        "1:556457828953:web:da7973f61f0ac8e5408748",
+      measurementId:
+        "G-X0GM41LVMJ"
+    };
+    /* =====================================================
+       INIT FIREBASE
+    ====================================================== */
+    if (!firebase.apps.length) {
+      firebase.initializeApp(
+        firebaseConfig
+      );
+    }
+    const db =
+      firebase.firestore();
+    /* =====================================================
+       COLLECTION: CAMPUS
+    ====================================================== */
+    const DEPARTMENT_COLLECTION =
+      "campus";
+    const ACCOUNT_COLLECTION =
+      "users";
+    /* =====================================================
+       STATE
+    ====================================================== */
+    let users = [];
+    let createSelectedManager = null;
+    let editSelectedManager = null;
+    /* =====================================================
+       DOM - CREATE
+    ====================================================== */
+    const departmentForm =
+      document.getElementById(
+        "departmentForm"
+      );
+    const departmentName =
+      document.getElementById(
+        "departmentName"
+      );
+    const departmentCode =
+      document.getElementById(
+        "departmentCode"
+      );
+    const departmentDescription =
+      document.getElementById(
+        "departmentDescription"
+      );
+    const departmentCampus =
+      document.getElementById(
+        "departmentCampus"
+      );
+    const departmentStatus =
+      document.getElementById(
+        "departmentStatus"
+      );
+    const submitBtn =
+      document.getElementById(
+        "submitBtn"
+      );
+    const resetBtn =
+      document.getElementById(
+        "resetBtn"
+      );
+    /* =====================================================
+       DOM - CREATE MANAGER
+    ====================================================== */
+    const createManagerSelect =
+      document.getElementById(
+        "createManagerSelect"
+      );
+    const createManagerDisplay =
+      document.getElementById(
+        "createManagerDisplay"
+      );
+    const createManagerText =
+      document.getElementById(
+        "createManagerText"
+      );
+    const createManagerSearch =
+      document.getElementById(
+        "createManagerSearch"
+      );
+    const createManagerOptions =
+      document.getElementById(
+        "createManagerOptions"
+      );
+    /* =====================================================
+       DOM - CREATE EMAIL
+    ====================================================== */
+    const createEmailSelect =
+      document.getElementById(
+        "createEmailSelect"
+      );
+    const createEmailDisplay =
+      document.getElementById(
+        "createEmailDisplay"
+      );
+    const createEmailText =
+      document.getElementById(
+        "createEmailText"
+      );
+    const createEmailSearch =
+      document.getElementById(
+        "createEmailSearch"
+      );
+    const createEmailOptions =
+      document.getElementById(
+        "createEmailOptions"
+      );
+    /* =====================================================
+       DOM - LIST
+    ====================================================== */
+    const departmentList =
+      document.getElementById(
+        "departmentList"
+      );
+    const departmentCount =
+      document.getElementById(
+        "departmentCount"
+      );
+    const refreshBtn =
+      document.getElementById(
+        "refreshBtn"
+      );
+    /* =====================================================
+       DOM - EDIT
+    ====================================================== */
+    const editModal =
+      document.getElementById(
+        "editModal"
+      );
+    const editForm =
+      document.getElementById(
+        "editForm"
+      );
+    const editId =
+      document.getElementById(
+        "editId"
+      );
+    const editName =
+      document.getElementById(
+        "editName"
+      );
+    const editCode =
+      document.getElementById(
+        "editCode"
+      );
+    const editDescription =
+      document.getElementById(
+        "editDescription"
+      );
+    const editCampus =
+      document.getElementById(
+        "editCampus"
+      );
+    const editStatus =
+      document.getElementById(
+        "editStatus"
+      );
+    /* =====================================================
+       DOM - EDIT MANAGER
+    ====================================================== */
+    const editManagerSelect =
+      document.getElementById(
+        "editManagerSelect"
+      );
+    const editManagerDisplay =
+      document.getElementById(
+        "editManagerDisplay"
+      );
+    const editManagerText =
+      document.getElementById(
+        "editManagerText"
+      );
+    const editManagerSearch =
+      document.getElementById(
+        "editManagerSearch"
+      );
+    const editManagerOptions =
+      document.getElementById(
+        "editManagerOptions"
+      );
+    /* =====================================================
+       DOM - EDIT EMAIL
+    ====================================================== */
+    const editEmailSelect =
+      document.getElementById(
+        "editEmailSelect"
+      );
+    const editEmailDisplay =
+      document.getElementById(
+        "editEmailDisplay"
+      );
+    const editEmailText =
+      document.getElementById(
+        "editEmailText"
+      );
+    const editEmailSearch =
+      document.getElementById(
+        "editEmailSearch"
+      );
+    const editEmailOptions =
+      document.getElementById(
+        "editEmailOptions"
+      );
+    const closeModal =
+      document.getElementById(
+        "closeModal"
+      );
+    const cancelEdit =
+      document.getElementById(
+        "cancelEdit"
+      );
+    /* =====================================================
+       TOAST
+    ====================================================== */
+    const toast =
+      document.getElementById(
+        "toast"
+      );
+    let toastTimer = null;
+    function showToast(
+      message,
+      type = "success"
+    ) {
+      clearTimeout(
+        toastTimer
+      );
+      toast.textContent =
+        message;
+      toast.className =
+        `toast show ${type}`;
+      toastTimer =
+        setTimeout(
+          () => {
+            toast.className =
+              "toast";
+          },
+          3000
+        );
+    }
+    /* =====================================================
+       ESCAPE HTML
+    ====================================================== */
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
+    }
+    /* =====================================================
+       GMAIL
+    ====================================================== */
+    function isGmail(email) {
+      return /^[^\s@]+@gmail\.com$/i.test(
+        String(email || "").trim()
+      );
+    }
+    function getUserCampus(user) {
+      if (!user) return "";
+      const campus = user.campus;
+      // Hỗ trợ cả campus là string và campus là object.
+      if (campus && typeof campus === "object") {
+        return String(
+          campus.name ||
+          campus.campusName ||
+          campus.title ||
+          ""
+        ).trim();
+      }
+      return String(
+        campus ||
+        user.campusName ||
+        ""
+      ).trim();
+    }
+    function getUserCampusId(user) {
+      if (!user) return "";
+      const campus = user.campus;
+      if (campus && typeof campus === "object") {
+        return String(
+          campus.campusId ||
+          campus.id ||
+          ""
+        ).trim();
+      }
+      return String(
+        user.campusId ||
+        ""
+      ).trim();
+    }
+    function findUserForDepartment(data) {
+      return users.find(
+        user =>
+          user.uid === data.managerUid ||
+          user.email === String(data.managerEmail || "").toLowerCase()
+      ) || null;
+    }
+    /* =====================================================
+       CAMPUS ID
+       Document ID và campusId có dạng: CODE-CAMPUS
+       Ví dụ: CS-Hà Nội
+    ====================================================== */
+    function buildCampusId(code, campus) {
+      const safeCode = String(code || "").trim().toUpperCase();
+      const safeCampus = String(campus || "")
+        .trim()
+        .replace(/[\\/]/g, "-");
+      return `${safeCode}-${safeCampus}`;
+    }
+    /* =====================================================
+       LOAD USERS
+    ====================================================== */
+    async function loadUsers() {
+      createManagerOptions.innerHTML =
+        `
+        <div class="select-loading">
+          Đang tải tài khoản...
+        </div>
+        `;
+      createEmailOptions.innerHTML =
+        `
+        <div class="select-loading">
+          Đang tải tài khoản...
+        </div>
+        `;
+      try {
+        const snapshot =
+          await db
+            .collection(
+              ACCOUNT_COLLECTION
+            )
+            .get();
+        users = [];
+        snapshot.forEach(
+          doc => {
+            const data =
+              doc.data();
+            const email =
+              String(
+                data.email || ""
+              )
+                .trim()
+                .toLowerCase();
+            /*
+             * CHỈ NHẬN GMAIL
+             */
+            if (!isGmail(email)) {
+              return;
+            }
+            const name =
+              data.name ||
+              data.displayName ||
+              data.fullName ||
+              data.hoTen ||
+              email;
+            users.push({
+              id: doc.id,
+              uid:
+                data.uid ||
+                doc.id,
+              name:
+                String(name),
+              email:
+                email,
+              campus:
+                getUserCampus(data),
+              campusId:
+                getUserCampusId(data)
+            });
+          }
+        );
+        users.sort(
+          (a, b) =>
+            a.name.localeCompare(
+              b.name,
+              "vi"
+            )
+        );
+        renderCreateManagerOptions(
+          users
+        );
+        renderCreateEmailOptions(
+          users
+        );
+        renderEditManagerOptions(
+          users
+        );
+        renderEditEmailOptions(
+          users
+        );
+        console.log(
+          `Đã tải ${users.length} tài khoản Gmail.`
+        );
+      }
+      catch (error) {
+        console.error(
+          "Lỗi tải users:",
+          error
+        );
+        createManagerOptions.innerHTML =
+          `
+          <div class="select-empty">
+            Không thể tải tài khoản.
+          </div>
+          `;
+        createEmailOptions.innerHTML =
+          `
+          <div class="select-empty">
+            Không thể tải tài khoản.
+          </div>
+          `;
+      }
+    }
+    /* =====================================================
+       RENDER MANAGER
+    ====================================================== */
+    function renderManagerOptions(
+      list,
+      container,
+      selected
+    ) {
+      if (!list.length) {
+        container.innerHTML =
+          `
+          <div class="select-empty">
+            Không tìm thấy tài khoản.
+          </div>
+          `;
+        return;
+      }
+      container.innerHTML = "";
+      list.forEach(
+        user => {
+          const option =
+            document.createElement(
+              "div"
+            );
+          option.className =
+            "select-option";
+          if (
+            selected &&
+            selected.id === user.id
+          ) {
+            option.classList.add(
+              "selected"
+            );
+          }
+          option.innerHTML =
+            `
+            <div class="option-name">
+              ${escapeHTML(
+                user.name
+              )}
+            </div>
+            <div class="option-email">
+              ${escapeHTML(
+                user.email
+              )}
+            </div>
+            `;
+          option.addEventListener(
+            "click",
+            () => {
+              selectManager(
+                user,
+                "create"
+              );
+            }
+          );
+          container.appendChild(
+            option
+          );
+        }
+      );
+    }
+    function renderCreateManagerOptions(
+      list
+    ) {
+      renderManagerOptions(
+        list,
+        createManagerOptions,
+        createSelectedManager
+      );
+    }
+    function renderEditManagerOptions(
+      list
+    ) {
+      renderManagerOptions(
+        list,
+        editManagerOptions,
+        editSelectedManager
+      );
+    }
+    /* =====================================================
+       RENDER EMAIL
+    ====================================================== */
+    function renderEmailOptions(
+      list,
+      container,
+      selected
+    ) {
+      if (!list.length) {
+        container.innerHTML =
+          `
+          <div class="select-empty">
+            Không tìm thấy Gmail.
+          </div>
+          `;
+        return;
+      }
+      container.innerHTML = "";
+      list.forEach(
+        user => {
+          const option =
+            document.createElement(
+              "div"
+            );
+          option.className =
+            "select-option";
+          if (
+            selected &&
+            selected.id === user.id
+          ) {
+            option.classList.add(
+              "selected"
+            );
+          }
+          option.innerHTML =
+            `
+            <div class="option-name">
+              ${escapeHTML(
+                user.email
+              )}
+            </div>
+            <div class="option-email">
+              ${escapeHTML(
+                user.name
+              )}
+            </div>
+            `;
+          option.addEventListener(
+            "click",
+            () => {
+              selectManager(
+                user,
+                container ===
+                  createEmailOptions
+                  ? "create"
+                  : "edit"
+              );
+            }
+          );
+          container.appendChild(
+            option
+          );
+        }
+      );
+    }
+    function renderCreateEmailOptions(
+      list
+    ) {
+      renderEmailOptions(
+        list,
+        createEmailOptions,
+        createSelectedManager
+      );
+    }
+    function renderEditEmailOptions(
+      list
+    ) {
+      renderEmailOptions(
+        list,
+        editEmailOptions,
+        editSelectedManager
+      );
+    }
+    /* =====================================================
+       SELECT MANAGER
+    ====================================================== */
+    function selectManager(
+      user,
+      mode
+    ) {
+      if (mode === "create") {
+        createSelectedManager =
+          user;
+        createManagerText.textContent =
+          user.name;
+        createEmailText.textContent =
+          user.email;
+        departmentCampus.value =
+          getUserCampus(user);
+        createManagerSelect
+          .classList.add(
+            "has-value"
+          );
+        createEmailSelect
+          .classList.add(
+            "has-value"
+          );
+        createManagerSelect
+          .classList.remove(
+            "open"
+          );
+        createEmailSelect
+          .classList.remove(
+            "open"
+          );
+        createManagerSearch.value =
+          "";
+        createEmailSearch.value =
+          "";
+        renderCreateManagerOptions(
+          users
+        );
+        renderCreateEmailOptions(
+          users
+        );
+      }
+      else {
+        editSelectedManager =
+          user;
+        editManagerText.textContent =
+          user.name;
+        editEmailText.textContent =
+          user.email;
+        editCampus.value =
+          getUserCampus(user);
+        editManagerSelect
+          .classList.add(
+            "has-value"
+          );
+        editEmailSelect
+          .classList.add(
+            "has-value"
+          );
+        editManagerSelect
+          .classList.remove(
+            "open"
+          );
+        editEmailSelect
+          .classList.remove(
+            "open"
+          );
+        editManagerSearch.value =
+          "";
+        editEmailSearch.value =
+          "";
+        renderEditManagerOptions(
+          users
+        );
+        renderEditEmailOptions(
+          users
+        );
+      }
+    }
+    /* =====================================================
+       FILTER MANAGER
+    ====================================================== */
+    function filterManagers(
+      keyword
+    ) {
+      keyword =
+        keyword
+          .trim()
+          .toLowerCase();
+      const filtered =
+        users.filter(
+          user =>
+            user.name
+              .toLowerCase()
+              .includes(keyword)
+            ||
+            user.email
+              .toLowerCase()
+              .includes(keyword)
+        );
+      return filtered;
+    }
+    /* =====================================================
+       FILTER EMAIL
+    ====================================================== */
+    function filterEmails(
+      keyword
+    ) {
+      keyword =
+        keyword
+          .trim()
+          .toLowerCase();
+      return users.filter(
+        user =>
+          user.email
+            .toLowerCase()
+            .includes(keyword)
+      );
+    }
+    /* =====================================================
+       CREATE SEARCH
+    ====================================================== */
+    createManagerSearch.addEventListener(
+      "input",
+      () => {
+        renderCreateManagerOptions(
+          filterManagers(
+            createManagerSearch.value
+          )
+        );
+      }
+    );
+    createEmailSearch.addEventListener(
+      "input",
+      () => {
+        renderCreateEmailOptions(
+          filterEmails(
+            createEmailSearch.value
+          )
+        );
+      }
+    );
+    /* =====================================================
+       EDIT SEARCH
+    ====================================================== */
+    editManagerSearch.addEventListener(
+      "input",
+      () => {
+        renderEditManagerOptions(
+          filterManagers(
+            editManagerSearch.value
+          )
+        );
+      }
+    );
+    editEmailSearch.addEventListener(
+      "input",
+      () => {
+        renderEditEmailOptions(
+          filterEmails(
+            editEmailSearch.value
+          )
+        );
+      }
+    );
+    /* =====================================================
+       OPEN DROPDOWN
+    ====================================================== */
+    function closeAllDropdowns() {
+      document
+        .querySelectorAll(
+          ".search-select.open"
+        )
+        .forEach(
+          element =>
+            element.classList.remove(
+              "open"
+            )
+        );
+    }
+    function openDropdown(
+      select,
+      search
+    ) {
+      const alreadyOpen =
+        select.classList.contains(
+          "open"
+        );
+      closeAllDropdowns();
+      if (!alreadyOpen) {
+        select.classList.add(
+          "open"
+        );
+        setTimeout(
+          () => search.focus(),
+          50
+        );
+      }
+    }
+    createManagerDisplay.addEventListener(
+      "click",
+      () =>
+        openDropdown(
+          createManagerSelect,
+          createManagerSearch
+        )
+    );
+    createEmailDisplay.addEventListener(
+      "click",
+      () =>
+        openDropdown(
+          createEmailSelect,
+          createEmailSearch
+        )
+    );
+    editManagerDisplay.addEventListener(
+      "click",
+      () =>
+        openDropdown(
+          editManagerSelect,
+          editManagerSearch
+        )
+    );
+    editEmailDisplay.addEventListener(
+      "click",
+      () =>
+        openDropdown(
+          editEmailSelect,
+          editEmailSearch
+        )
+    );
+    document.addEventListener(
+      "click",
+      event => {
+        if (
+          !event.target.closest(
+            ".search-select"
+          )
+        ) {
+          closeAllDropdowns();
+        }
+      }
+    );
+    /* =====================================================
+       RESET CREATE
+    ====================================================== */
+    function resetCreateForm() {
+      createSelectedManager =
+        null;
+      createManagerText.textContent =
+        "Chọn người phụ trách";
+      createEmailText.textContent =
+        "Chọn tài khoản Gmail";
+      departmentCampus.value =
+        "";
+      createManagerSearch.value =
+        "";
+      createEmailSearch.value =
+        "";
+      createManagerSelect
+        .classList.remove(
+          "has-value"
+        );
+      createEmailSelect
+        .classList.remove(
+          "has-value"
+        );
+      renderCreateManagerOptions(
+        users
+      );
+      renderCreateEmailOptions(
+        users
+      );
+    }
+    resetBtn.addEventListener(
+      "click",
+      () => {
+        setTimeout(
+          resetCreateForm,
+          0
+        );
+      }
+    );
+    /* =====================================================
+       CREATE DEPARTMENT
+    ====================================================== */
+    departmentForm.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+        const name =
+          departmentName.value
+            .trim();
+        const code =
+          departmentCode.value
+            .trim()
+            .toUpperCase();
+        const description =
+          departmentDescription.value
+            .trim();
+        const status =
+          departmentStatus.value;
+        const campus =
+          getUserCampus(createSelectedManager);
+        /* VALIDATION */
+        if (!name) {
+          showToast(
+            "Vui lòng nhập tên phòng ban.",
+            "error"
+          );
+          departmentName.focus();
+          return;
+        }
+        if (!code) {
+          showToast(
+            "Vui lòng nhập mã phòng ban.",
+            "error"
+          );
+          departmentCode.focus();
+          return;
+        }
+        if (!createSelectedManager) {
+          showToast(
+            "Vui lòng chọn người phụ trách.",
+            "error"
+          );
+          return;
+        }
+        if (!campus) {
+          showToast(
+            "Người phụ trách chưa có thông tin cơ sở.",
+            "error"
+          );
+          return;
+        }
+        if (
+          !isGmail(
+            createSelectedManager.email
+          )
+        ) {
+          showToast(
+            "Tài khoản phải là Gmail.",
+            "error"
+          );
+          return;
+        }
+        const campusId =
+          buildCampusId(
+            code,
+            campus
+          );
+        submitBtn.disabled =
+          true;
+        submitBtn.textContent =
+          "Đang kiểm tra...";
+        try {
+          /* CHECK CODE-CAMPUS */
+          const campusExists =
+            await isDepartmentCodeExists(
+              campusId
+            );
+          if (campusExists) {
+            showToast(
+              `Cơ sở "${campusId}" đã tồn tại.`,
+              "error"
+            );
+            return;
+          }
+          /* SAVE
+             Collection: campus
+             Document ID: CODE-CAMPUS
+             campusId: CODE-CAMPUS
+          */
+          submitBtn.textContent =
+            "Đang tạo...";
+          await db
+            .collection(
+              DEPARTMENT_COLLECTION
+            )
+            .doc(campusId)
+            .set({
+              name:
+                name,
+              code:
+                code,
+              description:
+                description,
+              managerName:
+                createSelectedManager.name,
+              managerEmail:
+                createSelectedManager.email,
+              managerUid:
+                createSelectedManager.uid,
+              campus:
+                campus,
+              campusId:
+                campusId,
+              status:
+                status,
+              createdAt:
+                firebase
+                  .firestore
+                  .FieldValue
+                  .serverTimestamp()
+            });
+          showToast(
+            "✓ Tạo phòng ban thành công."
+          );
+          departmentForm.reset();
+          resetCreateForm();
+          await loadDepartments();
+        }
+        catch (error) {
+          console.error(
+            error
+          );
+          showToast(
+            "Không thể tạo phòng ban: " +
+            error.message,
+            "error"
+          );
+        }
+        finally {
+          submitBtn.disabled =
+            false;
+          submitBtn.textContent =
+            "+ Tạo phòng ban";
+        }
+      }
+    );
+    /* =====================================================
+       CHECK CODE-CAMPUS
+    ====================================================== */
+    async function isDepartmentCodeExists(
+      campusId,
+      ignoreId = null
+    ) {
+      if (
+        ignoreId &&
+        campusId === ignoreId
+      ) {
+        return false;
+      }
+      const doc =
+        await db
+          .collection(
+            DEPARTMENT_COLLECTION
+          )
+          .doc(campusId)
+          .get();
+      return doc.exists;
+    }
+    /* =====================================================
+       LOAD DEPARTMENTS
+    ====================================================== */
+    async function loadDepartments() {
+      departmentList.innerHTML =
+        `
+        <div class="loading">
+          Đang tải danh sách phòng ban...
+        </div>
+        `;
+      try {
+        const snapshot =
+          await db
+            .collection(
+              DEPARTMENT_COLLECTION
+            )
+            .get();
+        const departments =
+          snapshot.docs.map(
+            doc => ({
+              id: doc.id,
+              ...doc.data()
+            })
+          );
+        departments.sort(
+          (a, b) => {
+            const aTime =
+              a.createdAt &&
+              a.createdAt.toMillis
+                ? a.createdAt.toMillis()
+                : 0;
+            const bTime =
+              b.createdAt &&
+              b.createdAt.toMillis
+                ? b.createdAt.toMillis()
+                : 0;
+            return bTime - aTime;
+          }
+        );
+        departmentCount.textContent =
+          `${departments.length} phòng ban`;
+        if (!departments.length) {
+          departmentList.innerHTML =
+            `
+            <div class="empty">
+              Chưa có phòng ban nào.
+            </div>
+            `;
+          return;
+        }
+        departmentList.innerHTML =
+          "";
+        departments.forEach(
+          department =>
+            renderDepartment(
+              department.id,
+              department
+            )
+        );
+      }
+      catch (error) {
+        console.error(
+          error
+        );
+        departmentList.innerHTML =
+          `
+          <div class="empty">
+            Không thể tải danh sách phòng ban.
+            <br><br>
+            ${escapeHTML(
+              error.message
+            )}
+          </div>
+          `;
+      }
+    }
+    /* =====================================================
+       RENDER DEPARTMENT
+    ====================================================== */
+    function renderDepartment(
+      id,
+      data
+    ) {
+      const item =
+        document.createElement(
+          "div"
+        );
+      item.className =
+        "department-item";
+      const active =
+        data.status === "active";
+      item.innerHTML =
+        `
+        <div class="department-info">
+          <h3 class="department-name">
+            ${escapeHTML(
+              data.name
+            )}
+          </h3>
+          <span class="department-code">
+            ${escapeHTML(
+              data.code
+            )}
+          </span>
+          <p class="department-description">
+            ${escapeHTML(
+              data.description ||
+              "Không có mô tả."
+            )}
+          </p>
+          <div class="manager">
+            Cơ sở:
+            <strong>
+              ${escapeHTML(
+                data.campus ||
+                data.campusName ||
+                (findUserForDepartment(data) && getUserCampus(findUserForDepartment(data))) ||
+                "Chưa có"
+              )}
+            </strong>
+            ${
+              data.campusId
+                ? `<br>Mã cơ sở: <strong>${escapeHTML(data.campusId)}</strong>`
+                : ""
+            }
+            <br>
+            Người phụ trách:
+            <strong>
+              ${escapeHTML(
+                data.managerName ||
+                "Chưa có"
+              )}
+            </strong>
+            <br>
+            Gmail:
+            ${escapeHTML(
+              data.managerEmail ||
+              "Chưa có"
+            )}
+          </div>
+        </div>
+        <div class="department-right">
+          <span
+            class="status ${
+              active
+                ? "active"
+                : "inactive"
+            }"
+            title="Trạng thái"
+          >
+            ${
+              active
+                ? "Đang hoạt động"
+                : "Ngừng hoạt động"
+            }
+          </span>
+          <button
+            class="action-btn edit-btn"
+            type="button"
+            onclick="openEdit('${id}')"
+          >
+            Sửa
+          </button>
+          <button
+            class="action-btn delete-btn"
+            type="button"
+            onclick="deleteDepartment('${id}')"
+          >
+            Xóa
+          </button>
+        </div>
+        `;
+      departmentList.appendChild(
+        item
+      );
+    }
+    /* =====================================================
+       OPEN EDIT
+    ====================================================== */
+    window.openEdit =
+      async function(id) {
+        try {
+          const doc =
+            await db
+              .collection(
+                DEPARTMENT_COLLECTION
+              )
+              .doc(id)
+              .get();
+          if (!doc.exists) {
+            showToast(
+              "Không tìm thấy phòng ban.",
+              "error"
+            );
+            return;
+          }
+          const data =
+            doc.data();
+          editId.value =
+            id;
+          editName.value =
+            data.name || "";
+          editCode.value =
+            data.code || "";
+          editDescription.value =
+            data.description || "";
+          editCampus.value =
+            data.campus ||
+            data.campusName ||
+            "";
+          editStatus.value =
+            data.status || "active";
+          /*
+           * Tìm manager hiện tại
+           */
+          editSelectedManager =
+            users.find(
+              user =>
+                user.uid ===
+                  data.managerUid
+                ||
+                user.email ===
+                  String(
+                    data.managerEmail ||
+                    ""
+                  ).toLowerCase()
+            ) || null;
+          if (
+            editSelectedManager
+          ) {
+            editCampus.value =
+              getUserCampus(editSelectedManager);
+            editManagerText.textContent =
+              editSelectedManager.name;
+            editEmailText.textContent =
+              editSelectedManager.email;
+          }
+          else {
+            editManagerText.textContent =
+              data.managerName ||
+              "Chọn người phụ trách";
+            editEmailText.textContent =
+              data.managerEmail ||
+              "Chọn tài khoản Gmail";
+          }
+          editManagerSearch.value =
+            "";
+          editEmailSearch.value =
+            "";
+          renderEditManagerOptions(
+            users
+          );
+          renderEditEmailOptions(
+            users
+          );
+          editModal.classList.add(
+            "show"
+          );
+        }
+        catch (error) {
+          console.error(
+            error
+          );
+          showToast(
+            "Không thể tải thông tin phòng ban.",
+            "error"
+          );
+        }
+      };
+    /* =====================================================
+       SAVE EDIT
+    ====================================================== */
+    editForm.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+        const id =
+          editId.value;
+        const name =
+          editName.value.trim();
+        const code =
+          editCode.value
+            .trim()
+            .toUpperCase();
+        const description =
+          editDescription.value.trim();
+        const status =
+          editStatus.value;
+        if (
+          !name ||
+          !code
+        ) {
+          showToast(
+            "Vui lòng nhập đầy đủ thông tin.",
+            "error"
+          );
+          return;
+        }
+        if (!editSelectedManager) {
+          showToast(
+            "Vui lòng chọn người phụ trách.",
+            "error"
+          );
+          return;
+        }
+        const campus =
+          getUserCampus(editSelectedManager);
+        if (!campus) {
+          showToast(
+            "Người phụ trách chưa có thông tin cơ sở.",
+            "error"
+          );
+          return;
+        }
+        const campusId =
+          buildCampusId(
+            code,
+            campus
+          );
+        try {
+          const campusExists =
+            await isDepartmentCodeExists(
+              campusId,
+              id
+            );
+          if (campusExists) {
+            showToast(
+              `Cơ sở "${campusId}" đã tồn tại.`,
+              "error"
+            );
+            return;
+          }
+          const oldRef =
+            db
+              .collection(
+                DEPARTMENT_COLLECTION
+              )
+              .doc(id);
+          const newRef =
+            db
+              .collection(
+                DEPARTMENT_COLLECTION
+              )
+              .doc(campusId);
+          const updateData = {
+            name:
+              name,
+            code:
+              code,
+            description:
+              description,
+            managerName:
+              editSelectedManager.name,
+            managerEmail:
+              editSelectedManager.email,
+            managerUid:
+              editSelectedManager.uid,
+            campus:
+              campus,
+            campusId:
+              campusId,
+            status:
+              status,
+            updatedAt:
+              firebase
+                .firestore
+                .FieldValue
+                .serverTimestamp()
+          };
+          /*
+           * Nếu code/campus thay đổi thì ID cũng phải đổi
+           * theo CODE-CAMPUS. Dùng batch để tạo ID mới
+           * và xóa ID cũ trong cùng một lần ghi.
+           */
+          const batch =
+            db.batch();
+          if (campusId !== id) {
+            batch.set(
+              newRef,
+              updateData,
+              { merge: true }
+            );
+            batch.delete(
+              oldRef
+            );
+          }
+          else {
+            batch.set(
+              oldRef,
+              updateData,
+              { merge: true }
+            );
+          }
+          await batch.commit();
+          showToast(
+            "✓ Cập nhật thành công."
+          );
+          closeEditModal();
+          await loadDepartments();
+        }
+        catch (error) {
+          console.error(
+            error
+          );
+          showToast(
+            "Không thể cập nhật: " +
+            error.message,
+            "error"
+          );
+        }
+      }
+    );
+    /* =====================================================
+       DELETE
+    ====================================================== */
+    window.deleteDepartment =
+      async function(id) {
+        const confirmed =
+          confirm(
+            "Bạn có chắc muốn xóa phòng ban này?"
+          );
+        if (!confirmed) {
+          return;
+        }
+        try {
+          await db
+            .collection(
+              DEPARTMENT_COLLECTION
+            )
+            .doc(id)
+            .delete();
+          showToast(
+            "✓ Đã xóa phòng ban."
+          );
+          await loadDepartments();
+        }
+        catch (error) {
+          console.error(
+            error
+          );
+          showToast(
+            "Không thể xóa phòng ban: " +
+            error.message,
+            "error"
+          );
+        }
+      };
+    /* =====================================================
+       CLOSE MODAL
+    ====================================================== */
+    function closeEditModal() {
+      editModal.classList.remove(
+        "show"
+      );
+      editSelectedManager =
+        null;
+      editManagerSearch.value =
+        "";
+      editEmailSearch.value =
+        "";
+    }
+    closeModal.addEventListener(
+      "click",
+      closeEditModal
+    );
+    cancelEdit.addEventListener(
+      "click",
+      closeEditModal
+    );
+    editModal.addEventListener(
+      "click",
+      event => {
+        if (
+          event.target ===
+          editModal
+        ) {
+          closeEditModal();
+        }
+      }
+    );
+    /* =====================================================
+       REFRESH
+    ====================================================== */
+    refreshBtn.addEventListener(
+      "click",
+      loadDepartments
+    );
+    /* =====================================================
+       ESC
+    ====================================================== */
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (
+          event.key === "Escape"
+        ) {
+          closeAllDropdowns();
+          closeEditModal();
+        }
+      }
+    );
+    /* =====================================================
+       START
+    ====================================================== */
+    loadUsers();
+    loadDepartments();
+  </script>
+  <script src="shared-sidebar.js"></script>
+
+</body>
+</html>
