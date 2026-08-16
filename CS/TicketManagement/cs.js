@@ -3454,33 +3454,96 @@ function getStudentMessageCount(ticket) {
         const excerpt = conversation ? conversation.slice(-320) : "";
         return `Chào bạn, mình đã tiếp nhận yêu cầu “${title}”. ${excerpt ? `Mình đã đọc nội dung trao đổi của bạn và ghi nhận: “${excerpt}”. ` : ""}Mình sẽ kiểm tra với bộ phận phụ trách và phản hồi bạn sớm nhất. Nếu có ảnh chụp màn hình hoặc thông báo lỗi, bạn có thể gửi thêm để mình hỗ trợ chính xác hơn nhé.`;
     }
+    let faqAiCache = null;
+    let faqAiCachePromise = null;
+
+    function removeVietnameseTones(value) {
+        return String(value || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/gi, "d")
+            .toLowerCase();
+    }
+
+    async function loadFaqAiContext() {
+        if (faqAiCache) return faqAiCache;
+        if (faqAiCachePromise) return faqAiCachePromise;
+        faqAiCachePromise = db.collection("faqs").limit(80).get()
+            .then(snapshot => {
+                faqAiCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                return faqAiCache;
+            })
+            .catch(error => {
+                console.warn("Không tải được FAQ cho AI:", error);
+                faqAiCache = [];
+                return faqAiCache;
+            });
+        return faqAiCachePromise;
+    }
+
+    function findRelatedFaqs(question, faqData) {
+        const words = removeVietnameseTones(question)
+            .split(/\s+/)
+            .filter(word => word.length >= 3);
+        if (!words.length) return [];
+        return faqData.map(item => {
+            const text = removeVietnameseTones(`${item.question || ""} ${item.answer || ""} ${item.category || ""}`);
+            let score = 0;
+            words.forEach(word => { if (text.includes(word)) score += 1; });
+            return { item, score };
+        }).filter(row => row.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 8)
+          .map(row => ({
+              category: row.item.category || "",
+              question: row.item.question || "",
+              answer: row.item.answer || ""
+          }));
+    }
+
     async function createAiDraft() {
         const conversation = chatConversationMessages.map(message => ({
-            role: (message.senderUid || message.senderId || message.uid || "") === currentCSUser?.uid ? "assistant" : "user",
+            role: (message.senderUid || message.senderId || message.uid || "") === currentCSUser?.uid
+                ? "assistant"
+                : (String(message.sender || message.senderType || "").toLowerCase() === "cs" ? "assistant" : "user"),
             text: message.text || message.message || "",
             imageName: message.imageName || ""
         })).filter(message => message.text || message.imageName).slice(-20);
-        const latestStudentMessage = [...conversation].reverse().find(message => message.role === "user")?.text || getTicketTitle(selectedTicket) || "Yêu cầu của học viên";
+
+        const latestStudentMessage = [...conversation]
+            .reverse()
+            .find(message => message.role === "user")?.text
+            || getTicketDescription(selectedTicket)
+            || getTicketTitle(selectedTicket)
+            || "Yêu cầu của học viên";
+
+        const faqData = await loadFaqAiContext();
+        const relatedFaqs = findRelatedFaqs(latestStudentMessage, faqData);
         const ticketContext = [{
-            category: selectedTicket?.category || selectedTicket?.type || "",
+            category: selectedTicket?.ticketCategory || selectedTicket?.category || selectedTicket?.ticketType || "",
             question: getTicketTitle(selectedTicket) || "",
-            answer: selectedTicket?.description || selectedTicket?.content || ""
+            answer: getTicketDescription(selectedTicket) || ""
         }];
+        const faqContext = [...relatedFaqs, ...ticketContext]
+            .filter(item => item.question || item.answer)
+            .slice(0, 12);
+
         const aiInstruction = [
             "Bạn là trợ lý Customer Success của Học Viện.",
-            "Hãy đọc toàn bộ lịch sử trao đổi được gửi trong history trước khi trả lời.",
-            "Chỉ dùng thông tin có trong lịch sử, ngữ cảnh ticket và FAQ; nếu thiếu dữ liệu, phải nói rõ cần CS kiểm tra thêm.",
-            "Không bịa chính sách, học phí, thời hạn, kết quả xử lý hoặc cam kết chắc chắn.",
-            "Viết câu trả lời tiếng Việt lịch sự, rõ ràng, ngắn gọn, xưng mình và gọi người nhận là bạn.",
-            "Chỉ trả về nội dung câu trả lời cho học viên, không giải thích quá trình suy luận."
+            "Hãy đọc toàn bộ lịch sử trao đổi trong history, câu hỏi mới nhất, thông tin ticket và FAQ liên quan trước khi trả lời.",
+            "Ưu tiên câu trả lời trong FAQ khi phù hợp; không được bịa chính sách, học phí, thời hạn, kết quả xử lý hoặc cam kết chắc chắn.",
+            "Nếu FAQ và dữ liệu ticket không đủ, hãy nói rõ để CS kiểm tra thêm thay vì đoán.",
+            "Viết tiếng Việt lịch sự, rõ ràng, ngắn gọn, xưng mình và gọi người nhận là bạn.",
+            "Chỉ trả về nội dung bản nháp gửi cho học viên, không giải thích quá trình suy luận."
         ].join(" ");
+
         const response = await fetch(AI_WEB_APP_URL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
             body: new URLSearchParams({
                 question: `${aiInstruction}\n\nCâu hỏi mới nhất của học viên:\n${latestStudentMessage}`,
                 history: JSON.stringify(conversation),
-                faqContext: JSON.stringify(ticketContext)
+                faqContext: JSON.stringify(faqContext)
             })
         });
         if (!response.ok) throw new Error(`Gemini gateway HTTP ${response.status}`);
