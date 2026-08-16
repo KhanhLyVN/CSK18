@@ -3456,7 +3456,6 @@ function getStudentMessageCount(ticket) {
     }
     let faqAiCache = null;
     let faqAiCachePromise = null;
-
     function removeVietnameseTones(value) {
         return String(value || "")
             .normalize("NFD")
@@ -3464,7 +3463,6 @@ function getStudentMessageCount(ticket) {
             .replace(/đ/gi, "d")
             .toLowerCase();
     }
-
     async function loadFaqAiContext() {
         if (faqAiCache) return faqAiCache;
         if (faqAiCachePromise) return faqAiCachePromise;
@@ -3480,7 +3478,6 @@ function getStudentMessageCount(ticket) {
             });
         return faqAiCachePromise;
     }
-
     function findRelatedFaqs(question, faqData) {
         const words = removeVietnameseTones(question)
             .split(/\s+/)
@@ -3500,7 +3497,6 @@ function getStudentMessageCount(ticket) {
               answer: row.item.answer || ""
           }));
     }
-
     async function createAiDraft() {
         const conversation = chatConversationMessages.map(message => ({
             role: (message.senderUid || message.senderId || message.uid || "") === currentCSUser?.uid
@@ -3509,14 +3505,12 @@ function getStudentMessageCount(ticket) {
             text: message.text || message.message || "",
             imageName: message.imageName || ""
         })).filter(message => message.text || message.imageName).slice(-20);
-
         const latestStudentMessage = [...conversation]
             .reverse()
             .find(message => message.role === "user")?.text
             || getTicketDescription(selectedTicket)
             || getTicketTitle(selectedTicket)
             || "Yêu cầu của học viên";
-
         const faqData = await loadFaqAiContext();
         const relatedFaqs = findRelatedFaqs(latestStudentMessage, faqData);
         const ticketContext = [{
@@ -3527,7 +3521,6 @@ function getStudentMessageCount(ticket) {
         const faqContext = [...relatedFaqs, ...ticketContext]
             .filter(item => item.question || item.answer)
             .slice(0, 12);
-
         const aiInstruction = [
             "Bạn là trợ lý Customer Success của Học Viện.",
             "Hãy đọc toàn bộ lịch sử trao đổi trong history, câu hỏi mới nhất, thông tin ticket và FAQ liên quan trước khi trả lời.",
@@ -3536,7 +3529,6 @@ function getStudentMessageCount(ticket) {
             "Viết tiếng Việt lịch sự, rõ ràng, ngắn gọn, xưng mình và gọi người nhận là bạn.",
             "Chỉ trả về nội dung bản nháp gửi cho học viên, không giải thích quá trình suy luận."
         ].join(" ");
-
         const response = await fetch(AI_WEB_APP_URL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
