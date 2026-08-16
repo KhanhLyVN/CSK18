@@ -185,7 +185,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .drawer-actions button.chat-trigger { color: var(--cream-pale); background: var(--maroon); border-color: var(--maroon); }
 .drawer-actions button:hover { border-color: var(--maroon); }
 
-/* Các ô trạng thái */
 .status-stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .status-step {
   min-height: 38px; display: flex; align-items: center; justify-content: center; gap: 6px;
