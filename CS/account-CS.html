@@ -905,27 +905,17 @@
                                     —
                                 </span>
                             </div>
-
-
                             <!-- CLASS -->
-
                             <!-- <div class="info-item">
-
                                 <span class="info-label">
                                     Lớp
                                 </span>
-
                                 <span
                                     class="info-value"
                                     id="class">
-
                                     —
-
                                 </span>
-
                             </div> -->
-
-
                             <!-- CAMPUS -->
                             <div class="info-item">
                                 <span class="info-label">
@@ -1164,11 +1154,9 @@ function showLoggedOutState() {
     if (profileCard) {
         profileCard.style.display = "none";
     }
-
     if (loginEmpty) {
         loginEmpty.hidden = false;
     }
-
     if (accountContent) {
         accountContent.classList.add("account-content-hidden");
     }
@@ -1180,11 +1168,9 @@ function showLoggedInState() {
     if (profileCard) {
         profileCard.style.display = "flex";
     }
-
     if (loginEmpty) {
         loginEmpty.hidden = true;
     }
-
     if (accountContent) {
         accountContent.classList.remove("account-content-hidden");
     }
@@ -1307,14 +1293,11 @@ if (
         "Firebase/Auth/Firestore chưa được tải."
     );
     showLoggedOutState();
-
     const loginTitle = loginEmpty.querySelector("h2");
     const loginMessage = loginEmpty.querySelector("p");
-
     if (loginTitle) {
         loginTitle.textContent = "Không thể kết nối Firebase";
     }
-
     if (loginMessage) {
         loginMessage.textContent =
             "Firebase, Authentication hoặc Firestore chưa được tải. Vui lòng kiểm tra firebase-config.js và thứ tự các script.";
@@ -1405,9 +1388,6 @@ if (
                     data.phone ||
                     data.phoneNumber ||
                     "Chưa cập nhật";
-
-
-
                 const campus =
                     data.campus ||
                     data.campusName ||
@@ -1453,8 +1433,6 @@ if (
                 if (nameEl) {
                     nameEl.textContent = name;
                 }
-
-
                 const campusEl = $("campus");
                 if (campusEl) {
                     campusEl.textContent = campus;
@@ -1514,7 +1492,6 @@ if (
    CHANGE PASSWORD
 ===================================================== */
 const changePasswordForm = $("changePasswordForm");
-
 if (changePasswordForm) {
     changePasswordForm.addEventListener(
         "submit",
@@ -1640,7 +1617,6 @@ if (changePasswordForm) {
    LOGOUT
 ===================================================== */
 const logoutBtn = $("logoutBtn");
-
 if (logoutBtn) {
     logoutBtn.addEventListener(
         "click",
@@ -1665,7 +1641,6 @@ if (logoutBtn) {
    LOGIN NOW
 ===================================================== */
 const loginNowBtn = $("loginNowBtn");
-
 if (loginNowBtn) {
     loginNowBtn.addEventListener(
         "click",

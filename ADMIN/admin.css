@@ -916,7 +916,6 @@ textarea:focus {
 [hidden] {
   display: none !important;
 }
-
 /* =========================================================
    RESPONSIVE TABLET
 ========================================================= */
@@ -1067,7 +1066,6 @@ textarea:focus {
     animation: none !important;
   }
 }
-
 /* =========================================================
    SIDEBAR OWNERSHIP: ADMIN.CSS ONLY
 ========================================================= */
@@ -1080,26 +1078,21 @@ textarea:focus {
 .main-content {
   box-sizing: border-box;
 }
-
 .admin-sidebar {
   width: 250px !important;
   min-width: 250px !important;
   max-width: 250px !important;
 }
-
 .main-content {
   margin-left: 250px !important;
 }
-
 @media (max-width: 780px) {
   .admin-sidebar {
     width: 250px !important;
     min-width: 250px !important;
     max-width: 250px !important;
   }
-
   .main-content {
     margin-left: 0 !important;
   }
 }
-

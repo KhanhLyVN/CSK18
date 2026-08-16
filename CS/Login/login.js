@@ -1,73 +1,73 @@
-/* ======================================================
-   SUPPORT CENTER - LOGIN
-   Firebase:
-   - Authentication
-   - Firestore
-   - Google Authentication
-
-   KHÔNG THAY ĐỔI firebase-config.js
-====================================================== */
-
 "use strict";
 
+/* =========================================================
+   SUPPORT CENTER - LOGIN
+   FIREBASE
+   Project: faq-csk18
 
-/* ======================================================
-   FIREBASE CHECK
-====================================================== */
+   QUAN TRỌNG:
+   - KHÔNG khai báo const db
+   - KHÔNG khai báo const auth
+   - KHÔNG khai báo const storage
+   - Firebase được lấy từ firebase-config.js
+========================================================= */
 
-function getFirebaseAuth() {
 
-    if (
-        typeof auth !== "undefined" &&
-        auth
-    ) {
-        return auth;
-    }
+/* =========================================================
+   FIREBASE
+========================================================= */
 
-    if (
-        typeof firebase !== "undefined" &&
-        firebase.apps &&
-        firebase.apps.length
-    ) {
+function getAuth() {
+    try {
+        if (
+            typeof firebase === "undefined" ||
+            !firebase.apps ||
+            !firebase.apps.length
+        ) {
+            console.error("Firebase chưa được initialize.");
+            return null;
+        }
+
         return firebase.auth();
-    }
 
-    return null;
+    } catch (error) {
+        console.error(
+            "Không thể lấy Firebase Auth:",
+            error
+        );
+
+        return null;
+    }
 }
 
 
-function getFirebaseDB() {
+function getDB() {
+    try {
+        if (
+            typeof firebase === "undefined" ||
+            !firebase.apps ||
+            !firebase.apps.length
+        ) {
+            console.error("Firebase chưa được initialize.");
+            return null;
+        }
 
-    if (
-        typeof db !== "undefined" &&
-        db
-    ) {
-        return db;
-    }
-
-    if (
-        typeof firebase !== "undefined" &&
-        firebase.apps &&
-        firebase.apps.length
-    ) {
         return firebase.firestore();
-    }
 
-    return null;
+    } catch (error) {
+        console.error(
+            "Không thể lấy Firestore:",
+            error
+        );
+
+        return null;
+    }
 }
 
 
-/* ======================================================
-   GLOBAL FIREBASE
-====================================================== */
-
-const firebaseAuth = getFirebaseAuth();
-const firestoreDB = getFirebaseDB();
-
-
-/* ======================================================
-   DEBUG FIREBASE
-====================================================== */
+/* =========================================================
+   FIREBASE DEBUG
+========================================================= */
 
 function debugFirebase() {
 
@@ -78,7 +78,6 @@ function debugFirebase() {
             !firebase.apps ||
             !firebase.apps.length
         ) {
-
             console.error(
                 "Firebase chưa được initialize."
             );
@@ -86,28 +85,29 @@ function debugFirebase() {
             return;
         }
 
+        const app = firebase.app();
+
         console.log(
             "========================================"
         );
 
         console.log(
-            "Firebase Project:",
-            firebase.app().options.projectId
+            "Firebase đã sẵn sàng"
         );
 
         console.log(
-            "Firebase Auth Domain:",
-            firebase.app().options.authDomain
+            "Project:",
+            app.options.projectId
         );
 
         console.log(
-            "Firebase Storage Bucket:",
-            firebase.app().options.storageBucket
+            "Auth Domain:",
+            app.options.authDomain
         );
 
         console.log(
-            "Firebase App:",
-            firebase.app().name
+            "Storage:",
+            app.options.storageBucket
         );
 
         console.log(
@@ -117,20 +117,20 @@ function debugFirebase() {
     } catch (error) {
 
         console.error(
-            "Không thể kiểm tra Firebase:",
+            "Firebase debug error:",
             error
         );
     }
 }
 
 
-/* ======================================================
+/* =========================================================
    DOM READY
-====================================================== */
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function () {
 
         debugFirebase();
 
@@ -143,10 +143,56 @@ document.addEventListener(
     }
 );
 
+/* =========================================================
+   RESET LOGIN PAGE
+   Khi quay lại trang login sau Logout / Back / BFCache
+========================================================= */
 
-/* ======================================================
+function resetLoginPageState() {
+
+    const loginButton = document.querySelector(
+        '#loginForm .btn'
+    );
+
+    const googleButton = document.getElementById(
+        'googleLogin'
+    );
+
+    if (loginButton) {
+        loginButton.disabled = false;
+        loginButton.innerHTML = `
+
+            Đăng nhập
+        `;
+    }
+
+    if (googleButton) {
+        googleButton.disabled = false;
+        googleButton.innerHTML = `
+
+            Đăng nhập bằng Google
+        `;
+    }
+}
+
+
+/* =========================================================
+   PAGE SHOW
+   Quan trọng khi trình duyệt dùng BFCache
+========================================================= */
+
+window.addEventListener(
+    "pageshow",
+    function () {
+
+        resetLoginPageState();
+
+    }
+);
+
+/* =========================================================
    PASSWORD TOGGLE
-====================================================== */
+========================================================= */
 
 function setupPasswordToggle() {
 
@@ -167,9 +213,10 @@ function setupPasswordToggle() {
         return;
     }
 
+
     toggle.addEventListener(
         "click",
-        () => {
+        function () {
 
             const icon =
                 toggle.querySelector("i");
@@ -215,26 +262,31 @@ function setupPasswordToggle() {
 }
 
 
-/* ======================================================
+/* =========================================================
    GOOGLE LOGIN
-====================================================== */
+========================================================= */
 
 function setupGoogleLogin() {
 
-    const googleLogin =
+    const googleButton =
         document.getElementById(
             "googleLogin"
         );
 
-    if (!googleLogin) {
+    if (!googleButton) {
         return;
     }
 
-    googleLogin.addEventListener(
-        "click",
-        async () => {
 
-            if (!firebaseAuth) {
+    googleButton.addEventListener(
+        "click",
+        async function () {
+
+            const auth = getAuth();
+
+            const db = getDB();
+
+            if (!auth) {
 
                 toast(
                     "Firebase Authentication chưa sẵn sàng.",
@@ -244,7 +296,7 @@ function setupGoogleLogin() {
                 return;
             }
 
-            if (!firestoreDB) {
+            if (!db) {
 
                 toast(
                     "Firestore chưa sẵn sàng.",
@@ -254,41 +306,48 @@ function setupGoogleLogin() {
                 return;
             }
 
-            googleLogin.disabled = true;
 
-            const oldText =
-                googleLogin.innerHTML;
+            const oldHTML =
+                googleButton.innerHTML;
 
-            googleLogin.innerHTML =
-                `<i class="fa-solid fa-spinner fa-spin"></i>
-                 Đang đăng nhập...`;
+
+            googleButton.disabled =
+                true;
+
+            googleButton.innerHTML =
+                `
+                Đang đăng nhập...
+                `;
+
 
             try {
 
-                /* ======================================
+                /* =========================================
                    GOOGLE PROVIDER
-                ====================================== */
+                ========================================= */
 
                 const provider =
                     new firebase.auth.GoogleAuthProvider();
+
 
                 provider.setCustomParameters({
                     prompt: "select_account"
                 });
 
 
-                /* ======================================
+                /* =========================================
                    GOOGLE POPUP
-                ====================================== */
+                ========================================= */
 
                 const result =
-                    await firebaseAuth
-                        .signInWithPopup(
-                            provider
-                        );
+                    await auth.signInWithPopup(
+                        provider
+                    );
+
 
                 const user =
                     result.user;
+
 
                 if (!user) {
 
@@ -299,11 +358,7 @@ function setupGoogleLogin() {
 
 
                 console.log(
-                    "========================================"
-                );
-
-                console.log(
-                    "GOOGLE LOGIN"
+                    "Google Auth thành công."
                 );
 
                 console.log(
@@ -316,24 +371,16 @@ function setupGoogleLogin() {
                     user.email
                 );
 
-                console.log(
-                    "========================================"
-                );
 
-
-                /* ======================================
-                   FIRESTORE USER
-                ====================================== */
+                /* =========================================
+                   FIRESTORE PROFILE
+                ========================================= */
 
                 const account =
                     await findUserProfile(
                         user
                     );
 
-
-                /* ======================================
-                   KHÔNG CÓ PROFILE
-                ====================================== */
 
                 if (!account) {
 
@@ -344,34 +391,32 @@ function setupGoogleLogin() {
                         "error"
                     );
 
-                    googleLogin.disabled =
-                        false;
-
-                    googleLogin.innerHTML =
-                        oldText;
+                    resetGoogleButton(
+                        googleButton,
+                        oldHTML
+                    );
 
                     return;
                 }
 
 
                 const userData =
-                    account.data;
+                    account.data || {};
 
 
                 console.log(
-                    "Google Firestore profile:",
+                    "Firestore user:",
                     userData
                 );
 
 
-                /* ======================================
+                /* =========================================
                    STATUS
-                ====================================== */
+                ========================================= */
 
                 if (
                     userData.status &&
-                    userData.status !==
-                        "active"
+                    userData.status !== "active"
                 ) {
 
                     await safeSignOut();
@@ -381,141 +426,105 @@ function setupGoogleLogin() {
                         "error"
                     );
 
-                    googleLogin.disabled =
-                        false;
-
-                    googleLogin.innerHTML =
-                        oldText;
-
-                    return;
-                }
-
-
-                /* ======================================
-                   ADMIN
-                ====================================== */
-
-                if (
-                    userData.accountType ===
-                        "admin" &&
-                    userData.role ===
-                        "admin"
-                ) {
-
-                    toast(
-                        "Đăng nhập Admin thành công!",
-                        "success"
-                    );
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "/ADMIN/homepage-ad.html";
-
-                        },
-                        500
+                    resetGoogleButton(
+                        googleButton,
+                        oldHTML
                     );
 
                     return;
                 }
 
 
-                /* ======================================
-                   CUSTOMER SUCCESS
-                ====================================== */
+                /* =========================================
+                   KIỂM TRA QUYỀN
+                ========================================= */
 
-                if (
-                    userData.accountType ===
-                    "customer_success"
-                ) {
-
-                    toast(
-                        "Đăng nhập CS thành công!",
-                        "success"
+                const accountType =
+                    getAccountType(
+                        userData
                     );
 
-                    setTimeout(
-                        () => {
 
-                            window.location.href =
-                                "/CS/homepageCS/trangchu-cs.html";
-
-                        },
-                        500
-                    );
-
-                    return;
-                }
-
-
-                /* ======================================
-                   STUDENT
-                ====================================== */
-
-                if (
-                    userData.accountType ===
-                    "student"
-                ) {
-
-                    toast(
-                        "Đăng nhập học viên thành công!",
-                        "success"
-                    );
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "/HV/homepage-hv/homepage.html";
-
-                        },
-                        500
-                    );
-
-                    return;
-                }
-
-
-                /* ======================================
-                   KHÔNG ĐƯỢC PHÂN QUYỀN
-                ====================================== */
-
-                console.error(
-                    "Tài khoản Google không được phân quyền:",
-                    userData
+                console.log(
+                    "Account Type:",
+                    accountType
                 );
 
-                await safeSignOut();
+                console.log(
+                    "Role:",
+                    userData.role
+                );
+
+
+                /* =========================================
+                   ĐIỀU HƯỚNG
+                ========================================= */
+
+                const redirect =
+                    getRedirectPage(
+                        userData
+                    );
+
+
+                if (!redirect) {
+
+                    console.error(
+                        "Không xác định được quyền:",
+                        userData
+                    );
+
+                    await safeSignOut();
+
+                    toast(
+                        "Tài khoản chưa được phân quyền trong hệ thống.",
+                        "error"
+                    );
+
+                    resetGoogleButton(
+                        googleButton,
+                        oldHTML
+                    );
+
+                    return;
+                }
+
 
                 toast(
-                    "Tài khoản chưa được phân quyền trong hệ thống.",
-                    "error"
+                    getSuccessMessage(
+                        userData
+                    ),
+                    "success"
                 );
 
-                googleLogin.disabled =
-                    false;
 
-                googleLogin.innerHTML =
-                    oldText;
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            redirect;
+
+                    },
+                    500
+                );
 
             } catch (error) {
 
                 console.error(
-                    "Lỗi đăng nhập Google:",
+                    "Lỗi Google Login:",
                     error
                 );
 
                 toast(
-                    getAuthErrorMessage(error),
+                    getAuthErrorMessage(
+                        error
+                    ),
                     "error"
                 );
 
-                googleLogin.disabled =
-                    false;
-
-                googleLogin.innerHTML =
-                    oldText;
+                resetGoogleButton(
+                    googleButton,
+                    oldHTML
+                );
             }
 
         }
@@ -523,46 +532,48 @@ function setupGoogleLogin() {
 }
 
 
-/* ======================================================
+/* =========================================================
    EMAIL / PASSWORD LOGIN
-====================================================== */
+========================================================= */
 
 function setupEmailPasswordLogin() {
 
-    const loginForm =
+    const form =
         document.getElementById(
             "loginForm"
         );
 
-    if (!loginForm) {
+    if (!form) {
         return;
     }
 
-    const loginBtn =
-        loginForm.querySelector(
+
+    const emailInput =
+        document.getElementById(
+            "loginEmail"
+        );
+
+    const passwordInput =
+        document.getElementById(
+            "loginPassword"
+        );
+
+    const loginButton =
+        form.querySelector(
             ".btn"
         );
 
-    loginForm.addEventListener(
+
+    form.addEventListener(
         "submit",
-        async (event) => {
+        async function (event) {
 
             event.preventDefault();
 
 
-            /* ==========================================
+            /* =========================================
                INPUT
-            ========================================== */
-
-            const emailInput =
-                document.getElementById(
-                    "loginEmail"
-                );
-
-            const passwordInput =
-                document.getElementById(
-                    "loginPassword"
-                );
+            ========================================= */
 
             if (
                 !emailInput ||
@@ -570,7 +581,7 @@ function setupEmailPasswordLogin() {
             ) {
 
                 toast(
-                    "Không tìm thấy ô đăng nhập.",
+                    "Không tìm thấy thông tin đăng nhập.",
                     "error"
                 );
 
@@ -585,15 +596,16 @@ function setupEmailPasswordLogin() {
                     .trim()
                     .toLowerCase();
 
+
             const password =
                 String(
                     passwordInput.value || ""
                 );
 
 
-            /* ==========================================
+            /* =========================================
                VALIDATE
-            ========================================== */
+            ========================================= */
 
             if (!email) {
 
@@ -621,59 +633,60 @@ function setupEmailPasswordLogin() {
             }
 
 
-            /* ==========================================
-               FIREBASE CHECK
-            ========================================== */
+            /* =========================================
+               FIREBASE
+            ========================================= */
 
-            if (!firebaseAuth) {
+            const auth = getAuth();
+
+            const db = getDB();
+
+
+            if (!auth) {
 
                 toast(
                     "Firebase Authentication chưa sẵn sàng.",
                     "error"
                 );
 
-                console.error(
-                    "firebaseAuth không tồn tại."
-                );
-
                 return;
             }
 
 
-            if (!firestoreDB) {
+            if (!db) {
 
                 toast(
                     "Firestore chưa sẵn sàng.",
                     "error"
                 );
 
-                console.error(
-                    "firestoreDB không tồn tại."
-                );
-
                 return;
             }
 
 
-            /* ==========================================
-               BUTTON
-            ========================================== */
+            /* =========================================
+               BUTTON LOADING
+            ========================================= */
 
-            if (loginBtn) {
+            const oldText =
+                loginButton
+                    ? loginButton.innerHTML
+                    : "";
 
-                loginBtn.disabled =
+
+            if (loginButton) {
+
+                loginButton.disabled =
                     true;
 
-                loginBtn.textContent =
-                    "Đang đăng nhập...";
+                loginButton.innerHTML =
+                    `
+                    Đang đăng nhập...
+                    `;
             }
 
 
             try {
-
-                /* ======================================
-                   1. FIREBASE AUTH
-                ====================================== */
 
                 console.log(
                     "========================================"
@@ -689,21 +702,19 @@ function setupEmailPasswordLogin() {
                 );
 
                 console.log(
-                    "Firebase Project:",
-                    firebase.app().options.projectId
-                );
-
-                console.log(
                     "========================================"
                 );
 
 
+                /* =========================================
+                   1. FIREBASE AUTH
+                ========================================= */
+
                 const result =
-                    await firebaseAuth
-                        .signInWithEmailAndPassword(
-                            email,
-                            password
-                        );
+                    await auth.signInWithEmailAndPassword(
+                        email,
+                        password
+                    );
 
 
                 const user =
@@ -723,7 +734,7 @@ function setupEmailPasswordLogin() {
                 );
 
                 console.log(
-                    "Auth UID:",
+                    "UID:",
                     user.uid
                 );
 
@@ -733,9 +744,9 @@ function setupEmailPasswordLogin() {
                 );
 
 
-                /* ======================================
+                /* =========================================
                    2. FIRESTORE PROFILE
-                ====================================== */
+                ========================================= */
 
                 const account =
                     await findUserProfile(
@@ -743,37 +754,30 @@ function setupEmailPasswordLogin() {
                     );
 
 
-                /* ======================================
-                   3. KHÔNG TÌM THẤY PROFILE
-                ====================================== */
+                /* =========================================
+                   3. KHÔNG CÓ PROFILE
+                ========================================= */
 
                 if (!account) {
-
-                    console.error(
-                        "Không tìm thấy users theo UID hoặc email."
-                    );
 
                     await safeSignOut();
 
                     toast(
-                        "Tài khoản đã đăng nhập Firebase nhưng chưa được cấp quyền trong hệ thống.",
+                        "Tài khoản Firebase chưa được cấp quyền trong hệ thống.",
                         "error"
                     );
 
                     resetLoginButton(
-                        loginBtn
+                        loginButton,
+                        oldText
                     );
 
                     return;
                 }
 
 
-                /* ======================================
-                   USER DATA
-                ====================================== */
-
                 const userData =
-                    account.data;
+                    account.data || {};
 
 
                 console.log(
@@ -785,12 +789,12 @@ function setupEmailPasswordLogin() {
                 );
 
                 console.log(
-                    "Document ID:",
+                    "Document:",
                     account.docId
                 );
 
                 console.log(
-                    "User Data:",
+                    "Data:",
                     userData
                 );
 
@@ -799,16 +803,17 @@ function setupEmailPasswordLogin() {
                 );
 
 
-                /* ======================================
+                /* =========================================
                    4. KIỂM TRA EMAIL
-                ====================================== */
+                ========================================= */
 
                 const authEmail =
                     String(
-                        user.email || email
+                        user.email || ""
                     )
                         .trim()
                         .toLowerCase();
+
 
                 const firestoreEmail =
                     String(
@@ -820,18 +825,15 @@ function setupEmailPasswordLogin() {
 
                 if (
                     firestoreEmail &&
-                    firestoreEmail !==
-                        authEmail
+                    authEmail &&
+                    firestoreEmail !== authEmail
                 ) {
 
                     console.error(
                         "Email không khớp:",
                         {
-                            authEmail:
-                                authEmail,
-
-                            firestoreEmail:
-                                firestoreEmail
+                            authEmail,
+                            firestoreEmail
                         }
                     );
 
@@ -843,27 +845,22 @@ function setupEmailPasswordLogin() {
                     );
 
                     resetLoginButton(
-                        loginBtn
+                        loginButton,
+                        oldText
                     );
 
                     return;
                 }
 
 
-                /* ======================================
+                /* =========================================
                    5. STATUS
-                ====================================== */
+                ========================================= */
 
                 if (
                     userData.status &&
-                    userData.status !==
-                        "active"
+                    userData.status !== "active"
                 ) {
-
-                    console.warn(
-                        "Account status:",
-                        userData.status
-                    );
 
                     await safeSignOut();
 
@@ -873,199 +870,132 @@ function setupEmailPasswordLogin() {
                     );
 
                     resetLoginButton(
-                        loginBtn
+                        loginButton,
+                        oldText
                     );
 
                     return;
                 }
 
 
-                /* ======================================
-                   6. ADMIN
-                ====================================== */
+                /* =========================================
+                   6. LẤY ACCOUNT TYPE
+                ========================================= */
 
-                if (
-                    userData.accountType ===
-                        "admin" &&
-                    userData.role ===
-                        "admin"
-                ) {
-
-                    console.log(
-                        "========================================"
-                    );
-
-                    console.log(
-                        "ADMIN LOGIN SUCCESS"
-                    );
-
-                    console.log(
-                        "========================================"
+                const accountType =
+                    getAccountType(
+                        userData
                     );
 
 
-                    toast(
-                        "Đăng nhập Admin thành công!",
-                        "success"
-                    );
+                console.log(
+                    "Account Type:",
+                    accountType
+                );
 
-
-                    if (loginBtn) {
-
-                        loginBtn.textContent =
-                            "Thành công!";
-                    }
-
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "/ADMIN/homepage-ad.html";
-
-                        },
-                        500
-                    );
-
-                    return;
-                }
-
-
-                /* ======================================
-                   7. CUSTOMER SUCCESS
-                ====================================== */
-
-                if (
-                    userData.accountType ===
-                    "customer_success"
-                ) {
-
-                    console.log(
-                        "========================================"
-                    );
-
-                    console.log(
-                        "CUSTOMER SUCCESS LOGIN"
-                    );
-
-                    console.log(
-                        "========================================"
-                    );
-
-
-                    toast(
-                        "Đăng nhập CS thành công!",
-                        "success"
-                    );
-
-
-                    if (loginBtn) {
-
-                        loginBtn.textContent =
-                            "Thành công!";
-                    }
-
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "/CS/homepageCS/trangchu-cs.html";
-
-                        },
-                        500
-                    );
-
-                    return;
-                }
-
-
-                /* ======================================
-                   8. STUDENT
-                ====================================== */
-
-                if (
-                    userData.accountType ===
-                    "student"
-                ) {
-
-                    console.log(
-                        "========================================"
-                    );
-
-                    console.log(
-                        "STUDENT LOGIN"
-                    );
-
-                    console.log(
-                        "========================================"
-                    );
-
-
-                    toast(
-                        "Đăng nhập học viên thành công!",
-                        "success"
-                    );
-
-
-                    if (loginBtn) {
-
-                        loginBtn.textContent =
-                            "Thành công!";
-                    }
-
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "/HV/homepage-hv/homepage.html";
-
-                        },
-                        500
-                    );
-
-                    return;
-                }
-
-
-                /* ======================================
-                   9. KHÔNG ĐƯỢC PHÂN QUYỀN
-                ====================================== */
-
-                console.error(
-                    "ACCOUNT TYPE KHÔNG HỢP LỆ:",
-                    {
-                        uid:
-                            user.uid,
-
-                        email:
-                            authEmail,
-
-                        accountType:
-                            userData.accountType,
-
-                        role:
-                            userData.role,
-
-                        status:
-                            userData.status
-                    }
+                console.log(
+                    "Role:",
+                    userData.role
                 );
 
 
-                await safeSignOut();
+                /* =========================================
+                   7. XÁC ĐỊNH TRANG
+                ========================================= */
 
+                const redirect =
+                    getRedirectPage(
+                        userData
+                    );
+
+
+                /* =========================================
+                   8. KHÔNG CÓ QUYỀN
+                ========================================= */
+
+                if (!redirect) {
+
+                    console.error(
+                        "ACCOUNT TYPE KHÔNG HỢP LỆ:",
+                        {
+                            uid:
+                                user.uid,
+
+                            email:
+                                authEmail,
+
+                            accountType:
+                                userData.accountType,
+
+                            role:
+                                userData.role,
+
+                            status:
+                                userData.status
+                        }
+                    );
+
+
+                    await safeSignOut();
+
+
+                    toast(
+                        "Tài khoản chưa được phân quyền trong hệ thống.",
+                        "error"
+                    );
+
+
+                    resetLoginButton(
+                        loginButton,
+                        oldText
+                    );
+
+                    return;
+                }
+
+
+                /* =========================================
+                   9. LOGIN SUCCESS
+                ========================================= */
 
                 toast(
-                    "Tài khoản chưa được phân quyền trong hệ thống.",
-                    "error"
+                    getSuccessMessage(
+                        userData
+                    ),
+                    "success"
                 );
 
+
+                /* =========================================
+                LOGIN SUCCESS
+                ========================================= */
+
+                toast(
+                    getSuccessMessage(userData),
+                    "success"
+                );
+
+                /*
+                * Không đổi nút thành "Đăng nhập thành công".
+                * Nút luôn giữ đúng trạng thái "Đăng nhập".
+                */
 
                 resetLoginButton(
-                    loginBtn
+                    loginButton,
+                    null
                 );
+
+                setTimeout(
+                    function () {
+
+                        window.location.replace(
+                            redirect
+                        );
+
+                    },
+                    500
+                );
+
 
             } catch (error) {
 
@@ -1105,7 +1035,8 @@ function setupEmailPasswordLogin() {
 
 
                 resetLoginButton(
-                    loginBtn
+                    loginButton,
+                    oldText
                 );
             }
 
@@ -1114,21 +1045,212 @@ function setupEmailPasswordLogin() {
 }
 
 
-/* ======================================================
+/* =========================================================
+   GET ACCOUNT TYPE
+=========================================================
+
+   Firebase của bé hiện tại có:
+
+   role: "student"
+
+   nhưng KHÔNG có:
+
+   accountType
+
+   Vì vậy phải hỗ trợ cả hai.
+
+========================================================= */
+
+function getAccountType(data) {
+
+    if (!data) {
+        return "";
+    }
+
+
+    /* =========================================
+       ƯU TIÊN accountType
+    ========================================= */
+
+    if (data.accountType) {
+
+        return String(
+            data.accountType
+        )
+            .trim()
+            .toLowerCase();
+    }
+
+
+    /* =========================================
+       FALLBACK ROLE
+    ========================================= */
+
+    if (data.role) {
+
+        const role =
+            String(
+                data.role
+            )
+                .trim()
+                .toLowerCase();
+
+
+        /* STUDENT */
+
+        if (
+            role === "student" ||
+            role === "hocvien" ||
+            role === "học viên"
+        ) {
+
+            return "student";
+        }
+
+
+        /* ADMIN */
+
+        if (
+            role === "admin" ||
+            role === "administrator"
+        ) {
+
+            return "admin";
+        }
+
+
+        /* CUSTOMER SUCCESS */
+
+        if (
+            role === "customer_success" ||
+            role === "customer-success" ||
+            role === "cs"
+        ) {
+
+            return "customer_success";
+        }
+
+
+        /* MANAGER */
+
+        if (
+            role === "manager" ||
+            role === "cs_manager"
+        ) {
+
+            return "customer_success";
+        }
+    }
+
+
+    return "";
+}
+
+
+/* =========================================================
+   GET REDIRECT PAGE
+========================================================= */
+
+function getRedirectPage(data) {
+
+    if (!data) {
+        return null;
+    }
+
+
+    const accountType =
+        getAccountType(data);
+
+
+    /* =========================================
+       ADMIN
+    ========================================= */
+
+    if (
+        accountType === "admin"
+    ) {
+
+        return "/ADMIN/homepage-ad.html";
+    }
+
+
+    /* =========================================
+       CUSTOMER SUCCESS
+    ========================================= */
+
+    if (
+        accountType ===
+        "customer_success"
+    ) {
+
+        return "/CS/homepageCS/trangchu-cs.html";
+    }
+
+
+    /* =========================================
+       STUDENT
+    ========================================= */
+
+    if (
+        accountType === "student"
+    ) {
+
+        return "/HV/homepage-hv/homepage.html";
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   SUCCESS MESSAGE
+========================================================= */
+
+function getSuccessMessage(data) {
+
+    const accountType =
+        getAccountType(data);
+
+
+    if (
+        accountType === "admin"
+    ) {
+
+        return "Đăng nhập Admin thành công!";
+    }
+
+
+    if (
+        accountType === "customer_success"
+    ) {
+
+        return "Đăng nhập CS thành công!";
+    }
+
+
+    if (
+        accountType === "student"
+    ) {
+
+        return "Đăng nhập học viên thành công!";
+    }
+
+
+}
+
+
+/* =========================================================
    FIND USER PROFILE
-======================================================
+=========================================================
 
    Ưu tiên:
 
-   1. users/{Firebase Auth UID}
+   1. users/{Firebase UID}
 
-   Nếu không tồn tại:
+   2. users where email == Firebase email
 
-   2. users where email == Firebase Auth email
-
-   Điều này xử lý trường hợp Firestore document
-   trước đây được tạo bằng ID khác UID.
-====================================================== */
+========================================================= */
 
 async function findUserProfile(user) {
 
@@ -1136,7 +1258,11 @@ async function findUserProfile(user) {
         return null;
     }
 
-    if (!firestoreDB) {
+
+    const db = getDB();
+
+
+    if (!db) {
 
         console.error(
             "Firestore chưa sẵn sàng."
@@ -1183,22 +1309,19 @@ async function findUserProfile(user) {
     );
 
 
-    /* ==================================================
+    /* =========================================
        CÁCH 1 - UID
-    ================================================== */
+    ========================================= */
 
     if (uid) {
 
         try {
 
-            const uidRef =
-                firestoreDB
+            const snapshot =
+                await db
                     .collection("users")
-                    .doc(uid);
-
-
-            const uidSnap =
-                await uidRef.get();
+                    .doc(uid)
+                    .get();
 
 
             console.log(
@@ -1207,28 +1330,19 @@ async function findUserProfile(user) {
 
             console.log(
                 "Exists:",
-                uidSnap.exists
+                snapshot.exists
             );
 
 
-            if (uidSnap.exists) {
-
-                const data =
-                    uidSnap.data() || {};
-
-
-                console.log(
-                    "Tìm thấy user bằng UID."
-                );
-
+            if (snapshot.exists) {
 
                 return {
 
                     docId:
-                        uidSnap.id,
+                        snapshot.id,
 
                     data:
-                        data,
+                        snapshot.data() || {},
 
                     method:
                         "uid"
@@ -1241,31 +1355,30 @@ async function findUserProfile(user) {
                 "Lỗi đọc users/{uid}:",
                 error
             );
-
         }
     }
 
 
-    /* ==================================================
+    /* =========================================
        CÁCH 2 - EMAIL
-    ================================================== */
+    ========================================= */
 
     if (email) {
 
         try {
 
-            console.warn(
+            console.log(
                 "Không tìm thấy bằng UID."
             );
 
             console.log(
-                "Đang tìm users bằng email:",
+                "Tìm bằng email:",
                 email
             );
 
 
-            const emailQuery =
-                await firestoreDB
+            const result =
+                await db
                     .collection("users")
                     .where(
                         "email",
@@ -1278,39 +1391,23 @@ async function findUserProfile(user) {
 
             console.log(
                 "Email query empty:",
-                emailQuery.empty
+                result.empty
             );
 
 
-            if (
-                !emailQuery.empty
-            ) {
+            if (!result.empty) {
 
-                const doc =
-                    emailQuery.docs[0];
-
-
-                const data =
-                    doc.data() || {};
-
-
-                console.log(
-                    "Tìm thấy user bằng EMAIL."
-                );
-
-                console.log(
-                    "Document ID:",
-                    doc.id
-                );
+                const document =
+                    result.docs[0];
 
 
                 return {
 
                     docId:
-                        doc.id,
+                        document.id,
 
                     data:
-                        data,
+                        document.data() || {},
 
                     method:
                         "email"
@@ -1320,26 +1417,18 @@ async function findUserProfile(user) {
         } catch (error) {
 
             console.error(
-                "Lỗi query user theo email:",
+                "Lỗi query users theo email:",
                 error
             );
-
         }
     }
 
 
-    /* ==================================================
-       KHÔNG TÌM THẤY
-    ================================================== */
-
     console.error(
-        "Không tìm thấy user bằng UID hoặc Email.",
+        "Không tìm thấy user.",
         {
-            uid:
-                uid,
-
-            email:
-                email
+            uid,
+            email
         }
     );
 
@@ -1348,17 +1437,20 @@ async function findUserProfile(user) {
 }
 
 
-/* ======================================================
+/* =========================================================
    SAFE SIGN OUT
-====================================================== */
+========================================================= */
 
 async function safeSignOut() {
 
     try {
 
-        if (firebaseAuth) {
+        const auth = getAuth();
 
-            await firebaseAuth.signOut();
+
+        if (auth) {
+
+            await auth.signOut();
         }
 
     } catch (error) {
@@ -1371,57 +1463,77 @@ async function safeSignOut() {
 }
 
 
-/* ======================================================
+/* =========================================================
    RESET LOGIN BUTTON
-====================================================== */
+========================================================= */
 
-function resetLoginButton(
-    button
-) {
+function resetLoginButton(button) {
 
     if (!button) {
         return;
     }
 
-    button.disabled =
-        false;
+    button.disabled = false;
 
-    button.textContent =
-        "Đăng nhập";
+    button.innerHTML = `
+
+        Đăng nhập
+    `;
 }
 
+/* =========================================================
+   RESET GOOGLE BUTTON
+========================================================= */
 
-/* ======================================================
+function resetGoogleButton(button) {
+
+    if (!button) {
+        return;
+    }
+
+    button.disabled = false;
+
+    button.innerHTML = `
+        <span class="material-symbols-rounded">
+            login
+        </span>
+        Đăng nhập bằng Google
+    `;
+}
+
+/* =========================================================
    TOAST
-====================================================== */
+========================================================= */
 
 function toast(
     message,
     type = "success"
 ) {
 
-    let el =
+    let element =
         document.getElementById(
             "appToast"
         );
 
 
-    /* ==========================================
-       CREATE
-    ========================================== */
+    /* =========================================
+       CREATE ELEMENT
+    ========================================= */
 
-    if (!el) {
+    if (!element) {
 
-        el =
+        element =
             document.createElement(
                 "div"
             );
 
-        el.id =
+
+        element.id =
             "appToast";
 
+
         document.body.appendChild(
-            el
+            element
         );
 
 
@@ -1451,10 +1563,8 @@ function toast(
 
                 gap: 10px;
 
-                max-width: min(
-                    90vw,
-                    500px
-                );
+                max-width:
+                    min(90vw, 500px);
 
                 padding:
                     13px 20px;
@@ -1490,7 +1600,7 @@ function toast(
                     transform .25s ease;
 
                 z-index:
-                    99999;
+                    999999;
 
             }
 
@@ -1530,6 +1640,14 @@ function toast(
 
             }
 
+
+            #appToast .material-symbols-rounded {
+
+                font-size:
+                    20px;
+
+            }
+
         `;
 
 
@@ -1539,35 +1657,33 @@ function toast(
     }
 
 
-    /* ==========================================
+    /* =========================================
        ICON
-    ========================================== */
+    ========================================= */
 
-    let icon = "✓";
+    let icon =
+        " ";
 
 
     if (
         type === "error"
     ) {
 
-        icon = "✕";
+        icon =
+            "error";
 
     } else if (
         type === "warning"
     ) {
 
-        icon = "!";
+        icon =
+            "warning";
     }
 
 
-    el.innerHTML = `
+    element.innerHTML = `
 
-        <span
-            style="
-                font-size:16px;
-                font-weight:700;
-            "
-        >
+        <span class="material-symbols-rounded">
             ${icon}
         </span>
 
@@ -1578,20 +1694,20 @@ function toast(
     `;
 
 
-    el.className =
+    element.className =
         `show toast-${type}`;
 
 
     clearTimeout(
-        window.__toastTimer
+        window.__supportToastTimer
     );
 
 
-    window.__toastTimer =
+    window.__supportToastTimer =
         setTimeout(
-            () => {
+            function () {
 
-                el.classList.remove(
+                element.classList.remove(
                     "show"
                 );
 
@@ -1601,13 +1717,11 @@ function toast(
 }
 
 
-/* ======================================================
+/* =========================================================
    ESCAPE HTML
-====================================================== */
+========================================================= */
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value) {
 
     return String(
         value || ""
@@ -1635,9 +1749,9 @@ function escapeHtml(
 }
 
 
-/* ======================================================
+/* =========================================================
    FIREBASE AUTH ERROR
-====================================================== */
+========================================================= */
 
 function getAuthErrorMessage(
     error
@@ -1652,96 +1766,81 @@ function getAuthErrorMessage(
 
         case "auth/invalid-email":
 
-            return (
-                "Email không hợp lệ."
-            );
+            return "Email không hợp lệ.";
 
 
         case "auth/user-disabled":
 
-            return (
-                "Tài khoản này đã bị vô hiệu hóa."
-            );
+            return "Tài khoản này đã bị vô hiệu hóa.";
 
 
         case "auth/user-not-found":
 
-            return (
-                "Không tìm thấy tài khoản với email này."
-            );
+            return "Không tìm thấy tài khoản với email này.";
 
 
         case "auth/wrong-password":
 
-            return (
-                "Sai mật khẩu. Vui lòng thử lại."
-            );
+            return "Sai mật khẩu. Vui lòng thử lại.";
 
 
         case "auth/invalid-credential":
 
-            return (
-                "Email hoặc mật khẩu không đúng."
-            );
+            return "Email hoặc mật khẩu không đúng.";
 
 
         case "auth/invalid-login-credentials":
 
-            return (
-                "Email hoặc mật khẩu không đúng."
-            );
+            return "Email hoặc mật khẩu không đúng.";
 
 
         case "auth/too-many-requests":
 
-            return (
-                "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau."
-            );
+            return "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.";
 
 
         case "auth/network-request-failed":
 
-            return (
-                "Lỗi kết nối mạng. Vui lòng kiểm tra internet."
-            );
+            return "Không thể kết nối Firebase. Hãy kiểm tra mạng.";
 
 
         case "auth/popup-closed-by-user":
 
-            return (
-                "Cửa sổ đăng nhập Google đã bị đóng."
-            );
+            return "Cửa sổ đăng nhập Google đã bị đóng.";
 
 
         case "auth/popup-blocked":
 
-            return (
-                "Trình duyệt đã chặn cửa sổ Google."
-            );
+            return "Trình duyệt đã chặn cửa sổ Google.";
 
 
         case "auth/cancelled-popup-request":
 
-            return (
-                "Yêu cầu đăng nhập Google đã bị hủy."
-            );
+            return "Yêu cầu đăng nhập Google đã bị hủy.";
 
 
         case "auth/operation-not-allowed":
 
-            return (
-                "Phương thức đăng nhập này chưa được bật trong Firebase."
-            );
+            return "Phương thức đăng nhập này chưa được bật trong Firebase.";
 
 
-        case "auth/network-request-failed":
+        case "auth/account-exists-with-different-credential":
 
-            return (
-                "Không thể kết nối Firebase. Hãy kiểm tra mạng."
-            );
+            return "Email này đã tồn tại bằng phương thức đăng nhập khác.";
+
+
+        case "auth/unauthorized-domain":
+
+            return "Tên miền hiện tại chưa được cấp quyền trong Firebase Authentication.";
 
 
         default:
+
+            console.error(
+                "Firebase Error:",
+                error
+            );
+
 
             if (
                 error &&
@@ -1749,14 +1848,11 @@ function getAuthErrorMessage(
             ) {
 
                 console.error(
-                    "Firebase error message:",
                     error.message
                 );
             }
 
 
-            return (
-                "Đã có lỗi xảy ra. Vui lòng thử lại."
-            );
+            return "Đã có lỗi xảy ra. Vui lòng thử lại.";
     }
 }

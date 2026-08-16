@@ -1572,7 +1572,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                             }
                         );
                         console.log(
-                            "🎫 Ticket của CS:",
+                            "Ticket của CS:",
                             tickets
                         );
                         renderDashboard(
@@ -1581,7 +1581,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     },
                     error => {
                         console.error(
-                            "❌ Không thể lấy ticket của CS:",
+                            "Không thể lấy ticket của CS:",
                             error
                         );
                         showTicketLoadError();

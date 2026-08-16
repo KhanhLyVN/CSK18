@@ -14,7 +14,6 @@
   --danger: #a23b2e;
   --shadow: 0 18px 45px rgba(62, 4, 2, 0.18);
 }
-
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
 body {
@@ -26,9 +25,7 @@ body {
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--maroon); outline-offset: 2px; }
-
 .app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
 /* Topbar */
 .topbar {
   min-height: 58px;
@@ -59,7 +56,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .topbar-status { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; color: rgba(251, 244, 233, .8); font-size: 11px; white-space: nowrap; }
 .conn-dot, .live-dot { width: 8px; height: 8px; display: inline-block; border-radius: 50%; background: var(--muted); }
 .conn-dot.live, .live-dot { background: #91b374; box-shadow: 0 0 0 3px rgba(145, 179, 116, .2); }
-
 /* Main shell and sidebar */
 .body { min-height: 0; flex: 1; display: flex; position: relative; overflow: hidden; }
 .sidebar {
@@ -80,7 +76,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .menu-item svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .menu-item:hover { color: var(--maroon); background: var(--cream-pale); }
 .menu-item.active { color: var(--maroon-deep); background: var(--cream); border-left-color: var(--maroon); font-weight: 700; }
-
 /* Main content */
 .main { min-width: 0; flex: 1; overflow: auto; padding: 30px 38px 48px; background-image: radial-gradient(circle at 1px 1px, rgba(93, 7, 3, .035) 1px, transparent 0); background-size: 24px 24px; }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding-bottom: 19px; margin-bottom: 20px; border-bottom: 3px solid var(--maroon); }
@@ -88,7 +83,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .page-title { margin: 0; color: var(--maroon-deep); font: 700 clamp(27px, 3vw, 38px)/1.05 "Fraunces", serif; }
 .page-sub { margin: 8px 0 0; color: var(--ink-soft); font-size: 13px; }
 .page-date { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-soft); font-size: 12px; white-space: nowrap; }
-
 /* Statistic cards */
 .stat-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--maroon); border-radius: 8px; box-shadow: 0 2px 6px rgba(93, 7, 3, .03); }
@@ -98,7 +92,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .stat-card.stat-closed { border-left-color: var(--muted); }
 .stat-label { display: block; color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
 .stat-card strong { display: block; margin-top: 8px; color: var(--maroon-deep); font: 700 25px/1 "Fraunces", serif; }
-
 /* Table */
 .table-panel { overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 15px rgba(93, 7, 3, .04); }
 .filter-bar { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; padding: 16px 18px; background: var(--cream-pale); border-bottom: 1px solid var(--line); }
@@ -143,7 +136,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .page-btn { min-width: 29px; height: 29px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink-soft); cursor: pointer; font-size: 11px; }
 .page-btn:hover:not(:disabled), .page-btn.active { color: var(--cream-pale); background: var(--maroon); border-color: var(--maroon); }
 .page-btn:disabled { cursor: not-allowed; opacity: .45; }
-
 /* Sliding information drawer */
 .ticket-drawer {
   position: fixed; top: 0; right: 0; bottom: 0; width: min(720px, 100vw);
@@ -152,7 +144,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   transition: transform .28s ease; z-index: 60;
 }
 .ticket-drawer.open { transform: translateX(0); }
-
 /* Chat là một bottom-sheet nằm bên trong drawer. Khi mở, nó chiếm không gian riêng và đẩy phần thông tin lên, không phủ tối nội dung. */
 .chat-panel {
   width: 100%; min-height: 0; height: 0; flex: 0 0 0;
@@ -184,7 +175,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .drawer-actions button { min-height: 37px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); cursor: pointer; font-size: 12px; font-weight: 700; }
 .drawer-actions button.chat-trigger { color: var(--cream-pale); background: var(--maroon); border-color: var(--maroon); }
 .drawer-actions button:hover { border-color: var(--maroon); }
-
 .status-stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .status-step {
   min-height: 38px; display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -204,7 +194,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .status-step.status-resolved.current { background: #e7eee1; }
 .status-step.status-closed.current { background: #f0eae3; }
 .drawer-placeholder { padding: 55px 25px; color: var(--muted); text-align: center; font-size: 13px; line-height: 1.6; }
-
 /* Chat panel */
 .chat-ticket-context { padding: 10px 18px; color: var(--ink-soft); background: var(--cream-pale); border-bottom: 1px solid var(--line); font: 600 11px/1.4 "IBM Plex Mono", monospace; }
 .chat-messages { min-height: 0; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--cream-pale); }
@@ -221,7 +210,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .send-button:hover { background: var(--maroon-deep); }
 .send-button:disabled { cursor: not-allowed; opacity: .55; }
 .drawer-backdrop { position: fixed; inset: 0; background: rgba(42, 23, 18, .28); z-index: 50; }
-
 @media (max-width: 1100px) { .stat-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 900px) {
   .sidebar { position: absolute; inset: 0 auto 0 0; width: 258px; transform: translateX(-105%); box-shadow: var(--shadow); }

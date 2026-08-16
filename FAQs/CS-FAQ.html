@@ -26,7 +26,6 @@
   --edit: #B08A4E;
   --muted: #8A7A6D;
 }
-
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
 body {
@@ -35,9 +34,7 @@ body {
   background: var(--cream-pale);
   overflow: hidden;
 }
-
 .app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
 /* ---------- Top bar ---------- */
 .topbar {
   background: var(--maroon);
@@ -66,10 +63,8 @@ body {
 .topbar .titles { line-height: 1.2; }
 .topbar h1 { margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; }
 .topbar span { font-size: 11px; opacity: 0.8; }
-
 /* ---------- Body layout ---------- */
 .body { flex: 1; display: flex; min-height: 0; position: relative; overflow: hidden; }
-
 /* ---------- Sidebar ---------- */
 .sidebar {
   width: 260px;
@@ -85,7 +80,6 @@ body {
 .sidebar.collapsed { width: 70px; }
 .sidebar.collapsed .menu-item span { display: none; }
 .sidebar.collapsed .menu-item { justify-content: center; padding: 12px; }
-
 .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
 .menu-item {
   display: flex; align-items: center; gap: 12px;
@@ -101,7 +95,6 @@ body {
 .menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
 .menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
 .menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
-
 /* ---------- Main Content Area ---------- */
 .main {
   flex: 1;
@@ -112,7 +105,6 @@ body {
   background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,0.03) 1px, transparent 0);
   background-size: 24px 24px;
 }
-
 /* ---------- FAQ Content Styles ---------- */
 .container {
   max-width: 900px;
@@ -124,7 +116,6 @@ body {
   border: 1px solid var(--line);
   box-shadow: 0 4px 20px rgba(93,7,3,0.05);
 }
-
 h2 {
   font-family: 'Fraunces', serif;
   color: var(--maroon-deep);
@@ -132,7 +123,6 @@ h2 {
   margin-bottom: 24px;
   font-size: 28px;
 }
-
 .form-group { margin-bottom: 20px; }
 label {
   display: block;
@@ -141,7 +131,6 @@ label {
   color: var(--maroon-deep);
   font-size: 14px;
 }
-
 input, select, textarea {
   width: 100%;
   padding: 12px;
@@ -157,7 +146,6 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--maroon);
   box-shadow: 0 0 0 3px rgba(93,7,3,0.1);
 }
-
 .btn-row { display: flex; gap: 12px; margin-top: 10px; }
 button.btn-add {
   background: var(--maroon);
@@ -171,7 +159,6 @@ button.btn-add {
   transition: all 0.2s ease;
 }
 button.btn-add:hover { background: var(--maroon-deep); transform: translateY(-1px); }
-
 button.btn-cancel {
   background: var(--muted);
   color: #fff;
@@ -182,7 +169,6 @@ button.btn-cancel {
   cursor: pointer;
   display: none;
 }
-
 /* Table Styles */
 .table-wrap { overflow-x: auto; margin-top: 32px; border-radius: 8px; border: 1px solid var(--line); }
 table { width: 100%; border-collapse: collapse; background: #fff; }
@@ -190,7 +176,6 @@ th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--line); 
 th { background: var(--cream-pale); color: var(--maroon-deep); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--paper); }
-
 .btn-del, .btn-edit {
   border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s ease;
 }
@@ -198,7 +183,6 @@ tr:hover td { background: var(--paper); }
 .btn-edit { background: #fef3c7; color: var(--edit); margin-right: 6px; }
 .btn-del:hover { background: var(--danger); color: #fff; }
 .btn-edit:hover { background: var(--edit); color: #fff; }
-
 /* Responsive */
 @media (max-width: 860px) {
   .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
@@ -206,7 +190,6 @@ tr:hover td { background: var(--paper); }
   .main { padding: 20px 16px; }
   .container { padding: 20px; }
 }
-
     </style>
 </head>
 <body data-nav-page="faq">

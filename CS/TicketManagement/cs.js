@@ -2875,7 +2875,6 @@ function getStudentMessageCount(ticket) {
        UPDATE STATUS
     ========================================================= */
   
-
     /* =========================================================
        ADMIN NOTIFICATIONS / SYSTEM LOGS
     ========================================================= */
@@ -2909,7 +2908,6 @@ function getStudentMessageCount(ticket) {
             console.warn("Không thể gửi thông báo cho admin:", error);
         }
     }
-
     async function updateTicketStatus(
         ticket,
         newStatus
@@ -4008,11 +4006,11 @@ function getStudentMessageCount(ticket) {
     );
   
     console.log(
-        "🎫 CS TICKET MANAGEMENT ĐÃ KHỞI ĐỘNG"
+        "CS TICKET MANAGEMENT ĐÃ KHỞI ĐỘNG"
     );
   
     console.log(
-        "🖱️ Có thể bấm bất cứ đâu trong ticket để mở Drawer"
+        "Có thể bấm bất cứ đâu trong ticket để mở Drawer"
     );
   
     console.log(

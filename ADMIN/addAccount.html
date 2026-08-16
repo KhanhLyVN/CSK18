@@ -14,7 +14,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
 <script src="/firebase-config.js"></script>
 <link rel="stylesheet" href="admin.css">
-
 <style>
 :root {
     --maroon: #5D0703;
@@ -616,7 +615,6 @@ tbody tr:hover {
         width: 100%;
     }
 }
-
 /* =========================================================
    ADMIN SIDEBAR LAYOUT OVERRIDES
 ========================================================= */
@@ -625,28 +623,23 @@ body {
   padding: 0;
   overflow-x: hidden;
 }
-
 .app-shell {
   min-height: 100vh;
   display: flex;
   width: 100%;
   background: var(--cream-pale);
 }
-
 .main-content {
   min-width: 0;
   flex: 1 1 auto;
 }
-
 .wrap {
   width: min(1120px, calc(100% - 64px));
   padding: 44px 0 70px;
 }
-
 header.page {
   padding-top: 4px;
 }
-
 .template-btn,
 .btn-primary,
 .btn-ghost {
@@ -659,52 +652,43 @@ header.page {
   box-shadow: 0 5px 12px rgba(93, 7, 3, .12);
   transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
-
 .template-btn:hover,
 .btn-primary:hover,
 .btn-ghost:hover {
   box-shadow: 0 8px 18px rgba(93, 7, 3, .18);
   transform: translateY(-2px);
 }
-
 @media (max-width: 900px) {
   .wrap {
     width: min(100% - 40px, 760px);
     padding-top: 32px;
   }
 }
-
 @media (max-width: 780px) {
   .wrap {
     width: calc(100% - 32px);
     padding-top: 26px;
   }
-
   header.page {
     align-items: flex-start;
     gap: 18px;
   }
-
   header.page .tagline,
   .template-hint {
     text-align: left;
   }
 }
-
 @media (max-width: 560px) {
   .wrap {
     width: calc(100% - 24px);
     padding-bottom: 40px;
   }
-
   header.page h1 {
     font-size: 29px;
   }
-
   .step {
     padding: 18px;
   }
-
   .step-desc {
     margin-left: 0;
   }
@@ -1065,19 +1049,15 @@ document.getElementById('confirmAccountsBtn').addEventListener('click', async ()
                             : '',
                         email: row.studentEmail,
                         username: row.username,
-
                         // Loại tài khoản
                         accountType: 'customer_success',
                         provider: 'e-mail',
-
                         // Thông tin nhân sự
                         phone: row.phone || '',
                         department: row.department || '',
                         campus: row.campus || '',
-
                         // Mật khẩu dùng để xuất tài khoản
                         password: row.password,
-
                         passwordCreated: true,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -1407,6 +1387,5 @@ document.getElementById('exportCsvBtn').addEventListener(
 );
 </script>
   <script src="shared-sidebar.js"></script>
-
 </body>
 </html>

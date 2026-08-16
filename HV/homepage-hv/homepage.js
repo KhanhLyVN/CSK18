@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const openTicketsEl = document.getElementById("openTicketsCount");
   const progressTicketsEl = document.getElementById("progressTicketsCount");
   const resolvedTicketsEl = document.getElementById("resolvedTicketsCount");
@@ -17,26 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const notificationList = document.getElementById("notificationList");
   const notificationEmpty = document.getElementById("notificationEmpty");
   const notificationUnreadLabel = document.getElementById("notificationUnreadLabel");
-
   let currentStudentUid = "";
   let notificationRecords = [];
-
   function renderNotifications() {
     if (!notificationList) return;
-
     const unreadCount = notificationRecords.length;
-
     if (notificationCountEl) {
       notificationCountEl.hidden = unreadCount === 0;
       notificationCountEl.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
     }
-
     if (notificationUnreadLabel) {
       notificationUnreadLabel.textContent = unreadCount
         ? `${unreadCount} thông báo mới nhất`
         : "Chưa có thông báo";
     }
-
     if (notificationEmpty) notificationEmpty.classList.toggle("show", notificationRecords.length === 0);
     notificationList.innerHTML = notificationRecords.map(item => `
       <a class="notification-item" href="/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(item.ticketId)}">
@@ -47,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </a>
     `).join("");
   }
-
   function readTicketNotificationHistory(tickets) {
     notificationRecords = tickets
       .flatMap(ticket => {
@@ -61,13 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .sort((a, b) => getMillis(b.createdAt) - getMillis(a.createdAt))
       .slice(0, 50);
-
     renderNotifications();
   }
-
   function openNotifications() {
     if (!notificationPanel) return;
-
     notificationPanel.classList.add("open");
     notificationPanel.setAttribute("aria-hidden", "false");
     notificationButton?.setAttribute("aria-expanded", "true");
@@ -76,10 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
       requestAnimationFrame(() => notificationBackdrop.classList.add("show"));
     }
   }
-
   function closeNotifications() {
     if (!notificationPanel) return;
-
     notificationPanel.classList.remove("open");
     notificationPanel.setAttribute("aria-hidden", "true");
     notificationButton?.setAttribute("aria-expanded", "false");
@@ -88,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (notificationBackdrop) notificationBackdrop.hidden = true;
     }, 200);
   }
-
   notificationButton?.addEventListener("click", () => {
     notificationPanel?.classList.contains("open") ? closeNotifications() : openNotifications();
   });
@@ -97,169 +83,110 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", event => {
     if (event.key === "Escape") closeNotifications();
   });
-
   renderNotifications();
-
   // ======================================================
   // STATUS
   // ======================================================
-
   const STATUS_META = {
     open: {
       label: "Đang mở",
       className: "status-open"
     },
-
     pending: {
       label: "Đang chờ",
       className: "status-open"
     },
-
     in_progress: {
       label: "Đang xử lý",
       className: "status-in_progress"
     },
-
     resolved: {
       label: "Đã giải quyết",
       className: "status-resolved"
     },
-
     closed: {
       label: "Đã đóng",
       className: "status-closed"
     }
   };
-
-
   // ======================================================
   // FIREBASE
   // ======================================================
-
   function getDatabase() {
-
     if (typeof db !== "undefined" && db) {
       return db;
     }
-
     return window.db || null;
   }
-
   function getAuth() {
-
     if (typeof auth !== "undefined" && auth) {
       return auth;
     }
-
     return window.auth || null;
   }
-
-
   // ======================================================
   // HELPER
   // ======================================================
-
   function firstValue(ticket, ...keys) {
-
     for (const key of keys) {
-
       if (
         ticket[key] !== undefined &&
         ticket[key] !== null &&
         String(ticket[key]).trim()
       ) {
-
         return ticket[key];
-
       }
-
     }
-
     return "";
-
   }
-
-
   function normalizeStatus(status) {
-
     if (!STATUS_META[status]) {
-
       return "open";
-
     }
-
     return status;
-
   }
-
-
   function getMillis(value) {
-
     if (!value) {
       return 0;
     }
-
     if (typeof value.toMillis === "function") {
       return value.toMillis();
     }
-
     if (typeof value.toDate === "function") {
       return value.toDate().getTime();
     }
-
     if (typeof value.seconds === "number") {
       return value.seconds * 1000;
     }
-
     const valueMillis =
       new Date(value).getTime();
-
     return Number.isNaN(valueMillis)
       ? 0
       : valueMillis;
-
   }
-
-
   function formatDate(value) {
-
     const millis = getMillis(value);
-
     return millis
       ? new Date(millis).toLocaleDateString("vi-VN")
       : (value || "—");
-
   }
-
-
   function escapeHTML(value) {
-
     const element =
       document.createElement("div");
-
     element.textContent =
       value == null
         ? ""
         : String(value);
-
     return element.innerHTML;
-
   }
-
-
   function setText(element, value) {
-
     if (element) {
       element.textContent = value;
     }
-
   }
-
-
   // ======================================================
   // NGÀY HIỆN TẠI
   // ======================================================
-
   setText(
     todayLabelEl,
     new Date().toLocaleDateString(
@@ -272,31 +199,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     )
   );
-
-
   // ======================================================
   // TÊN HỌC VIÊN
   // ======================================================
-
   function updateWelcomeName(name) {
-
     if (!welcomeNameEl) {
       return;
     }
-
     const displayName =
       (name || "Học viên").trim();
-
     welcomeNameEl.textContent =
       displayName || "Học viên";
-
   }
-
-
   // ======================================================
   // RENDER TICKET
   // ======================================================
-
   function renderHomepageSatisfaction(ticket, status) {
     if (status !== "closed" || ticket.satisfactionStatus !== "awaiting") return "";
     const round = Number(ticket.satisfactionRound) || 1;
@@ -310,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
   }
-
   async function submitHomepageSatisfaction(button) {
     const ticketId = button.dataset.ticketId;
     const choice = button.dataset.homeSatisfaction;
@@ -318,10 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const database = getDatabase();
     const user = getAuth()?.currentUser;
     if (!ticketId || !choice || !database || !user) return;
-
     const card = button.closest(".homepage-ticket-card, .recent-item-wrap");
     card?.querySelectorAll("[data-home-satisfaction]").forEach(item => { item.disabled = true; });
-
     try {
       await database.runTransaction(async transaction => {
         const ticketRef = database.collection("tickets").doc(ticketId);
@@ -334,7 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
           throw new Error("Yêu cầu đánh giá không còn hiệu lực. Vui lòng tải lại.");
         }
-
         const update = {
           satisfactionStatus: choice,
           satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -357,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         transaction.update(ticketRef, update);
       });
-
       if (choice === "unsatisfied") {
         window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
       }
@@ -367,37 +279,27 @@ document.addEventListener("DOMContentLoaded", () => {
       window.alert(error?.message || "Không thể lưu đánh giá. Vui lòng thử lại.");
     }
   }
-
   function renderRecentTickets(tickets) {
-
     if (!recentListEl) {
       return;
     }
-
     if (!tickets.length) {
-
       recentListEl.innerHTML = `
         <div class="empty-state">
           Bạn chưa có ticket nào.
           Hãy tạo yêu cầu đầu tiên.
         </div>
       `;
-
       return;
     }
-
-
     recentListEl.innerHTML =
       tickets
         .slice(0, 5)
         .map(ticket => {
-
           const status =
             normalizeStatus(ticket.status);
-
           const meta =
             STATUS_META[status];
-
           const number =
             firstValue(
               ticket,
@@ -405,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
               "ticket_num",
               "id"
             );
-
           const title =
             firstValue(
               ticket,
@@ -413,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
               "subject"
             ) ||
             "Không có tiêu đề";
-
           const category =
             firstValue(
               ticket,
@@ -421,7 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
               "ticketCategoryId",
               "category"
             );
-
           const issue =
             firstValue(
               ticket,
@@ -430,56 +329,41 @@ document.addEventListener("DOMContentLoaded", () => {
               "ticketType",
               "ticket_type"
             );
-
           const type =
             category &&
             issue &&
             category !== issue
-
               ? `${category} · ${issue}`
-
               : issue ||
                 category ||
                 "Khác";
-
-
           const query =
             encodeURIComponent(number);
-
-
           return `
-
             <div class="recent-item-wrap">
               <a
                 class="recent-item"
                 href="/HV/chat-hv/trao-doi-ticket.html?ticket=${query}"
               >
-
               <span class="recent-code">
                 ${escapeHTML(number)}
               </span>
-
               <span class="recent-title-wrap">
-
                 <span
                   class="recent-title"
                   title="${escapeHTML(title)}"
                 >
                   ${escapeHTML(title)}
                 </span>
-
                 <span class="recent-type">
                   ${escapeHTML(type)}
                 </span>
-
               </span>
-
               <span
                 class="status-badge ${meta.className}"
               >
                 ${meta.label}
               </span>
-
                 <span class="recent-date">
                   ${escapeHTML(
                     firstValue(ticket, "date") ||
@@ -489,15 +373,10 @@ document.addEventListener("DOMContentLoaded", () => {
               </a>
               ${renderHomepageSatisfaction(ticket, status)}
             </div>
-
           `;
-
         })
         .join("");
-
   }
-
-
     recentListEl?.addEventListener("click", event => {
     const button = event.target.closest("[data-home-satisfaction]");
     if (!button) return;
@@ -505,179 +384,114 @@ document.addEventListener("DOMContentLoaded", () => {
     event.stopPropagation();
     submitHomepageSatisfaction(button);
   });
-
-
   // ======================================================
   // FIREBASE
   // ======================================================
-
   const database =
-
     getDatabase();
-
   const authInstance =
     getAuth();
-
-
   if (!database) {
-
     setText(
       connectionLabelEl,
       "Chưa kết nối"
     );
-
     if (recentListEl) {
-
       recentListEl.innerHTML = `
         <div class="empty-state">
           Chưa cấu hình kết nối dữ liệu.
         </div>
       `;
-
     }
-
     return;
-
   }
-
-
   if (!authInstance) {
-
     setText(
       connectionLabelEl,
       "Chưa đăng nhập"
     );
-
     if (recentListEl) {
-
       recentListEl.innerHTML = `
         <div class="empty-state">
           Vui lòng đăng nhập để xem ticket.
         </div>
       `;
-
     }
-
     return;
-
   }
-
-
   // ======================================================
   // ĐỢI FIREBASE AUTH
   // ======================================================
-
   authInstance.onAuthStateChanged(async user => {
-
     // ----------------------------------------------------
     // CHƯA ĐĂNG NHẬP
     // ----------------------------------------------------
-
     if (!user) {
       currentStudentUid = "";
       notificationRecords = [];
       renderNotifications();
-
       updateWelcomeName("Học viên");
-
       setText(
         connectionLabelEl,
         "Chưa đăng nhập"
       );
-
       connectionDotEl?.classList.remove("live");
-
-
       setText(openTicketsEl, "0");
       setText(progressTicketsEl, "0");
       setText(resolvedTicketsEl, "0");
       setText(totalTicketsEl, "0");
-
-
       if (recentListEl) {
-
         recentListEl.innerHTML = `
           <div class="empty-state">
             Vui lòng đăng nhập để xem ticket của bạn.
           </div>
         `;
-
       }
-
       return;
-
     }
-
-
     // ----------------------------------------------------
     // ĐÃ ĐĂNG NHẬP
     // ----------------------------------------------------
-
     const currentUid =
       user.uid;
-
     currentStudentUid = currentUid;
-
-
     console.log(
       "Học viên hiện tại:",
       currentUid
     );
-
-
     // ====================================================
     // LẤY PROFILE
     // ====================================================
-
     try {
-
       const userDoc =
         await database
           .collection("users")
           .doc(currentUid)
           .get();
-
-
       const userData =
         userDoc.exists
           ? userDoc.data()
           : {};
-
-
       const displayName =
         userData.name ||
         user.displayName ||
         "Học viên";
-
-
       updateWelcomeName(displayName);
-
-
     } catch (error) {
-
       console.error(
         "Không thể lấy thông tin học viên:",
         error
       );
-
-
       updateWelcomeName(
         user.displayName ||
         "Học viên"
       );
-
     }
-
-
     // ====================================================
     // CHỈ LẤY TICKET CỦA USER ĐANG ĐĂNG NHẬP
     // ====================================================
-
     let ticketQuery;
-
-
     try {
-
       ticketQuery =
         database
           .collection("tickets")
@@ -686,40 +500,26 @@ document.addEventListener("DOMContentLoaded", () => {
             "==",
             currentUid
           );
-
-
     } catch (error) {
-
       console.error(
         "Không thể tạo truy vấn ticket:",
         error
       );
-
       return;
-
     }
-
-
     // ====================================================
     // REALTIME TICKET
     // ====================================================
-
     ticketQuery.onSnapshot(
-
       snapshot => {
-
         connectionDotEl?.classList.add("live");
-
         setText(
           connectionLabelEl,
           "Realtime"
         );
-
-
         // ----------------------------------------------
         // CHỈ CÁC TICKET CỦA USER HIỆN TẠI
         // ----------------------------------------------
-
         const tickets =
           snapshot.docs
             .map(doc => ({
@@ -731,43 +531,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 getMillis(b.createdAt) -
                 getMillis(a.createdAt)
             );
-
-
         // ----------------------------------------------
         // ĐẾM STATUS
         // ----------------------------------------------
-
         const counts = {
-
           open: 0,
-
           pending: 0,
-
           in_progress: 0,
-
           resolved: 0,
-
           closed: 0
-
         };
-
-
         tickets.forEach(ticket => {
-
           const status =
             normalizeStatus(
               ticket.status
             );
-
           counts[status]++;
-
         });
-
-
         // ----------------------------------------------
         // HIỂN THỊ THỐNG KÊ
         // ----------------------------------------------
-
         setText(
           openTicketsEl,
           counts.open +
@@ -775,26 +558,18 @@ document.addEventListener("DOMContentLoaded", () => {
           counts.in_progress +
           counts.resolved
         );
-
-
         setText(
           progressTicketsEl,
           counts.in_progress
         );
-
-
         setText(
           resolvedTicketsEl,
           counts.resolved
         );
-
-
         setText(
           totalTicketsEl,
           tickets.length
         );
-
-
         // Tương thích giao diện cũ
         setText(
           document.getElementById(
@@ -803,61 +578,40 @@ document.addEventListener("DOMContentLoaded", () => {
           counts.closed +
           counts.resolved
         );
-
-
         // ----------------------------------------------
         // RENDER
         // ----------------------------------------------
-
         renderRecentTickets(
           tickets
         );
-
         if (notificationPanel) {
           readTicketNotificationHistory(tickets);
         }
-
         console.log(
           `Đã tải ${tickets.length} ticket của user ${currentUid}`
         );
-
       },
-
-
       error => {
-
         console.error(
           "Không thể tải ticket của học viên:",
           error
         );
-
-
         connectionDotEl?.classList.remove(
           "live"
         );
-
-
         setText(
           connectionLabelEl,
           "Mất kết nối"
         );
-
-
         if (recentListEl) {
-
           recentListEl.innerHTML = `
             <div class="empty-state">
               Không thể tải ticket.
               Vui lòng kiểm tra kết nối và thử lại.
             </div>
           `;
-
         }
-
       }
-
     );
-
   });
-
 });
