@@ -117,6 +117,15 @@
   
     const sendChatBtn =
         document.getElementById("sendChatBtn");
+    const chatImageInput = document.getElementById("chatImageInput");
+    const chatAttachmentPreview = document.getElementById("chatAttachmentPreview");
+    const chatAttachmentHint = document.getElementById("chatAttachmentHint");
+    const aiSuggestBtn = document.getElementById("aiSuggestBtn");
+    const chatAiSuggestions = document.getElementById("chatAiSuggestions");
+    let pendingImage = null;
+    let chatConversationMessages = [];
+    let aiDraftText = "";
+    const AI_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
   
     const closeChatBtn =
         document.getElementById("closeChatBtn");
@@ -537,7 +546,233 @@
     }
   
   
-    function getStudentMessageCount(ticket) {
+function getTicketAttachmentMeta(ticket) {
+  const data = ticket || {};
+  return {
+    name: data.attachmentName || data.imageName || data.fileName || "Hình ảnh học viên",
+    type: data.attachmentType || data.imageType || data.fileType || "image/*",
+    size: Number(data.attachmentSize || data.imageSize || data.fileSize || 0),
+    dataUrl: data.attachmentDataUrl || data.imageDataUrl || ""
+  };
+}
+function renderTicketAttachmentPlaceholder(ticket) {
+    const meta = getTicketAttachmentMeta(ticket);
+    // Nếu ticket không có thông tin tệp thì không tạo placeholder.
+    if (!meta.directUrl && !meta.path) {
+        return "";
+    }
+    const sizeLabel = meta.size > 0
+        ? `${Math.max(1, Math.round(meta.size / 1024))} KB`
+        : "";
+    return `
+        <div
+            class="detail-attachment-loading"
+            id="ticketAttachmentDetail"
+            data-ticket-id="${escapeHtml(ticket.id || "")}"
+        >
+            <span class="material-symbols-rounded">attach_file</span>
+            <span>
+                Đang tải tệp đính kèm:
+                ${escapeHtml(meta.name)}
+                ${sizeLabel ? ` · ${escapeHtml(sizeLabel)}` : ""}
+            </span>
+        </div>
+    `;
+}
+async function resolveTicketAttachmentUrl(ticket) {
+    if (!ticket) {
+        return "";
+    }
+    const directUrl = String(
+        ticket.attachmentUrl ||
+        ticket.imageUrl ||
+        ticket.downloadUrl ||
+        ticket.fileUrl ||
+        ""
+    ).trim();
+    if (directUrl) {
+        console.log("Attachment URL from ticket:", directUrl);
+        return directUrl;
+    }
+    const storagePath = String(
+        ticket.storagePath ||
+        ticket.attachmentPath ||
+        ticket.filePath ||
+        ""
+    ).trim();
+    if (storagePath && typeof firebase.storage === "function") {
+        try {
+            const url = await firebase
+                .storage()
+                .ref()
+                .child(storagePath)
+                .getDownloadURL();
+            console.log("Attachment URL from storagePath:", url);
+            return url;
+        } catch (error) {
+            console.error(
+                "Không thể lấy URL từ storagePath:",
+                storagePath,
+                error
+            );
+        }
+    }
+    // Tìm ảnh trong messages của chính ticket.
+    const ticketId = ticket.id || ticket.ticketNum;
+    if (ticketId && db) {
+        try {
+            const snapshot = await db
+                .collection("tickets")
+                .doc(ticketId)
+                .collection("messages")
+                .get();
+            for (const messageDoc of snapshot.docs) {
+                const message = messageDoc.data() || {};
+                const messageUrl = String(
+                    message.imageUrl ||
+                    message.attachmentUrl ||
+                    message.downloadUrl ||
+                    message.fileUrl ||
+                    ""
+                ).trim();
+                if (messageUrl) {
+                    console.log(
+                        "Attachment URL from message:",
+                        messageUrl
+                    );
+                    return messageUrl;
+                }
+            }
+        } catch (error) {
+            console.error(
+                "Không thể đọc messages để tìm ảnh:",
+                error
+            );
+        }
+    }
+    console.warn("Ticket không có URL hoặc Storage path:", ticket);
+    return "";
+}
+        async function hydrateTicketAttachment(ticket) {
+            const holder = document.getElementById("ticketAttachmentDetail");
+            if (!holder) {
+                return;
+            }
+            const meta = getTicketAttachmentMeta(ticket);
+            const url = await resolveTicketAttachmentUrl(ticket);
+            if (!url) {
+                holder.outerHTML = `
+                    <div class="detail-attachment-unavailable">
+                        <span class="material-symbols-rounded">image_not_supported</span>
+                        <span>Không tìm thấy URL tệp đính kèm.</span>
+                    </div>
+                `;
+                return;
+            }
+            const isImage =
+                String(meta.type || "")
+                    .toLowerCase()
+                    .startsWith("image/") ||
+                String(url).startsWith("data:image/") ||
+                /\.(jpg|jpeg|png|gif|webp|bmp|svg)(?:[?#]|$)/i.test(url);
+            if (!isImage) {
+                holder.outerHTML = `
+                    <a
+                        class="detail-attachment-link"
+                        href="${escapeHtml(url)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <span
+                            class="detail-attachment-caption"
+                            style="margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;"
+                        >
+                            <span class="material-symbols-rounded">attach_file</span>
+                            ${escapeHtml(meta.name)} · Mở tệp
+                        </span>
+                    </a>
+                `;
+                return;
+            }
+            holder.outerHTML = `
+                <figure class="detail-attachment-figure">
+                    <a
+                        class="detail-attachment-link"
+                        href="${escapeHtml(url)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Mở ảnh học viên"
+                    >
+                        <img
+                            class="detail-attachment-full-image"
+                            src="${escapeHtml(url)}"
+                            alt="${escapeHtml(meta.name)}"
+                            loading="eager"
+                        >
+                    </a>
+                    <figcaption class="detail-attachment-caption">
+                        <span class="material-symbols-rounded">open_in_new</span>
+                        ${escapeHtml(meta.name)}
+                    </figcaption>
+                </figure>
+            `;
+            const image = document.querySelector(
+                ".detail-attachment-figure img"
+            );
+            if (image) {
+                image.addEventListener("error", () => {
+                    image.closest(".detail-attachment-figure").outerHTML = `
+                        <div class="detail-attachment-unavailable">
+                            <span class="material-symbols-rounded">broken_image</span>
+                            <span>
+                                Không tải được ảnh. Hãy kiểm tra URL Firebase Storage,
+                                Storage Rules và quyền truy cập bucket.
+                            </span>
+                        </div>
+                    `;
+                }, { once: true });
+            }
+        }
+    async function resolveTicketAttachmentUrl(ticket) {
+        const meta = getTicketAttachmentMeta(ticket);
+        if (meta.directUrl) return meta.directUrl;
+        if (meta.path && typeof firebase !== "undefined" && firebase.storage) {
+            try { return await firebase.storage().ref(meta.path).getDownloadURL(); } catch (error) { console.info("Không lấy được attachmentPath", meta.path); }
+        }
+        // Tìm URL ảnh đã lưu trong các message của ticket.
+        if (db && ticket?.id) {
+            try {
+                const snapshot = await db.collection(TICKET_COLLECTION).doc(ticket.id).collection(CHAT_SUBCOLLECTION).orderBy("createdAt", "asc").get();
+                for (const docSnap of snapshot.docs) {
+                    const message = docSnap.data() || {};
+                    const url = message.imageUrl || message.attachmentUrl || message.downloadUrl || "";
+                    if (url) return url;
+                }
+            } catch (error) { console.info("Không đọc được ảnh từ messages", error); }
+        }
+        // Không tự đoán đường dẫn Storage. Path sai sẽ gây request lỗi/CORS lặp lại.
+        // Chỉ sử dụng attachmentPath/storagePath thật sự được lưu trong Firebase.
+        return "";
+    }
+    function renderTicketAttachmentPlaceholder(ticket) {
+  const meta = getTicketAttachmentMeta(ticket);
+  if (!meta.dataUrl) return "";
+  const safeUrl = String(meta.dataUrl);
+  if (!safeUrl.startsWith("data:image/")) return "";
+  return `<figure class="detail-attachment-figure">
+    <a class="detail-attachment-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener" title="Mở ảnh học viên">
+      <img class="detail-attachment-full-image" src="${escapeHtml(safeUrl)}" alt="${escapeHtml(meta.name)}" loading="lazy">
+    </a>
+    <figcaption class="detail-attachment-caption">
+      <span class="material-symbols-rounded">image</span>${escapeHtml(meta.name)}
+    </figcaption>
+  </figure>`;
+}
+async function hydrateTicketAttachment(ticket) {
+  // Ảnh Base64 đã được render trực tiếp; không gọi Firebase Storage.
+  return;
+}
+function getStudentMessageCount(ticket) {
         const count = Number(ticket?.studentMessageCount || 0);
         return Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
     }
@@ -1534,26 +1769,7 @@
                 </td>
   
                 <td>
-                    <div class="content-cell">
-  
-                        <strong>
-                            ${escapeHtml(
-                                title
-                            )}
-                        </strong>
-  
-                        <small>
-                            ${escapeHtml(
-                                getTicketDescription(
-                                    ticket
-                                )
-                            ).slice(
-                                0,
-                                100
-                            )}
-                        </small>
-  
-                    </div>
+                    <div class="content-cell"><strong class="content-title-only">${escapeHtml(title || "Không có tiêu đề")}</strong></div>
                 </td>
   
                 <td>
@@ -2197,6 +2413,7 @@
                             "Không có nội dung."
                         )}
                     </div>
+                    ${renderTicketAttachmentPlaceholder(ticket)}
   
                 </div>
   
@@ -2225,6 +2442,7 @@
         `;
   
   
+        hydrateTicketAttachment(ticket);
         const openChatButton =
             document.getElementById(
                 "openChatFromDrawer"
@@ -2698,11 +2916,9 @@
                     updatedByEmail: currentCSUser?.email || "",
                     notificationHistory: appendNotificationHistory(latestTicket, notification)
                 };
-
                 if (normalizedStatus === "closed" && latestTicket.status !== "closed") {
                     const satisfactionAttemptCount = Number(latestTicket.satisfactionAttemptCount) || 0;
                     statusUpdate.closedAt = firebase.firestore.FieldValue.serverTimestamp();
-
                     if (latestTicket.satisfactionStatus === "unsatisfied" && satisfactionAttemptCount < 2) {
                         statusUpdate.satisfactionAttemptCount = satisfactionAttemptCount + 1;
                         statusUpdate.satisfactionRound = satisfactionAttemptCount + 1;
@@ -2713,7 +2929,6 @@
                 } else if (normalizedStatus !== "closed" && latestTicket.status === "closed") {
                     statusUpdate.closedAt = null;
                 }
-
                 transaction.update(ticketRef, statusUpdate);
             });
   
@@ -3066,8 +3281,8 @@
   
                         syncStudentMessageCount(ticket, snapshot.docs);
   
-                        if (
-                            snapshot.empty
+                        chatConversationMessages = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                        if (snapshot.empty
                         ) {
   
                             chatMessages.innerHTML = `
@@ -3175,9 +3390,8 @@
                 </div>
   
                 <div class="chat-message-content">
-                    ${escapeHtml(
-                        text
-                    )}
+                    ${escapeHtml(text)}
+                    ${(message.imageDataUrl || message.attachmentDataUrl || message.imageUrl) ? `<a class="chat-message-image-link" href="${escapeHtml(message.imageDataUrl || message.attachmentDataUrl || message.imageUrl)}" target="_blank" rel="noopener" title="Mở ảnh học viên"><img class="chat-message-image" src="${escapeHtml(message.imageDataUrl || message.attachmentDataUrl || message.imageUrl)}" alt="${escapeHtml(message.imageName || "Ảnh đính kèm")}"><span class="chat-message-image-caption"><span class="material-symbols-rounded">image</span>${escapeHtml(message.imageName || "Ảnh đính kèm")}</span></a>` : ""}
                 </div>
   
                 <div class="chat-message-time">
@@ -3193,7 +3407,98 @@
     }
   
   
-    /* =========================================================
+        function clearPendingImage() {
+        pendingImage = null;
+        if (chatImageInput) chatImageInput.value = "";
+        if (chatAttachmentPreview) {
+            chatAttachmentPreview.hidden = true;
+            chatAttachmentPreview.innerHTML = "";
+        }
+        if (chatAttachmentHint) chatAttachmentHint.textContent = "Ảnh tối đa 700 KB";
+    }
+    function renderPendingImage(file, dataUrl) {
+        if (!chatAttachmentPreview) return;
+        chatAttachmentPreview.hidden = false;
+        chatAttachmentPreview.innerHTML = `<span class="attachment-file-icon"><span class="material-symbols-rounded">image</span></span><span class="attachment-file-meta"><strong>${escapeHtml(file.name)}</strong><small>Hình ảnh · ${Math.round(file.size / 1024)} KB</small></span><button type="button" id="removeChatImage" aria-label="Xóa tệp hình ảnh" title="Xóa tệp">close</button>`;
+        document.getElementById("removeChatImage")?.addEventListener("click", clearPendingImage);
+        if (chatAttachmentHint) chatAttachmentHint.textContent = "Ảnh đã sẵn sàng để gửi";
+    }
+    chatImageInput?.addEventListener("change", event => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("Vui lòng chọn tệp hình ảnh.");
+            clearPendingImage();
+            return;
+        }
+        if (file.size > 700 * 1024) {
+            alert("Ảnh quá lớn. Vui lòng chọn ảnh không vượt quá 700 KB.");
+            clearPendingImage();
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            pendingImage = { name: file.name, type: file.type, dataUrl: String(reader.result) };
+            renderPendingImage(file, pendingImage.dataUrl);
+        };
+        reader.readAsDataURL(file);
+    });
+    function getStudentConversationText() {
+        return chatConversationMessages.filter(message => {
+            const sender = message.senderUid || message.senderId || message.uid || "";
+            return sender !== currentCSUser?.uid;
+        }).map(message => message.text || message.message || "").filter(Boolean).join("\n");
+    }
+    function getLocalAiDraft(ticket, conversation) {
+        const title = getTicketTitle(ticket) || "yêu cầu của bạn";
+        const excerpt = conversation ? conversation.slice(-320) : "";
+        return `Chào bạn, mình đã tiếp nhận yêu cầu “${title}”. ${excerpt ? `Mình đã đọc nội dung trao đổi của bạn và ghi nhận: “${excerpt}”. ` : ""}Mình sẽ kiểm tra với bộ phận phụ trách và phản hồi bạn sớm nhất. Nếu có ảnh chụp màn hình hoặc thông báo lỗi, bạn có thể gửi thêm để mình hỗ trợ chính xác hơn nhé.`;
+    }
+    async function createAiDraft() {
+        const conversation = chatConversationMessages.map(message => ({
+            role: (message.senderUid || message.senderId || message.uid || "") === currentCSUser?.uid ? "assistant" : "user",
+            text: message.text || message.message || "",
+            imageName: message.imageName || ""
+        })).filter(message => message.text || message.imageName).slice(-20);
+        const latestStudentMessage = [...conversation].reverse().find(message => message.role === "user")?.text || getTicketTitle(selectedTicket) || "Yêu cầu của học viên";
+        const ticketContext = [{
+            category: selectedTicket?.category || selectedTicket?.type || "",
+            question: getTicketTitle(selectedTicket) || "",
+            answer: selectedTicket?.description || selectedTicket?.content || ""
+        }];
+        const aiInstruction = [
+            "Bạn là trợ lý Customer Success của Học Viện.",
+            "Hãy đọc toàn bộ lịch sử trao đổi được gửi trong history trước khi trả lời.",
+            "Chỉ dùng thông tin có trong lịch sử, ngữ cảnh ticket và FAQ; nếu thiếu dữ liệu, phải nói rõ cần CS kiểm tra thêm.",
+            "Không bịa chính sách, học phí, thời hạn, kết quả xử lý hoặc cam kết chắc chắn.",
+            "Viết câu trả lời tiếng Việt lịch sự, rõ ràng, ngắn gọn, xưng mình và gọi người nhận là bạn.",
+            "Chỉ trả về nội dung câu trả lời cho học viên, không giải thích quá trình suy luận."
+        ].join(" ");
+        const response = await fetch(AI_WEB_APP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body: new URLSearchParams({
+                question: `${aiInstruction}\n\nCâu hỏi mới nhất của học viên:\n${latestStudentMessage}`,
+                history: JSON.stringify(conversation),
+                faqContext: JSON.stringify(ticketContext)
+            })
+        });
+        if (!response.ok) throw new Error(`Gemini gateway HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data?.success || !data?.answer) throw new Error(data?.error || "Gemini không trả về câu trả lời hợp lệ.");
+        return String(data.answer).trim();
+    }
+    async function showAiSuggestions() {
+        if (!chatAiSuggestions || !selectedTicket) return;
+        chatAiSuggestions.hidden = false;
+        chatAiSuggestions.innerHTML = `<div class="ai-panel-head"><span class="material-symbols-rounded">auto_awesome</span>AI đang phân tích</div><p class="ai-panel-status">Đang đọc toàn bộ nội dung trao đổi của học viên...</p>`;
+        aiDraftText = await createAiDraft();
+        chatAiSuggestions.innerHTML = `<div class="ai-panel-head"><span class="material-symbols-rounded">auto_awesome</span>Gợi ý trả lời ẩn</div><p class="ai-panel-status">Bản nháp chỉ hiển thị cho CS và chưa được gửi cho học viên.</p><textarea class="ai-draft" id="aiDraftText">${escapeHtml(aiDraftText)}</textarea><div class="ai-panel-actions"><button class="ai-panel-action" id="refreshAiDraft" type="button"><span class="material-symbols-rounded">refresh</span>Tạo lại</button><button class="ai-panel-action primary" id="insertAiDraft" type="button"><span class="material-symbols-rounded">content_paste</span>Dùng câu trả lời</button></div>`;
+        document.getElementById("insertAiDraft")?.addEventListener("click", () => { const draft = document.getElementById("aiDraftText")?.value || aiDraftText; if (chatInput) { chatInput.value = draft; chatInput.focus(); } });
+        document.getElementById("refreshAiDraft")?.addEventListener("click", showAiSuggestions);
+    }
+    aiSuggestBtn?.addEventListener("click", showAiSuggestions);
+/* =========================================================
        SEND CHAT
     ========================================================= */
   
@@ -3252,7 +3557,7 @@
             chatInput.value.trim();
   
   
-        if (!text) {
+        if (!text && !pendingImage) {
             return;
         }
   
@@ -3280,7 +3585,7 @@
             const messageRef = ticketRef.collection(CHAT_SUBCOLLECTION).doc();
             const notification = createNotificationData(selectedTicket, {
                 type: "message",
-                preview: text
+                preview: text || "Đã gửi một hình ảnh"
             });
   
             await db.runTransaction(async transaction => {
@@ -3290,8 +3595,10 @@
                 const shouldAskAfterReply = latestTicket.status !== "closed" && satisfactionAttemptCount === 0 && latestTicket.satisfactionStatus !== "awaiting";
   
                 transaction.set(messageRef, {
-
                     text,
+                    imageUrl: pendingImage?.dataUrl || "",
+                    imageName: pendingImage?.name || "",
+                    imageType: pendingImage?.type || "",
                     senderUid: currentCSUser.uid,
                     senderId: currentCSUser.uid,
                     senderEmail: currentCSUser.email || "",
@@ -3302,13 +3609,12 @@
                 });
   
                 const messageUpdate = {
-                    lastMessage: text,
-                    lastCSReply: text,
+                    lastMessage: text || "Đã gửi một hình ảnh",
+                    lastCSReply: text || "Đã gửi một hình ảnh",
                     lastCSReplyAt: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     notificationHistory: appendNotificationHistory(latestTicket, notification)
                 };
-
                 if (shouldAskAfterReply) {
                     messageUpdate.satisfactionAttemptCount = 1;
                     messageUpdate.satisfactionRound = 1;
@@ -3316,13 +3622,13 @@
                     messageUpdate.satisfactionAskedAt = firebase.firestore.FieldValue.serverTimestamp();
                     messageUpdate.satisfactionRespondedAt = null;
                 }
-
                 transaction.update(ticketRef, messageUpdate);
             });
   
   
-            chatInput.value =
-                "";
+            chatInput.value = "";
+            clearPendingImage();
+            if (chatAiSuggestions) { chatAiSuggestions.hidden = true; chatAiSuggestions.innerHTML = ""; }
   
   
         } catch (error) {

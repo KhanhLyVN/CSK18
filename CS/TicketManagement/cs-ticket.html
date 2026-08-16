@@ -28,8 +28,19 @@
       </section>
     </main>
   </div>
-  <aside class="ticket-drawer" id="ticketDrawer" aria-hidden="true" aria-labelledby="drawerTitle"><div class="drawer-head"><div><span class="drawer-kicker">THÔNG TIN TICKET</span><h2 id="drawerTitle">Chi tiết ticket</h2></div><button class="icon-button close-button" id="closeDrawerBtn" type="button" aria-label="Đóng thông tin ticket" title="Đóng">×</button></div><div class="drawer-body" id="drawerBody"><div class="drawer-placeholder">Chọn dấu ba chấm ở một dòng ticket để xem thông tin.</div></div><section class="chat-panel" id="chatPanel" aria-hidden="true" aria-labelledby="chatTitle"><div class="chat-head"><div><span class="drawer-kicker">TRAO ĐỔI TRỰC TIẾP</span><h2 id="chatTitle">Chat với học viên</h2></div><button class="icon-button close-button" id="closeChatBtn" type="button" aria-label="Đóng khung chat" title="Đóng">×</button></div><div class="chat-ticket-context" id="chatTicketContext">—</div><div class="chat-messages" id="chatMessages"><div class="thread-empty">Chưa chọn ticket.</div></div><div class="chat-composer"><textarea id="chatInput" rows="3" placeholder="Nhập tin nhắn gửi học viên..."></textarea><button id="sendChatBtn" class="send-button" type="button">Gửi tin nhắn</button></div></section></aside>
-  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="ticket-drawer" id="ticketDrawer" aria-hidden="true" aria-labelledby="drawerTitle"><div class="drawer-head"><div><span class="drawer-kicker">THÔNG TIN TICKET</span><h2 id="drawerTitle">Chi tiết ticket</h2></div><button class="icon-button close-button" id="closeDrawerBtn" type="button" aria-label="Đóng thông tin ticket" title="Đóng">×</button></div><div class="drawer-body" id="drawerBody"><div class="drawer-placeholder">Chọn dấu ba chấm ở một dòng ticket để xem thông tin.</div></div><section class="chat-panel" id="chatPanel" aria-hidden="true" aria-labelledby="chatTitle"><div class="chat-head"><div><span class="drawer-kicker">TRAO ĐỔI TRỰC TIẾP</span><h2 id="chatTitle">Chat với học viên</h2></div><button class="icon-button close-button" id="closeChatBtn" type="button" aria-label="Đóng khung chat" title="Đóng">×</button></div><div class="chat-ticket-context" id="chatTicketContext">—</div><div class="chat-messages" id="chatMessages"><div class="thread-empty">Chưa chọn ticket.</div></div><div class="chat-composer">
+  <div class="chat-attachment-preview" id="chatAttachmentPreview" hidden></div>
+  <section class="chat-ai-suggestions" id="chatAiSuggestions" hidden aria-live="polite"></section>
+  <textarea id="chatInput" rows="3" placeholder="Nhập tin nhắn gửi học viên..."></textarea>
+  <div class="chat-composer-actions">
+    <label class="chat-tool-button" for="chatImageInput" title="Đính kèm hình ảnh" aria-label="Đính kèm hình ảnh"><span class="material-symbols-rounded">attach_file</span><input id="chatImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></label>
+    <button id="aiSuggestBtn" class="chat-tool-button ai-tool-button" type="button" title="Gọi AI gợi ý trả lời" aria-label="Gọi AI gợi ý trả lời"><span class="material-symbols-rounded">auto_awesome</span><span>AI gợi ý</span></button>
+    <span class="chat-tool-hint" id="chatAttachmentHint">Tệp ảnh tối đa 700 KB</span>
+    <button id="sendChatBtn" class="send-button" type="button"><span class="material-symbols-rounded">send</span> Gửi</button>
+  </div>
+</div>
+</section>
+    </aside>
   <script src="/CS/navbar.js"></script>
   <script src="/CS/TicketManagement/cs.js"></script>
 </body>

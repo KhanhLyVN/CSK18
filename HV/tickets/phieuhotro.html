@@ -12,14 +12,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
-
 <script>
   window.db = window.db || (typeof db !== "undefined" ? db : null);
   window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script> -->
 </head>
 <body data-nav-page="create">
   <div class="app">
@@ -31,7 +29,6 @@
             <div class="clock" id="todayStr">—</div>
           </div>
         </div>
-
   
         <div class="layout" id="layoutContainer">
           <!-- FORM VIEW -->
@@ -99,7 +96,7 @@
                   <strong>Chọn tệp</strong> hoặc kéo thả vào đây
                   <div class="file-name" id="fileName"></div>
                 </div>
-                <input type="file" id="fFile" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.zip" style="display:none">
+                <input type="file" id="fFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none">
               </div>
   
               <div class="error-text" id="errorText">Vui lòng điền đầy đủ các trường bắt buộc (*).</div>
@@ -140,7 +137,6 @@
               </div>
             </div>
           </div>
-
           <div class="stub-wrap" id="stubWrap">
             <div class="stub-label">Phiếu ghi nhận</div>
             <div class="stub">
@@ -164,7 +160,6 @@
         </div>
       </div>
   </div>
-
 <script src="/HV/navbar.js"></script>
 <script type="module" src="/HV/tickets/phieuhotro.js"></script>
 </body>
