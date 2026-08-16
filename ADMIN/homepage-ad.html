@@ -25,20 +25,108 @@
     <!-- Main Content Area -->
     <main class="main-content">
       <!-- Header Topbar -->
-      <header class="topbar">
-        <button id="menuBtn" class="icon-btn mobile-only">☰</button>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          type="button"
+          id="menuBtn"
+          class="icon-btn mobile-only"
+          title="Mở menu"
+          aria-label="Mở menu"
+        >
+          <span class="material-symbols-rounded">
+            menu
+          </span>
+        </button>
         <div class="connection">
-          <i id="connectionDot"></i>
-          <span id="connectionLabel">Đang kết nối Firebase...</span>
+          <span
+            id="connectionDot"
+            class="connection-dot"
+          ></span>
+          <span id="connectionLabel">
+            Đang kết nối Firebase...
+          </span>
         </div>
-        <div class="top-actions">
-          <button class="icon-btn" id="noticeBtn" title="Thông báo">
-            ♧<em></em>
+      </div>
+      <!-- ===============================================
+           TOP ACTIONS
+      ================================================ -->
+      <div class="top-actions">
+        <!-- NOTIFICATION -->
+        <div class="notification-wrapper">
+          <button
+            type="button"
+            class="icon-btn notification-btn"
+            id="noticeBtn"
+            title="Thông báo"
+            aria-label="Thông báo"
+            aria-expanded="false"
+          >
+            <span class="material-symbols-rounded">
+              notifications
+            </span>
+            <span
+              id="noticeBadge"
+              class="notice-badge hidden"
+            >
+              0
+            </span>
           </button>
-          <span class="top-admin">T. Admin</span>
-          <div class="avatar avatar-admin small-mark">AC</div>
+          <!-- ===========================================
+               NOTIFICATION PANEL
+          ============================================ -->
+          <div
+            id="notificationPanel"
+            class="notification-panel"
+            hidden
+          >
+            <div class="notification-header">
+              <div>
+                <strong>Thông báo</strong>
+                <small id="notificationCount">
+                  Không có thông báo mới
+                </small>
+              </div>
+              <button
+                type="button"
+                id="markAllReadBtn"
+                class="notification-action"
+              >
+                Đánh dấu đã đọc
+              </button>
+            </div>
+            <div
+              id="notificationList"
+              class="notification-list"
+            >
+              <div class="notification-empty">
+                <span class="material-symbols-rounded">
+                  notifications_none
+                </span>
+                <p>
+                  Không có thông báo mới
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </header>
+        <!-- ADMIN NAME -->
+        <span
+          class="top-admin"
+          id="topAdminName"
+        >
+          Admin
+        </span>
+        <!-- ADMIN AVATAR -->
+        <div
+          class="avatar avatar-admin"
+          id="topAdminAvatar"
+          aria-label="Tài khoản Admin"
+        >
+          AD
+        </div>
+      </div>
+    </header>
       <div class="content-wrap">
         <!-- Hero Section -->
         <section class="hero">

@@ -21,52 +21,116 @@
   /* =========================================================
    TOPBAR
 ========================================================= */
+/* =========================================================
+   TOPBAR
+========================================================= */
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 50;
-  height: 72px;
+  z-index: 100;
+  min-height: 72px;
   display: flex;
   align-items: center;
-  padding:
-    0 42px;
-  border-bottom:
-    1px solid var(--line);
-  background:
-    rgba(255,253,249,.92);
-  backdrop-filter:
-    blur(14px);
+  justify-content: space-between;
+  padding: 0 42px;
+  background: rgba(255, 253, 249, .94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* =========================================================
+   CONNECTION
+========================================================= */
 .connection {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--soft);
-  font-size: 11px;
+  gap: 9px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
 }
-.connection i {
+.connection-dot {
   width: 8px;
   height: 8px;
+  flex: 0 0 8px;
   border-radius: 50%;
-  background: #b7aaa0;
+  background: #B7AAA0;
+  transition: .2s ease;
 }
-.connection i.live {
+.connection-dot.live {
   background: var(--green);
   box-shadow:
-    0 0 0 4px
-    rgba(93,133,87,.13);
+    0 0 0 4px rgba(94, 127, 82, .13);
 }
+.connection-dot.error {
+  background: var(--danger);
+  box-shadow:
+    0 0 0 4px rgba(162, 59, 46, .13);
+}
+/* =========================================================
+   ICON BUTTON
+========================================================= */
+.icon-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink-soft);
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+.icon-btn:hover {
+  background: var(--cream);
+  border-color:
+    rgba(93, 7, 3, .22);
+  color: var(--maroon);
+  transform:
+    translateY(-1px);
+}
+.icon-btn:active {
+  transform: translateY(0);
+}
+.icon-btn .material-symbols-rounded {
+  font-size: 21px;
+}
+/* =========================================================
+   MOBILE
+========================================================= */
+.mobile-only {
+  display: none;
+}
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
 .top-actions {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-left: auto;
 }
 .top-admin {
-  color: var(--maroon);
+  color: var(--ink);
   font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
 }
+/* =========================================================
+   AVATAR
+========================================================= */
 .avatar {
   width: 38px;
   height: 38px;
@@ -74,34 +138,158 @@
   place-items: center;
   border-radius: 11px;
   background: var(--cream);
+  border: 1px solid var(--line);
   color: var(--maroon);
   font-size: 11px;
   font-weight: 800;
 }
-.small-mark {
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+.notification-wrapper {
+  position: relative;
+}
+.notification-btn {
+  position: relative;
+}
+.notice-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--paper);
+  border-radius: 999px;
+  background: var(--danger);
+  color: white;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+}
+.notice-badge.hidden {
+  display: none !important;
+}
+/* =========================================================
+   NOTIFICATION PANEL
+========================================================= */
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 360px;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  box-shadow:
+    0 18px 50px rgba(42, 23, 18, .14);
+  z-index: 500;
+}
+/* =========================================================
+   NOTIFICATION HEADER
+========================================================= */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.notification-header strong {
+  display: block;
+  color: var(--maroon);
+  font-size: 13px;
+  font-weight: 800;
+}
+.notification-header small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.notification-action {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--maroon);
+  font-size: 9px;
+  font-weight: 700;
+}
+.notification-action:hover {
+  text-decoration: underline;
+}
+/* =========================================================
+   NOTIFICATION LIST
+========================================================= */
+.notification-list {
+  max-height: 330px;
+  overflow-y: auto;
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background .15s ease;
+}
+.notification-item:hover {
+  background: var(--cream-pale);
+}
+.notification-icon {
   width: 34px;
   height: 34px;
-}
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  display: inline-grid;
-  place-items: center;
-  border:
-    1px solid transparent;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--soft);
-  font-size: 17px;
-  transition: .18s ease;
-}
-.icon-btn:hover {
-  border-color: var(--line);
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
   background: var(--cream);
   color: var(--maroon);
 }
-.mobile-only {
-  display: none;
+.notification-icon .material-symbols-rounded {
+  font-size: 18px;
+}
+.notification-content {
+  min-width: 0;
+  flex: 1;
+}
+.notification-content strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 11px;
+}
+.notification-content p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.notification-time {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 8px;
+}
+.notification-empty {
+  padding: 35px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.notification-empty .material-symbols-rounded {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--cream);
+  font-size: 32px;
+}
+.notification-empty p {
+  margin: 0;
+  font-size: 10px;
 }
 .log-detail-hero { display:flex; align-items:center; gap:12px; padding:16px; margin-bottom:14px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(135deg,var(--cream-pale),#fff); }
 .log-detail-hero-copy { min-width:0; flex:1; }
@@ -127,20 +315,108 @@
     <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
     <main class="main-content">
       <!-- Header Topbar -->
-      <header class="topbar">
-        <button id="menuBtn" class="icon-btn mobile-only">☰</button>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          type="button"
+          id="menuBtn"
+          class="icon-btn mobile-only"
+          title="Mở menu"
+          aria-label="Mở menu"
+        >
+          <span class="material-symbols-rounded">
+            menu
+          </span>
+        </button>
         <div class="connection">
-          <i id="connectionDot"></i>
-          <span id="connectionLabel">Đang kết nối Firebase...</span>
+          <span
+            id="connectionDot"
+            class="connection-dot"
+          ></span>
+          <span id="connectionLabel">
+            Đang kết nối Firebase...
+          </span>
         </div>
-        <div class="top-actions">
-          <button class="icon-btn" id="noticeBtn" title="Thông báo">
-            ♧<em></em>
+      </div>
+      <!-- ===============================================
+           TOP ACTIONS
+      ================================================ -->
+      <div class="top-actions">
+        <!-- NOTIFICATION -->
+        <div class="notification-wrapper">
+          <button
+            type="button"
+            class="icon-btn notification-btn"
+            id="noticeBtn"
+            title="Thông báo"
+            aria-label="Thông báo"
+            aria-expanded="false"
+          >
+            <span class="material-symbols-rounded">
+              notifications
+            </span>
+            <span
+              id="noticeBadge"
+              class="notice-badge hidden"
+            >
+              0
+            </span>
           </button>
-          <span class="top-admin">T. Admin</span>
-          <div class="avatar avatar-admin small-mark">AC</div>
+          <!-- ===========================================
+               NOTIFICATION PANEL
+          ============================================ -->
+          <div
+            id="notificationPanel"
+            class="notification-panel"
+            hidden
+          >
+            <div class="notification-header">
+              <div>
+                <strong>Thông báo</strong>
+                <small id="notificationCount">
+                  Không có thông báo mới
+                </small>
+              </div>
+              <button
+                type="button"
+                id="markAllReadBtn"
+                class="notification-action"
+              >
+                Đánh dấu đã đọc
+              </button>
+            </div>
+            <div
+              id="notificationList"
+              class="notification-list"
+            >
+              <div class="notification-empty">
+                <span class="material-symbols-rounded">
+                  notifications_none
+                </span>
+                <p>
+                  Không có thông báo mới
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </header>
+        <!-- ADMIN NAME -->
+        <span
+          class="top-admin"
+          id="topAdminName"
+        >
+          Admin
+        </span>
+        <!-- ADMIN AVATAR -->
+        <div
+          class="avatar avatar-admin"
+          id="topAdminAvatar"
+          aria-label="Tài khoản Admin"
+        >
+          AD
+        </div>
+      </div>
+    </header>
     <div class="content-wrap">
       <!-- =================================================
            HERO
