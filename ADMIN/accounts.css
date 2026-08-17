@@ -16,9 +16,9 @@
   --radius-sm: 10px;
   --radius-md: 16px;
 }
-/* =========================================================
-   RESET
-========================================================= */
+
+/*RESET*/
+
 *,
 *::before,
 *::after {
@@ -57,17 +57,16 @@ a {
 [hidden] {
   display: none !important;
 }
-/* =========================================================
-   APP
-========================================================= */
+
+/*APP*/
+
 .app-shell {
   min-height: 100vh;
   width: 100%;
 }
 
-/* =========================================================
-   TOPBAR
-========================================================= */
+/*TOPBAR*/
+
 .topbar {
   position: sticky;
   top: 0;
@@ -87,9 +86,9 @@ a {
   align-items: center;
   gap: 12px;
 }
-/* =========================================================
-   CONNECTION
-========================================================= */
+
+/*CONNECTION*/
+
 .connection {
   display: flex;
   align-items: center;
@@ -116,9 +115,9 @@ a {
   box-shadow:
     0 0 0 4px rgba(162, 59, 46, .13);
 }
-/* =========================================================
-   ICON BUTTON
-========================================================= */
+
+/*ICON BUTTON*/
+
 .icon-btn {
   position: relative;
   width: 38px;
@@ -152,15 +151,13 @@ a {
 .icon-btn .material-symbols-rounded {
   font-size: 21px;
 }
-/* =========================================================
-   MOBILE
-========================================================= */
+/*MOBILE UI*/
 .mobile-only {
   display: none;
 }
-/* =========================================================
-   TOP ACTIONS
-========================================================= */
+
+/*TOP ACTIONS*/
+
 .top-actions {
   display: flex;
   align-items: center;
@@ -172,9 +169,9 @@ a {
   font-weight: 700;
   white-space: nowrap;
 }
-/* =========================================================
-   AVATAR
-========================================================= */
+
+/*AVATAR*/
+
 .avatar {
   width: 38px;
   height: 38px;
@@ -187,9 +184,9 @@ a {
   font-size: 11px;
   font-weight: 800;
 }
-/* =========================================================
-   NOTIFICATION
-========================================================= */
+
+/*NOTIFICATION*/
+
 .notification-wrapper {
   position: relative;
 }
@@ -217,9 +214,9 @@ a {
 .notice-badge.hidden {
   display: none !important;
 }
-/* =========================================================
-   NOTIFICATION PANEL
-========================================================= */
+
+/*NOTIFICATION PANEL*/
+
 .notification-panel {
   position: absolute;
   top: calc(100% + 12px);
@@ -233,9 +230,9 @@ a {
     0 18px 50px rgba(42, 23, 18, .14);
   z-index: 500;
 }
-/* =========================================================
-   NOTIFICATION HEADER
-========================================================= */
+
+/*NOTIFICATION HEADER*/
+
 .notification-header {
   display: flex;
   align-items: center;
@@ -267,9 +264,9 @@ a {
 .notification-action:hover {
   text-decoration: underline;
 }
-/* =========================================================
-   NOTIFICATION LIST
-========================================================= */
+
+/*NOTIFICATION LIST*/
+
 .notification-list {
   max-height: 330px;
   overflow-y: auto;
@@ -335,9 +332,9 @@ a {
   margin: 0;
   font-size: 10px;
 }
-/* =========================================================
-   CONTENT
-========================================================= */
+
+/*CONTENT*/
+
 .content-wrap {
   width: 100%;
   max-width: 1480px;
@@ -345,9 +342,9 @@ a {
   padding:
     44px 42px 60px;
 }
-/* =========================================================
-   HERO
-========================================================= */
+
+/*HERO*/
+
 .hero {
   position: relative;
   display: flex;
@@ -391,9 +388,9 @@ a {
   font-size: 14px;
   line-height: 1.8;
 }
-/* =========================================================
-   HERO ART
-========================================================= */
+
+/*HERO ART*/
+
 .hero-art {
   position: relative;
   width: 300px;
@@ -469,9 +466,9 @@ a {
   transform:
     rotate(21deg);
 }
-/* =========================================================
-   STATS
-========================================================= */
+
+/*STATS*/
+
 .stats-grid {
   display: grid;
   grid-template-columns:
@@ -529,9 +526,9 @@ a {
 .stat-card.attention small {
   color: #92702d;
 }
-/* =========================================================
-   ACCOUNT PANEL
-========================================================= */
+
+/*ACCOUNT PANEL*/
+
 .account-panel {
   width: 100%;
   overflow: hidden;
@@ -588,9 +585,9 @@ a {
     var(--muted);
   font-size: 12px;
 }
-/* =========================================================
-   BUTTON
-========================================================= */
+
+/*BUTTON*/
+
 .primary-btn {
   padding:
     12px 16px;
@@ -612,9 +609,9 @@ a {
   transform:
     translateY(-2px);
 }
-/* =========================================================
-   FILTER
-========================================================= */
+
+/*FILTER*/
+
 .filters {
   display: flex;
   align-items: center;
@@ -669,9 +666,9 @@ a {
     0 0 0 4px
     rgba(143,61,56,.12);
 }
-/* =========================================================
-   TABLE
-========================================================= */
+
+/*TABLE*/
+
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -711,7 +708,9 @@ tbody tr:hover {
   background:
     #fffaf4;
 }
+
 /* ACCOUNT */
+
 .account-cell {
   display: flex;
   align-items: center;
@@ -742,7 +741,9 @@ tbody tr:hover {
     var(--soft);
   font-weight: 600;
 }
+
 /* STATUS */
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -784,9 +785,9 @@ tbody tr:hover {
     "IBM Plex Mono",
     monospace;
 }
-/* =========================================================
-   DRAWER
-========================================================= */
+
+/*DRAWER*/
+
 .drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -855,9 +856,9 @@ tbody tr:hover {
     var(--paper);
   font-size: 24px;
 }
-/* =========================================================
-   MOBILE
-========================================================= */
+
+/*MOBILE UI*/
+
 @media (max-width: 1050px) {
   .content-wrap {
     padding-inline: 28px;
@@ -973,9 +974,9 @@ tbody tr:hover {
       .01ms !important;
   }
 }
-/* =========================================================
-   CONSISTENT BUTTON SYSTEM — CS ACCOUNT PAGE
-========================================================= */
+
+/*CONSISTENT BUTTON SYSTEM — CS ACCOUNT PAGE*/
+
 button,
 .primary-btn,
 .icon-btn,
@@ -1141,9 +1142,9 @@ input:focus-visible {
     font-size: 18px;
   }
 }
-/* =========================================================
-   CS PROFILE DETAIL DRAWER
-========================================================= */
+
+/*CS PROFILE DETAIL DRAWER*/
+
 #drawerContent {
   padding: 22px;
   color: var(--ink);
