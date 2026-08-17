@@ -6,12 +6,14 @@
       <small>ADMIN CENTER</small>
     </div>
   </div>
-  <nav class="admin-sidebar-nav">
+
+  <nav class="admin-sidebar-nav" aria-label="Điều hướng quản trị">
     <div class="admin-nav-label">Tổng quan</div>
     <a href="/ADMIN/homepage-ad.html" class="admin-nav-item" data-page="overview">
       <span class="admin-nav-icon material-symbols-rounded">dashboard</span>
       <span class="admin-nav-text">Trang chủ</span>
     </a>
+
     <div class="admin-nav-label">Quản lý</div>
     <a href="/ADMIN/accounts.html" class="admin-nav-item" data-page="accounts">
       <span class="admin-nav-icon material-symbols-rounded">manage_accounts</span>
@@ -22,10 +24,15 @@
       <span class="admin-nav-icon material-symbols-rounded">person_add</span>
       <span class="admin-nav-text">Thêm CS</span>
     </a>
+    <a href="/ADMIN/phong_ban.html" class="admin-nav-item" data-page="departments">
+      <span class="admin-nav-icon material-symbols-rounded">corporate_fare</span>
+      <span class="admin-nav-text">Phòng ban</span>
+    </a>
     <a href="/ADMIN/activity-report.html" class="admin-nav-item" data-page="reports">
       <span class="admin-nav-icon material-symbols-rounded">analytics</span>
       <span class="admin-nav-text">Báo cáo hoạt động</span>
     </a>
+
     <div class="admin-nav-label">Hệ thống</div>
     <a href="/ADMIN/settings.html" class="admin-nav-item" data-page="settings">
       <span class="admin-nav-icon material-symbols-rounded">settings</span>
@@ -36,6 +43,7 @@
       <span class="admin-nav-text">Nhật ký hệ thống</span>
     </a>
   </nav>
+
   <div class="admin-sidebar-user">
     <div class="admin-user-avatar" id="sidebarAvatar">AD</div>
     <div class="admin-user-info">
@@ -47,4 +55,5 @@
     </button>
   </div>
 </aside>
+
 <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" hidden></div>
