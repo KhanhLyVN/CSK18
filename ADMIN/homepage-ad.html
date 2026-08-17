@@ -6,6 +6,7 @@
   <title>Trang chủ - Admin</title>
   <link rel="stylesheet" href="homepage-ad.css">
   <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="./header/header.css">
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,109 +25,8 @@
       <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- Header Topbar -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <button
-          type="button"
-          id="menuBtn"
-          class="icon-btn mobile-only"
-          title="Mở menu"
-          aria-label="Mở menu"
-        >
-          <span class="material-symbols-rounded">
-            menu
-          </span>
-        </button>
-        <div class="connection">
-          <span
-            id="connectionDot"
-            class="connection-dot"
-          ></span>
-          <span id="connectionLabel">
-            Đang kết nối Firebase...
-          </span>
-        </div>
-      </div>
-      <!-- ===============================================
-           TOP ACTIONS
-      ================================================ -->
-      <div class="top-actions">
-        <!-- NOTIFICATION -->
-        <div class="notification-wrapper">
-          <button
-            type="button"
-            class="icon-btn notification-btn"
-            id="noticeBtn"
-            title="Thông báo"
-            aria-label="Thông báo"
-            aria-expanded="false"
-          >
-            <span class="material-symbols-rounded">
-              notifications
-            </span>
-            <span
-              id="noticeBadge"
-              class="notice-badge hidden"
-            >
-              0
-            </span>
-          </button>
-          <!-- ===========================================
-               NOTIFICATION PANEL
-          ============================================ -->
-          <div
-            id="notificationPanel"
-            class="notification-panel"
-            hidden
-          >
-            <div class="notification-header">
-              <div>
-                <strong>Thông báo</strong>
-                <small id="notificationCount">
-                  Không có thông báo mới
-                </small>
-              </div>
-              <button
-                type="button"
-                id="markAllReadBtn"
-                class="notification-action"
-              >
-                Đánh dấu đã đọc
-              </button>
-            </div>
-            <div
-              id="notificationList"
-              class="notification-list"
-            >
-              <div class="notification-empty">
-                <span class="material-symbols-rounded">
-                  notifications_none
-                </span>
-                <p>
-                  Không có thông báo mới
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- ADMIN NAME -->
-        <span
-          class="top-admin"
-          id="topAdminName"
-        >
-          Admin
-        </span>
-        <!-- ADMIN AVATAR -->
-        <div
-          class="avatar avatar-admin"
-          id="topAdminAvatar"
-          aria-label="Tài khoản Admin"
-        >
-          AD
-        </div>
-      </div>
-    </header>
+      <div id="sharedHeader"></div>
+
       <div class="content-wrap">
         <!-- Hero Section -->
         <section class="hero">
@@ -194,6 +94,7 @@
   <!-- Toast Notification -->
   <!-- <div class="toast" id="toast"></div> -->
   <!-- App Main Logic -->
+  <script src="./header/header.js"></script>
   <script src="shared-sidebar.js"></script>
 <script src="/ADMIN/homepage-ad.js"></script>
 </body>

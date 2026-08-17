@@ -1078,10 +1078,19 @@ function loadAdminAccount() {
             data.name ||
             data.fullName ||
             data.displayName ||
+            data.userName ||
             email;
+          const campus =
+            data.campus ||
+            data.campusName ||
+            data["code-campus"] ||
+            data.campusId ||
+            data.codeCampus ||
+            "";
           setAdminDisplay(
             name,
-            email
+            email,
+            campus
           );
         })
         .catch((error) => {
@@ -1100,17 +1109,151 @@ function loadAdminAccount() {
 }
 function setAdminDisplay(
   name,
-  email
+  email,
+  campus = ""
 ) {
+  const finalName =
+    name || email || "Admin";
+  const finalCampus =
+    String(campus || "").trim();
+
+  const adminCampus = document.getElementById("topAdminCampus");
   if (elements.topAdminName) {
-    elements.topAdminName.textContent =
-      name;
+    elements.topAdminName.textContent = finalName;
+    elements.topAdminName.title = finalName;
+  }
+  if (adminCampus) {
+    adminCampus.textContent = String(campus || "").trim();
   }
   if (elements.topAdminAvatar) {
     elements.topAdminAvatar.textContent =
-      getInitials(name || email);
+      getInitials(finalName);
+    elements.topAdminAvatar.setAttribute(
+      "aria-label",
+      `Tài khoản ${elements.topAdminName ? elements.topAdminName.textContent : finalName}`
+    );
   }
 }
+
+/* =========================================================
+   SHARED HEADER - ADMIN PROFILE
+   Hiển thị theo logic của trang System:
+   Tên Admin Campus
+========================================================= */
+(() => {
+  "use strict";
+
+  const get = (id) => document.getElementById(id);
+
+  function safeText(value) {
+    return value === null || value === undefined
+      ? ""
+      : String(value).trim();
+  }
+
+  function getInitials(name) {
+    const text = safeText(name) || "Admin";
+    const parts = text.split(/\s+/).filter(Boolean);
+
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    return parts
+      .slice(-2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
+  }
+
+  function renderAdmin(name, campus, email) {
+  const adminName = get("topAdminName");
+    const adminCampus = get("topAdminCampus");
+    const finalName = safeText(name) || safeText(email) || "Admin";
+    const finalCampus = safeText(campus);
+
+    if (adminName) {
+      adminName.textContent = finalName;
+      adminName.title = finalName;
+    }
+
+    if (adminCampus) {
+      adminCampus.textContent = finalCampus;
+      adminCampus.title = finalCampus
+        ? `Campus ${finalCampus}`
+        : "";
+    }
+
+    if (adminAvatar) {
+      adminAvatar.textContent = getInitials(finalName);
+      adminAvatar.setAttribute(
+        "aria-label",
+        `Tài khoản ${adminName ? adminName.textContent : finalName}${finalCampus ? ` - ${finalCampus}` : ""}`
+      );
+    }
+  }
+
+  async function loadAdminProfile(user) {
+    if (!user) {
+      renderAdmin("Admin", "", "");
+      return;
+    }
+
+    let name = user.displayName || user.email || "Admin";
+    let campus = "";
+
+    try {
+      if (typeof db !== "undefined" && db) {
+        const userDoc = await db
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+        if (userDoc.exists) {
+          const data = userDoc.data() || {};
+
+          name =
+            data.name ||
+            data.fullName ||
+            data.displayName ||
+            data.userName ||
+            name;
+
+          campus =
+            data.campus ||
+            data.campusName ||
+            data["code-campus"] ||
+            data.campusId ||
+            data.codeCampus ||
+            "";
+        }
+      }
+    } catch (error) {
+      console.error("Không thể lấy thông tin Admin:", error);
+    }
+
+    renderAdmin(name, campus, user.email);
+  }
+
+  function initAdminProfile() {
+    if (typeof firebase === "undefined" || !firebase.auth) {
+      renderAdmin("Admin", "", "");
+      return;
+    }
+
+    firebase.auth().onAuthStateChanged((user) => {
+      loadAdminProfile(user);
+    });
+  }
+
+  /* Chờ header.html được chèn xong rồi mới tìm topAdminName/avatar. */
+  document.addEventListener("sharedheader:loaded", initAdminProfile);
+
+  /* Trường hợp header đã có sẵn khi file này được nạp. */
+  if (get("topAdminName")) {
+    initAdminProfile();
+  }
+})();
+
 /* =========================================================
    NOTIFICATIONS
 ========================================================= */
