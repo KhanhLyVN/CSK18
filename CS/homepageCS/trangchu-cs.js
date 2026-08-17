@@ -1,80 +1,41 @@
+"use strict";
 /* =========================================================
    CONFIG
 ========================================================= */
 const TICKET_COLLECTION = "tickets";
-/*
- * QUAN TRỌNG:
- *
- * Firebase của bé đang dùng:
- *
- * campus
- *
- * KHÔNG PHẢI:
- *
- * departments
- */
 const CAMPUS_COLLECTION = "campus";
-/*
- * Collection chứa hồ sơ user (CS, manager,...)
- * Dùng để biết CS đang đăng nhập thuộc
- * campus nào / phòng ban nào.
- */
 const USER_COLLECTION = "users";
 /*
- * Nếu ticket không xác định được phòng ban
- * thì mặc định chuyển về IT.
+ * Nếu không xác định được phòng ban
+ * thì mặc định là IT.
  */
 const DEFAULT_DEPARTMENT_CODE = "IT";
 /* =========================================================
    FIREBASE CHECK
 ========================================================= */
 (function () {
-    "use strict";
-    if (
-        typeof firebase === "undefined"
-    ) {
-        console.error(
-            "❌ Firebase chưa được load."
-        );
+    if (typeof firebase === "undefined") {
+        console.error("❌ Firebase chưa được load.");
         return;
     }
-    if (
-        typeof db === "undefined"
-    ) {
-        console.error(
-            "❌ Firestore db chưa được khởi tạo."
-        );
+    if (typeof db === "undefined" || !db) {
+        console.error("❌ Firestore db chưa được khởi tạo.");
         return;
     }
-    if (
-        typeof auth === "undefined"
-    ) {
-        console.error(
-            "❌ Firebase Auth chưa được khởi tạo."
-        );
+    if (typeof auth === "undefined" || !auth) {
+        console.error("❌ Firebase Auth chưa được khởi tạo.");
         return;
     }
-    console.log(
-        "=========================================="
-    );
-    console.log(
-        "CS DASHBOARD JS ĐÃ KHỞI ĐỘNG"
-    );
-    console.log(
-        "Ticket collection:",
-        TICKET_COLLECTION
-    );
-    console.log(
-        "Campus collection:",
-        CAMPUS_COLLECTION
-    );
+    console.log("==========================================");
+    console.log("CS DASHBOARD JS ĐÃ KHỞI ĐỘNG");
+    console.log("Ticket collection:", TICKET_COLLECTION);
+    console.log("Campus collection:", CAMPUS_COLLECTION);
+    console.log("User collection:", USER_COLLECTION);
     console.log(
         "Default department:",
         DEFAULT_DEPARTMENT_CODE
     );
-    console.log(
-        "=========================================="
-    );
+    console.log("==========================================");
     /* =====================================================
        ICONS
     ===================================================== */
@@ -153,30 +114,22 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         }
     };
     function normalizeStatus(status) {
-        if (
-            !status
-        ) {
+        if (!status) {
             return "open";
         }
-        const value =
-            String(status)
-                .trim()
-                .toLowerCase();
-        if (
-            value === "pending"
-        ) {
+        const value = String(status)
+            .trim()
+            .toLowerCase();
+        if (value === "pending") {
             return "pending";
         }
-        if (
-            STATUS_META[value]
-        ) {
+        if (STATUS_META[value]) {
             return value;
         }
         return "open";
     }
     function statusPill(status) {
-        const key =
-            normalizeStatus(status);
+        const key = normalizeStatus(status);
         const meta =
             STATUS_META[key] ||
             STATUS_META.open;
@@ -197,6 +150,106 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 ${escapeHtml(meta.label)}
             </span>
         `;
+    }
+    /* =====================================================
+       PRIORITY
+    ===================================================== */
+    /*
+     * Chuẩn hóa mức độ ưu tiên.
+     *
+     * Firebase có thể lưu:
+     *
+     * high
+     * cao
+     * urgent
+     * critical
+     *
+     * medium
+     * trung bình
+     *
+     * low
+     * thấp
+     */
+    function normalizePriority(value) {
+        if (
+            value === undefined ||
+            value === null ||
+            value === ""
+        ) {
+            return "medium";
+        }
+        const priority =
+            String(value)
+                .trim()
+                .toLowerCase();
+        if (
+            priority === "high" ||
+            priority === "cao" ||
+            priority === "urgent" ||
+            priority === "critical" ||
+            priority === "khẩn" ||
+            priority === "khẩn cấp"
+        ) {
+            return "high";
+        }
+        if (
+            priority === "low" ||
+            priority === "thấp"
+        ) {
+            return "low";
+        }
+        return "medium";
+    }
+    /*
+     * Lấy priority từ ticket.
+     *
+     * Field chính:
+     *
+     * priority
+     *
+     * Các field phía sau hỗ trợ dữ liệu cũ.
+     */
+    function getTicketPriority(ticket) {
+        if (!ticket) {
+            return "medium";
+        }
+        return normalizePriority(
+            ticket.priority ??
+            ticket.priorityLevel ??
+            ticket.urgency ??
+            ticket.mucDoUuTien ??
+            ticket.mucDo ??
+            "medium"
+        );
+    }
+    /*
+     * Trọng số priority:
+     *
+     * HIGH   = 3
+     * MEDIUM = 2
+     * LOW    = 1
+     */
+    function getPriorityWeight(ticket) {
+        const priority =
+            getTicketPriority(ticket);
+        if (priority === "high") {
+            return 3;
+        }
+        if (priority === "low") {
+            return 1;
+        }
+        return 2;
+    }
+    function getPriorityLabel(ticket) {
+        const priority =
+            getTicketPriority(ticket);
+        if (priority === "high") {
+            return "Ưu tiên cao";
+        }
+        if (priority === "low") {
+            return "Ưu tiên thấp";
+        }
+        return "Ưu tiên trung bình";
     }
     /* =====================================================
        CATEGORY LABEL
@@ -318,8 +371,11 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 ""
             );
         /*
-         * Nếu có ticketType dạng system-web
-         * thì ưu tiên lấy label của nó.
+         * Nếu có ticketType dạng:
+         *
+         * system-web
+         *
+         * thì ưu tiên lấy label.
          */
         if (
             ticket.ticketType &&
@@ -386,9 +442,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
        DATE
     ===================================================== */
     function getTimestampMillis(value) {
-        if (
-            !value
-        ) {
+        if (!value) {
             return 0;
         }
         if (
@@ -397,9 +451,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         ) {
             return value.toMillis();
         }
-        if (
-            value instanceof Date
-        ) {
+        if (value instanceof Date) {
             return value.getTime();
         }
         if (
@@ -415,23 +467,15 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             : parsed;
     }
     function formatTicketDate(ticket) {
-        if (
-            ticket.date
-        ) {
-            return String(
-                ticket.date
-            );
+        if (ticket.date) {
+            return String(ticket.date);
         }
-        if (
-            ticket.createdAt
-        ) {
+        if (ticket.createdAt) {
             const millis =
                 getTimestampMillis(
                     ticket.createdAt
                 );
-            if (
-                millis
-            ) {
+            if (millis) {
                 return new Date(
                     millis
                 ).toLocaleDateString(
@@ -457,9 +501,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         document.getElementById(
             "todayStr"
         );
-    if (
-        todayElement
-    ) {
+    if (todayElement) {
         todayElement.textContent =
             todayLabel();
     }
@@ -469,19 +511,13 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     function greetingByHour() {
         const hour =
             new Date().getHours();
-        if (
-            hour < 11
-        ) {
+        if (hour < 11) {
             return "Chào buổi sáng";
         }
-        if (
-            hour < 13
-        ) {
+        if (hour < 13) {
             return "Chào buổi trưa";
         }
-        if (
-            hour < 18
-        ) {
+        if (hour < 18) {
             return "Chào buổi chiều";
         }
         return "Chào buổi tối";
@@ -490,9 +526,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         document.getElementById(
             "greetingLine"
         );
-    if (
-        greetingElement
-    ) {
+    if (greetingElement) {
         greetingElement.textContent =
             `${greetingByHour()} — đây là tổng quan các yêu cầu hỗ trợ từ học viên hiện có trên hệ thống.`;
     }
@@ -508,9 +542,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         }
         const campus =
             String(value).trim();
-        if (
-            !campus
-        ) {
+        if (!campus) {
             return "";
         }
         const lower =
@@ -539,21 +571,19 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
        CAMPUS TỪ CAMPUS ID
     ===================================================== */
     function campusFromCampusId(campusId) {
-        if (
-            !campusId
-        ) {
+        if (!campusId) {
             return "";
         }
         const value =
             String(campusId).trim();
         /*
+         * Ví dụ:
+         *
          * IT-HCM
-         * IT-Hà Nội
          * IT-HN
+         * IT-Hà Nội
          */
-        if (
-            value.includes("-")
-        ) {
+        if (value.includes("-")) {
             const parts =
                 value.split("-");
             const last =
@@ -568,23 +598,17 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
        LẤY CAMPUS TỪ TICKET
     ===================================================== */
     function getTicketCampus(ticket) {
-        if (
-            ticket.campus
-        ) {
+        if (ticket.campus) {
             return normalizeCampus(
                 ticket.campus
             );
         }
-        if (
-            ticket.campusName
-        ) {
+        if (ticket.campusName) {
             return normalizeCampus(
                 ticket.campusName
             );
         }
-        if (
-            ticket.campusId
-        ) {
+        if (ticket.campusId) {
             return campusFromCampusId(
                 ticket.campusId
             );
@@ -595,14 +619,20 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
        DEPARTMENT ROUTING
     ===================================================== */
     /*
-     * Hiện tại toàn bộ ticket hệ thống
-     * sẽ chuyển về IT.
+     * Mapping hiện tại:
      *
-     * Sau này có thể thêm:
+     * Hệ thống      → IT
+     * Khóa học      → IT
+     * Tài khoản     → IT
+     * Vận hành      → IT
+     * Khác          → IT
      *
-     * "learning": "TEACH"
-     * "operations": "TEACH"
-     * ...
+     * Bé có thể đổi sau nếu muốn:
+     *
+     * learning  → CS
+     * operations → TEACH
+     * payment → SALE
+     * material → RND
      */
     const DEPARTMENT_ROUTING = {
         system: "IT",
@@ -637,21 +667,17 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     ===================================================== */
     function resolveDepartmentCode(ticket) {
         /*
-         * 1. Ticket đã có departmentCode.
+         * 1. departmentCode
          */
-        if (
-            ticket.departmentCode
-        ) {
+        if (ticket.departmentCode) {
             return normalizeDepartmentCode(
                 ticket.departmentCode
             );
         }
         /*
-         * 2. Ticket có department.
+         * 2. department
          */
-        if (
-            ticket.department
-        ) {
+        if (ticket.department) {
             if (
                 typeof ticket.department ===
                 "object"
@@ -680,17 +706,9 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             }
         }
         /*
-         * 3. ticketType.
-         *
-         * Ví dụ:
-         *
-         * system-web
-         *
-         * => IT
+         * 3. ticketType
          */
-        if (
-            ticket.ticketType
-        ) {
+        if (ticket.ticketType) {
             const ticketType =
                 String(
                     ticket.ticketType
@@ -706,9 +724,6 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     ]
                 );
             }
-            /*
-             * Nếu ticketType bắt đầu bằng system
-             */
             if (
                 ticketType
                     .toLowerCase()
@@ -718,11 +733,9 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             }
         }
         /*
-         * 4. category.
+         * 4. ticketCategory
          */
-        if (
-            ticket.ticketCategory
-        ) {
+        if (ticket.ticketCategory) {
             const category =
                 String(
                     ticket.ticketCategory
@@ -740,7 +753,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             }
         }
         /*
-         * 5. Mặc định.
+         * 5. Mặc định
          */
         return normalizeDepartmentCode(
             DEFAULT_DEPARTMENT_CODE
@@ -754,23 +767,17 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         departmentCode
     ) {
         const normalizedCampus =
-            normalizeCampus(
-                campus
-            );
+            normalizeCampus(campus);
         const normalizedCode =
             normalizeDepartmentCode(
                 departmentCode
             );
-        if (
-            !normalizedCampus
-        ) {
+        if (!normalizedCampus) {
             throw new Error(
                 "Không xác định được campus của ticket."
             );
         }
-        if (
-            !normalizedCode
-        ) {
+        if (!normalizedCode) {
             throw new Error(
                 "Không xác định được departmentCode."
             );
@@ -785,17 +792,12 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             }
         );
         /*
-         * QUAN TRỌNG:
-         *
-         * Không dùng:
-         *
-         * where("campus", "==", ...)
-         * .where("code", "==", ...)
-         *
-         * để tránh yêu cầu composite index.
-         *
          * Chỉ query campus.
-         * Sau đó lọc code bằng JavaScript.
+         *
+         * Sau đó lọc code bằng JS.
+         *
+         * Điều này tránh composite index
+         * cho truy vấn campus + code.
          */
         const snapshot =
             await db
@@ -809,56 +811,46 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 )
                 .limit(50)
                 .get();
-        if (
-            snapshot.empty
-        ) {
+        if (snapshot.empty) {
             throw new Error(
                 `Không tìm thấy campus "${normalizedCampus}" trong collection "${CAMPUS_COLLECTION}".`
             );
         }
-        let activeDoc =
-            null;
-        let fallbackDoc =
-            null;
-        snapshot.forEach(
-            docSnap => {
-                const data =
-                    docSnap.data() || {};
-                const code =
-                    normalizeDepartmentCode(
-                        data.code
-                    );
-                if (
-                    code !== normalizedCode
-                ) {
-                    return;
-                }
-                const status =
-                    String(
-                        data.status || ""
-                    )
+        let activeDoc = null;
+        let fallbackDoc = null;
+        snapshot.forEach(docSnap => {
+            const data =
+                docSnap.data() || {};
+            const code =
+                normalizeDepartmentCode(
+                    data.code
+                );
+            if (
+                code !== normalizedCode
+            ) {
+                return;
+            }
+            const status =
+                String(
+                    data.status || ""
+                )
                     .trim()
                     .toLowerCase();
-                if (
-                    status === "active"
-                ) {
-                    activeDoc =
-                        docSnap;
-                }
-                if (
-                    !fallbackDoc
-                ) {
-                    fallbackDoc =
-                        docSnap;
-                }
+            if (
+                status === "active"
+            ) {
+                activeDoc =
+                    docSnap;
             }
-        );
+            if (!fallbackDoc) {
+                fallbackDoc =
+                    docSnap;
+            }
+        });
         const selectedDoc =
             activeDoc ||
             fallbackDoc;
-        if (
-            !selectedDoc
-        ) {
+        if (!selectedDoc) {
             throw new Error(
                 `Không tìm thấy phòng ban code "${normalizedCode}" tại campus "${normalizedCampus}".`
             );
@@ -914,12 +906,8 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     ===================================================== */
     async function findTicketAssignee(ticket) {
         const campus =
-            getTicketCampus(
-                ticket
-            );
-        if (
-            !campus
-        ) {
+            getTicketCampus(ticket);
+        if (!campus) {
             throw new Error(
                 "Ticket chưa có campus."
             );
@@ -938,7 +926,9 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 departmentCode:
                     departmentCode,
                 ticketType:
-                    ticket.ticketType
+                    ticket.ticketType,
+                priority:
+                    getTicketPriority(ticket)
             }
         );
         const department =
@@ -946,23 +936,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 campus,
                 departmentCode
             );
-        /*
-         * QUAN TRỌNG:
-         *
-         * Không còn bắt buộc phải có managerUid.
-         *
-         * Ticket giờ được gán theo PHÒNG BAN
-         * (departmentId/departmentCode/campus),
-         * không gán theo 1 UID quản lý cụ thể.
-         *
-         * managerUid/managerName/managerEmail
-         * chỉ giữ lại để tham khảo (ví dụ hiển thị
-         * người phụ trách phòng ban), không dùng
-         * để lọc ticket nữa.
-         */
-        if (
-            !department.managerUid
-        ) {
+        if (!department.managerUid) {
             console.warn(
                 `⚠️ Phòng ban "${department.departmentCode}" tại "${department.campus}" chưa có managerUid — vẫn gán ticket theo phòng ban.`
             );
@@ -979,11 +953,14 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             campusId:
                 department.campusId,
             assigneeUid:
-                department.managerUid || "",
+                department.managerUid ||
+                "",
             assigneeName:
-                department.managerName || "",
+                department.managerName ||
+                "",
             assigneeEmail:
-                department.managerEmail || ""
+                department.managerEmail ||
+                ""
         };
     }
     /* =====================================================
@@ -997,22 +974,13 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             return ticket;
         }
         /*
-         * Nếu ticket đã được gán cho
-         * một PHÒNG BAN rồi thì không
-         * phân công lại.
-         *
-         * (Trước đây check theo assigneeUid,
-         * giờ check theo departmentId vì
-         * ticket được gán theo phòng ban,
-         * không phải theo 1 UID cụ thể.)
+         * Nếu ticket đã có departmentId
+         * thì không assign lại.
          */
-        if (
-            ticket.departmentId
-        ) {
+        if (ticket.departmentId) {
             return {
                 ...ticket,
-                assignmentSkipped:
-                    true
+                assignmentSkipped: true
             };
         }
         const ticketNum =
@@ -1026,15 +994,6 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 await findTicketAssignee(
                     ticket
                 );
-            /*
-             * Chỉ bắt buộc phải xác định
-             * được PHÒNG BAN (departmentId).
-             *
-             * Không còn bắt buộc phải có
-             * assigneeUid (managerUid) vì
-             * giờ nhiều CS trong cùng phòng ban
-             * đều xem được ticket của phòng ban đó.
-             */
             if (
                 !assignment.departmentId
             ) {
@@ -1042,14 +1001,6 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     "Không xác định được phòng ban."
                 );
             }
-            /*
-             * =================================================
-             * TRANSACTION
-             *
-             * Tránh trường hợp nhiều CS cùng mở dashboard
-             * rồi cùng assign một ticket.
-             * =================================================
-             */
             const ticketRef =
                 db
                     .collection(
@@ -1058,15 +1009,19 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     .doc(
                         ticket.id
                     );
+            /*
+             * Transaction
+             *
+             * Tránh 2 CS cùng assign
+             * một ticket.
+             */
             await db.runTransaction(
                 async transaction => {
                     const freshDoc =
                         await transaction.get(
                             ticketRef
                         );
-                    if (
-                        !freshDoc.exists
-                    ) {
+                    if (!freshDoc.exists) {
                         throw new Error(
                             "Ticket không còn tồn tại."
                         );
@@ -1074,7 +1029,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     const freshData =
                         freshDoc.data() || {};
                     /*
-                     * Một CS/tab khác đã assign trước.
+                     * Tab khác đã assign
                      */
                     if (
                         freshData.departmentId
@@ -1118,14 +1073,14 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 {
                     ticket:
                         ticketNum,
-                    assigneeUid:
-                        assignment.assigneeUid,
-                    assigneeName:
-                        assignment.assigneeName,
                     department:
                         assignment.departmentName,
+                    departmentCode:
+                        assignment.departmentCode,
                     campus:
-                        assignment.campus
+                        assignment.campus,
+                    assigneeUid:
+                        assignment.assigneeUid
                 }
             );
             return {
@@ -1169,25 +1124,20 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     )
                     .limit(100)
                     .get();
-            if (
-                snapshot.empty
-            ) {
+            if (snapshot.empty) {
                 console.log(
                     "Không có ticket active."
                 );
                 return;
             }
-            const tickets =
-                [];
-            snapshot.forEach(
-                docSnap => {
-                    tickets.push({
-                        id:
-                            docSnap.id,
-                        ...docSnap.data()
-                    });
-                }
-            );
+            const tickets = [];
+            snapshot.forEach(docSnap => {
+                tickets.push({
+                    id:
+                        docSnap.id,
+                    ...docSnap.data()
+                });
+            });
             const unassigned =
                 tickets.filter(
                     ticket =>
@@ -1204,10 +1154,8 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             ) {
                 return;
             }
-            let success =
-                0;
-            let failed =
-                0;
+            let success = 0;
+            let failed = 0;
             for (
                 const ticket
                 of unassigned
@@ -1255,8 +1203,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     /* =====================================================
        REALTIME LISTENER TICKET CHƯA ASSIGN
     ===================================================== */
-    let unassignedUnsubscribe =
-        null;
+    let unassignedUnsubscribe = null;
     function startUnassignedTicketListener() {
         if (
             typeof unassignedUnsubscribe ===
@@ -1294,18 +1241,11 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                                     docSnap.id,
                                 ...docSnap.data()
                             };
-                            /*
-                             * Chỉ assign ticket
-                             * chưa được gán phòng ban.
-                             */
                             if (
                                 ticket.departmentId
                             ) {
                                 continue;
                             }
-                            /*
-                             * Assign.
-                             */
                             await assignTicketIfNeeded(
                                 ticket
                             );
@@ -1320,18 +1260,8 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 );
     }
     /* =====================================================
-       HỒ SƠ CS ĐANG ĐĂNG NHẬP
+       HỒ SƠ CS
     ===================================================== */
-    /*
-     * Đọc document trong collection "users"
-     * để biết CS đang đăng nhập thuộc
-     * campus nào / phòng ban nào.
-     *
-     * Đây chính là chỗ quyết định CS này
-     * sẽ thấy ticket của phòng ban nào,
-     * KHÔNG phải dựa vào managerUid trong
-     * collection "campus" nữa.
-     */
     async function loadCSProfile(uid) {
         try {
             const docSnap =
@@ -1339,13 +1269,9 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     .collection(
                         USER_COLLECTION
                     )
-                    .doc(
-                        uid
-                    )
+                    .doc(uid)
                     .get();
-            if (
-                !docSnap.exists
-            ) {
+            if (!docSnap.exists) {
                 console.warn(
                     "⚠️ Không tìm thấy hồ sơ user cho uid:",
                     uid
@@ -1392,20 +1318,15 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     /* =====================================================
        AUTH
     ===================================================== */
-    let currentCSUser =
-        null;
-    let currentCSProfile =
-        null;
-    let dashboardUnsubscribe =
-        null;
+    let currentCSUser = null;
+    let currentCSProfile = null;
+    let dashboardUnsubscribe = null;
     auth.onAuthStateChanged(
         async user => {
             /*
-             * Không đăng nhập.
+             * Không đăng nhập
              */
-            if (
-                !user
-            ) {
+            if (!user) {
                 console.warn(
                     "⚠️ Không có CS đăng nhập."
                 );
@@ -1442,32 +1363,32 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             );
             /*
              * Bước 1:
-             *
-             * Lấy hồ sơ CS (campus + phòng ban)
-             * để biết CS này thuộc phòng ban nào.
+             * Lấy profile CS.
              */
             currentCSProfile =
                 await loadCSProfile(
                     user.uid
                 );
             /*
+             * Nếu không có profile
+             */
+            if (!currentCSProfile) {
+                showTicketLoadError();
+                return;
+            }
+            /*
              * Bước 2:
-             *
              * Repair ticket cũ.
              */
             await repairUnassignedTickets();
             /*
              * Bước 3:
-             *
              * Theo dõi ticket mới.
              */
             startUnassignedTicketListener();
             /*
              * Bước 4:
-             *
-             * Lấy TẤT CẢ ticket thuộc
-             * campus + phòng ban của CS hiện tại
-             * (không chỉ ticket assign riêng cho uid này).
+             * Load ticket của CS.
              */
             loadTicketsForCurrentCS(
                 currentCSProfile
@@ -1475,23 +1396,8 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         }
     );
     /* =====================================================
-       LOAD TICKET THEO PHÒNG BAN (KHÔNG PHẢI THEO UID)
+       LOAD TICKET THEO PHÒNG BAN + CAMPUS
     ===================================================== */
-    /*
-     * QUAN TRỌNG:
-     *
-     * Trước đây hàm này lọc ticket theo
-     * assigneeUid == uid của CS đang đăng nhập.
-     * Điều đó khiến ticket chỉ hiện ra cho
-     * đúng 1 người (người có managerUid trong
-     * collection "campus"), còn các CS khác
-     * cùng phòng ban thì KHÔNG thấy gì.
-     *
-     * Giờ đổi sang lọc theo departmentCode + campus
-     * của chính CS đang đăng nhập (lấy từ collection
-     * "users"), để CS nào cũng thấy được ticket
-     * của phòng ban mình phụ trách.
-     */
     function loadTicketsForCurrentCS(profile) {
         if (
             dashboardUnsubscribe
@@ -1506,7 +1412,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             !profile.campus
         ) {
             console.warn(
-                "⚠️ CS chưa có department/campus hợp lệ trong hồ sơ (collection users) — không thể tải ticket theo phòng ban.",
+                "⚠️ CS chưa có department/campus hợp lệ:",
                 profile
             );
             showTicketLoadError();
@@ -1521,6 +1427,15 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     profile.campus
             }
         );
+        /*
+         * Query:
+         *
+         * departmentCode == CS department
+         * campus == CS campus
+         *
+         * Firebase có thể yêu cầu composite index
+         * cho 2 điều kiện này.
+         */
         dashboardUnsubscribe =
             db
                 .collection(
@@ -1538,8 +1453,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                 )
                 .onSnapshot(
                     snapshot => {
-                        const tickets =
-                            [];
+                        const tickets = [];
                         snapshot.forEach(
                             docSnap => {
                                 tickets.push({
@@ -1551,12 +1465,12 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                         );
                         /*
                          * Ticket mới nhất trước.
+                         *
+                         * Phần "Cần phản hồi gấp"
+                         * sẽ tự sort lại theo priority.
                          */
                         tickets.sort(
-                            (
-                                a,
-                                b
-                            ) => {
+                            (a, b) => {
                                 const timeA =
                                     getTimestampMillis(
                                         a.createdAt
@@ -1572,7 +1486,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                             }
                         );
                         console.log(
-                            "Ticket của CS:",
+                            "📋 Ticket của CS:",
                             tickets
                         );
                         renderDashboard(
@@ -1581,7 +1495,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
                     },
                     error => {
                         console.error(
-                            "Không thể lấy ticket của CS:",
+                            "❌ Không thể lấy ticket của CS:",
                             error
                         );
                         showTicketLoadError();
@@ -1596,9 +1510,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "recentList"
             );
-        if (
-            recentList
-        ) {
+        if (recentList) {
             recentList.innerHTML = `
                 <div class="empty-note">
                     Không thể tải danh sách ticket.
@@ -1610,18 +1522,10 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
        RENDER DASHBOARD
     ===================================================== */
     function renderDashboard(tickets) {
-        renderStats(
-            tickets
-        );
-        renderUnanswered(
-            tickets
-        );
-        renderTypeBreakdown(
-            tickets
-        );
-        renderRecent(
-            tickets
-        );
+        renderStats(tickets);
+        renderUnanswered(tickets);
+        renderTypeBreakdown(tickets);
+        renderRecent(tickets);
     }
     /* =====================================================
        STATISTICS
@@ -1639,20 +1543,18 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             closed:
                 0
         };
-        tickets.forEach(
-            ticket => {
-                const status =
-                    normalizeStatus(
-                        ticket.status
-                    );
-                if (
-                    counts[status] !==
-                    undefined
-                ) {
-                    counts[status]++;
-                }
+        tickets.forEach(ticket => {
+            const status =
+                normalizeStatus(
+                    ticket.status
+                );
+            if (
+                counts[status] !==
+                undefined
+            ) {
+                counts[status]++;
             }
-        );
+        });
         const statAll =
             document.getElementById(
                 "statAll"
@@ -1673,63 +1575,103 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "statClosed"
             );
-        if (
-            statAll
-        ) {
+        if (statAll) {
             statAll.textContent =
                 tickets.length;
         }
-        if (
-            statOpen
-        ) {
+        if (statOpen) {
             statOpen.textContent =
                 counts.open +
                 counts.pending;
         }
-        if (
-            statProgress
-        ) {
+        if (statProgress) {
             statProgress.textContent =
                 counts.in_progress;
         }
-        if (
-            statResolved
-        ) {
+        if (statResolved) {
             statResolved.textContent =
                 counts.resolved;
         }
-        if (
-            statClosed
-        ) {
+        if (statClosed) {
             statClosed.textContent =
                 counts.closed;
         }
     }
     /* =====================================================
        UNANSWERED
+       ƯU TIÊN CAO → TRUNG BÌNH → THẤP
     ===================================================== */
     function renderUnanswered(tickets) {
+        /*
+         * Chỉ lấy ticket đang cần xử lý.
+         */
         const list =
-            tickets.filter(
-                ticket => {
-                    const status =
-                        normalizeStatus(
-                            ticket.status
-                        );
-                    return (
-                        status === "open" ||
-                        status === "pending" ||
-                        status === "in_progress"
+            tickets.filter(ticket => {
+                const status =
+                    normalizeStatus(
+                        ticket.status
                     );
-                }
+                return (
+                    status === "open" ||
+                    status === "pending" ||
+                    status === "in_progress"
+                );
+            });
+        /*
+         * =================================================
+         * SORT PRIORITY
+         *
+         * HIGH   → trước
+         * MEDIUM → sau
+         * LOW    → cuối
+         *
+         * Cùng priority:
+         * createdAt mới hơn → trước
+         * =================================================
+         */
+        list.sort((a, b) => {
+            const priorityA =
+                getPriorityWeight(a);
+            const priorityB =
+                getPriorityWeight(b);
+            /*
+             * Priority khác nhau
+             */
+            if (
+                priorityA !==
+                priorityB
+            ) {
+                return (
+                    priorityB -
+                    priorityA
+                );
+            }
+            /*
+             * Cùng priority
+             *
+             * Ticket mới hơn đứng trước.
+             */
+            const timeA =
+                getTimestampMillis(
+                    a.createdAt
+                );
+            const timeB =
+                getTimestampMillis(
+                    b.createdAt
+                );
+            return (
+                timeB -
+                timeA
             );
+        });
+        /*
+         * Tổng số ticket cần phản hồi
+         */
         const countElement =
             document.getElementById(
                 "unansweredCount"
             );
-        if (
-            countElement
-        ) {
+        if (countElement) {
             countElement.textContent =
                 list.length;
         }
@@ -1737,14 +1679,13 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "unansweredList"
             );
-        if (
-            !element
-        ) {
+        if (!element) {
             return;
         }
-        if (
-            list.length === 0
-        ) {
+        /*
+         * Không có ticket
+         */
+        if (list.length === 0) {
             element.innerHTML = `
                 <div class="empty-note">
                     Tuyệt vời! Không có ticket nào đang chờ xử lý. 🎉
@@ -1752,97 +1693,110 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             `;
             return;
         }
+        /*
+         * Sau khi sort priority,
+         * mới lấy 10 ticket.
+         */
+        const urgentTickets =
+            list.slice(
+                0,
+                10
+            );
         element.innerHTML =
-            list
-                .slice(
-                    0,
-                    10
-                )
-                .map(
-                    ticket => {
-                        const ticketNum =
-                            getTicketNum(
-                                ticket
-                            );
-                        return `
-                            <a
-                                class="mini-item"
-                                href="/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(ticketNum)}"
-                            >
-                                <div class="mi-top">
-                                    <span class="mi-num">
-                                        ${escapeHtml(
-                                            ticketNum
-                                        )}
-                                    </span>
-                                    <span class="mi-date">
-                                        ${escapeHtml(
-                                            formatTicketDate(
-                                                ticket
-                                            )
-                                        )}
-                                    </span>
-                                </div>
-                                <div class="mi-title">
+            urgentTickets
+                .map(ticket => {
+                    const ticketNum =
+                        getTicketNum(
+                            ticket
+                        );
+                    const priority =
+                        getTicketPriority(
+                            ticket
+                        );
+                    const priorityLabel =
+                        getPriorityLabel(
+                            ticket
+                        );
+                    return `
+                        <a
+                            class="mini-item priority-${escapeHtml(priority)}"
+                            href="/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(ticketNum)}"
+                        >
+                            <div class="mi-top">
+                                <span class="mi-num">
                                     ${escapeHtml(
-                                        getTicketTitle(
+                                        ticketNum
+                                    )}
+                                </span>
+                                <span class="mi-date">
+                                    ${escapeHtml(
+                                        formatTicketDate(
                                             ticket
                                         )
                                     )}
-                                </div>
-                                <div class="mi-name">
+                                </span>
+                            </div>
+                            <div class="mi-title">
+                                ${escapeHtml(
+                                    getTicketTitle(
+                                        ticket
+                                    )
+                                )}
+                            </div>
+                            <div class="mi-name">
+                                ${escapeHtml(
+                                    getStudentName(
+                                        ticket
+                                    )
+                                )}
+                                ·
+                                <strong
+                                    style="
+                                        color:var(--maroon)
+                                    "
+                                >
                                     ${escapeHtml(
-                                        getStudentName(
+                                        getTicketType(
                                             ticket
                                         )
                                     )}
-                                    ·
-                                    <strong
-                                        style="
-                                            color:var(--maroon)
-                                        "
-                                    >
-                                        ${escapeHtml(
-                                            getTicketType(
-                                                ticket
-                                            )
-                                        )}
-                                    </strong>
-                                </div>
-                            </a>
-                        `;
-                    }
-                )
+                                </strong>
+                                ·
+                                <strong
+                                    class="priority-label priority-${escapeHtml(priority)}"
+                                >
+                                    ${escapeHtml(
+                                        priorityLabel
+                                    )}
+                                </strong>
+                            </div>
+                        </a>
+                    `;
+                })
                 .join("");
     }
     /* =====================================================
        TYPE BREAKDOWN
     ===================================================== */
     function renderTypeBreakdown(tickets) {
-        const counts =
-            {};
-        tickets.forEach(
-            ticket => {
-                const key =
-                    getTicketType(
-                        ticket
-                    );
-                counts[key] =
-                    (
-                        counts[key] ||
-                        0
-                    ) + 1;
-            }
-        );
+        const counts = {};
+        tickets.forEach(ticket => {
+            const key =
+                getTicketType(
+                    ticket
+                );
+            counts[key] =
+                (
+                    counts[key] ||
+                    0
+                ) + 1;
+        });
         const entries =
             Object.entries(
                 counts
             )
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     b[1] -
                     a[1]
             );
@@ -1854,13 +1808,12 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "typeBarList"
             );
-        if (
-            !element
-        ) {
+        if (!element) {
             return;
         }
         if (
-            entries.length === 0
+            entries.length ===
+            0
         ) {
             element.innerHTML = `
                 <div class="empty-note">
@@ -1872,19 +1825,13 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         element.innerHTML =
             entries
                 .map(
-                    (
-                        [
-                            label,
-                            count
-                        ]
-                    ) => {
+                    ([label, count]) => {
                         const percent =
                             Math.round(
                                 (
                                     count /
                                     max
-                                ) *
-                                100
+                                ) * 100
                             );
                         return `
                             <div class="bar-row">
@@ -1920,9 +1867,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "recentCount"
             );
-        if (
-            countElement
-        ) {
+        if (countElement) {
             countElement.textContent =
                 tickets.length;
         }
@@ -1930,11 +1875,15 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             document.getElementById(
                 "recentList"
             );
-        if (
-            !element
-        ) {
+        if (!element) {
             return;
         }
+        /*
+         * 10 ticket mới nhất.
+         *
+         * Không sort priority ở đây.
+         * Đây là danh sách "gần đây".
+         */
         const recent =
             tickets.slice(
                 0,
@@ -1960,7 +1909,8 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             </div>
         `;
         if (
-            recent.length === 0
+            recent.length ===
+            0
         ) {
             element.innerHTML =
                 head +
@@ -1974,62 +1924,60 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         element.innerHTML =
             head +
             recent
-                .map(
-                    ticket => {
-                        const ticketNum =
-                            getTicketNum(
-                                ticket
-                            );
-                        const ticketType =
-                            getTicketType(
-                                ticket
-                            );
-                        return `
-                            <a
-                                class="recent-row"
-                                href="/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(ticketNum)}"
-                            >
-                                <span class="rc-num">
-                                    ${escapeHtml(
-                                        ticketNum
-                                    )}
-                                </span>
-                                <span class="rc-title">
-                                    ${escapeHtml(
-                                        getTicketTitle(
-                                            ticket
-                                        )
-                                    )}
-                                    <span class="rc-sub">
-                                        ${escapeHtml(
-                                            getStudentName(
-                                                ticket
-                                            )
-                                        )}
-                                    </span>
-                                </span>
-                                <span class="rc-type">
-                                    ${svgIcon(
-                                        ticket.icon
-                                    )}
-                                    ${escapeHtml(
-                                        ticketType
-                                    )}
-                                </span>
-                                <span class="rc-date">
-                                    ${escapeHtml(
-                                        formatTicketDate(
-                                            ticket
-                                        )
-                                    )}
-                                </span>
-                                ${statusPill(
-                                    ticket.status
+                .map(ticket => {
+                    const ticketNum =
+                        getTicketNum(
+                            ticket
+                        );
+                    const ticketType =
+                        getTicketType(
+                            ticket
+                        );
+                    return `
+                        <a
+                            class="recent-row"
+                            href="/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(ticketNum)}"
+                        >
+                            <span class="rc-num">
+                                ${escapeHtml(
+                                    ticketNum
                                 )}
-                            </a>
-                        `;
-                    }
-                )
+                            </span>
+                            <span class="rc-title">
+                                ${escapeHtml(
+                                    getTicketTitle(
+                                        ticket
+                                    )
+                                )}
+                                <span class="rc-sub">
+                                    ${escapeHtml(
+                                        getStudentName(
+                                            ticket
+                                        )
+                                    )}
+                                </span>
+                            </span>
+                            <span class="rc-type">
+                                ${svgIcon(
+                                    ticket.icon
+                                )}
+                                ${escapeHtml(
+                                    ticketType
+                                )}
+                            </span>
+                            <span class="rc-date">
+                                ${escapeHtml(
+                                    formatTicketDate(
+                                        ticket
+                                    )
+                                )}
+                            </span>
+                            ${statusPill(
+                                ticket.status
+                            )}
+                        </a>
+                    `;
+                })
                 .join("");
     }
     /* =====================================================
@@ -2039,30 +1987,26 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         .querySelectorAll(
             ".stat-card"
         )
-        .forEach(
-            card => {
-                card.addEventListener(
-                    "click",
-                    () => {
-                        const filter =
-                            card.dataset.filter ||
-                            "all";
-                        const status =
-                            card.dataset.status;
-                        let url =
-                            `/CS/TicketManagement/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
-                        if (
-                            status
-                        ) {
-                            url +=
-                                `&status=${encodeURIComponent(status)}`;
-                        }
-                        window.location.href =
-                            url;
+        .forEach(card => {
+            card.addEventListener(
+                "click",
+                () => {
+                    const filter =
+                        card.dataset.filter ||
+                        "all";
+                    const status =
+                        card.dataset.status;
+                    let url =
+                        `/CS/TicketManagement/cs-ticket.html?filter=${encodeURIComponent(filter)}`;
+                    if (status) {
+                        url +=
+                            `&status=${encodeURIComponent(status)}`;
                     }
-                );
-            }
-        );
+                    window.location.href =
+                        url;
+                }
+            );
+        });
     /* =====================================================
        QUICK FIND
     ===================================================== */
@@ -2079,19 +2023,13 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             "quickFindErr"
         );
     function goToTicket() {
-        if (
-            !quickFindInput
-        ) {
+        if (!quickFindInput) {
             return;
         }
         const value =
             quickFindInput.value.trim();
-        if (
-            !value
-        ) {
-            if (
-                quickFindErr
-            ) {
+        if (!value) {
+            if (quickFindErr) {
                 quickFindErr.textContent =
                     "Vui lòng nhập mã ticket cần tìm.";
                 quickFindErr.classList.add(
@@ -2100,9 +2038,7 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
             }
             return;
         }
-        if (
-            quickFindErr
-        ) {
+        if (quickFindErr) {
             quickFindErr.classList.remove(
                 "show"
             );
@@ -2110,22 +2046,19 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
         window.location.href =
             `/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(value)}`;
     }
-    if (
-        quickFindBtn
-    ) {
+    if (quickFindBtn) {
         quickFindBtn.addEventListener(
             "click",
             goToTicket
         );
     }
-    if (
-        quickFindInput
-    ) {
+    if (quickFindInput) {
         quickFindInput.addEventListener(
             "keydown",
             event => {
                 if (
-                    event.key === "Enter"
+                    event.key ===
+                    "Enter"
                 ) {
                     event.preventDefault();
                     goToTicket();
@@ -2136,22 +2069,25 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     /* =====================================================
        GLOBAL DEBUG
     ===================================================== */
-    window.CSDashboard =
-        {
-            findCampusDepartment,
-            findTicketAssignee,
-            assignTicketIfNeeded,
-            repairUnassignedTickets,
-            loadTicketsForCurrentCS,
-            loadCSProfile,
-            getTicketCampus,
-            resolveDepartmentCode,
-            normalizeCampus,
-            currentUser:
-                () =>
-                    currentCSUser,
-            currentProfile:
-                () =>
-                    currentCSProfile
-        };
+    window.CSDashboard = {
+        findCampusDepartment,
+        findTicketAssignee,
+        assignTicketIfNeeded,
+        repairUnassignedTickets,
+        loadTicketsForCurrentCS,
+        loadCSProfile,
+        getTicketCampus,
+        resolveDepartmentCode,
+        normalizeCampus,
+        normalizePriority,
+        getTicketPriority,
+        getPriorityWeight,
+        getPriorityLabel,
+        currentUser:
+            () =>
+                currentCSUser,
+        currentProfile:
+            () =>
+                currentCSProfile
+    };
 })();
