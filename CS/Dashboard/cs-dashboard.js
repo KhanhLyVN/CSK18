@@ -6,6 +6,24 @@
 (function () {
     let pieChartInstance = null;
     let satisfactionChartInstance = null;
+    let dashboardState = {
+        date: "",
+        totalTickets: 0,
+        ticketsToday: 0,
+        completedThisWeek: 0,
+        inProgress: 0,
+        totalThisWeek: 0,
+        completionRate: 0,
+        avgTimeText: null,
+        satisfactionRate: null,
+        satisfiedCount: 0,
+        unsatisfiedCount: 0,
+        typeCounts: { system: 0, learning: 0, account: 0, other: 0 },
+        weeklyCounts: {
+            thisWeek: [0, 0, 0, 0, 0, 0, 0],
+            lastWeek: [0, 0, 0, 0, 0, 0, 0]
+        }
+    };
 
     /* =====================================================
        HELPER
@@ -110,6 +128,90 @@
         }
         const safeValue = Math.min(100, Math.max(0, Number(value)));
         fill.style.width = `${safeValue}%`;
+    }
+
+    function buildDashboardSnapshot(tickets, metrics) {
+        return {
+            date: new Date().toLocaleDateString("vi-VN"),
+            totalTickets: tickets.length,
+            ticketsToday: metrics.ticketsToday,
+            completedThisWeek: metrics.completedThisWeek,
+            inProgress: metrics.inProgress,
+            totalThisWeek: metrics.totalThisWeek,
+            completionRate: metrics.completionRate,
+            avgTimeText: metrics.avgTimeText,
+            satisfactionRate: metrics.satisfactionRate,
+            satisfiedCount: metrics.satisfiedCount,
+            unsatisfiedCount: metrics.unsatisfiedCount,
+            typeCounts: metrics.typeCounts,
+            weeklyCounts: metrics.weeklyCounts
+        };
+    }
+
+    function updateDashboardState(metrics) {
+        dashboardState = {
+            ...dashboardState,
+            ...metrics,
+            typeCounts: { ...(metrics.typeCounts || dashboardState.typeCounts) },
+            weeklyCounts: {
+                thisWeek: [...(metrics.weeklyCounts?.thisWeek || dashboardState.weeklyCounts.thisWeek)],
+                lastWeek: [...(metrics.weeklyCounts?.lastWeek || dashboardState.weeklyCounts.lastWeek)]
+            }
+        };
+        window.__dashboardSnapshot = buildDashboardSnapshot(metrics.tickets || [], dashboardState);
+    }
+
+    function exportDashboardExcel() {
+        if (typeof XLSX === "undefined") {
+            alert("Tính năng xuất Excel chưa sẵn sàng trong trình duyệt.");
+            return;
+        }
+
+        const snapshot = window.__dashboardSnapshot || dashboardState;
+        if (!snapshot || !snapshot.typeCounts) {
+            alert("Chưa có dữ liệu dashboard để xuất.");
+            return;
+        }
+
+        const summaryRows = [
+            ["Chỉ tiêu", "Giá trị"],
+            ["Ngày thống kê", snapshot.date],
+            ["Tổng số ticket", snapshot.totalTickets],
+            ["Ticket mới hôm nay", snapshot.ticketsToday],
+            ["Ticket hoàn thành trong tuần", snapshot.completedThisWeek],
+            ["Ticket đang xử lý", snapshot.inProgress],
+            ["Tổng ticket trong tuần", snapshot.totalThisWeek],
+            ["Tỷ lệ hoàn thành", `${snapshot.completionRate}%`],
+            ["Thời gian xử lý trung bình", snapshot.avgTimeText || "Chưa có dữ liệu"],
+            ["Tỷ lệ hài lòng", snapshot.satisfactionRate ? `${snapshot.satisfactionRate}%` : "Chưa có dữ liệu"],
+            ["Hài lòng", snapshot.satisfiedCount || 0],
+            ["Không hài lòng", snapshot.unsatisfiedCount || 0]
+        ];
+
+        const typeRows = [
+            ["Nhóm ticket", "Số lượng"],
+            ["Hệ thống", snapshot.typeCounts.system || 0],
+            ["Khóa học", snapshot.typeCounts.learning || 0],
+            ["Tài khoản", snapshot.typeCounts.account || 0],
+            ["Khác", snapshot.typeCounts.other || 0]
+        ];
+
+        const dayLabels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+        const weeklyRows = [
+            ["Ngày", "Tuần này", "Tuần trước"],
+            ...dayLabels.map((label, index) => [label, snapshot.weeklyCounts.thisWeek[index] || 0, snapshot.weeklyCounts.lastWeek[index] || 0])
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+        const typeSheet = XLSX.utils.aoa_to_sheet(typeRows);
+        const weeklySheet = XLSX.utils.aoa_to_sheet(weeklyRows);
+
+        XLSX.utils.book_append_sheet(workbook, summarySheet, "Tổng quan");
+        XLSX.utils.book_append_sheet(workbook, typeSheet, "Loại ticket");
+        XLSX.utils.book_append_sheet(workbook, weeklySheet, "So sánh tuần");
+
+        XLSX.writeFile(workbook, "dashboard-ticket-report.xlsx");
     }
 
     /* =====================================================
@@ -332,6 +434,26 @@
        RESET DASHBOARD RỖNG
     ===================================================== */
     function renderEmptyState() {
+        const emptyTypeCounts = { system: 0, learning: 0, account: 0, other: 0 };
+        const emptyMetrics = {
+            date: new Date().toLocaleDateString("vi-VN"),
+            totalTickets: 0,
+            ticketsToday: 0,
+            completedThisWeek: 0,
+            inProgress: 0,
+            totalThisWeek: 0,
+            completionRate: 0,
+            avgTimeText: null,
+            satisfactionRate: null,
+            satisfiedCount: 0,
+            unsatisfiedCount: 0,
+            typeCounts: emptyTypeCounts,
+            weeklyCounts: { thisWeek: [0, 0, 0, 0, 0, 0, 0], lastWeek: [0, 0, 0, 0, 0, 0, 0] }
+        };
+
+        dashboardState = { ...emptyMetrics };
+        window.__dashboardSnapshot = buildDashboardSnapshot([], emptyMetrics);
+
         setStat("valToday", "subToday", null);
         setStat("valCompleted", "subCompleted", null);
         setStat("valInProgress", "subInProgress", null);
@@ -342,7 +464,7 @@
 
         setProgress(null);
         resetBarsEmpty();
-        renderPieChart({ system: 0, learning: 0, account: 0, other: 0 });
+        renderPieChart(emptyTypeCounts);
     }
 
     /* =====================================================
@@ -363,37 +485,29 @@
         let inProgress = 0;
         let totalThisWeek = 0;
 
-        // Biểu đồ tròn
         const typeCounts = { system: 0, learning: 0, account: 0, other: 0 };
-
-        // Thời gian trung bình
         let totalTimeMinutes = 0;
         let resolvedCount = 0;
-
-        // Phản hồi hài lòng sau khi CS đóng ticket.
         let satisfiedCount = 0;
         let unsatisfiedCount = 0;
+
+        const weekTickets = [];
 
         tickets.forEach(ticket => {
             if (!ticket) return;
 
-            // 1. LẤY NGÀY TẠO
             const createdAt = toValidDate(ticket.createdAt);
             if (!createdAt) return;
 
-            // 2. PHÂN LOẠI TICKET (hệ thống / khóa học / tài khoản / khác)
             const categoryKey = normalizeCategoryKey(ticket);
             if (categoryKey && typeCounts[categoryKey] !== undefined) {
                 typeCounts[categoryKey]++;
             }
 
-            // 3. ĐÁNH GIÁ HÀI LÒNG: lấy từ hai nút học viên đã chọn.
             const satisfactionStatus = String(ticket.satisfactionStatus || "").toLowerCase();
             if (satisfactionStatus === "satisfied") satisfiedCount++;
             if (satisfactionStatus === "unsatisfied") unsatisfiedCount++;
 
-            // 4. THỜI GIAN XỬ LÝ: chỉ ticket đã đóng.
-            // `updatedAt` chỉ là fallback cho ticket legacy chưa có `closedAt`.
             const status = String(ticket.status || "").toLowerCase();
             if (status === "closed") {
                 const closedAt = toValidDate(ticket.closedAt || ticket.statusClosedAt || ticket.updatedAt);
@@ -404,7 +518,6 @@
                 }
             }
 
-            // 5. STATS THEO THỜI GIAN
             if (getDateKey(createdAt) === today) {
                 ticketsToday++;
             }
@@ -413,6 +526,7 @@
             if (dayThis >= 0 && dayThis < 7) {
                 thisWeek[dayThis]++;
                 totalThisWeek++;
+                weekTickets.push(ticket);
             }
 
             const dayLast = getWeekDay(createdAt, mondayLast);
@@ -420,39 +534,64 @@
                 lastWeek[dayLast]++;
             }
 
-            // STATUS
             if (status === "in_progress" || status === "processing" || status === "pending") {
                 inProgress++;
             }
-            if (status === "completed" || status === "closed" || status === "resolved") {
-                if (createdAt >= mondayThis) {
-                    completedThisWeek++;
-                }
-            }
         });
 
-        // Tỷ lệ hoàn thành
-        const completionRate = totalThisWeek === 0 ? 0 : Math.round((completedThisWeek / totalThisWeek) * 100);
+        completedThisWeek = weekTickets.filter(ticket => {
+            const status = String(ticket.status || "").toLowerCase();
+            return status === "completed" || status === "closed" || status === "resolved";
+        }).length;
 
-        // Hiển thị 4 thẻ chính
+        /* --- Tỷ lệ hoàn thành: tính trên TOÀN BỘ ticket, không giới hạn theo tuần --- */
+        const totalAllTickets = tickets.length;
+        const completedAllTickets = tickets.filter(ticket => {
+            const status = String(ticket.status || "").toLowerCase();
+            return status === "completed" || status === "closed" || status === "resolved";
+        }).length;
+        const completionRate = totalAllTickets === 0 ? 0 : Math.round((completedAllTickets / totalAllTickets) * 100);
+
+        const avgTimeText = resolvedCount > 0 ? formatDuration(Math.round(totalTimeMinutes / resolvedCount)) : null;
+        const satisfactionResponses = satisfiedCount + unsatisfiedCount;
+        const satisfactionRate = satisfactionResponses > 0 ? Math.round((satisfiedCount / satisfactionResponses) * 100) : null;
+
+        const dashboardSnapshot = {
+            ticketsToday,
+            completedThisWeek,
+            inProgress,
+            totalThisWeek,
+            completionRate,
+            avgTimeText,
+            satisfactionRate,
+            satisfiedCount,
+            unsatisfiedCount,
+            typeCounts,
+            weeklyCounts: { thisWeek, lastWeek },
+            totalTickets: tickets.length
+        };
+        dashboardState = {
+            ...dashboardState,
+            ...dashboardSnapshot,
+            totalTickets: tickets.length,
+            typeCounts: { ...typeCounts },
+            weeklyCounts: { thisWeek: [...thisWeek], lastWeek: [...lastWeek] }
+        };
+        window.__dashboardSnapshot = buildDashboardSnapshot(tickets, dashboardState);
+
         setStat("valToday", "subToday", ticketsToday, ticketsToday === 0 ? "Không có ticket mới hôm nay" : `${ticketsToday} ticket được tạo hôm nay`);
         setStat("valCompleted", "subCompleted", completedThisWeek, completedThisWeek === 0 ? "Chưa có ticket hoàn thành" : `${completedThisWeek} ticket đã hoàn thành`);
         setStat("valInProgress", "subInProgress", inProgress, inProgress === 0 ? "Không có ticket đang xử lý" : `${inProgress} ticket đang xử lý`);
-        setStat("valCompletionRate", "subCompletionRate", completionRate, `${completedThisWeek}/${totalThisWeek} ticket`, "%");
+        setStat("valCompletionRate", "subCompletionRate", completionRate, `${completedAllTickets}/${totalAllTickets} ticket`, "%");
         setProgress(completionRate);
 
-        // Hiển thị Thời gian trung bình
-        if (resolvedCount > 0) {
-            const avgMinutes = Math.round(totalTimeMinutes / resolvedCount);
-            setStat("valAvgTime", "subAvgTime", formatDuration(avgMinutes), `Từ lúc tạo đến khi đóng · ${resolvedCount} ticket`);
+        if (avgTimeText) {
+            setStat("valAvgTime", "subAvgTime", avgTimeText, `Từ lúc tạo đến khi đóng · ${resolvedCount} ticket`);
         } else {
             setStat("valAvgTime", "subAvgTime", null);
         }
 
-        // Hiển thị tỷ lệ hài lòng trên các đánh giá đã phản hồi.
-        const satisfactionResponses = satisfiedCount + unsatisfiedCount;
         if (satisfactionResponses > 0) {
-            const satisfactionRate = Math.round((satisfiedCount / satisfactionResponses) * 100);
             setStat(
                 "valSatisfaction",
                 "subSatisfaction",
@@ -464,8 +603,6 @@
             setStat("valSatisfaction", "subSatisfaction", null);
         }
         renderSatisfactionChart(satisfiedCount, unsatisfiedCount);
-
-        // Cập nhật biểu đồ
         renderPieChart(typeCounts);
         renderBarChart(thisWeek, lastWeek);
     }
@@ -474,38 +611,63 @@
        ĐỌC FIRESTORE REAL-TIME
     ===================================================== */
     function initDashboard() {
-        renderToday();
+    renderToday();
 
-        if (typeof db === "undefined") {
-            console.error("Firebase db chưa được khởi tạo.");
-            renderEmptyState();
-            return;
-        }
-
-        db.collection("tickets").onSnapshot(
-            snapshot => {
-                const tickets = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-
-                if (tickets.length === 0) {
-                    renderEmptyState();
-                    return;
-                }
-                calculateDashboard(tickets);
-            },
-            error => {
-                console.error("Lỗi đọc tickets:", error);
-                renderEmptyState();
-            }
-        );
+    if (typeof db === "undefined") {
+        console.error("Firebase db chưa được khởi tạo.");
+        renderEmptyState();
+        return;
     }
 
-    document.addEventListener("DOMContentLoaded", initDashboard);
+    db.collection("tickets").onSnapshot(
+        snapshot => {
+            const tickets = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            if (tickets.length === 0) {
+                renderEmptyState();
+                return;
+            }
+            calculateDashboard(tickets);
+        },
+        error => {
+            console.error("Lỗi đọc tickets (real-time):", error.code, error.message);
+
+            // Fallback: thử đọc dữ liệu một lần bằng get() thay vì real-time listener
+            db.collection("tickets").get()
+                .then(snapshot => {
+                    const tickets = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    if (tickets.length === 0) {
+                        renderEmptyState();
+                        return;
+                    }
+                    console.warn("Đã tải dữ liệu qua get() (không real-time) do onSnapshot lỗi.");
+                    calculateDashboard(tickets);
+                })
+                .catch(fallbackError => {
+                    console.error("Lỗi đọc tickets (fallback get()):", fallbackError.code, fallbackError.message);
+                    renderEmptyState();
+                });
+        }
+    );
+}
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const exportButton = el("exportDashboardBtn");
+        if (exportButton) {
+            exportButton.addEventListener("click", exportDashboardExcel);
+        }
+        initDashboard();
+    });
 
     window.DashboardUI = {
         renderEmptyState,
-        calculateDashboard
+        calculateDashboard,
+        exportDashboardExcel
     };
 })();
