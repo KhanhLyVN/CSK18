@@ -1286,6 +1286,9 @@ async function submitTicket() {
       selectedMainType.value,
       selectedIssue
     );
+  const automaticPriority = typeof window.automaticTicketPriority === "function"
+    ? window.automaticTicketPriority({ categoryId: selectedMainType.value, issueId: selectedIssue, title, description })
+    : { level: "medium", label: "Trung bình", reason: "Không tải được bộ phân loại tự động.", source: "fallback" };
   // ====================================================
   // TICKET NUMBER
   // ====================================================
@@ -1379,6 +1382,10 @@ async function submitTicket() {
     ticketIssueId: selectedIssue || "",
     ticketIssue: ticketIssueLabel,
     departmentCode,
+    priority: automaticPriority.level,
+    priorityLabel: automaticPriority.label,
+    priorityReason: automaticPriority.reason,
+    prioritySource: automaticPriority.source,
     title,
     description,
     // Ảnh nhỏ lưu Firestore Base64, không dùng Storage
