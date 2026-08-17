@@ -16,10 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const notificationList = document.getElementById("notificationList");
   const notificationEmpty = document.getElementById("notificationEmpty");
   const notificationUnreadLabel = document.getElementById("notificationUnreadLabel");
-  let currentStudentUid = "";
+    let currentStudentUid = "";
   let notificationRecords = [];
-  function renderNotifications() {
-    if (!notificationList) return;
+  const sharedNotificationManager = Boolean(window.__studentNotificationManager);
+
+    function renderNotifications() {
+    if (sharedNotificationManager || !notificationList) return;
+
     const unreadCount = notificationRecords.length;
     if (notificationCountEl) {
       notificationCountEl.hidden = unreadCount === 0;
@@ -40,8 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </a>
     `).join("");
   }
-  function readTicketNotificationHistory(tickets) {
+    function readTicketNotificationHistory(tickets) {
+    if (sharedNotificationManager) return;
     notificationRecords = tickets
+
       .flatMap(ticket => {
         const history = Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : [];
         return history.map(item => ({
@@ -75,15 +80,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (notificationBackdrop) notificationBackdrop.hidden = true;
     }, 200);
   }
-  notificationButton?.addEventListener("click", () => {
-    notificationPanel?.classList.contains("open") ? closeNotifications() : openNotifications();
-  });
-  notificationClose?.addEventListener("click", closeNotifications);
-  notificationBackdrop?.addEventListener("click", closeNotifications);
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeNotifications();
-  });
-  renderNotifications();
+    if (!sharedNotificationManager) {
+    notificationButton?.addEventListener("click", () => {
+      notificationPanel?.classList.contains("open") ? closeNotifications() : openNotifications();
+    });
+    notificationClose?.addEventListener("click", closeNotifications);
+    notificationBackdrop?.addEventListener("click", closeNotifications);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeNotifications();
+    });
+    renderNotifications();
+  }
+
   // ======================================================
   // STATUS
   // ======================================================

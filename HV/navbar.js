@@ -119,8 +119,10 @@
             ":scope > main",
             ":scope > .main",
             ":scope > .sent-tickets-page",
-            ":scope > .homepage",
+                        ":scope > .homepage",
+            ":scope > .faq-page-content",
             ":scope > [data-page-content]"
+
         ];
         for (
             const selector
@@ -229,10 +231,16 @@
                     </small>
                 </span>
             </a>
-            <div
+                        <div
                 class="student-navbar-actions"
                 data-navbar-actions
-            ></div>
+            >
+                <button class="student-navbar-notification-button" id="notificationButton" type="button" aria-label="Mở thông báo" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+                    <span class="student-navbar-notification-count" id="notificationCount" hidden>0</span>
+                </button>
+            </div>
+
         `;
         return topbar;
     }
@@ -319,10 +327,84 @@
         );
         return overlay;
     }
+        function ensureNotificationPanel() {
+        let panel = document.getElementById("notificationPanel");
+        if (!panel) {
+            panel = document.createElement("aside");
+            panel.className = "student-notification-panel";
+            panel.id = "notificationPanel";
+            panel.setAttribute("aria-hidden", "true");
+            panel.innerHTML = `
+                <div class="student-notification-head"><div><span class="student-notification-kicker">CẬP NHẬT MỚI</span><h2>Thông báo</h2><p>Các thay đổi mới từ Customer Success.</p></div><button class="student-notification-close" id="notificationClose" type="button" aria-label="Đóng thông báo">×</button></div>
+                <div class="student-notification-toolbar"><span id="notificationUnreadLabel">Chưa có thông báo</span></div>
+                <div class="student-notification-list" id="notificationList"></div>
+                <div class="student-notification-empty" id="notificationEmpty">Khi CS cập nhật ticket, thông báo sẽ xuất hiện tại đây.</div>
+            `;
+            document.body.appendChild(panel);
+        }
+        let backdrop = document.getElementById("notificationBackdrop");
+        if (!backdrop) {
+            backdrop = document.createElement("div");
+            backdrop.className = "student-notification-backdrop";
+            backdrop.id = "notificationBackdrop";
+            backdrop.hidden = true;
+            document.body.appendChild(backdrop);
+        }
+        return { panel, backdrop };
+    }
+
+    function bindNotifications() {
+        if (window.__studentNotificationManager) return;
+        window.__studentNotificationManager = true;
+        const button = document.getElementById("notificationButton");
+        const { panel, backdrop } = ensureNotificationPanel();
+        const count = document.getElementById("notificationCount");
+        const list = document.getElementById("notificationList");
+        const empty = document.getElementById("notificationEmpty");
+        const unreadLabel = document.getElementById("notificationUnreadLabel");
+        const close = document.getElementById("notificationClose");
+        let records = [];
+
+        const millis = value => {
+            if (!value) return 0;
+            if (typeof value.toMillis === "function") return value.toMillis();
+            if (typeof value.toDate === "function") return value.toDate().getTime();
+            return new Date(value).getTime() || 0;
+        };
+        const esc = value => { const node = document.createElement("div"); node.textContent = value == null ? "" : String(value); return node.innerHTML; };
+        const render = () => {
+            const total = records.length;
+            if (count) { count.hidden = total === 0; count.textContent = total > 99 ? "99+" : String(total); }
+            if (unreadLabel) unreadLabel.textContent = total ? `${total} thông báo mới nhất` : "Chưa có thông báo";
+            if (empty) empty.classList.toggle("show", total === 0);
+            if (list) list.innerHTML = records.map(item => `<a class="student-notification-item" href="/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(item.ticketId)}"><div class="student-notification-item-head"><strong>${esc(item.ticketNum || "Ticket")}</strong><span>${esc(item.time || "")}</span></div><b>${esc(item.title || "Ticket hỗ trợ")}</b><p>${esc(item.preview || "Customer Success đã cập nhật ticket.")}</p></a>`).join("");
+        };
+        const closePanel = () => { panel.classList.remove("open"); panel.setAttribute("aria-hidden", "true"); button?.setAttribute("aria-expanded", "false"); backdrop.classList.remove("show"); window.setTimeout(() => { backdrop.hidden = true; }, 180); };
+        const openPanel = () => { panel.classList.add("open"); panel.setAttribute("aria-hidden", "false"); button?.setAttribute("aria-expanded", "true"); backdrop.hidden = false; requestAnimationFrame(() => backdrop.classList.add("show")); };
+        button?.addEventListener("click", () => panel.classList.contains("open") ? closePanel() : openPanel());
+        close?.addEventListener("click", closePanel);
+        backdrop.addEventListener("click", closePanel);
+        document.addEventListener("keydown", event => { if (event.key === "Escape") closePanel(); });
+        const authInstance = window.auth || (typeof auth !== "undefined" ? auth : null);
+        const database = window.db || (typeof db !== "undefined" ? db : null);
+        if (authInstance && database) {
+            authInstance.onAuthStateChanged(user => {
+                if (!user) { records = []; render(); return; }
+                database.collection("tickets").where("studentId", "==", user.uid).onSnapshot(snapshot => {
+                    records = snapshot.docs.flatMap(doc => { const ticket = { id: doc.id, ...doc.data() }; return (Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : []).map(item => ({ ...item, ticketId: item.ticketId || ticket.id, ticketNum: item.ticketNum || ticket.ticketNum || ticket.ticket_num || ticket.id, title: item.title || ticket.title || "Ticket hỗ trợ", time: new Date(millis(item.createdAt || item.updatedAt)).toLocaleString("vi-VN") })); }).sort((a, b) => millis(b.createdAt) - millis(a.createdAt)).slice(0, 50);
+                    render();
+                }, error => console.warn("[Student Notifications] Không thể tải thông báo", error));
+            });
+        }
+        render();
+    }
+
     /* =====================================================
-       KHỞI TẠO NAVBAR
+              KHỞI TẠO NAVBAR
        ===================================================== */
+
     function initNavbar() {
+
         const app =
             document.querySelector(
                 ".app"
@@ -352,8 +434,9 @@
         /* -------------------------------------------------
            TẠO COMPONENT
            ------------------------------------------------- */
-        const topbar =
+                const topbar =
             createTopbar();
+
         const layout =
             document.createElement(
                 "div"
@@ -391,9 +474,11 @@
         /* -------------------------------------------------
            ICON + ACTIVE
            ------------------------------------------------- */
-        applyIcons(
+                applyIcons(
             sidebar
         );
+        bindNotifications();
+
         setActive(
             sidebar
         );
@@ -521,15 +606,6 @@
     /* =====================================================
        CHẠY SAU KHI DOM READY
        ===================================================== */
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initNavbar
-        );
-    } else {
         initNavbar();
-    }
+
 })();
