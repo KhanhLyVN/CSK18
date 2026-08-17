@@ -115,7 +115,95 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .stub-status { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: var(--gold); font-size: 13.5px; font-weight: 800; }
 .stub-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
 .stub-note { margin-top: 14px; padding-top: 11px; border-top: 1px dashed var(--line); color: var(--ink-soft); font-size: 12px; line-height: 1.55; }
+.title-ai-field {
+  position: relative;
+}
 
+.title-ai-suggestion {
+  display: none;
+  margin-top: 10px;
+  padding: 14px 15px;
+  border: 1px solid rgba(176, 138, 78, .55);
+  border-left: 4px solid var(--gold, #b08a4e);
+  border-radius: 9px;
+  color: var(--ink, #2a1712);
+  background: linear-gradient(135deg, #fffaf1 0%, #fff 100%);
+  box-shadow: 0 6px 18px rgba(62, 4, 2, .08);
+  animation: titleAiSuggestionIn .2s ease-out;
+}
+
+.title-ai-suggestion.is-visible {
+  display: block;
+}
+
+.title-ai-suggestion.is-loading {
+  opacity: .78;
+}
+
+.title-ai-suggestion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.title-ai-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--maroon, #5d0703);
+  font-size: 12px;
+}
+
+.title-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: #fffaf1;
+  background: var(--maroon, #5d0703);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.title-ai-close {
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ink-soft, #6b5348);
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.title-ai-close:hover {
+  color: var(--maroon, #5d0703);
+  background: rgba(93, 7, 3, .08);
+}
+
+.title-ai-suggestion-body {
+  color: var(--ink-soft, #6b5348);
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.title-ai-suggestion-body strong {
+  color: var(--maroon, #5d0703);
+}
+
+@keyframes titleAiSuggestionIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 @media (max-width: 860px) {
   .main { padding: 24px 18px 42px; }
 }

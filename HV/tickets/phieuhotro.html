@@ -9,10 +9,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
 <script>
   window.db = window.db || (typeof db !== "undefined" ? db : null);
   window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);
@@ -82,9 +83,36 @@
               <hr class="divider">
   
               <div class="section-title"><span class="idx">03</span> Nội dung chi tiết</div>
-              <div class="field">
-                <label>Tiêu đề <span class="opt"></span></label>
-                <input type="text" id="fTitle" placeholder="Tóm tắt ngắn gọn vấn đề">
+              <div class="field title-ai-field" id="titleAiField">
+                <label for="fTitle">Tiêu đề <span class="opt"></span></label>
+                <input
+                  type="text"
+                  id="fTitle"
+                  placeholder="Ví dụ: Em không đăng nhập được vào khóa học"
+                  autocomplete="off"
+                >
+
+                <section
+                  id="titleAiSuggestion"
+                  class="title-ai-suggestion"
+                  aria-live="polite"
+                  aria-hidden="true"
+                >
+                  <div class="title-ai-suggestion-head">
+                    <div class="title-ai-heading">
+                      <span class="title-ai-badge">AI</span>
+                      <strong>Gợi ý xử lý nhanh</strong>
+                    </div>
+                    <button
+                      type="button"
+                      id="closeTitleAiSuggestion"
+                      class="title-ai-close"
+                      aria-label="Đóng gợi ý AI"
+                      title="Đóng"
+                    >×</button>
+                  </div>
+                  <div id="titleAiSuggestionBody" class="title-ai-suggestion-body"></div>
+                </section>
               </div>
               <div class="field">
                 <label>Mô tả chi tiết <span class="opt"></span></label>
