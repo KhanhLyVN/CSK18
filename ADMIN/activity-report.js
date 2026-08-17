@@ -1,19 +1,17 @@
-/* =========================================================
-   ACTIVITY REPORT - ADMIN
-   =========================================================
+/*ACTIVITY REPORT - ADMIN
    QUAN TRỌNG:
    Firebase đã được khởi tạo trong firebase-config.js:
    const auth = firebase.auth();
    const db = firebase.firestore();
    const storage = firebase.storage();
-   FILE NÀY KHÔNG ĐƯỢC khai báo lại db / auth / storage.
-========================================================= */
+   FILE NÀY KHÔNG ĐƯỢC khai báo lại db / auth / storage.*/
 "use strict";
-/* =========================================================
-   CONFIG
-========================================================= */
+
+/*CONFIG*/
+
 const USER_COLLECTION = "users";
 const DEFAULT_PERIOD = "30";
+
 /*
  * Không dùng:
  *
@@ -22,9 +20,9 @@ const DEFAULT_PERIOD = "30";
  *
  * vì firebase-config.js đã tạo sẵn.
  */
-/* =========================================================
-   STATE
-========================================================= */
+
+/* STATE*/
+
 let allUsers = [];
 let filteredUsers = [];
 let unsubscribeUsers = null;
@@ -32,9 +30,9 @@ let currentPeriod = DEFAULT_PERIOD;
 let currentCampus = "all";
 let currentDepartment = "all";
 let currentSearch = "";
-/* =========================================================
-   DOM
-========================================================= */
+
+/*DOM*/
+
 const $ = (id) => document.getElementById(id);
 const elements = {
   connectionDot: $("connectionDot"),
@@ -80,9 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadAdminAccount();
   loadUsers();
 });
-/* =========================================================
-   FIREBASE CONNECTION
-========================================================= */
+
+/*FIREBASE CONNECTION*/
+
 function initFirebaseConnection() {
   try {
     if (typeof firebase === "undefined") {
@@ -153,12 +151,8 @@ function loadUsers() {
             });
           });
           allUsers.sort((a, b) => {
-            const timeA = getTimestampValue(
-              a.createdAt || a.created || a.joined
-            );
-            const timeB = getTimestampValue(
-              b.createdAt || b.created || b.joined
-            );
+            const timeA = getTimestampValue(a.createdAt || a.created || a.joined);
+            const timeB = getTimestampValue(b.createdAt || b.created || b.joined);
             return timeB - timeA;
           });
           setConnection(
@@ -169,72 +163,41 @@ function loadUsers() {
           applyFilters();
         },
         (error) => {
-          console.error(
-            "Lỗi realtime users:",
-            error
-          );
-          setConnection(
-            false,
-            "Lỗi kết nối Firestore"
-          );
-          showTableError(
-            "Không thể tải dữ liệu tài khoản."
-          );
+          console.error("Lỗi realtime users:",error);
+          setConnection(false, "Lỗi kết nối Firestore");
+          showTableError("Không thể tải dữ liệu tài khoản.");
         }
       );
   } catch (error) {
-    console.error(
-      "Lỗi khởi tạo users:",
-      error
-    );
-    showTableError(
-      "Có lỗi khi tải dữ liệu."
-    );
+    console.error("Lỗi khởi tạo users:",error);
+    showTableError("Có lỗi khi tải dữ liệu.");
   }
 }
-/* =========================================================
-   CUSTOMER SUCCESS CHECK
-========================================================= */
+
+/*CUSTOMER SUCCESS CHECK*/
+
 function isCustomerSuccess(data) {
-  const accountType = normalize(
-    data.accountType
-  );
-  const role = normalize(
-    data.role
-  );
-  const type = normalize(
-    data.type
-  );
+  const accountType = normalize(data.accountType );
+  const role = normalize(data.role);
+  const type = normalize(data.type);
   /*
    * Nếu document có accountType thì ưu tiên.
    */
   if (accountType) {
-    return (
-      accountType === "customer_success" ||
-      accountType === "customer success" ||
-      accountType === "cs"
+    return (accountType === "customer_success" ||accountType === "customer success" ||accountType === "cs"
     );
   }
   /*
    * Hỗ trợ role.
    */
   if (role) {
-    return (
-      role === "cs" ||
-      role === "customer_success" ||
-      role === "customer success" ||
-      role === "customer-success"
-    );
+    return (role === "cs" ||role === "customer_success" || role === "customer success" ||role === "customer-success");
   }
   /*
    * Hỗ trợ type.
    */
   if (type) {
-    return (
-      type === "cs" ||
-      type === "customer_success" ||
-      type === "customer success"
-    );
+    return (type === "cs" ||type === "customer_success" ||type === "customer success");
   }
   /*
    * Nếu hệ thống users hiện tại không có
@@ -244,38 +207,29 @@ function isCustomerSuccess(data) {
    */
   return true;
 }
-/* =========================================================
-   FILTER INIT
-========================================================= */
+
+/*FILTER INIT*/
+
 function initFilters() {
   if (elements.periodFilter) {
-    elements.periodFilter.addEventListener(
-      "change",
+    elements.periodFilter.addEventListener("change",
       () => {
-        currentPeriod =
-          elements.periodFilter.value || DEFAULT_PERIOD;
+        currentPeriod =elements.periodFilter.value || DEFAULT_PERIOD;
         updatePeriodLabel();
         applyFilters();
       }
     );
   }
   if (elements.campusFilter) {
-    elements.campusFilter.addEventListener(
-      "change",
-      () => {
-        currentCampus =
-          elements.campusFilter.value || "all";
-        applyFilters();
+    elements.campusFilter.addEventListener("change",() => {
+        currentCampus =elements.campusFilter.value || "all";applyFilters();
       }
     );
   }
   if (elements.departmentFilter) {
-    elements.departmentFilter.addEventListener(
-      "change",
-      () => {
+    elements.departmentFilter.addEventListener("change",() => {
         currentDepartment =
-          elements.departmentFilter.value || "all";
-        applyFilters();
+          elements.departmentFilter.value || "all";applyFilters();
       }
     );
   }
@@ -283,42 +237,31 @@ function initFilters() {
     elements.searchInput.addEventListener(
       "input",
       () => {
-        currentSearch =
-          elements.searchInput.value
-            .trim()
-            .toLowerCase();
+        currentSearch =elements.searchInput.value.trim().toLowerCase();
         applyFilters();
       }
     );
   }
   updatePeriodLabel();
 }
-/* =========================================================
-   BUTTONS
-========================================================= */
+
+/*BUTTONS*/
+
 function initButtons() {
   if (elements.clearFilters) {
-    elements.clearFilters.addEventListener(
-      "click",
-      clearFilters
-    );
+    elements.clearFilters.addEventListener("click",clearFilters);
   }
   if (elements.exportBtn) {
-    elements.exportBtn.addEventListener(
-      "click",
-      exportCSV
-    );
+    elements.exportBtn.addEventListener("click",exportCSV);
   }
 }
-/* =========================================================
-   POPULATE FILTERS
-========================================================= */
+
+/*POPULATE FILTERS*/
+
 function populateFilters() {
   if (elements.campusFilter) {
     const campuses = uniqueValues(
-      allUsers.map((user) =>
-        getCampus(user)
-      )
+      allUsers.map((user) =>getCampus(user))
     );
     const currentValue =
       elements.campusFilter.value || "all";
@@ -326,13 +269,10 @@ function populateFilters() {
       `<option value="all">Tất cả campus</option>`;
     campuses.forEach((campus) => {
       if (!campus) return;
-      const option =
-        document.createElement("option");
+      const option =document.createElement("option");
       option.value = campus;
       option.textContent = campus;
-      elements.campusFilter.appendChild(
-        option
-      );
+      elements.campusFilter.appendChild(option);
     });
     if (
       campuses.includes(currentValue)
@@ -345,40 +285,32 @@ function populateFilters() {
   }
   if (elements.departmentFilter) {
     const departments = uniqueValues(
-      allUsers.map((user) =>
-        getDepartment(user)
-      )
+      allUsers.map((user) =>getDepartment(user))
     );
-    const currentValue =
-      elements.departmentFilter.value || "all";
+    const currentValue =elements.departmentFilter.value || "all";
     elements.departmentFilter.innerHTML =
       `<option value="all">Tất cả phòng ban</option>`;
     departments.forEach((department) => {
       if (!department) return;
-      const option =
-        document.createElement("option");
+      const option =document.createElement("option");
       option.value = department;
       option.textContent = department;
-      elements.departmentFilter.appendChild(
-        option
-      );
+      elements.departmentFilter.appendChild(option);
     });
     if (
       departments.includes(currentValue)
     ) {
-      elements.departmentFilter.value =
-        currentValue;
+      elements.departmentFilter.value =currentValue;
     } else {
       elements.departmentFilter.value = "all";
     }
   }
 }
-/* =========================================================
-   APPLY FILTERS
-========================================================= */
+
+/*APPLY FILTERS*/
+
 function applyFilters() {
-  filteredUsers = allUsers.filter(
-    (user) => {
+  filteredUsers = allUsers.filter((user) => {
       /*
        * Campus
        */
@@ -393,8 +325,7 @@ function applyFilters() {
        */
       if (
         currentDepartment !== "all" &&
-        getDepartment(user) !== currentDepartment
-      ) {
+        getDepartment(user) !== currentDepartment) {
         return false;
       }
       /*
@@ -413,11 +344,7 @@ function applyFilters() {
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
-        if (
-          !searchable.includes(
-            currentSearch
-          )
-        ) {
+        if (!searchable.includes(currentSearch)) {
           return false;
         }
       }
@@ -426,95 +353,61 @@ function applyFilters() {
   );
   renderAll();
 }
-/* =========================================================
-   RENDER ALL
-========================================================= */
+
+/*RENDER ALL*/
+
 function renderAll() {
   renderStats();
   renderCampusReport();
   renderDepartmentReport();
   renderActivityTable();
 }
-/* =========================================================
-   STATS
-========================================================= */
+
+/*STATS*/
+
 function renderStats() {
   const total = filteredUsers.length;
-  const active = filteredUsers.filter(
-    (user) =>
-      getAccountStatus(user) === "active"
-  ).length;
-  const pending = filteredUsers.filter(
-    (user) =>
-      getAccountStatus(user) === "pending"
-  ).length;
-  const newCount =
-    getNewUsersCount(filteredUsers);
-  const activePercent =
-    total > 0
-      ? Math.round(
-          (active / total) * 100
-        )
-      : 0;
+  const active = filteredUsers.filter((user) =>getAccountStatus(user) === "active").length;
+  const pending = filteredUsers.filter((user) =>getAccountStatus(user) === "pending").length;
+  const newCount =getNewUsersCount(filteredUsers);
+  const activePercent =total > 0? Math.round((active / total) * 100): 0;
   if (elements.totalCount) {
-    elements.totalCount.textContent =
-      total;
+    elements.totalCount.textContent =total;
   }
   if (elements.activeCount) {
-    elements.activeCount.textContent =
-      active;
+    elements.activeCount.textContent =active;
   }
   if (elements.pendingCount) {
-    elements.pendingCount.textContent =
-      pending;
+    elements.pendingCount.textContent =pending;
   }
   if (elements.newCount) {
-    elements.newCount.textContent =
-      newCount;
+    elements.newCount.textContent =newCount;
   }
   if (elements.activePercent) {
-    elements.activePercent.textContent =
-      `${activePercent}% tổng đội ngũ`;
+    elements.activePercent.textContent =`${activePercent}% tổng đội ngũ`;
   }
   if (elements.periodLabel) {
-    elements.periodLabel.textContent =
-      getPeriodText(currentPeriod);
+    elements.periodLabel.textContent =getPeriodText(currentPeriod);
   }
 }
-/* =========================================================
-   NEW USERS
-========================================================= */
+
+/*NEW USERS*/
+
 function getNewUsersCount(users) {
   if (currentPeriod === "all") {
     return users.length;
   }
-  const days =
-    Number(currentPeriod) || 30;
+  const days =Number(currentPeriod) || 30;
   const now = Date.now();
-  const start =
-    now -
-    days *
-      24 *
-      60 *
-      60 *
-      1000;
+  const start =now -days *24 *60 *60 *1000;
   return users.filter((user) => {
-    const created =
-      getTimestampValue(
-        user.createdAt ||
-        user.created ||
-        user.joined ||
-        user.created_at
-      );
-    return (
-      created >= start &&
-      created <= now
-    );
+    const created =getTimestampValue(user.createdAt ||user.created || user.joined || user.created_at);
+    return (created >= start &&created <= now);
   }).length;
 }
-/* =========================================================
-   CAMPUS REPORT
-========================================================= */
+
+/*CAMPUS REPORT*/
+
 function renderCampusReport() {
   if (!elements.campusReport) {
     return;
@@ -528,29 +421,13 @@ function renderCampusReport() {
   }
   const counts = {};
   filteredUsers.forEach((user) => {
-    const campus =
-      getCampus(user) || "Chưa xác định";
-    counts[campus] =
-      (counts[campus] || 0) + 1;
+    const campus =getCampus(user) || "Chưa xác định";
+    counts[campus] =(counts[campus] || 0) + 1;
   });
-  const entries =
-    Object.entries(counts)
-      .sort((a, b) => b[1] - a[1]);
-  const max =
-    Math.max(
-      ...entries.map(
-        ([, count]) => count
-      ),
-      1
-    );
-  elements.campusReport.innerHTML =
-    entries
-      .map(
-        ([campus, count]) => {
-          const percent =
-            Math.round(
-              (count / max) * 100
-            );
+  const entries =Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const max =Math.max(...entries.map(([, count]) => count),1);
+  elements.campusReport.innerHTML =entries.map(([campus, count]) => {
+          const percent =Math.round((count / max) * 100);
           return `
             <div class="distribution-row">
               <div class="distribution-head">
@@ -566,9 +443,7 @@ function renderCampusReport() {
       )
       .join("");
 }
-/* =========================================================
-   DEPARTMENT REPORT
-========================================================= */
+/*DEPARTMENT REPORT*/
 function renderDepartmentReport() {
   if (!elements.departmentReport) {
     return;
@@ -582,30 +457,15 @@ function renderDepartmentReport() {
   }
   const counts = {};
   filteredUsers.forEach((user) => {
-    const department =
-      getDepartment(user) ||
-      "Chưa xác định";
-    counts[department] =
-      (counts[department] || 0) + 1;
+    const department =getDepartment(user) ||"Chưa xác định";
+    counts[department] =(counts[department] || 0) + 1;
   });
-  const entries =
-    Object.entries(counts)
-      .sort((a, b) => b[1] - a[1]);
-  const max =
-    Math.max(
-      ...entries.map(
-        ([, count]) => count
-      ),
-      1
-    );
+  const entries =Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const max =Math.max(...entries.map(([, count]) => count),1);
   elements.departmentReport.innerHTML =
     entries
-      .map(
-        ([department, count]) => {
-          const percent =
-            Math.round(
-              (count / max) * 100
-            );
+      .map(([department, count]) => {
+          const percent =Math.round((count / max) * 100);
           return `
             <div class="distribution-row">
               <div class="distribution-head">
@@ -621,9 +481,7 @@ function renderDepartmentReport() {
       )
       .join("");
 }
-/* =========================================================
-   ACTIVITY TABLE
-========================================================= */
+/*ACTIVITY TABLE*/
 function renderActivityTable() {
   if (!elements.activityBody) {
     return;
@@ -642,33 +500,16 @@ function renderActivityTable() {
   elements.activityBody.innerHTML =
     filteredUsers
       .map((user) => {
-        const name =
-          getUserName(user);
-        const email =
-          user.email ||
-          "Không có email";
-        const username =
-          user.username ||
-          user.userName ||
-          user.uid ||
-          user.id ||
-          "—";
-        const campus =
-          getCampus(user) ||
-          "Chưa xác định";
-        const department =
-          getDepartment(user) ||
-          "Chưa xác định";
-        const status =
-          getAccountStatus(user);
-        const statusHTML =
-          renderStatus(status);
-        const lastLogin =
-          getLastLogin(user);
-        const createdAt =
-          getCreatedAt(user);
-        const initials =
-          getInitials(name);
+        const name =getUserName(user);
+        const email =user.email ||"Không có email";
+        const username =user.username ||user.userName ||user.uid ||user.id ||"—";
+        const campus =getCampus(user) ||"Chưa xác định";
+        const department =getDepartment(user) ||"Chưa xác định";
+        const status =getAccountStatus(user);
+        const statusHTML =renderStatus(status);
+        const lastLogin =getLastLogin(user);
+        const createdAt =getCreatedAt(user);
+        const initials =getInitials(name);
         return `
           <tr>
             <td>
@@ -724,55 +565,31 @@ function renderActivityTable() {
    STATUS
 ========================================================= */
 function getAccountStatus(user) {
-  const raw =
-    user.status ??
-    user.accountStatus ??
-    user.state ??
-    "";
-  const status =
-    normalize(raw);
+  const raw =user.status ??user.accountStatus ??user.state ??"";
+  const status = normalize(raw);
   /*
    * Các trạng thái đang hoạt động
    */
-  if (
-    status === "active" ||
-    status === "activated" ||
-    status === "online" ||
-    status === "enabled" ||
-    status === "dang hoat dong" ||
-    status === "đang hoạt động"
-  ) {
+  if (status === "active" ||status === "activated" ||status === "online" ||status === "enabled" || status === "dang hoat dong" ||status === "đang hoạt động") {
     return "active";
   }
   /*
    * Pending
    */
-  if (
-    status === "pending" ||
-    status === "inactive" ||
-    status === "disabled" ||
-    status === "chua kich hoat" ||
-    status === "chưa kích hoạt"
-  ) {
+  if (status === "pending" || status === "inactive" ||status === "disabled" ||status === "chua kich hoat" ||status === "chưa kích hoạt") {
     return "pending";
   }
   /*
    * Kiểm tra passwordCreated
    */
-  if (
-    user.passwordCreated === false
-  ) {
+  if (user.passwordCreated === false) {
     return "pending";
   }
   /*
    * Nếu có lastLogin thì coi là active.
    */
   const lastLogin =
-    getTimestampValue(
-      user.lastLoginAt ||
-      user.lastLogin ||
-      user.lastActive
-    );
+    getTimestampValue(user.lastLoginAt ||user.lastLogin ||user.lastActive);
   if (lastLogin > 0) {
     return "active";
   }
@@ -794,44 +611,26 @@ function renderStatus(status) {
     </span>
   `;
 }
-/* =========================================================
-   CAMPUS
-========================================================= */
+
+/*CAMPUS*/
+
 function getCampus(user) {
-  return cleanValue(
-    user.campus ??
-    user.campusName ??
-    user["code-campus"] ??
-    user.campusId ??
-    user.codeCampus
-  );
+  return cleanValue(user.campus ??user.campusName ??user["code-campus"] ??user.campusId ??user.codeCampus);
 }
-/* =========================================================
-   DEPARTMENT
-========================================================= */
+/*DEPARTMENT*/
 function getDepartment(user) {
-  return cleanValue(
-    user.department ??
-    user.departmentName ??
-    user.dept
+  return cleanValue(user.department ??user.departmentName ??user.dept
   );
 }
-/* =========================================================
-   USER NAME
-========================================================= */
+
+/*USER NAME*/
+
 function getUserName(user) {
-  return cleanValue(
-    user.name ??
-    user.fullName ??
-    user.displayName ??
-    user.username ??
-    user.email ??
-    "Không có tên"
-  );
+  return cleanValue( user.name ??user.fullName ??user.displayName ??user.username ??user.email ??"Không có tên");
 }
-/* =========================================================
-   LAST LOGIN
-========================================================= */
+
+/*LAST LOGIN*/
+
 function getLastLogin(user) {
   const timestamp =
     user.lastLoginAt ??
@@ -846,9 +645,9 @@ function getLastLogin(user) {
   }
   return formatDateTime(value);
 }
-/* =========================================================
-   CREATED
-========================================================= */
+
+/*CREATED*/
+
 function getCreatedAt(user) {
   const timestamp =
     user.createdAt ??
@@ -862,9 +661,7 @@ function getCreatedAt(user) {
   }
   return formatDate(value);
 }
-/* =========================================================
-   TIMESTAMP
-========================================================= */
+/*TIMESTAMP*/
 function getTimestampValue(value) {
   if (!value) {
     return 0;
@@ -887,16 +684,10 @@ function getTimestampValue(value) {
   /*
    * Firebase Timestamp object
    */
-  if (
-    typeof value === "object" &&
-    typeof value.seconds === "number"
-  ) {
+  if (typeof value === "object" &&typeof value.seconds === "number") {
     return (
       value.seconds * 1000 +
-      Math.floor(
-        (value.nanoseconds || 0) /
-          1000000
-      )
+      Math.floor((value.nanoseconds || 0) /1000000)
     );
   }
   /*
@@ -1011,32 +802,27 @@ function clearFilters() {
     "Đã xóa toàn bộ bộ lọc."
   );
 }
-/* =========================================================
-   RECORD INFO
-========================================================= */
+
+/*RECORD INFO*/
+
 function updateRecordInfo(count) {
   if (elements.recordBadge) {
-    elements.recordBadge.textContent =
-      `${count} hồ sơ`;
+    elements.recordBadge.textContent =`${count} hồ sơ`;
   }
   if (elements.entriesNote) {
     if (count === 0) {
-      elements.entriesNote.textContent =
-        "Không có hồ sơ";
+      elements.entriesNote.textContent ="Không có hồ sơ";
     } else {
-      elements.entriesNote.textContent =
-        `Hiển thị ${count} hồ sơ`;
+      elements.entriesNote.textContent =`Hiển thị ${count} hồ sơ`;
     }
   }
 }
-/* =========================================================
-   ADMIN ACCOUNT
-========================================================= */
+
+/*ADMIN ACCOUNT*/
+
 function loadAdminAccount() {
   try {
-    if (
-      typeof auth === "undefined"
-    ) {
+    if (typeof auth === "undefined") {
       return;
     }
     const currentUser =
@@ -1044,13 +830,8 @@ function loadAdminAccount() {
     if (!currentUser) {
       return;
     }
-    const email =
-      currentUser.email ||
-      "Admin";
-    setAdminDisplay(
-      email,
-      email
-    );
+    const email =currentUser.email ||"Admin";
+    setAdminDisplay(email,email);
     /*
      * Lấy profile admin nếu có.
      */
@@ -1058,14 +839,7 @@ function loadAdminAccount() {
       typeof db !== "undefined"
     ) {
       db.collection(USER_COLLECTION)
-        .where(
-          "email",
-          "==",
-          email
-        )
-        .limit(1)
-        .get()
-        .then((snapshot) => {
+        .where("email","==",email).limit(1).get().then((snapshot) => {
           if (
             snapshot.empty
           ) {
@@ -1094,17 +868,11 @@ function loadAdminAccount() {
           );
         })
         .catch((error) => {
-          console.warn(
-            "Không lấy được profile admin:",
-            error
-          );
+          console.warn("Không lấy được profile admin:", error);
         });
     }
   } catch (error) {
-    console.warn(
-      "Lỗi load admin:",
-      error
-    );
+    console.warn("Lỗi load admin:",error);
   }
 }
 function setAdminDisplay(
@@ -1112,10 +880,8 @@ function setAdminDisplay(
   email,
   campus = ""
 ) {
-  const finalName =
-    name || email || "Admin";
-  const finalCampus =
-    String(campus || "").trim();
+  const finalName = name || email || "Admin";
+  const finalCampus =String(campus || "").trim();
 
   const adminCampus = document.getElementById("topAdminCampus");
   if (elements.topAdminName) {
@@ -1254,67 +1020,41 @@ function setAdminDisplay(
   }
 })();
 
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
+/*NOTIFICATIONS */
+
 function initNotifications() {
-  if (
-    !elements.noticeBtn ||
-    !elements.notificationPanel
-  ) {
+  if (!elements.noticeBtn ||!elements.notificationPanel ) {
     return;
   }
   elements.noticeBtn.addEventListener(
     "click",
     (event) => {
       event.stopPropagation();
-      const isHidden =
-        elements.notificationPanel.hidden;
-      elements.notificationPanel.hidden =
-        !isHidden;
-    }
-  );
+      const isHidden =elements.notificationPanel.hidden;
+      elements.notificationPanel.hidden =!isHidden; });
   document.addEventListener(
     "click",
     (event) => {
       if (
-        !elements.notificationPanel.contains(
-          event.target
-        ) &&
-        !elements.noticeBtn.contains(
-          event.target
-        )
-      ) {
-        elements.notificationPanel.hidden =
-          true;
+        !elements.notificationPanel.contains(event.target) &&
+        !elements.noticeBtn.contains(event.target))
+        {
+        elements.notificationPanel.hidden =true;
       }
     }
   );
-  if (
-    elements.markAllReadBtn
-  ) {
-    elements.markAllReadBtn.addEventListener(
-      "click",
-      () => {
+  if (elements.markAllReadBtn) {
+    elements.markAllReadBtn.addEventListener("click",() => 
+      {
         clearNotificationBadge();
-        if (
-          elements.notificationCount
-        ) {
-          elements.notificationCount.textContent =
-            "Không có thông báo mới";
+        if (elements.notificationCount) {
+          elements.notificationCount.textContent = "Không có thông báo mới";
         }
-        showToast(
-          "Đã đánh dấu tất cả là đã đọc."
-        );
-      }
-    );
-  }
+        showToast("Đã đánh dấu tất cả là đã đọc.");});}
   renderEmptyNotifications();
 }
 function renderEmptyNotifications() {
-  if (
-    !elements.notificationList
-  ) {
+  if (!elements.notificationList) {
     return;
   }
   elements.notificationList.innerHTML = `
@@ -1328,57 +1068,35 @@ function renderEmptyNotifications() {
   clearNotificationBadge();
 }
 function clearNotificationBadge() {
-  if (
-    elements.noticeBadge
-  ) {
-    elements.noticeBadge.textContent =
-      "0";
-    elements.noticeBadge.classList.add(
-      "hidden"
-    );
+  if (elements.noticeBadge) {
+    elements.noticeBadge.textContent ="0";
+    elements.noticeBadge.classList.add("hidden");
   }
-  if (
-    elements.noticeBtn
-  ) {
-    elements.noticeBtn.classList.remove(
-      "has-notice"
-    );
-  }
+  if (elements.noticeBtn) {
+    elements.noticeBtn.classList.remove("has-notice");}
 }
-/* =========================================================
-   MOBILE MENU
-========================================================= */
+
+/*MOBILE MENU*/
+
 function initMobileMenu() {
   if (!elements.menuBtn) {
     return;
   }
   elements.menuBtn.addEventListener(
-    "click",
-    () => {
-      const sidebar =
-        document.getElementById(
-          "sharedSidebar"
-        );
+    "click",() => {
+      const sidebar =document.getElementById("sharedSidebar");
       if (!sidebar) {
         return;
       }
-      sidebar.classList.toggle(
-        "open"
-      );
-      document.body.classList.toggle(
-        "sidebar-open"
-      );
-    }
-  );
+      sidebar.classList.toggle("open");
+      document.body.classList.toggle("sidebar-open");});
 }
-/* =========================================================
-   EXPORT CSV
-========================================================= */
+
+/*EXPORT CSV*/
+
 function exportCSV() {
   if (!filteredUsers.length) {
-    showToast(
-      "Không có dữ liệu để xuất."
-    );
+    showToast("Không có dữ liệu để xuất.");
     return;
   }
   const headers = [
@@ -1412,39 +1130,20 @@ function exportCSV() {
     headers,
     ...rows
   ]
-    .map((row) =>
-      row
-        .map(csvEscape)
-        .join(",")
-    )
-    .join("\r\n");
+    .map((row) =>row.map(csvEscape).join(",")).join("\r\n");
   /*
    * BOM để Excel đọc tiếng Việt.
    */
-  const blob =
-    new Blob(
-      ["\uFEFF" + csv],
-      {
-        type:
-          "text/csv;charset=utf-8;"
-      }
-    );
-  const url =
-    URL.createObjectURL(blob);
-  const link =
-    document.createElement("a");
+  const blob =new Blob(["\uFEFF" + csv],{type:"text/csv;charset=utf-8;"});
+  const url =URL.createObjectURL(blob);
+  const link =document.createElement("a");
   link.href = url;
-  link.download =
-    `activity-report-${formatFileDate(
-      new Date()
-    )}.csv`;
+  link.download =`activity-report-${formatFileDate(new Date())}.csv`;
   document.body.appendChild(link);
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  showToast(
-    "Đã xuất báo cáo CSV."
-  );
+  showToast("Đã xuất báo cáo CSV.");
 }
 function getStatusText(status) {
   if (status === "active") {
@@ -1453,49 +1152,33 @@ function getStatusText(status) {
   return "Chưa kích hoạt";
 }
 function csvEscape(value) {
-  const text =
-    String(value ?? "");
-  return `"${text.replace(
-    /"/g,
-    '""'
-  )}"`;
+  const text =String(value ?? "");
+  return `"${text.replace(/"/g,'""')}"`;
 }
 function formatFileDate(date) {
-  const year =
-    date.getFullYear();
-  const month =
-    String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
-  const day =
-    String(
-      date.getDate()
-    ).padStart(2, "0");
+  const year =date.getFullYear();
+  const month =String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-/* =========================================================
-   TOAST
-========================================================= */
+
+/*TOAST*/
+
 let toastTimer = null;
 function showToast(message) {
   if (!elements.toast) {
     return;
   }
-  elements.toast.textContent =
-    message;
-  elements.toast.hidden =
-    false;
+  elements.toast.textContent =message;
+  elements.toast.hidden =false;
   requestAnimationFrame(() => {
     elements.toast.classList.add(
       "show"
     );
   });
   clearTimeout(toastTimer);
-  toastTimer =
-    setTimeout(() => {
-      elements.toast.classList.remove(
-        "show"
-      );
+  toastTimer =setTimeout(() => {
+      elements.toast.classList.remove("show");
       setTimeout(() => {
         if (elements.toast) {
           elements.toast.hidden =
@@ -1504,9 +1187,9 @@ function showToast(message) {
       }, 220);
     }, 2600);
 }
-/* =========================================================
-   TABLE ERROR
-========================================================= */
+
+/*TABLE ERROR */
+
 function showTableError(message) {
   if (!elements.activityBody) {
     return;
@@ -1520,47 +1203,30 @@ function showTableError(message) {
   `;
   updateRecordInfo(0);
 }
-/* =========================================================
-   UTILITIES
-========================================================= */
+
+/*UTILITIES*/
+
 function normalize(value) {
-  return String(
-    value ?? ""
-  )
+  return String(value ?? "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    );
+    .replace(/[\u0300-\u036f]/g,"");
 }
 function cleanValue(value) {
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null ||value === undefined ) {
     return "";
   }
   if (
     typeof value === "object"
   ) {
-    if (
-      typeof value.name ===
-      "string"
-    ) {
+    if (typeof value.name ==="string") {
       return value.name.trim();
     }
-    if (
-      typeof value.code ===
-      "string"
-    ) {
+    if (typeof value.code ==="string") {
       return value.code.trim();
     }
-    if (
-      typeof value.id ===
-      "string"
-    ) {
+    if (typeof value.id ==="string") {
       return value.id.trim();
     }
     return "";
@@ -1569,18 +1235,8 @@ function cleanValue(value) {
 }
 function uniqueValues(values) {
   return [
-    ...new Set(
-      values
-        .map(cleanValue)
-        .filter(Boolean)
-    )
-  ].sort(
-    (a, b) =>
-      a.localeCompare(
-        b,
-        "vi"
-      )
-  );
+    ...new Set(values.map(cleanValue).filter(Boolean))
+  ].sort((a, b) =>a.localeCompare(b,"vi"));
 }
 function getInitials(name) {
   const text =
@@ -1597,15 +1253,10 @@ function getInitials(name) {
       .slice(0, 2)
       .toUpperCase();
   }
-  return (
-    parts[0][0] +
-    parts[parts.length - 1][0]
-  ).toUpperCase();
+  return (parts[0][0] +parts[parts.length - 1][0]).toUpperCase();
 }
 function escapeHTML(value) {
-  return String(
-    value ?? ""
-  )
+  return String(value ?? "")
     .replace(
       /&/g,
       "&amp;"
@@ -1627,16 +1278,13 @@ function escapeHTML(value) {
       "&#039;"
     );
 }
-/* =========================================================
-   CLEANUP
-========================================================= */
+
+/*CLEANUP*/
+
 window.addEventListener(
   "beforeunload",
   () => {
-    if (
-      typeof unsubscribeUsers ===
-        "function"
-    ) {
+    if (typeof unsubscribeUsers ==="function") {
       unsubscribeUsers();
     }
   }
