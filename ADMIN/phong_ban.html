@@ -10,12 +10,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- firebase-config.js phải là nơi duy nhất khai báo firebaseConfig -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
+  <link rel="stylesheet" href="admin.css">
   <style>
     :root{--maroon:#5d0703;--deep:#3e0402;--cream:#eedcc8;--pale:#fbf4e9;--paper:#fffbf5;--gold:#b08a4e;--ink:#2a1712;--soft:#6b5348;--line:rgba(93,7,3,.15);--ok:#4c6b3c;--danger:#a23b2e;--sidebar:270px;--shadow:0 14px 36px rgba(62,4,2,.08)}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--pale);color:var(--ink);font-family:Inter,Arial,sans-serif}body{overflow-x:hidden}button,input,textarea,select{font:inherit}.material-symbols-rounded{font-size:21px;line-height:1}
-    .admin-sidebar{position:fixed;z-index:30;inset:0 auto 0 0;width:var(--sidebar);display:flex;flex-direction:column;padding:24px 16px 18px;background:var(--deep);color:var(--pale);box-shadow:8px 0 28px rgba(62,4,2,.14)}
     .brand{display:flex;align-items:center;gap:12px;padding:4px 12px 28px}.brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(238,220,200,.3);border-radius:12px;color:var(--deep);background:var(--cream);font-family:Fraunces,serif;font-weight:700;font-size:18px}.brand strong{display:block;font-family:Fraunces,serif;font-size:18px}.brand small{display:block;margin-top:3px;color:rgba(251,244,233,.62);font-size:10px;letter-spacing:.12em}
     .nav-label{margin:18px 12px 8px;color:rgba(251,244,233,.48);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid transparent;border-radius:10px;color:rgba(251,244,233,.78);text-decoration:none;font-size:13px;font-weight:600;transition:.18s}.nav-item:hover{color:#fff;background:rgba(238,220,200,.09)}.nav-item.active,.nav-item[aria-current=page]{color:var(--deep);background:var(--cream);border-color:var(--cream);font-weight:800}.nav-icon{width:21px;text-align:center}.nav-badge{margin-left:auto;min-width:22px;padding:3px 6px;border-radius:10px;color:var(--deep);background:var(--gold);font-size:10px;text-align:center}.sidebar-user{display:flex;align-items:center;gap:10px;margin-top:auto;padding:14px 8px 4px;border-top:1px solid rgba(251,244,233,.14)}.avatar{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:50%;color:var(--deep);background:var(--cream);font-size:11px;font-weight:800}.user-info{min-width:0;flex:1}.user-info strong,.user-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user-info strong{font-size:12px}.user-info small{margin-top:3px;color:rgba(251,244,233,.55);font-size:10px}.logout{display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;color:var(--pale);background:transparent;cursor:pointer}.logout:hover{background:rgba(255,255,255,.1)}
     .page{min-height:100vh;margin-left:var(--sidebar);padding:44px clamp(22px,5vw,70px) 70px}.page-inner{width:min(1120px,100%);margin:auto}.eyebrow{margin:0 0 8px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.16em}.page-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;padding-bottom:22px;border-bottom:3px solid var(--maroon)}h1{margin:0;color:var(--deep);font:700 clamp(29px,4vw,43px)/1.05 Fraunces,serif}.subtitle{margin:10px 0 0;color:var(--soft);font-size:14px}.header-mark{text-align:right}.header-mark strong{display:block;color:var(--maroon);font:700 28px/1 Fraunces,serif}.header-mark span{display:block;margin-top:5px;color:var(--soft);font-size:11px}
@@ -29,22 +29,7 @@
   </style>
 </head>
 <body data-page="departments">
-  <button class="mobile-toggle" id="menuBtn" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
-  <aside class="admin-sidebar" id="adminSidebar">
-    <div class="brand"><div class="brand-mark">HV</div><div><strong>Học Viện</strong><small>ADMIN CENTER</small></div></div>
-    <nav aria-label="Điều hướng quản trị">
-      <div class="nav-label">Tổng quan</div>
-      <a class="nav-item" href="/ADMIN/homepage-ad.html" data-page="overview"><span class="nav-icon">⌂</span><span>Tổng quan</span></a>
-      <div class="nav-label">Quản lý</div>
-      <a class="nav-item" href="/ADMIN/homepage-ad.html#accounts" data-page="accounts"><span class="nav-icon">♙</span><span>Tài khoản CS</span><b class="nav-badge" id="accountCount">0</b></a>
-      <a class="nav-item active" href="/ADMIN/phong_ban.html" data-page="departments" aria-current="page"><span class="nav-icon material-symbols-rounded">corporate_fare</span><span>Phòng ban</span></a>
-      <a class="nav-item" href="/ADMIN/activity-report.html" data-page="reports"><span class="nav-icon">▥</span><span>Báo cáo hoạt động</span></a>
-      <div class="nav-label">Hệ thống</div>
-      <a class="nav-item" href="/ADMIN/settings.html" data-page="settings"><span class="nav-icon">⚙</span><span>Cài đặt</span></a>
-      <a class="nav-item" href="/ADMIN/system-log.html" data-page="logs"><span class="nav-icon">▤</span><span>Nhật ký hệ thống</span></a>
-    </nav>
-    <div class="sidebar-user"><div class="avatar" id="sidebarAvatar">AD</div><div class="user-info"><strong id="sidebarUserName">Administrator</strong><small id="sidebarUserRole">System Admin</small></div><button class="logout" id="logoutBtn" title="Đăng xuất"><span class="material-symbols-rounded">logout</span></button></div>
-  </aside>
+  <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
   <div class="backdrop" id="backdrop" hidden></div>
 
   <main class="page"><div class="page-inner">
@@ -94,5 +79,6 @@
     $("#todayLabel").textContent = new Date().toLocaleDateString("vi-VN"); watchDepartments();
   })();
   </script>
+  <script src="shared-sidebar.js"></script>
 </body>
 </html>
