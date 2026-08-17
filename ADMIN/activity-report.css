@@ -424,7 +424,7 @@ select:focus-visible {
 /* =========================================================
    HERO ART
 ========================================================= */
-.hero-art {
+/* .hero-art {
   position: relative;
   width: 300px;
   height: 210px;
@@ -497,7 +497,7 @@ select:focus-visible {
   top: 95px;
   width: 160px;
   transform: rotate(21deg);
-}
+} */
 /* =========================================================
    STATISTICS
 ========================================================= */
@@ -1104,15 +1104,15 @@ tbody tr:last-child td {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
   }
-  .hero-art {
+  /* .hero-art {
     width: 260px;
     flex-basis: 260px;
-  }
+  } */
 }
 @media (max-width: 900px) {
-  .hero-art {
+  /* .hero-art {
     display: none;
-  }
+  } */
   .report-grid {
     grid-template-columns: 1fr;
   }
