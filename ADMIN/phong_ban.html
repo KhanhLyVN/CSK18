@@ -21,6 +21,77 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
+<<<<<<< HEAD
+  <link rel="stylesheet" href="phong_ban.css">
+  <link rel="stylesheet" href="/ADMIN/admin-bar.css">
+  <link rel="stylesheet" href="header.css">
+  <style>
+    :root{--maroon:#5d0703;--deep:#3e0402;--cream:#eedcc8;--pale:#fbf4e9;--paper:#fffbf5;--gold:#b08a4e;--ink:#2a1712;--soft:#6b5348;--line:rgba(93,7,3,.15);--ok:#4c6b3c;--danger:#a23b2e;--sidebar:250px;--shadow:0 14px 36px rgba(62,4,2,.08)}
+.page{min-height:100vh;padding:34px clamp(22px,5vw,70px) 70px}.page-inner{width:min(1120px,100%);margin:auto}.eyebrow{margin:0 0 8px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.16em}.page-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;padding-bottom:22px;border-bottom:3px solid var(--maroon)}h1{margin:0;color:var(--deep);font:700 clamp(29px,4vw,43px)/1.05 Fraunces,serif}.subtitle{margin:10px 0 0;color:var(--soft);font-size:14px}.header-mark{text-align:right}.header-mark strong{display:block;color:var(--maroon);font:700 28px/1 Fraunces,serif}.header-mark span{display:block;margin-top:5px;color:var(--soft);font-size:11px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(290px,.85fr);gap:20px;align-items:start}.card{padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:var(--shadow)}.card+.card{margin-top:20px}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}.card-head h2{margin:0;color:var(--deep);font:700 22px/1.1 Fraunces,serif}.card-head p{margin:7px 0 0;color:var(--soft);font-size:12px;line-height:1.5}.count{padding:5px 9px;border-radius:999px;color:var(--maroon);background:var(--cream);font-size:11px;font-weight:800;white-space:nowrap}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800}.required{color:var(--danger)}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;outline:0;color:var(--ink);background:#fff;font-size:13px}.field textarea{min-height:92px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(93,7,3,.08)}.field small{color:var(--soft);font-size:11px}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.btn{border:0;border-radius:9px;padding:11px 16px;cursor:pointer;font-size:12px;font-weight:800}.btn:disabled{opacity:.55;cursor:not-allowed}.btn-primary{color:#fff;background:var(--maroon)}.btn-primary:hover{background:var(--deep)}.btn-secondary{color:var(--maroon);background:var(--cream)}
+.department-list{display:grid;gap:12px}.department-item{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px;border:1px solid var(--line);border-radius:12px;background:#fff}.department-info{min-width:0}.department-name{margin:0;color:var(--deep);font-size:16px;font-weight:800}.department-code{display:inline-block;margin-top:6px;padding:4px 7px;border-radius:5px;color:var(--maroon);background:var(--pale);font:700 10px/1 Inter,sans-serif;letter-spacing:.06em}.department-description{margin:9px 0 0;color:var(--soft);font-size:12px;line-height:1.5}.department-meta{margin-top:8px;color:var(--soft);font-size:11px}.department-right{display:flex;align-items:center;gap:12px;flex:0 0 auto}.status{padding:5px 9px;border-radius:99px;font-size:10px;font-weight:800;white-space:nowrap}.status.active{color:var(--ok);background:#e7eee1}.status.inactive{color:var(--danger);background:#f5e7e5}.item-actions{display:flex;gap:6px}.icon-btn{display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--line);border-radius:7px;color:var(--maroon);background:#fff;cursor:pointer}.icon-btn:hover{background:var(--pale)}.empty,.loading{padding:32px 14px;color:var(--soft);font-size:13px;text-align:center}.toast{position:fixed;z-index:100;right:22px;bottom:22px;max-width:360px;padding:13px 16px;border-radius:10px;color:#fff;background:var(--deep);box-shadow:var(--shadow);font-size:12px;opacity:0;pointer-events:none;transform:translateY(12px);transition:.2s}.toast.show{opacity:1;transform:none}.toast.error{background:var(--danger)}
+.modal{position:fixed;z-index:50;inset:0;display:none;place-items:center;padding:18px;background:rgba(30,10,5,.52)}.modal.show{display:grid}.modal-box{width:min(590px,100%);max-height:90vh;overflow:auto;padding:24px;border-radius:16px;background:var(--paper)}.modal-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:18px}.modal-head h2{margin:0;color:var(--deep);font:700 23px Fraunces,serif}.close{border:0;color:var(--soft);background:transparent;font-size:26px;cursor:pointer}
+/* Sidebar, topbar và mobile drawer được quản lý độc quyền bởi admin.css. */
+@media(max-width:900px){.grid{grid-template-columns:1fr}.page{padding-inline:25px}}
+@media(max-width:780px){.page{padding:28px 14px 40px}.page-header{align-items:flex-start;flex-direction:column;gap:14px}.header-mark{text-align:left}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.department-item{align-items:flex-start;flex-direction:column}.department-right{width:100%;justify-content:space-between}.card{padding:18px}.actions{flex-direction:column-reverse}.actions .btn{width:100%}}
+
+  </style>
+</head>
+<body data-admin-page="departments">
+  <div class="app-shell">
+    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+    <main class="main-content">
+<div class="page"><div class="page-inner">
+    <header class="page-header"><div><p class="eyebrow">ADMINISTRATION / QUẢN LÝ</p><h1>Quản lý phòng ban</h1><p class="subtitle">Tạo, cập nhật và quản lý các phòng ban trong hệ thống.</p></div><div class="header-mark"><strong id="todayLabel">—</strong><span>Cập nhật realtime</span></div></header>
+    <div class="grid">
+      <section class="card"><div class="card-head"><div><h2 id="formTitle">Tạo phòng ban</h2><p>Nhập thông tin để thêm phòng ban mới.</p></div></div>
+        <form id="departmentForm"><input type="hidden" id="editingId"><div class="form-grid">
+          <div class="field"><label for="departmentName">Tên phòng ban <span class="required">*</span></label><input id="departmentName" required maxlength="100" placeholder="Ví dụ: Customer Success"></div>
+          <div class="field"><label for="departmentCode">Mã phòng ban <span class="required">*</span></label><input id="departmentCode" required maxlength="20" placeholder="Ví dụ: CS"><small>Mã phải là duy nhất.</small></div>
+          <div class="field full"><label for="departmentDescription">Mô tả</label><textarea id="departmentDescription" maxlength="500" placeholder="Nhập mô tả ngắn về phòng ban..."></textarea></div>
+          <div class="field"><label for="departmentManager">Người phụ trách</label><input id="departmentManager" maxlength="100" placeholder="Ví dụ: Nguyễn Văn A"></div>
+          <div class="field"><label for="departmentCampus">Cơ sở</label><input id="departmentCampus" maxlength="100" placeholder="Ví dụ: Hà Nội"></div>
+          <div class="field"><label for="departmentStatus">Trạng thái</label><select id="departmentStatus"><option value="active">Đang hoạt động</option><option value="inactive">Ngừng hoạt động</option></select></div>
+        </div><div class="actions"><button class="btn btn-secondary" type="button" id="cancelBtn" hidden>Hủy chỉnh sửa</button><button class="btn btn-primary" type="submit" id="submitBtn">+ Tạo phòng ban</button></div></form>
+      </section>
+      <section class="card"><div class="card-head"><div><h2>Danh sách phòng ban</h2><p id="departmentCount">Đang tải...</p></div><button class="btn btn-secondary" id="refreshBtn" type="button">Làm mới</button></div><div class="department-list" id="departmentList"><div class="loading">Đang tải danh sách phòng ban...</div></div></section>
+      </div></div>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="modal" id="deleteModal"><div class="modal-box"><div class="modal-head"><h2>Xóa phòng ban?</h2><button class="close" type="button" data-close-modal>×</button></div><p id="deleteText">Bạn có chắc muốn xóa phòng ban này?</p><div class="actions"><button class="btn btn-secondary" type="button" data-close-modal>Hủy</button><button class="btn btn-primary" type="button" id="confirmDelete">Xóa phòng ban</button></div></div></div>
+
+  <script>
+  (() => {
+    "use strict";
+    const $ = (selector) => document.querySelector(selector);
+    const dbReady = () => window.firebase && window.firebase.apps && window.firebase.apps.length;
+    if (!dbReady()) { console.error("Firebase chưa được khởi tạo. Kiểm tra /firebase-config.js."); return; }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const state = { departments: [], unsubscribe: null, deleteId: null };
+    const els = { form: $("#departmentForm"), list: $("#departmentList"), count: $("#departmentCount"), editingId: $("#editingId"), name: $("#departmentName"), code: $("#departmentCode"), description: $("#departmentDescription"), manager: $("#departmentManager"), campus: $("#departmentCampus"), status: $("#departmentStatus"), submit: $("#submitBtn"), cancel: $("#cancelBtn"), toast: $("#toast") };
+    const esc = (value) => { const div = document.createElement("div"); div.textContent = value == null ? "" : String(value); return div.innerHTML; };
+    const dateText = (value) => { if (!value) return ""; const date = typeof value.toDate === "function" ? value.toDate() : new Date(value); return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("vi-VN"); };
+    function toast(message, error = false) { els.toast.textContent = message; els.toast.className = `toast show${error ? " error" : ""}`; clearTimeout(toast.timer); toast.timer = setTimeout(() => { els.toast.className = "toast"; }, 3000); }
+    function resetForm() { els.form.reset(); els.editingId.value = ""; els.status.value = "active"; els.submit.textContent = "+ Tạo phòng ban"; els.cancel.hidden = true; $("#formTitle").textContent = "Tạo phòng ban"; }
+    function startEdit(item) { els.editingId.value = item.id; els.name.value = item.name || ""; els.code.value = item.code || ""; els.description.value = item.description || ""; els.manager.value = item.manager || ""; els.campus.value = item.campus || ""; els.status.value = item.status || "active"; els.submit.textContent = "Lưu thay đổi"; els.cancel.hidden = false; $("#formTitle").textContent = "Chỉnh sửa phòng ban"; window.scrollTo({ top: 0, behavior: "smooth" }); }
+    function render() { els.count.textContent = `${state.departments.length} phòng ban`; if (!state.departments.length) { els.list.innerHTML = '<div class="empty">Chưa có phòng ban nào.</div>'; return; } els.list.innerHTML = state.departments.map(item => `<article class="department-item"><div class="department-info"><h3 class="department-name">${esc(item.name || "Chưa đặt tên")}</h3><span class="department-code">${esc(item.code || "—")}</span>${item.description ? `<p class="department-description">${esc(item.description)}</p>` : ""}${item.manager || item.campus ? `<div class="department-meta">${item.manager ? `Phụ trách: ${esc(item.manager)}` : ""}${item.manager && item.campus ? " · " : ""}${item.campus ? `Cơ sở: ${esc(item.campus)}` : ""}${item.updatedAt ? ` · Cập nhật ${dateText(item.updatedAt)}` : ""}</div>` : ""}</div><div class="department-right"><span class="status ${item.status === "inactive" ? "inactive" : "active"}">${item.status === "inactive" ? "Ngừng hoạt động" : "Đang hoạt động"}</span><div class="item-actions"><button class="icon-btn" type="button" title="Chỉnh sửa" data-edit="${esc(item.id)}"><span class="material-symbols-rounded">edit</span></button><button class="icon-btn" type="button" title="Xóa" data-delete="${esc(item.id)}"><span class="material-symbols-rounded">delete</span></button></div></div></article>`).join(""); }
+    function watchDepartments() { if (state.unsubscribe) state.unsubscribe(); state.unsubscribe = db.collection("departments").onSnapshot(snapshot => { state.departments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => String(a.name || "").localeCompare(String(b.name || ""), "vi")); render(); }, error => { console.error(error); els.list.innerHTML = '<div class="empty">Không thể tải danh sách phòng ban. Kiểm tra quyền Firestore.</div>'; toast("Không thể tải dữ liệu phòng ban.", true); }); }
+    els.form.addEventListener("submit", async event => { event.preventDefault(); const id = els.editingId.value; const name = els.name.value.trim(); const code = els.code.value.trim().toUpperCase(); if (!name || !code) return toast("Vui lòng nhập tên và mã phòng ban.", true); const duplicate = state.departments.find(item => item.code === code && item.id !== id); if (duplicate) return toast("Mã phòng ban đã tồn tại.", true); els.submit.disabled = true; const data = { name, code, description: els.description.value.trim(), manager: els.manager.value.trim(), campus: els.campus.value.trim(), status: els.status.value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; try { if (id) await db.collection("departments").doc(id).set(data, { merge: true }); else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection("departments").add(data); } toast(id ? "Đã cập nhật phòng ban." : "Đã tạo phòng ban."); resetForm(); } catch (error) { console.error(error); toast("Không thể lưu phòng ban. Kiểm tra quyền Firebase.", true); } finally { els.submit.disabled = false; } });
+    els.cancel.addEventListener("click", resetForm); $("#refreshBtn").addEventListener("click", watchDepartments);
+    els.list.addEventListener("click", event => { const edit = event.target.closest("[data-edit]"); const del = event.target.closest("[data-delete]"); if (edit) { const item = state.departments.find(x => x.id === edit.dataset.edit); if (item) startEdit(item); } if (del) { state.deleteId = del.dataset.delete; $("#deleteText").textContent = `Bạn có chắc muốn xóa “${state.departments.find(x => x.id === state.deleteId)?.name || "phòng ban này"}”?`; $("#deleteModal").classList.add("show"); } });
+    $("#confirmDelete").addEventListener("click", async () => { if (!state.deleteId) return; try { await db.collection("departments").doc(state.deleteId).delete(); toast("Đã xóa phòng ban."); $("#deleteModal").classList.remove("show"); } catch (error) { console.error(error); toast("Không thể xóa phòng ban.", true); } });
+    document.querySelectorAll("[data-close-modal]").forEach(button => button.addEventListener("click", () => $("#deleteModal").classList.remove("show")));
+    
+    auth.onAuthStateChanged(user => { if (user) { const label = user.displayName || user.email || "Administrator"; $("#sidebarUserName").textContent = label; $("#sidebarAvatar").textContent = label.slice(0,2).toUpperCase(); } });
+    $("#todayLabel").textContent = new Date().toLocaleDateString("vi-VN"); watchDepartments();
+  })();
+  </script>
+  <script src="/ADMIN/admin-bar.js"></script>
+</body>
+=======
   <!-- SIDEBAR -->
   <link rel="stylesheet" href="admin.css">
   <style>
@@ -924,7 +995,7 @@
                   autocomplete="off"
                 >
                 <small>
-                  Ví dụ: IT, CS, RND, SALE, TEACH.
+                  Ví dụ: IT, CS, RND, SALE, TEACHING.
                   Mã này dùng để lọc người phụ trách.
                 </small>
               </div>
@@ -2734,5 +2805,6 @@
       loadManagers();
     })();
   </script>
+>>>>>>> 597e1c67011ba6037da5b17b810912c6c2df35a9
 </body>
 </html>
