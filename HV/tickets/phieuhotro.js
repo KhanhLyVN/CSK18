@@ -35,6 +35,159 @@ const fileNameEl = $("fileName");
 const formView = $("formView");
 const successView = $("successView");
 const layoutContainer = $("layoutContainer");
+function getValue(id) {
+  const element = $(id);
+  return element ? String(element.value || "").trim() : "";
+}
+
+// ======================================================
+// AI PHÂN TÍCH TIÊU ĐỀ
+// ======================================================
+const TITLE_AI_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+
+const fTitle = $("fTitle" );
+const titleAiSuggestion = $("titleAiSuggestion");
+const titleAiSuggestionBody = $("titleAiSuggestionBody");
+const closeTitleAiSuggestion = $("closeTitleAiSuggestion");
+
+let titleAiDebounceTimer = null;
+let titleAiRequestId = 0;
+let titleAiManuallyClosed = false;
+
+function showTitleAiSuggestion(text, options = {}) {
+  if (!titleAiSuggestion || !titleAiSuggestionBody) return;
+
+  titleAiSuggestionBody.textContent = text || "";
+  titleAiSuggestion.classList.toggle("is-loading", Boolean(options.loading));
+  titleAiSuggestion.classList.add("is-visible");
+  titleAiSuggestion.setAttribute("aria-hidden", "false");
+}
+
+function hideTitleAiSuggestion() {
+  if (!titleAiSuggestion || !titleAiSuggestionBody) return;
+
+  titleAiSuggestion.classList.remove("is-visible", "is-loading");
+  titleAiSuggestion.setAttribute("aria-hidden", "true");
+  titleAiSuggestionBody.textContent = "";
+}
+
+function formatTitleAiAnswer(answer) {
+  const cleanAnswer = String(answer || "").trim();
+  if (!cleanAnswer) {
+    return "AI chưa tìm được hướng dẫn phù hợp. Bạn có thể bổ sung mô tả chi tiết ở ô bên dưới.";
+  }
+  return cleanAnswer;
+}
+
+async function analyzeTitleWithAI(title, requestId) {
+  const selectedRadio = document.querySelector(
+    'input[name="ticketMainType"]:checked'
+  );
+
+  const category = selectedRadio
+    ? getCategory(selectedRadio.value)
+    : null;
+
+  const issue = category?.issues?.find(
+    item => item.value === (issueSelect?.value || "")
+  ) || null;
+
+  const response = await fetch(TITLE_AI_WEB_APP_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body: new URLSearchParams({
+      question: title,
+      history: JSON.stringify([]),
+      faqContext: JSON.stringify([
+        {
+          category: category?.label || "",
+          question: issue?.label || "",
+          answer:
+            "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn."
+        }
+      ]),
+      mode: "title-suggestion"
+    })
+  });
+
+  if (requestId !== titleAiRequestId) return;
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data.success) {
+    throw new Error(data.error || "AI không thể phân tích tiêu đề.");
+  }
+
+  showTitleAiSuggestion(formatTitleAiAnswer(data.answer));
+}
+
+function requestTitleAiSuggestion() {
+  const title = getValue("fTitle");
+  titleAiManuallyClosed = false;
+  window.clearTimeout(titleAiDebounceTimer);
+  titleAiRequestId += 1;
+  const currentRequestId = titleAiRequestId;
+
+  if (title.length < 8) {
+    hideTitleAiSuggestion();
+    return;
+  }
+
+  showTitleAiSuggestion("AI đang đọc tiêu đề và tìm hướng xử lý phù hợp…", {
+    loading: true
+  });
+
+  titleAiDebounceTimer = window.setTimeout(async () => {
+    try {
+      await analyzeTitleWithAI(title, currentRequestId);
+    } catch (error) {
+      console.error("TITLE AI ERROR:", error);
+      if (currentRequestId === titleAiRequestId) {
+        showTitleAiSuggestion(
+          "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể gửi mô tả chi tiết để bộ phận hỗ trợ kiểm tra."
+        );
+      }
+    }
+  }, 700);
+}
+
+if (fTitle) {
+  fTitle.addEventListener("input", () => {
+    updateStub();
+    requestTitleAiSuggestion();
+  });
+
+  // Khi chuyển sang trường khác, khung tự đóng theo yêu cầu.
+  fTitle.addEventListener("blur", () => {
+    window.setTimeout(() => {
+      if (document.activeElement !== fTitle) {
+        hideTitleAiSuggestion();
+      }
+    }, 120);
+  });
+}
+
+if (closeTitleAiSuggestion) {
+  closeTitleAiSuggestion.addEventListener("click", () => {
+    titleAiManuallyClosed = true;
+    titleAiRequestId += 1;
+    window.clearTimeout(titleAiDebounceTimer);
+    hideTitleAiSuggestion();
+  });
+}
+
+// Khi người dùng chuyển sang loại yêu cầu khác, khung cũng đóng.
+if (chipGrid) {
+  chipGrid.addEventListener("click", hideTitleAiSuggestion);
+}
+if (issueSelect) {
+  issueSelect.addEventListener("change", hideTitleAiSuggestion);
+}
 let ticketNum = "HV-000000";
 let selectedFile = null;
 let loggedInUser = null;
@@ -43,6 +196,12 @@ function getDatabase() { return typeof db !== "undefined" ? db : null; }
 function escapeHTML(value) { const el = document.createElement("div"); el.textContent = value ?? ""; return el.innerHTML; }
 function svgIcon(key) { return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[key] || ICONS.other}</svg>`; }
 function getCategory(id) { return TICKET_CATEGORIES.find(item => item.id === id); }
+function getIssue(categoryId, issueValue) {
+  const category = getCategory(categoryId);
+  return category?.issues?.find(
+    issue => issue.value === issueValue
+  ) || null;
+}
 function getSelectedRadio() { return document.querySelector('input[name="ticketMainType"]:checked'); }
 function getPrefixFromCategory(label) {
   const normalized = String(label || "HV").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").trim().split(/\s+/);
@@ -177,6 +336,7 @@ async function submitTicket() {
   const name = $("fName").value.trim();
   const email = $("fEmail").value.trim();
   const campus = $("fCampus").value.trim();
+  const phone = loggedInUser?.phone || "";
   const isStudent = chkCourse.checked;
   const course = isStudent ? fCourse.value.trim() : "Không áp dụng";
   const title = $("fTitle").value.trim();
