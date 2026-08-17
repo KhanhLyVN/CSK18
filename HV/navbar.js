@@ -350,20 +350,59 @@
             backdrop.hidden = true;
             document.body.appendChild(backdrop);
         }
-        return { panel, backdrop };
+        let clearAll = panel.querySelector("#notificationClearAll");
+        if (!clearAll) {
+            const toolbar = panel.querySelector(".student-notification-toolbar, .notification-toolbar");
+            if (toolbar) {
+                clearAll = document.createElement("button");
+                clearAll.type = "button";
+                clearAll.id = "notificationClearAll";
+                clearAll.className = "student-notification-clear-all";
+                clearAll.textContent = "Xóa tất cả";
+                clearAll.setAttribute("aria-label", "Xóa tất cả thông báo");
+                toolbar.appendChild(clearAll);
+            }
+        }
+        return { panel, backdrop, clearAll };
     }
 
     function bindNotifications() {
         if (window.__studentNotificationManager) return;
         window.__studentNotificationManager = true;
         const button = document.getElementById("notificationButton");
-        const { panel, backdrop } = ensureNotificationPanel();
+        const { panel, backdrop, clearAll } = ensureNotificationPanel();
         const count = document.getElementById("notificationCount");
         const list = document.getElementById("notificationList");
         const empty = document.getElementById("notificationEmpty");
         const unreadLabel = document.getElementById("notificationUnreadLabel");
         const close = document.getElementById("notificationClose");
         let records = [];
+        let currentUserId = "";
+        let notificationState = { read: {}, deleted: {} };
+        let stateWriteQueue = Promise.resolve();
+        let authInstance = null;
+        let database = null;
+        const stateRef = () => currentUserId && database ? database.collection("studentNotificationState").doc(currentUserId) : null;
+        const loadState = async () => {
+            const ref = stateRef();
+            if (!ref) return;
+            try {
+                const snapshot = await ref.get();
+                const saved = snapshot.exists ? snapshot.data() : {};
+                notificationState = { read: saved.read || {}, deleted: saved.deleted || {} };
+            } catch (error) {
+                console.warn("[Student Notifications] Không thể tải trạng thái từ Firestore", error);
+                notificationState = { read: {}, deleted: {} };
+            }
+        };
+        const saveState = () => {
+            const ref = stateRef();
+            if (!ref) return;
+            const payload = { read: notificationState.read, deleted: notificationState.deleted, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            stateWriteQueue = stateWriteQueue.then(() => ref.set(payload, { merge: true })).catch(error => console.warn("[Student Notifications] Không thể lưu trạng thái Firestore", error));
+        };
+        const isRead = item => Boolean(notificationState.read[item.notificationKey]);
+        const isDeleted = item => Boolean(notificationState.deleted[item.notificationKey]);
 
         const millis = value => {
             if (!value) return 0;
@@ -373,25 +412,55 @@
         };
         const esc = value => { const node = document.createElement("div"); node.textContent = value == null ? "" : String(value); return node.innerHTML; };
         const render = () => {
-            const total = records.length;
-            if (count) { count.hidden = total === 0; count.textContent = total > 99 ? "99+" : String(total); }
-            if (unreadLabel) unreadLabel.textContent = total ? `${total} thông báo mới nhất` : "Chưa có thông báo";
-            if (empty) empty.classList.toggle("show", total === 0);
-            if (list) list.innerHTML = records.map(item => `<a class="student-notification-item" href="/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(item.ticketId)}"><div class="student-notification-item-head"><strong>${esc(item.ticketNum || "Ticket")}</strong><span>${esc(item.time || "")}</span></div><b>${esc(item.title || "Ticket hỗ trợ")}</b><p>${esc(item.preview || "Customer Success đã cập nhật ticket.")}</p></a>`).join("");
+            const visibleRecords = records.filter(item => !isDeleted(item));
+            const unreadRecords = visibleRecords.filter(item => !isRead(item));
+            if (count) { count.hidden = unreadRecords.length === 0; count.textContent = unreadRecords.length > 99 ? "99+" : String(unreadRecords.length); }
+            if (unreadLabel) unreadLabel.textContent = unreadRecords.length ? `${unreadRecords.length} thông báo chưa đọc` : (visibleRecords.length ? "Tất cả thông báo đã đọc" : "Chưa có thông báo");
+            if (empty) empty.classList.toggle("show", visibleRecords.length === 0);
+            if (clearAll) { clearAll.disabled = visibleRecords.length === 0; clearAll.classList.toggle("is-disabled", visibleRecords.length === 0); }
+            if (list) list.innerHTML = visibleRecords.map(item => `<div class="student-notification-item ${isRead(item) ? "is-read" : ""}" data-notification-key="${esc(item.notificationKey)}"><a class="student-notification-link" href="/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(item.ticketId)}"><div class="student-notification-item-head"><strong>${esc(item.ticketNum || "Ticket")}</strong><span>${esc(item.time || "")}</span></div><b>${esc(item.title || "Ticket hỗ trợ")}</b><p>${esc(item.preview || "Customer Success đã cập nhật ticket.")}</p></a><button class="student-notification-delete" type="button" data-notification-delete="${esc(item.notificationKey)}" aria-label="Xóa thông báo">×</button></div>`).join("");
         };
         const closePanel = () => { panel.classList.remove("open"); panel.setAttribute("aria-hidden", "true"); button?.setAttribute("aria-expanded", "false"); backdrop.classList.remove("show"); window.setTimeout(() => { backdrop.hidden = true; }, 180); };
         const openPanel = () => { panel.classList.add("open"); panel.setAttribute("aria-hidden", "false"); button?.setAttribute("aria-expanded", "true"); backdrop.hidden = false; requestAnimationFrame(() => backdrop.classList.add("show")); };
         button?.addEventListener("click", () => panel.classList.contains("open") ? closePanel() : openPanel());
         close?.addEventListener("click", closePanel);
         backdrop.addEventListener("click", closePanel);
+        list?.addEventListener("click", event => {
+            const deleteButton = event.target.closest("[data-notification-delete]");
+            if (deleteButton) {
+                event.preventDefault();
+                event.stopPropagation();
+                const item = deleteButton.closest(".student-notification-item");
+                item?.classList.add("is-removing");
+                window.setTimeout(() => { notificationState.deleted[deleteButton.dataset.notificationDelete] = true; saveState(); render(); }, 260);
+                return;
+            }
+            const link = event.target.closest(".student-notification-link");
+            if (!link) return;
+            const item = link.closest("[data-notification-key]");
+            if (!item) return;
+            event.preventDefault();
+            notificationState.read[item.dataset.notificationKey] = true;
+            saveState();
+            render();
+            window.setTimeout(() => { window.location.href = link.href; }, 0);
+        });
+        clearAll?.addEventListener("click", event => {
+            event.preventDefault();
+            if (clearAll.disabled) return;
+            list?.querySelectorAll(".student-notification-item").forEach(item => item.classList.add("is-removing"));
+            window.setTimeout(() => { records.forEach(item => { notificationState.deleted[item.notificationKey] = true; }); saveState(); render(); }, 260);
+        });
         document.addEventListener("keydown", event => { if (event.key === "Escape") closePanel(); });
-        const authInstance = window.auth || (typeof auth !== "undefined" ? auth : null);
-        const database = window.db || (typeof db !== "undefined" ? db : null);
+        authInstance = window.auth || (typeof auth !== "undefined" ? auth : null);
+        database = window.db || (typeof db !== "undefined" ? db : null);
         if (authInstance && database) {
             authInstance.onAuthStateChanged(user => {
-                if (!user) { records = []; render(); return; }
+                if (!user) { currentUserId = ""; records = []; render(); return; }
+                currentUserId = user.uid;
+                loadState().then(render);
                 database.collection("tickets").where("studentId", "==", user.uid).onSnapshot(snapshot => {
-                    records = snapshot.docs.flatMap(doc => { const ticket = { id: doc.id, ...doc.data() }; return (Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : []).map(item => ({ ...item, ticketId: item.ticketId || ticket.id, ticketNum: item.ticketNum || ticket.ticketNum || ticket.ticket_num || ticket.id, title: item.title || ticket.title || "Ticket hỗ trợ", time: new Date(millis(item.createdAt || item.updatedAt)).toLocaleString("vi-VN") })); }).sort((a, b) => millis(b.createdAt) - millis(a.createdAt)).slice(0, 50);
+                    records = snapshot.docs.flatMap(doc => { const ticket = { id: doc.id, ...doc.data() }; return (Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : []).map((item, index) => ({ ...item, ticketId: item.ticketId || ticket.id, notificationKey: `${ticket.id}:${item.id || item.notificationId || millis(item.createdAt) || index}`, ticketNum: item.ticketNum || ticket.ticketNum || ticket.ticket_num || ticket.id, title: item.title || ticket.title || "Ticket hỗ trợ", time: new Date(millis(item.createdAt || item.updatedAt)).toLocaleString("vi-VN") })); }).sort((a, b) => millis(b.createdAt) - millis(a.createdAt)).slice(0, 50);
                     render();
                 }, error => console.warn("[Student Notifications] Không thể tải thông báo", error));
             });

@@ -69,3 +69,16 @@
 .student-notification-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(42,23,18,.24); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
 .student-notification-backdrop.show { opacity: 1; pointer-events: auto; }
 @media (max-width: 560px) { .student-navbar-notification-button { width: 34px; height: 34px; } .student-notification-panel { width: 100vw; } .student-notification-head { padding: 18px 16px 15px; } }
+
+
+/* Notification read/delete states */
+.student-notification-clear-all { padding: 0; color: var(--maroon, #5d0703); background: transparent; border: 0; cursor: pointer; font: 800 10px/1.2 "Inter", sans-serif; }
+.student-notification-clear-all:hover { text-decoration: underline; }
+.student-notification-clear-all.is-disabled, .student-notification-clear-all:disabled { color: var(--muted, #8a7a6d); cursor: not-allowed; opacity: .5; text-decoration: none; }
+.student-notification-item { position: relative; padding-right: 34px; transition: background .16s ease, transform .16s ease, opacity .22s ease, max-height .26s ease, margin .26s ease, padding .26s ease; }
+.student-notification-item.is-read { border-left-color: rgba(93,7,3,.18); background: #f5f1eb; opacity: .65; }
+.student-notification-item.is-read .student-notification-item-head strong, .student-notification-item.is-read b { color: var(--muted, #8a7a6d); }
+.student-notification-link { display: block; color: inherit; text-decoration: none; }
+.student-notification-delete { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--muted, #8a7a6d); background: transparent; border: 0; border-radius: 5px; cursor: pointer; font-size: 17px; line-height: 1; opacity: .7; }
+.student-notification-delete:hover { color: var(--maroon, #5d0703); background: var(--cream, #eedcc8); opacity: 1; }
+.student-notification-item.is-removing { max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; transform: translateX(110%); }
