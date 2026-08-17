@@ -7,10 +7,8 @@
       return;
     }
     try {
-      /* =====================================================
-         LOAD HEADER
-      ===================================================== */
-      const response = await fetch('./header.html', {
+      /*LOAD HEADER*/
+      const response = await fetch('./header/header.html', {
         cache: 'no-cache'
       });
       if (!response.ok) {
@@ -19,9 +17,7 @@
         );
       }
       container.innerHTML = await response.text();
-      /* =====================================================
-         MOBILE SIDEBAR
-      ===================================================== */
+      /*MOBILE SIDEBAR*/
       const menuBtn = document.getElementById('menuBtn');
       const sidebar = document.getElementById('adminSidebar');
       if (menuBtn && sidebar) {
@@ -33,9 +29,7 @@
             sidebar.classList.contains('open')
           );
         });
-        /* ================================================
-           CLICK OUTSIDE SIDEBAR → CLOSE
-        ================================================= */
+        /*CLICK OUTSIDE SIDEBAR TO OPEN/CLOSE*/
         document.addEventListener('click', function (event) {
           if (
             window.innerWidth <= 780 &&
@@ -49,9 +43,7 @@
             );
           }
         });
-        /* ================================================
-           CLICK LINK → CLOSE MOBILE SIDEBAR
-        ================================================= */
+        /*CLICK LINK → CLOSE MOBILE SIDEBAR*/
         sidebar.querySelectorAll('a').forEach(function (link) {
           link.addEventListener('click', function () {
             if (window.innerWidth <= 780) {
@@ -62,9 +54,7 @@
             }
           });
         });
-        /* ================================================
-           RESIZE → CLOSE SIDEBAR
-        ================================================= */
+        /*RESIZE → CLOSE SIDEBAR*/
         window.addEventListener('resize', function () {
           if (window.innerWidth > 780) {
             sidebar.classList.remove('open');
@@ -78,16 +68,12 @@
           'Không tìm thấy #menuBtn hoặc #adminSidebar'
         );
       }
-      /* =====================================================
-         HEADER LOADED EVENT
-      ===================================================== */
+      /*HEADER LOADED EVENT*/
       document.dispatchEvent(
         new CustomEvent('sharedheader:loaded')
       );
 
-      /* =====================================================
-         ADMIN PROFILE + CAMPUS
-      ===================================================== */
+      /*ADMIN PROFILE AND CAMPUS*/
       loadAdminIdentity();
       initNotifications();
     } catch (error) {
