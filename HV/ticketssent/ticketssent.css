@@ -237,11 +237,367 @@ line-height: 1.5;
 .sent-card-foot a { color: var(--maroon); font-weight: 800; text-decoration: none; }
 .sent-card-foot a:hover { text-decoration: underline; }
 
-@media (max-width: 1050px) { .sent-ticket-grid { grid-template-columns: 1fr; } }
-@media (max-width: 600px) {
-  .sent-tickets-page { padding: 22px 18px 38px; }
-  .sent-page-head { align-items: flex-start; flex-direction: column; }
-  .sent-count { align-items: flex-start; }
-  .sent-card-body { grid-template-columns: 1fr 1fr; }
-  .sent-card-foot { align-items: flex-start; flex-direction: column; }
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .sent-tickets-page {
+    padding: 30px 60px 48px;
+  }
+
+  .sent-page-head {
+    gap: 40px;
+  }
 }
+
+
+@media (max-width: 900px) {
+  .sent-tickets-page {
+    padding: 26px 32px 42px;
+  }
+
+  .sent-page-head {
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sent-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .sent-tickets-page {
+    padding: 20px 16px 32px;
+  }
+
+  /* Header */
+  .sent-page-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .sent-eyebrow {
+    font-size: 10px;
+  }
+
+  .sent-page-head h2 {
+    font-size: 28px;
+  }
+
+  .sent-page-head p {
+    max-width: 100%;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .sent-count {
+    align-items: flex-start;
+  }
+
+  .sent-count strong {
+    font-size: 26px;
+  }
+
+  /* Stats */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-title {
+    font-size: 10px;
+  }
+
+  .stat-num {
+    font-size: 24px;
+  }
+
+  .stat-desc {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  /* Content */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .panel {
+    border-radius: 9px;
+  }
+
+  .panel-head {
+    padding: 15px;
+  }
+
+  .panel-head h3 {
+    font-size: 18px;
+  }
+
+  .panel-head a {
+    font-size: 10px;
+  }
+
+  /* Ticket */
+  .sent-ticket-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .sent-card-head {
+    padding: 17px 16px 14px;
+  }
+
+  .sent-card-head strong {
+    font-size: 21px;
+  }
+
+  .sent-card-body {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 15px 16px;
+  }
+
+  .sent-card-field strong {
+    font-size: 11px;
+  }
+
+  .sent-response {
+    padding: 11px;
+  }
+
+  .sent-response p {
+    font-size: 11px;
+  }
+
+  .sent-card-foot {
+    padding: 12px 16px;
+  }
+
+  /* Satisfaction */
+  .sent-satisfaction-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sent-satisfaction-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Help */
+  .help-item {
+    padding: 13px;
+  }
+}
+
+
+@media (max-width: 400px) {
+  .sent-tickets-page {
+    padding: 18px 12px 28px;
+  }
+
+  .sent-page-head h2 {
+    font-size: 25px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 10px;
+  }
+
+  .stat-title {
+    grid-column: 1;
+  }
+
+  .stat-num {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+
+  .stat-desc {
+    grid-column: 1;
+  }
+
+  .sent-card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .sent-response {
+    grid-column: auto;
+  }
+
+  .sent-satisfaction-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dán ở CUỐI homepage.css hoặc ticketssent.css để ghi đè các rule cũ */
+
+html,
+body {
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  min-height: 100dvh;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.sent-tickets-page {
+  min-height: 100dvh;
+  height: auto !important;
+  overflow: visible !important;
+  box-sizing: border-box;
+}
+
+.content-grid,
+.panel,
+.help-panel,
+.help-list {
+  height: auto !important;
+  min-height: 0;
+  overflow: visible !important;
+}
+
+.help-list {
+  display: flex !important;
+  flex-direction: column;
+  gap: 10px;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.help-item {
+  display: flex !important;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+  box-sizing: border-box;
+  visibility: visible !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+.help-content {
+  display: flex !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  visibility: visible !important;
+}
+
+.help-content strong,
+.help-content small,
+.help-icon,
+.help-arrow {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 600px) {
+  html,
+  body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app,
+  main,
+  .sent-tickets-page {
+    position: static !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .sent-tickets-page {
+    padding: 20px 16px 40px;
+  }
+
+  .content-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .recent-panel,
+  .help-panel {
+    display: block !important;
+    width: 100%;
+  }
+
+  .help-list {
+    display: flex !important;
+    padding: 0 15px 15px;
+  }
+
+  .help-item {
+    min-height: 68px;
+    padding: 13px !important;
+  }
+
+  .help-content strong {
+    font-size: 13px;
+  }
+
+  .help-content small {
+    display: block !important;
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 400px) {
+  .sent-tickets-page {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .help-list {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+/* Nếu navbar.css có các rule dưới đây, hãy xóa hoặc ghi đè chúng:
+   body { overflow: hidden; }
+   .app { height: 100vh; overflow: hidden; }
+   main { height: 100vh; overflow: hidden; }
+*/
