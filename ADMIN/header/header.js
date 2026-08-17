@@ -10,7 +10,7 @@
       /* =====================================================
          LOAD HEADER
       ===================================================== */
-      const response = await fetch('./header/header.html', {
+      const response = await fetch('./header.html', {
         cache: 'no-cache'
       });
       if (!response.ok) {

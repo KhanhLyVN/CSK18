@@ -62,57 +62,7 @@ button {
   display: none !important;
 }
 
-/* =========================================================
-   TOPBAR
-========================================================= */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 42px;
-  background: rgba(255, 253, 249, .94);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-/* =========================================================
-   CONNECTION
-========================================================= */
-.connection {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--ink-soft);
-  font-size: 10px;
-  font-weight: 600;
-}
-.connection-dot {
-  width: 8px;
-  height: 8px;
-  flex: 0 0 8px;
-  border-radius: 50%;
-  background: #B7AAA0;
-  transition: .2s ease;
-}
-.connection-dot.live {
-  background: var(--green);
-  box-shadow:
-    0 0 0 4px rgba(94, 127, 82, .13);
-}
-.connection-dot.error {
-  background: var(--danger);
-  box-shadow:
-    0 0 0 4px rgba(162, 59, 46, .13);
-}
+/* Header và sidebar được quản lý tập trung bởi admin.css/shared-sidebar.js. */
 /* =========================================================
    ICON BUTTON
 ========================================================= */

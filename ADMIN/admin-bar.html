@@ -1,0 +1,32 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-brand">
+    <div class="admin-brand-mark">HV</div>
+    <div class="admin-brand-text"><strong>Học Viện</strong><small>ADMIN CENTER</small></div>
+  </div>
+  <nav class="admin-sidebar-nav" aria-label="Điều hướng quản trị">
+    <div class="admin-nav-label">Tổng quan</div>
+    <a href="/ADMIN/homepage-ad.html" class="admin-nav-item" data-page="overview"><span class="admin-nav-icon material-symbols-rounded">dashboard</span><span class="admin-nav-text">Trang chủ</span></a>
+    <div class="admin-nav-label">Quản lý</div>
+    <a href="/ADMIN/accounts.html" class="admin-nav-item" data-page="accounts"><span class="admin-nav-icon material-symbols-rounded">manage_accounts</span><span class="admin-nav-text">Tài khoản CS</span><b class="admin-nav-badge" id="sidebarAccountCount">0</b></a>
+    <a href="/ADMIN/addAccount.html" class="admin-nav-item" data-page="add-cs"><span class="admin-nav-icon material-symbols-rounded">person_add</span><span class="admin-nav-text">Thêm CS</span></a>
+    <a href="/ADMIN/phong_ban.html" class="admin-nav-item" data-page="departments"><span class="admin-nav-icon material-symbols-rounded">corporate_fare</span><span class="admin-nav-text">Phòng ban</span></a>
+    <a href="/ADMIN/activity-report.html" class="admin-nav-item" data-page="reports"><span class="admin-nav-icon material-symbols-rounded">analytics</span><span class="admin-nav-text">Báo cáo hoạt động</span></a>
+    <div class="admin-nav-label">Hệ thống</div>
+    <a href="/ADMIN/settings.html" class="admin-nav-item" data-page="settings"><span class="admin-nav-icon material-symbols-rounded">settings</span><span class="admin-nav-text">Cài đặt</span></a>
+    <a href="/ADMIN/system-log.html" class="admin-nav-item" data-page="logs"><span class="admin-nav-icon material-symbols-rounded">history</span><span class="admin-nav-text">Nhật ký hệ thống</span></a>
+  </nav>
+  <div class="admin-sidebar-user">
+    <div class="admin-user-avatar" id="sidebarAvatar">AD</div>
+    <div class="admin-user-info"><strong id="sidebarUserName">Administrator</strong><small id="sidebarUserRole">System Admin</small></div>
+    <button type="button" class="admin-user-menu" id="sidebarLogoutBtn" title="Đăng xuất" aria-label="Đăng xuất"><span class="material-symbols-rounded">logout</span></button>
+  </div>
+</aside>
+<div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" hidden></div>
+<header class="topbar">
+  <div class="topbar-left"><button type="button" id="menuBtn" class="icon-btn mobile-only" title="Mở menu" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button></div>
+  <div class="top-actions">
+    <div class="notification-wrapper"><button type="button" class="icon-btn notification-btn" id="noticeBtn" title="Thông báo" aria-label="Thông báo" aria-expanded="false"><span class="material-symbols-rounded">notifications</span><span id="noticeBadge" class="notice-badge hidden">0</span></button><div id="notificationPanel" class="notification-panel" hidden><div class="notification-header"><div><strong>Thông báo</strong><small id="notificationCount">Không có thông báo mới</small></div><button type="button" id="markAllReadBtn" class="notification-action">Đánh dấu đã đọc</button></div><div id="notificationList" class="notification-list"><div class="notification-empty"><span class="material-symbols-rounded">notifications_none</span><p>Không có thông báo mới</p></div></div></div></div>
+    <div class="admin-identity" aria-label="Tài khoản quản trị"><span class="top-admin" id="topAdminName">Admin</span></div>
+    <div class="avatar avatar-admin" id="topAdminAvatar" aria-label="Tài khoản Admin">AD</div>
+  </div>
+</header>

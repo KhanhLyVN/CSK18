@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="admin-bar.css">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Log - Admin</title>
-  <link rel="stylesheet" href="system-log.css">
-  <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="./header/header.css">
+  <link rel="stylesheet" href="/ADMIN/system-log.css">
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,11 +41,9 @@
 </head>
 <body data-admin-page="logs">
 <div class="app-shell">
-    <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
+    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
     <main class="main-content">
-      <div id="sharedHeader"></div>
-
-      <div class="content-wrap">
+<div class="content-wrap">
       <!-- =================================================
            HERO
       ================================================== -->
@@ -316,8 +314,7 @@
   id="toast"
   hidden
 ></div>
-<script src="./header/header.js"></script>
-<script src="shared-sidebar.js"></script>
-<script src="system-log.js"></script>
+<script src="/ADMIN/system-log.js"></script>
+  <script src="/ADMIN/admin-bar.js"></script>
 </body>
 </html>
