@@ -1,7 +1,7 @@
 "use strict";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDiGtSXQMGEE1YWWfW73enu6PK3zjokr4",
+    apiKey: "AIzaSyDiGtSXQMGEE1YWWfW73enu6PK3zjokrw4",
     authDomain: "faq-csk18.firebaseapp.com",
     projectId: "faq-csk18",
     storageBucket: "faq-csk18.firebasestorage.app",
@@ -10,12 +10,26 @@ const firebaseConfig = {
     measurementId: "G-X0GM41LVMJ"
 };
 
-/* Chỉ initialize nếu chưa có Firebase App */
+/* =========================================
+   INITIALIZE FIREBASE
+========================================= */
+
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-/* Firebase services */
+/* =========================================
+   FIREBASE SERVICES
+========================================= */
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+console.log("========================================");
+console.log("FIREBASE CONFIG LOADED");
+console.log("Project:", firebase.app().options.projectId);
+console.log("Auth Domain:", firebase.app().options.authDomain);
+console.log("Storage:", firebase.app().options.storageBucket);
+console.log("Firebase App:", firebase.app().name);
+console.log("========================================");
