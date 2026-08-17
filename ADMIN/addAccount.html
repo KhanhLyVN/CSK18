@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
+  <link rel="stylesheet" href="admin-bar.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tạo tài khoản CS</title>
@@ -13,9 +15,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
 <script src="/firebase-config.js"></script>
-<link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="./header/header.css">
-
 <style>
 :root {
     --maroon: #5D0703;
@@ -700,10 +699,9 @@ header.page {
 </head>
 <body data-admin-page="add-cs">
 <div class="app-shell">
-  <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
-  <main class="main-content">
-    <div id="sharedHeader"></div>
-  <div class="wrap">
+    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+    <main class="main-content">
+<div class="wrap">
   <header class="page">
     <h1>Tạo tài khoản CS</h1>
     <div>
@@ -1390,7 +1388,6 @@ document.getElementById('exportCsvBtn').addEventListener(
     }
 );
 </script>
-<script src="./header/header.js"></script>
-<script src="shared-sidebar.js"></script>
+  <script src="admin-bar.js"></script>
 </body>
 </html>

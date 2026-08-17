@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="admin-bar.css">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cài đặt hệ thống - Admin</title>
   <link rel="stylesheet" href="settings.css">
-  <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="./header/header.css">
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,13 +22,12 @@
 </head>
 <body data-admin-page="settings">
 <div class="app-shell">
-    <div id="sharedSidebar" aria-label="Sidebar quản trị"></div>
+    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
   <!-- =====================================================
        MAIN
   ====================================================== -->
     <main class="main-content">
-      <div id="sharedHeader"></div>
-    <!-- ===================================================
+<!-- ===================================================
          CONTENT
     ==================================================== -->
     <div class="content-wrap">
@@ -570,8 +569,7 @@
   class="toast"
   hidden
 ></div>
-<script src="./header/header.js"></script>
-<script src="shared-sidebar.js"></script>
 <script src="settings.js"></script>
+  <script src="admin-bar.js"></script>
 </body>
 </html>

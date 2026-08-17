@@ -954,6 +954,9 @@ textarea:focus {
     transform: translateX(0);
     box-shadow: 10px 0 40px rgba(42,23,18,.18);
   }
+  body.sidebar-open {
+    overflow: hidden;
+  }
   .main-content {
     margin-left: 0;
   }

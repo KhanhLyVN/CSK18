@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="admin-bar.css">
+<meta charset="UTF-8">
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -14,9 +16,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
   <link rel="stylesheet" href="activity-report.css">
-  <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="./header/header.css">
-
   <!-- =====================================================
        FIREBASE
   ====================================================== -->
@@ -25,24 +24,18 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="../firebase-config.js"></script>
-  <script src="shared-sidebar.js"></script>
 </head>
 <body data-admin-page="reports">
 <div class="app-shell">
   <!-- ===================================================
        SIDEBAR
   ==================================================== -->
-  <div
-    id="sharedSidebar"
-    aria-label="Sidebar quản trị"
-  ></div>
+  <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
   <!-- ===================================================
        MAIN
   ==================================================== -->
     <main class="main-content">
-      <div id="sharedHeader"></div>
-
-      <div class="content-wrap">
+<div class="content-wrap">
       <!-- =================================================
            HERO
       ================================================== -->
@@ -444,8 +437,7 @@
     Thông báo
   </span>
 </div>
-<script src="./header/header.js"></script>
-<script src="shared-sidebar.js"></script>
 <script src="/ADMIN/activity-report.js"></script>
+  <script src="admin-bar.js"></script>
 </body>
 </html>

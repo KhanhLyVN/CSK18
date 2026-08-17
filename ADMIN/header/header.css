@@ -490,49 +490,7 @@
       scale(1);
   }
 }
-/* =========================================================
-   MOBILE SIDEBAR
-========================================================= */
-@media (max-width: 780px) {
-  #adminSidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 280px;
-    height: 100vh;
-    z-index: 2000;
-    transform: translateX(-100%);
-    transition:
-      transform 0.28s cubic-bezier(.4, 0, .2, 1);
-    box-shadow:
-      12px 0 35px rgba(40, 15, 10, 0.16);
-  }
-  #adminSidebar.open {
-    transform: translateX(0);
-  }
-  /* Overlay */
-  body.sidebar-open::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 1999;
-    background: rgba(35, 15, 12, 0.38);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-  }
-  /* Header nằm dưới sidebar */
-  .topbar {
-    z-index: 1000;
-  }
-  /* Sidebar nằm trên overlay */
-  #adminSidebar {
-    z-index: 2000;
-  }
-  /* Không cho trang phía sau scroll */
-  body.sidebar-open {
-    overflow: hidden;
-  }
-}
+/* Sidebar mobile được quản lý độc quyền bởi admin.css. */
 /* =========================================================
    MOBILE
 ========================================================= */
