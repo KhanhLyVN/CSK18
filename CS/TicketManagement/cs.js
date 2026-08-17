@@ -2367,18 +2367,15 @@ function getStudentMessageCount(ticket) {
                     </div>
   
   
-                    <div class="detail-item">
+                    <div class="detail-item priority-detail-item">
                         <span>
-                            ƯU TIÊN
+                            MỨC ĐỘ ƯU TIÊN
                         </span>
   
                         <strong>
-                            ${escapeHtml(
-                                getPriorityLabel(
-                                    ticket.priority
-                                )
-                            )}
+                            ${priorityPill(ticket.priority)}
                         </strong>
+                        ${ticket.priorityReason ? `<small class="priority-reason">${escapeHtml(ticket.priorityReason)}</small>` : ""}
                     </div>
   
   

@@ -355,6 +355,9 @@ async function submitTicket() {
 
   const category = getCategory(selectedMainType.value);
   const issueLabel = selectedMainType.value === "other" ? "Khác" : issueSelect.selectedOptions[0]?.textContent?.trim() || "Khác";
+  const automaticPriority = typeof window.automaticTicketPriority === "function"
+    ? window.automaticTicketPriority({ categoryId: selectedMainType.value, issueId: selectedIssue, title, description })
+    : { level: "medium", label: "Trung bình", reason: "Không tải được bộ phân loại tự động.", source: "fallback" };
   if (ticketNum === "HV-000000") updateTicketNumber();
   const submitButton = $("submitBtn");
   submitButton.disabled = true;
@@ -380,6 +383,10 @@ async function submitTicket() {
       ticketType: selectedIssue || selectedMainType.value,
       ticketCategory: category?.label || "Khác",
       ticketIssue: issueLabel,
+      priority: automaticPriority.level,
+      priorityLabel: automaticPriority.label,
+      priorityReason: automaticPriority.reason,
+      prioritySource: automaticPriority.source,
 
       title,
       description,
