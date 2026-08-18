@@ -8,92 +8,110 @@
   <link rel="stylesheet" href="/HV/homepage-hv/homepage.css">
   <link rel="stylesheet" href="/HV/navbar.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" />
   <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
 </head>
+
 <body data-nav-page="sent">
   <div class="app">
     <main class="sent-tickets-page">
       <section class="sent-page-head">
-        <div><span class="sent-eyebrow">TỔNG QUAN HỖ TRỢ</span><h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2><p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p></div>
+        <div><span class="sent-eyebrow">TỔNG QUAN HỖ TRỢ</span>
+          <h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2>
+          <p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p>
+        </div>
         <div class="sent-count"><strong id="todayLabel">—</strong><span>Cập nhật realtime</span></div>
       </section>
       <section class="stats-grid" aria-label="Thống kê ticket">
-        <article class="stat-card stat-open"><span class="stat-title">Ticket đang mở</span><strong class="stat-num" id="openTicketsCount">—</strong><span class="stat-desc">Chưa đóng hoặc đang xử lý</span></article>
-        <article class="stat-card stat-progress"><span class="stat-title">Đang xử lý</span><strong class="stat-num" id="progressTicketsCount">—</strong><span class="stat-desc">Đang được Customer Success tiếp nhận</span></article>
-        <article class="stat-card stat-resolved"><span class="stat-title">Đã giải quyết</span><strong class="stat-num" id="resolvedTicketsCount">—</strong><span class="stat-desc">Đã có hướng xử lý</span></article>
-        <article class="stat-card stat-closed"><span class="stat-title">Tổng ticket</span><strong class="stat-num" id="totalTicketsCount">—</strong><span class="stat-desc">Tất cả yêu cầu đã gửi</span></article>
+        <article class="stat-card stat-open"><span class="stat-title">Ticket đang mở</span><strong class="stat-num"
+            id="openTicketsCount">—</strong><span class="stat-desc">Chưa đóng hoặc đang xử lý</span></article>
+        <article class="stat-card stat-progress"><span class="stat-title">Đang xử lý</span><strong class="stat-num"
+            id="progressTicketsCount">—</strong><span class="stat-desc">Đang được Customer Success tiếp nhận</span>
+        </article>
+        <article class="stat-card stat-resolved"><span class="stat-title">Đã giải quyết</span><strong class="stat-num"
+            id="resolvedTicketsCount">—</strong><span class="stat-desc">Đã có hướng xử lý</span></article>
+        <article class="stat-card stat-closed"><span class="stat-title">Tổng ticket</span><strong class="stat-num"
+            id="totalTicketsCount">—</strong><span class="stat-desc">Tất cả yêu cầu đã gửi</span></article>
       </section>
       <section class="content-grid">
-        <div class="panel recent-panel"><div class="panel-head"><div><span class="panel-kicker">THEO DÕI YÊU CẦU</span><h3>Ticket gần đây</h3></div><a href="/HV/chat-hv/trao-doi-ticket.html">Xem tất cả →</a></div><div class="recent-list" id="recentTicketList"><div class="loading-state">Đang tải ticket...</div></div></div>
-<div class="panel help-panel">
-  <div class="panel-head">
-    <div>
-      <span class="panel-kicker">GỢI Ý NHANH</span>
-      <h3>Bạn có thể làm gì?</h3>
-    </div>
-  </div>
+        <div class="panel recent-panel">
+          <div class="panel-head">
+            <div><span class="panel-kicker">THEO DÕI YÊU CẦU</span>
+              <h3>Ticket gần đây</h3>
+            </div><a href="/HV/chat-hv/trao-doi-ticket.html">Xem tất cả →</a>
+          </div>
+          <div class="recent-list" id="recentTicketList">
+            <div class="loading-state">Đang tải ticket...</div>
+          </div>
+        </div>
+        <div class="panel help-panel">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">GỢI Ý NHANH</span>
+              <h3>Bạn có thể làm gì?</h3>
+            </div>
+          </div>
 
-  <div class="help-list">
+          <div class="help-list">
 
-    <a class="help-item" href="/FAQs/faq.html">
-      <span class="help-icon">
-        <span class="material-symbols-rounded">help</span>
-      </span>
+            <a class="help-item" href="/FAQs/faq.html">
+              <span class="help-icon">
+                <span class="material-symbols-rounded">help</span>
+              </span>
 
-      <span class="help-content">
-        <strong>Tra cứu FAQ</strong>
-        <small>Tìm câu trả lời trong kho kiến thức.</small>
-      </span>
+              <span class="help-content">
+                <strong>Tra cứu FAQ</strong>
+                <small>Tìm câu trả lời trong kho kiến thức.</small>
+              </span>
 
-      <span class="help-arrow material-symbols-rounded">
-        arrow_forward
-      </span>
-    </a>
-
-
-    <a class="help-item" href="/HV/tickets/phieuhotro.html">
-      <span class="help-icon">
-        <span class="material-symbols-rounded">add_circle</span>
-      </span>
-
-      <span class="help-content">
-        <strong>Gửi yêu cầu mới</strong>
-        <small>Mô tả vấn đề để được hỗ trợ.</small>
-      </span>
-
-      <span class="help-arrow material-symbols-rounded">
-        arrow_forward
-      </span>
-    </a>
+              <span class="help-arrow material-symbols-rounded">
+                arrow_forward
+              </span>
+            </a>
 
 
-    <a class="help-item" href="/HV/chat-hv/trao-doi-ticket.html">
-      <span class="help-icon">
-        <span class="material-symbols-rounded">forum</span>
-      </span>
+            <a class="help-item" href="/HV/tickets/phieuhotro.html">
+              <span class="help-icon">
+                <span class="material-symbols-rounded">add_circle</span>
+              </span>
 
-      <span class="help-content">
-        <strong>Trao đổi với CS</strong>
-        <small>Xem phản hồi và nhắn tin.</small>
-      </span>
+              <span class="help-content">
+                <strong>Gửi yêu cầu mới</strong>
+                <small>Mô tả vấn đề để được hỗ trợ.</small>
+              </span>
 
-      <span class="help-arrow material-symbols-rounded">
-        arrow_forward
-      </span>
-    </a>
+              <span class="help-arrow material-symbols-rounded">
+                arrow_forward
+              </span>
+            </a>
 
-  </div>
-</div>     
- </section>
+
+            <a class="help-item" href="/HV/chat-hv/trao-doi-ticket.html">
+              <span class="help-icon">
+                <span class="material-symbols-rounded">forum</span>
+              </span>
+
+              <span class="help-content">
+                <strong>Trao đổi với CS</strong>
+                <small>Xem phản hồi và nhắn tin.</small>
+              </span>
+
+              <span class="help-arrow material-symbols-rounded">
+                arrow_forward
+              </span>
+            </a>
+
+          </div>
+        </div>
+      </section>
     </main>
   </div>
   <script src="/HV/navbar.js"></script>
@@ -101,4 +119,5 @@
   <script type="module" src="/HV/ticketssent/useticket.js"></script>
   <script type="module" src="/HV/ticketssent/ticketssent.js"></script>
 </body>
+
 </html>
