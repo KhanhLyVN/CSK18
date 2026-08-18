@@ -33,8 +33,8 @@ if (window.emailjs) {
 /* =========================================================
    AI CONFIG
 ========================================================= */
-const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxUn053qObh-uTNqfbPehEjM0AJnnOn3BFwN1ZyWkopAPwMlLPZjwTb2bU10v7fsZQ/exec";
+// const TITLE_AI_WEB_APP_URL =
+//   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
 /* =========================================================
    FIRESTORE COLLECTION
 ========================================================= */
@@ -87,66 +87,18 @@ const TICKET_CATEGORIES = [
     label: "Hệ thống",
     icon: "bug",
     issues: [
-      {
-        value: "system-login",
-        label: "Đăng nhập / xác thực",
-        department: "IT"
-      },
-      {
-        value: "system-password",
-        label: "Mật khẩu",
-        department: "IT"
-      },
-      {
-        value: "system-account",
-        label: "Tài khoản học viên",
-        department: "IT"
-      },
-      {
-        value: "system-website-access",
-        label: "Website không truy cập được",
-        department: "IT"
-      },
-      {
-        value: "system-page-error",
-        label: "Một trang bị lỗi",
-        department: "IT"
-      },
-      {
-        value: "system-browser-device",
-        label: "Lỗi thiết bị / trình duyệt",
-        department: "IT"
-      },
-      {
-        value: "system-video-playback",
-        label: "Lỗi phát video",
-        department: "IT"
-      },
-      {
-        value: "system-file-upload",
-        label: "Không tải được tệp",
-        department: "IT"
-      },
-      {
-        value: "system-notification",
-        label: "Email / thông báo",
-        department: "IT"
-      },
-      {
-        value: "system-data-sync",
-        label: "Dữ liệu chưa đồng bộ",
-        department: "IT"
-      },
-      {
-        value: "system-security",
-        label: "Bảo mật tài khoản",
-        department: "IT"
-      },
-      {
-        value: "system-other",
-        label: "Khác",
-        department: "IT"
-      }
+      { value: "system-login", label: "Đăng nhập / xác thực", department: "IT" },
+      { value: "system-password", label: "Mật khẩu", department: "IT" },
+      { value: "system-account", label: "Tài khoản học viên", department: "IT" },
+      { value: "system-website-access", label: "Website không truy cập được", department: "IT" },
+      { value: "system-page-error", label: "Một trang bị lỗi", department: "IT" },
+      { value: "system-browser-device", label: "Lỗi thiết bị / trình duyệt", department: "IT" },
+      { value: "system-video-playback", label: "Lỗi phát video", department: "IT" },
+      { value: "system-file-upload", label: "Không tải được tệp", department: "IT" },
+      { value: "system-notification", label: "Email / thông báo", department: "IT" },
+      { value: "system-data-sync", label: "Dữ liệu chưa đồng bộ", department: "IT" },
+      { value: "system-security", label: "Bảo mật tài khoản", department: "IT" },
+      { value: "system-other", label: "Khác", department: "IT" }
     ]
   },
   {
@@ -154,61 +106,17 @@ const TICKET_CATEGORIES = [
     label: "Khóa học",
     icon: "book",
     issues: [
-      {
-        value: "learning-registration",
-        label: "Đăng ký khóa học",
-        department: "CS"
-      },
-      {
-        value: "learning-course-access",
-        label: "Quyền truy cập khóa học",
-        department: "CS"
-      },
-      {
-        value: "learning-fee",
-        label: "Học phí",
-        department: "SALE"
-      },
-      {
-        value: "learning-payment-method",
-        label: "Phương thức thanh toán",
-        department: "SALE"
-      },
-      {
-        value: "learning-payment-confirmation",
-        label: "Xác nhận thanh toán",
-        department: "SALE"
-      },
-      {
-        value: "learning-invoice",
-        label: "Hóa đơn / biên nhận",
-        department: "SALE"
-      },
-      {
-        value: "learning-refund",
-        label: "Hoàn tiền / hủy đăng ký",
-        department: "SALE"
-      },
-      {
-        value: "learning-promotion",
-        label: "Mã giảm giá / ưu đãi",
-        department: "SALE"
-      },
-      {
-        value: "learning-certificate",
-        label: "Chứng chỉ",
-        department: "CS"
-      },
-      {
-        value: "learning-result",
-        label: "Kết quả học tập",
-        department: "CS"
-      },
-      {
-        value: "learning-other",
-        label: "Khác",
-        department: "CS"
-      }
+      { value: "learning-registration", label: "Đăng ký khóa học", department: "CS" },
+      { value: "learning-course-access", label: "Quyền truy cập khóa học", department: "CS" },
+      { value: "learning-fee", label: "Học phí", department: "SALE" },
+      { value: "learning-payment-method", label: "Phương thức thanh toán", department: "SALE" },
+      { value: "learning-payment-confirmation", label: "Xác nhận thanh toán", department: "SALE" },
+      { value: "learning-invoice", label: "Hóa đơn / biên nhận", department: "SALE" },
+      { value: "learning-refund", label: "Hoàn tiền / hủy đăng ký", department: "SALE" },
+      { value: "learning-promotion", label: "Mã giảm giá / ưu đãi", department: "SALE" },
+      { value: "learning-certificate", label: "Chứng chỉ", department: "CS" },
+      { value: "learning-result", label: "Kết quả học tập", department: "CS" },
+      { value: "learning-other", label: "Khác", department: "CS" }
     ]
   },
   {
@@ -216,61 +124,17 @@ const TICKET_CATEGORIES = [
     label: "Vận hành",
     icon: "mentor",
     issues: [
-      {
-        value: "operations-schedule",
-        label: "Lịch học",
-        department: "CS"
-      },
-      {
-        value: "operations-attendance",
-        label: "Điểm danh và vắng học",
-        department: "CS"
-      },
-      {
-        value: "operations-mentor",
-        label: "Mentor / giáo viên",
-        department: "TEACH"
-      },
-      {
-        value: "operations-mentor-feedback",
-        label: "Phản hồi về mentor",
-        department: "TEACH"
-      },
-      {
-        value: "operations-video-quality",
-        label: "Chất lượng hình ảnh / video",
-        department: "CS"
-      },
-      {
-        value: "operations-video-access",
-        label: "Không xem được bài giảng",
-        department: "CS"
-      },
-      {
-        value: "operations-material",
-        label: "Tài liệu và bài giảng",
-        department: "RND"
-      },
-      {
-        value: "operations-assignment",
-        label: "Bài tập và hỗ trợ bài giảng",
-        department: "RND"
-      },
-      {
-        value: "operations-classroom",
-        label: "Phòng học và buổi học",
-        department: "CS"
-      },
-      {
-        value: "operations-support",
-        label: "Hỗ trợ trong quá trình học",
-        department: "CS"
-      },
-      {
-        value: "operations-other",
-        label: "Khác",
-        department: "CS"
-      }
+      { value: "operations-schedule", label: "Lịch học", department: "CS" },
+      { value: "operations-attendance", label: "Điểm danh và vắng học", department: "CS" },
+      { value: "operations-mentor", label: "Mentor / giáo viên", department: "TEACH" },
+      { value: "operations-mentor-feedback", label: "Phản hồi về mentor", department: "TEACH" },
+      { value: "operations-video-quality", label: "Chất lượng hình ảnh / video", department: "CS" },
+      { value: "operations-video-access", label: "Không xem được bài giảng", department: "CS" },
+      { value: "operations-material", label: "Tài liệu và bài giảng", department: "RND" },
+      { value: "operations-assignment", label: "Bài tập và hỗ trợ bài giảng", department: "RND" },
+      { value: "operations-classroom", label: "Phòng học và buổi học", department: "CS" },
+      { value: "operations-support", label: "Hỗ trợ trong quá trình học", department: "CS" },
+      { value: "operations-other", label: "Khác", department: "CS" }
     ]
   },
   {
@@ -278,21 +142,9 @@ const TICKET_CATEGORIES = [
     label: "Khác",
     icon: "other",
     issues: [
-      {
-        value: "other-feedback",
-        label: "Góp ý / phản hồi",
-        department: "CS"
-      },
-      {
-        value: "other-complaint",
-        label: "Khiếu nại",
-        department: "CS"
-      },
-      {
-        value: "other-request",
-        label: "Yêu cầu hỗ trợ khác",
-        department: "CS"
-      }
+      { value: "other-feedback", label: "Góp ý / phản hồi", department: "CS" },
+      { value: "other-complaint", label: "Khiếu nại", department: "CS" },
+      { value: "other-request", label: "Yêu cầu hỗ trợ khác", department: "CS" }
     ]
   }
 ];
@@ -316,22 +168,17 @@ function getValue(id) {
   if (!element) {
     return "";
   }
-  return String(
-    element.value || ""
-  ).trim();
+  return String(element.value || "").trim();
 }
 function setText(id, value) {
   const element = $(id);
   if (element) {
-    element.textContent =
-      value ?? "";
+    element.textContent = value ?? "";
   }
 }
 function escapeHTML(value) {
-  const div =
-    document.createElement("div");
-  div.textContent =
-    value ?? "";
+  const div = document.createElement("div");
+  div.textContent = value ?? "";
   return div.innerHTML;
 }
 /* =========================================================
@@ -356,43 +203,28 @@ function svgIcon(key) {
 ========================================================= */
 function getDatabase() {
   try {
-    if (
-      typeof db !== "undefined" &&
-      db
-    ) {
+    if (typeof db !== "undefined" && db) {
       return db;
     }
   } catch (_) {}
-  if (
-    typeof window.db !== "undefined" &&
-    window.db
-  ) {
+  if (typeof window.db !== "undefined" && window.db) {
     return window.db;
   }
   return null;
 }
 function getAuth() {
   try {
-    if (
-      typeof auth !== "undefined" &&
-      auth
-    ) {
+    if (typeof auth !== "undefined" && auth) {
       return auth;
     }
   } catch (_) {}
-  if (
-    typeof window.auth !== "undefined" &&
-    window.auth
-  ) {
+  if (typeof window.auth !== "undefined" && window.auth) {
     return window.auth;
   }
   return null;
 }
 function getFirebase() {
-  if (
-    typeof firebase !== "undefined" &&
-    firebase
-  ) {
+  if (typeof firebase !== "undefined" && firebase) {
     return firebase;
   }
   return null;
@@ -401,251 +233,144 @@ function getFirebase() {
    CATEGORY
 ========================================================= */
 function getCategory(categoryId) {
-  return (
-    TICKET_CATEGORIES.find(
-      item =>
-        item.id === categoryId
-    ) || null
-  );
+  return TICKET_CATEGORIES.find(item => item.id === categoryId) || null;
 }
 /* =========================================================
    ISSUE
 ========================================================= */
-function getIssue(
-  categoryId,
-  issueValue
-) {
-  const category =
-    getCategory(categoryId);
+function getIssue(categoryId, issueValue) {
+  const category = getCategory(categoryId);
   if (!category) {
     return null;
   }
-  return (
-    category.issues.find(
-      item =>
-        item.value === issueValue
-    ) || null
-  );
+  return category.issues.find(item => item.value === issueValue) || null;
 }
 /* =========================================================
    DEPARTMENT
 ========================================================= */
-function resolveTicketDepartment(
-  categoryId,
-  issueValue
-) {
-  const issue =
-    getIssue(
-      categoryId,
-      issueValue
-    );
+function resolveTicketDepartment(categoryId, issueValue) {
+  const issue = getIssue(categoryId, issueValue);
   if (issue?.department) {
     return issue.department;
   }
-  return (
-    CATEGORY_DEFAULT_DEPARTMENT[
-      categoryId
-    ] || "CS"
-  );
+  return CATEGORY_DEFAULT_DEPARTMENT[categoryId] || "CS";
 }
 /* =========================================================
    TICKET PREFIX
 ========================================================= */
-function getPrefixFromCategory(
-  label
-) {
+function getPrefixFromCategory(label) {
   if (!label) {
     return "HV";
   }
-  const cleanStr =
-    String(label)
-      .normalize("NFD")
-      .replace(
-        /[\u0300-\u036f]/g,
-        ""
-      )
-      .replace(/đ/gi, "d")
-      .trim();
-  const words =
-    cleanStr.split(/\s+/);
+  const cleanStr = String(label)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/gi, "d")
+    .trim();
+  const words = cleanStr.split(/\s+/);
   if (words.length >= 2) {
-    return (
-      words[0][0] +
-      words[1][0]
-    ).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
   }
-  return cleanStr
-    .substring(0, 2)
-    .toUpperCase();
+  return cleanStr.substring(0, 2).toUpperCase();
 }
 /* =========================================================
    GENERATE TICKET NUMBER
 ========================================================= */
-function genTicketNum(
-  typeLabel
-) {
-  const prefix =
-    getPrefixFromCategory(
-      typeLabel
-    );
-  const timePart =
-    String(Date.now()).slice(-7);
-  const randomPart =
-    String(
-      Math.floor(
-        Math.random() * 100
-      )
-    ).padStart(2, "0");
+function genTicketNum(typeLabel) {
+  const prefix = getPrefixFromCategory(typeLabel);
+  const timePart = String(Date.now()).slice(-7);
+  const randomPart = String(Math.floor(Math.random() * 100)).padStart(2, "0");
   return `${prefix}-${timePart}${randomPart}`;
 }
 /* =========================================================
    DATE
 ========================================================= */
 function todayLabel() {
-  return new Date()
-    .toLocaleDateString(
-      "vi-VN",
-      {
-        weekday: "long",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-      }
-    );
+  return new Date().toLocaleDateString("vi-VN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
 }
 function isoToday() {
-  const now =
-    new Date();
-  const offset =
-    now.getTimezoneOffset();
-  return new Date(
-    now.getTime() -
-    offset * 60000
-  )
-    .toISOString()
-    .slice(0, 10);
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10);
 }
-function formatDateVN(
-  value
-) {
+function formatDateVN(value) {
   if (!value) {
     return "—";
   }
-  const parts =
-    value.split("-");
+  const parts = value.split("-");
   if (parts.length !== 3) {
     return value;
   }
-  const [
-    year,
-    month,
-    day
-  ] = parts;
+  const [year, month, day] = parts;
   return `${day}/${month}/${year}`;
 }
 /* =========================================================
    DOM ELEMENTS
 ========================================================= */
-const issueField =
-  $("issueField");
-const issueSelect =
-  $("issueSelect");
-const chipGrid =
-  $("chipGrid");
-const chkCourse =
-  $("chkCourse");
-const courseBoxWrap =
-  $("courseBoxWrap");
-const fCourse =
-  $("fCourse");
-const fDateEl =
-  $("fDate");
-const fileDrop =
-  $("fileDrop");
-const fFile =
-  $("fFile");
-const fileNameEl =
-  $("fileName");
-const formView =
-  $("formView");
-const successView =
-  $("successView");
-const submitBtn =
-  $("submitBtn");
-const againBtn =
-  $("againBtn");
-const layoutContainer =
-  $("layoutContainer");
-const fTitle =
-  $("fTitle");
-const titleAiResult =
-  $("titleAiResult");
-const titleAiResultBody =
-  $("titleAiResultBody");
+const issueField = $("issueField");
+const issueSelect = $("issueSelect");
+const chipGrid = $("chipGrid");
+const chkCourse = $("chkCourse");
+const courseBoxWrap = $("courseBoxWrap");
+const fCourse = $("fCourse");
+const fDateEl = $("fDate");
+const fileDrop = $("fileDrop");
+const fFile = $("fFile");
+const fileNameEl = $("fileName");
+const formView = $("formView");
+const successView = $("successView");
+const submitBtn = $("submitBtn");
+const againBtn = $("againBtn");
+const layoutContainer = $("layoutContainer");
+const fTitle = $("fTitle");
+const titleAiResult = $("titleAiResult");
+const titleAiResultBody = $("titleAiResultBody");
 // HTML hiện tại không có nút đóng riêng; khung tự đóng khi blur/chuyển mục.
 const closeTitleAiSuggestion = null;
 /* =========================================================
    AI LOADING DOM
+   (KHAI BÁO DUY NHẤT của aiProgressTimer / aiProgress —
+   không được khai báo lại bằng let/const ở nơi khác trong
+   file, nếu không sẽ gây SyntaxError và làm hỏng toàn bộ
+   module này.)
 ========================================================= */
-const titleAiLoading =
-  document.getElementById("titleAiLoading");
-
-const titleAiProgressBar =
-  document.getElementById("titleAiProgressBar");
-
-const titleAiLoadingPercent =
-  document.getElementById("titleAiLoadingPercent");
-
-const titleAiLoadingText =
-  document.getElementById("titleAiLoadingText");
-
-const titleAiLoadingStatus =
-  document.getElementById("titleAiLoadingStatus");
-
+const titleAiLoading = document.getElementById("titleAiLoading");
+const titleAiProgressBar = document.getElementById("titleAiProgressBar");
+const titleAiLoadingPercent = document.getElementById("titleAiLoadingPercent");
+const titleAiLoadingText = document.getElementById("titleAiLoadingText");
+const titleAiLoadingStatus = document.getElementById("titleAiLoadingStatus");
 
 let aiProgressTimer = null;
 let aiProgress = 0;
 /* =========================================================
    STATE
 ========================================================= */
-let ticketNum =
-  "HV-000000";
-let selectedFile =
-  null;
-let loggedInUser =
-  null;
-let titleAiDebounceTimer =
-  null;
-let titleAiRequestId =
-  0;
-let titleAiManuallyClosed =
-  false;
+let ticketNum = "HV-000000";
+let selectedFile = null;
+let loggedInUser = null;
+let titleAiDebounceTimer = null;
+let titleAiRequestId = 0;
+let titleAiManuallyClosed = false;
 /* =========================================================
    RENDER ISSUE OPTIONS
 ========================================================= */
-function renderIssueOptions(
-  categoryId
-) {
+function renderIssueOptions(categoryId) {
   if (!issueSelect) {
     return;
   }
-  const category =
-    getCategory(categoryId);
-  if (
-    !category ||
-    category.id === "other"
-  ) {
-    issueSelect.innerHTML =
-      '<option value="">-- Chọn chi tiết vấn đề --</option>';
-    issueSelect.disabled =
-      true;
+  const category = getCategory(categoryId);
+  if (!category || category.id === "other") {
+    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
+    issueSelect.disabled = true;
     if (issueField) {
-      issueField.classList.remove(
-        "show"
-      );
+      issueField.classList.remove("show");
     }
-    issueSelect.value =
-      "";
+    issueSelect.value = "";
     return;
   }
   issueSelect.innerHTML = `
@@ -654,35 +379,23 @@ function renderIssueOptions(
     </option>
     ${category.issues
       .map(issue => `
-        <option value="${escapeHTML(
-          issue.value
-        )}">
-          ${escapeHTML(
-            issue.label
-          )}
+        <option value="${escapeHTML(issue.value)}">
+          ${escapeHTML(issue.label)}
         </option>
       `)
       .join("")}
   `;
-  issueSelect.disabled =
-    false;
+  issueSelect.disabled = false;
   if (issueField) {
-    issueField.classList.add(
-      "show"
-    );
+    issueField.classList.add("show");
   }
-  issueSelect.value =
-    "";
+  issueSelect.value = "";
 }
 /* =========================================================
    CHIPS
 ========================================================= */
 function chips() {
-  return Array.from(
-    document.querySelectorAll(
-      ".chip"
-    )
-  );
+  return Array.from(document.querySelectorAll(".chip"));
 }
 /* =========================================================
    RENDER CATEGORIES
@@ -691,401 +404,197 @@ function renderCategories() {
   if (!chipGrid) {
     return;
   }
-  chipGrid.innerHTML =
-    "";
-  TICKET_CATEGORIES.forEach(
-    category => {
-      const el =
-        document.createElement(
-          "label"
-        );
-      el.className =
-        "chip";
-      el.innerHTML = `
-        <input
-          type="radio"
-          name="ticketMainType"
-          value="${escapeHTML(
-            category.id
-          )}"
-          data-label="${escapeHTML(
-            category.label
-          )}"
-          data-icon="${escapeHTML(
-            category.icon
-          )}"
-        >
-        ${svgIcon(
-          category.icon
-        )}
-        <span>
-          ${escapeHTML(
-            category.label
-          )}
-        </span>
-        <span class="mark"></span>
-      `;
-      chipGrid.appendChild(
-        el
-      );
-    }
-  );
-  chips().forEach(
-    chip => {
-      chip.addEventListener(
-        "click",
-        () => {
-          chips().forEach(
-            item => {
-              item.classList.remove(
-                "active"
-              );
-            }
-          );
-          chip.classList.add(
-            "active"
-          );
-          const radio =
-            chip.querySelector(
-              'input[name="ticketMainType"]'
-            );
-          if (!radio) {
-            return;
-          }
-          radio.checked =
-            true;
-          renderIssueOptions(
-            radio.value
-          );
-          const category =
-            getCategory(
-              radio.value
-            );
-          const categoryLabel =
-            category?.label ||
-            radio.value ||
-            "Khác";
-          ticketNum =
-            genTicketNum(
-              categoryLabel
-            );
-          hideTitleAiSuggestion();
-          updateStub();
-        }
-      );
-    }
-  );
+  chipGrid.innerHTML = "";
+  TICKET_CATEGORIES.forEach(category => {
+    const el = document.createElement("label");
+    el.className = "chip";
+    el.innerHTML = `
+      <input
+        type="radio"
+        name="ticketMainType"
+        value="${escapeHTML(category.id)}"
+        data-label="${escapeHTML(category.label)}"
+        data-icon="${escapeHTML(category.icon)}"
+      >
+      ${svgIcon(category.icon)}
+      <span>
+        ${escapeHTML(category.label)}
+      </span>
+      <span class="mark"></span>
+    `;
+    chipGrid.appendChild(el);
+  });
+  chips().forEach(chip => {
+    chip.addEventListener("click", () => {
+      chips().forEach(item => {
+        item.classList.remove("active");
+      });
+      chip.classList.add("active");
+      const radio = chip.querySelector('input[name="ticketMainType"]');
+      if (!radio) {
+        return;
+      }
+      radio.checked = true;
+      renderIssueOptions(radio.value);
+      const category = getCategory(radio.value);
+      const categoryLabel = category?.label || radio.value || "Khác";
+      ticketNum = genTicketNum(categoryLabel);
+      hideTitleAiSuggestion();
+      updateStub();
+    });
+  });
 }
 /* =========================================================
    ISSUE CHANGE
 ========================================================= */
 if (issueSelect) {
-  issueSelect.addEventListener(
-    "change",
-    () => {
-      const selectedRadio =
-        document.querySelector(
-          'input[name="ticketMainType"]:checked'
-        );
-      if (!selectedRadio) {
-        return;
-      }
-      const category =
-        getCategory(
-          selectedRadio.value
-        );
-      const issue =
-        getIssue(
-          selectedRadio.value,
-          issueSelect.value
-        );
-      const label =
-        issue
-          ? `${category?.label || ""}-${issue.value}`
-          : category?.label ||
-            "Khác";
-      ticketNum =
-        genTicketNum(
-          label
-        );
-      hideTitleAiSuggestion();
-      updateStub();
+  issueSelect.addEventListener("change", () => {
+    const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+    if (!selectedRadio) {
+      return;
     }
-  );
+    const category = getCategory(selectedRadio.value);
+    const issue = getIssue(selectedRadio.value, issueSelect.value);
+    const label = issue
+      ? `${category?.label || ""}-${issue.value}`
+      : category?.label || "Khác";
+    ticketNum = genTicketNum(label);
+    hideTitleAiSuggestion();
+    updateStub();
+  });
 }
 /* =========================================================
    COURSE CHECKBOX
 ========================================================= */
 if (chkCourse) {
-  chkCourse.addEventListener(
-    "change",
-    () => {
-      if (courseBoxWrap) {
-        courseBoxWrap.classList.toggle(
-          "show",
-          chkCourse.checked
-        );
-      }
-      if (
-        !chkCourse.checked &&
-        fCourse
-      ) {
-        fCourse.value =
-          "";
-      }
-      updateStub();
+  chkCourse.addEventListener("change", () => {
+    if (courseBoxWrap) {
+      courseBoxWrap.classList.toggle("show", chkCourse.checked);
     }
-  );
+    if (!chkCourse.checked && fCourse) {
+      fCourse.value = "";
+    }
+    updateStub();
+  });
 }
 /* =========================================================
    FILE VALIDATION
 ========================================================= */
-function setSelectedFile(
-  file
-) {
-  const errorEl =
-    $("errorText");
-  const maxSize =
-    700 * 1024;
+function setSelectedFile(file) {
+  const errorEl = $("errorText");
+  const maxSize = 700 * 1024;
   if (!file) {
     return;
   }
-  if (
-    !file.type ||
-    !file.type.startsWith(
-      "image/"
-    )
-  ) {
+  if (!file.type || !file.type.startsWith("image/")) {
     if (errorEl) {
-      errorEl.textContent =
-        "Vui lòng chọn tệp hình ảnh JPG, PNG, WEBP hoặc GIF.";
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = "Vui lòng chọn tệp hình ảnh JPG, PNG, WEBP hoặc GIF.";
+      errorEl.classList.add("show");
     }
-    selectedFile =
-      null;
+    selectedFile = null;
     return;
   }
   if (file.size > maxSize) {
     if (errorEl) {
-      errorEl.textContent =
-        "Ảnh không được vượt quá 700 KB.";
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = "Ảnh không được vượt quá 700 KB.";
+      errorEl.classList.add("show");
     }
-    selectedFile =
-      null;
+    selectedFile = null;
     return;
   }
-  selectedFile =
-    file;
+  selectedFile = file;
   if (fileNameEl) {
-    fileNameEl.textContent =
-      `Đã chọn: ${file.name} (${Math.ceil(
-        file.size / 1024
-      )} KB)`;
+    fileNameEl.textContent = `Đã chọn: ${file.name} (${Math.ceil(file.size / 1024)} KB)`;
   }
   if (errorEl) {
-    errorEl.classList.remove(
-      "show"
-    );
+    errorEl.classList.remove("show");
   }
 }
 /* =========================================================
    FILE DROP
 ========================================================= */
-if (
-  fileDrop &&
-  fFile
-) {
-  fileDrop.addEventListener(
-    "click",
-    () => {
-      fFile.click();
+if (fileDrop && fFile) {
+  fileDrop.addEventListener("click", () => {
+    fFile.click();
+  });
+  fFile.addEventListener("change", () => {
+    if (fFile.files?.[0]) {
+      setSelectedFile(fFile.files[0]);
     }
-  );
-  fFile.addEventListener(
-    "change",
-    () => {
-      if (
-        fFile.files?.[0]
-      ) {
-        setSelectedFile(
-          fFile.files[0]
-        );
-      }
+  });
+  fileDrop.addEventListener("dragover", event => {
+    event.preventDefault();
+    fileDrop.classList.add("dragover");
+  });
+  fileDrop.addEventListener("dragleave", event => {
+    event.preventDefault();
+    fileDrop.classList.remove("dragover");
+  });
+  fileDrop.addEventListener("drop", event => {
+    event.preventDefault();
+    fileDrop.classList.remove("dragover");
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+      setSelectedFile(file);
     }
-  );
-  fileDrop.addEventListener(
-    "dragover",
-    event => {
-      event.preventDefault();
-      fileDrop.classList.add(
-        "dragover"
-      );
-    }
-  );
-  fileDrop.addEventListener(
-    "dragleave",
-    event => {
-      event.preventDefault();
-      fileDrop.classList.remove(
-        "dragover"
-      );
-    }
-  );
-  fileDrop.addEventListener(
-    "drop",
-    event => {
-      event.preventDefault();
-      fileDrop.classList.remove(
-        "dragover"
-      );
-      const file =
-        event.dataTransfer
-          ?.files?.[0];
-      if (file) {
-        setSelectedFile(
-          file
-        );
-      }
-    }
-  );
+  });
 }
 /* =========================================================
    UPDATE STUB
 ========================================================= */
 function updateStub() {
-  const selectedRadio =
-    document.querySelector(
-      'input[name="ticketMainType"]:checked'
-    );
-  const selectedIssue =
-    issueSelect?.value ||
-    "";
-  const category =
-    selectedRadio
-      ? getCategory(
-          selectedRadio.value
-        )
-      : null;
-  const issue =
-    selectedRadio
-      ? getIssue(
-          selectedRadio.value,
-          selectedIssue
-        )
-      : null;
+  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+  const selectedIssue = issueSelect?.value || "";
+  const category = selectedRadio ? getCategory(selectedRadio.value) : null;
+  const issue = selectedRadio ? getIssue(selectedRadio.value, selectedIssue) : null;
   const displayLabel =
-    issue &&
-    selectedRadio?.value !== "other"
+    issue && selectedRadio?.value !== "other"
       ? `${category?.label || "Khác"} · ${issue.label}`
-      : category?.label ||
-        "Chưa chọn loại";
-  setText(
-    "stubNum",
-    ticketNum
-  );
-  setText(
-    "stubName",
-    getValue("fName") ||
-      "—"
-  );
-  setText(
-    "stubTitle",
-    getValue("fTitle") ||
-      "—"
-  );
-  setText(
-    "stubDate",
-    formatDateVN(
-      fDateEl?.value ||
-        ""
-    )
-  );
-  const stubCourse =
-    $("stubCourse");
-  const stubCourseBody =
-    $("stubCourseBody");
+      : category?.label || "Chưa chọn loại";
+  setText("stubNum", ticketNum);
+  setText("stubName", getValue("fName") || "—");
+  setText("stubTitle", getValue("fTitle") || "—");
+  setText("stubDate", formatDateVN(fDateEl?.value || ""));
+  const stubCourse = $("stubCourse");
+  const stubCourseBody = $("stubCourseBody");
   if (chkCourse?.checked) {
-    const course =
-      getValue(
-        "fCourse"
-      );
+    const course = getValue("fCourse");
     if (stubCourse) {
-      stubCourse.textContent =
-        course
-          ? `Khóa học: ${course}`
-          : "";
+      stubCourse.textContent = course ? `Khóa học: ${course}` : "";
     }
     if (stubCourseBody) {
-      stubCourseBody.textContent =
-        course ||
-        "Chưa nhập";
+      stubCourseBody.textContent = course || "Chưa nhập";
     }
   } else {
     if (stubCourse) {
-      stubCourse.textContent =
-        "";
+      stubCourse.textContent = "";
     }
     if (stubCourseBody) {
-      stubCourseBody.textContent =
-        "Không có";
+      stubCourseBody.textContent = "Không có";
     }
   }
-  const stubCat =
-    $("stubCat");
+  const stubCat = $("stubCat");
   if (stubCat) {
     stubCat.innerHTML =
-      svgIcon(
-        selectedRadio
-          ?.dataset.icon ||
-        "other"
-      ) +
-      `<span>${escapeHTML(
-        displayLabel
-      )}</span>`;
+      svgIcon(selectedRadio?.dataset.icon || "other") +
+      `<span>${escapeHTML(displayLabel)}</span>`;
   }
 }
 /* =========================================================
    INPUT → UPDATE STUB
 ========================================================= */
-[
-  "fName",
-  "fTitle",
-  "fCourse",
-  "fDesc",
-  "fPhone",
-  "fCampus"
-].forEach(
-  id => {
-    const element =
-      $(id);
-    if (element) {
-      element.addEventListener(
-        "input",
-        updateStub
-      );
-    }
+["fName", "fTitle", "fCourse", "fDesc", "fPhone", "fCampus"].forEach(id => {
+  const element = $(id);
+  if (element) {
+    element.addEventListener("input", updateStub);
   }
-);
+});
 /* =========================================================
    AI TITLE SUGGESTION
 ========================================================= */
-function showTitleAiSuggestion(
-  text,
-  options = {}
-) {
-  if (
-    !titleAiLoading ||
-    !titleAiResult ||
-    !titleAiResultBody
-  ) {
-    console.warn(
-      "Thiếu phần tử HTML hiển thị kết quả AI."
-    );
+function showTitleAiSuggestion(text, options = {}) {
+  if (!titleAiLoading || !titleAiResult || !titleAiResultBody) {
+    console.warn("Thiếu phần tử HTML hiển thị kết quả AI.");
     return;
   }
 
@@ -1094,74 +603,32 @@ function showTitleAiSuggestion(
 
   if (isLoading) {
     // Trong lúc AI xử lý: chỉ hiện thanh loading.
-    titleAiLoading.classList.add(
-      "is-visible"
-    );
-    titleAiLoading.classList.remove(
-      "is-error",
-      "is-result"
-    );
-    titleAiLoading.setAttribute(
-      "aria-hidden",
-      "false"
-    );
-    titleAiResult.classList.remove(
-      "is-visible"
-    );
-    titleAiResultBody.textContent =
-      "";
+    titleAiLoading.classList.add("is-visible");
+    titleAiLoading.classList.remove("is-error", "is-result");
+    titleAiLoading.setAttribute("aria-hidden", "false");
+    titleAiResult.classList.remove("is-visible");
+    titleAiResultBody.textContent = "";
     return;
   }
 
   // Khi đã đạt 100%: ẩn loading trước, rồi mới hiện đáp án.
-  titleAiLoading.classList.remove(
-    "is-visible",
-    "is-error",
-    "is-result"
-  );
-  titleAiLoading.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-  titleAiResult.classList.toggle(
-    "is-error",
-    isError
-  );
-  titleAiResultBody.textContent =
-    String(text || "").trim();
-  titleAiResult.classList.add(
-    "is-visible"
-  );
+  titleAiLoading.classList.remove("is-visible", "is-error", "is-result");
+  titleAiLoading.setAttribute("aria-hidden", "true");
+  titleAiResult.classList.toggle("is-error", isError);
+  titleAiResultBody.textContent = String(text || "").trim();
+  titleAiResult.classList.add("is-visible");
 }
 function hideTitleAiSuggestion() {
-  if (
-    !titleAiLoading ||
-    !titleAiResult ||
-    !titleAiResultBody
-  ) {
+  if (!titleAiLoading || !titleAiResult || !titleAiResultBody) {
     return;
   }
-  titleAiLoading.classList.remove(
-    "is-visible",
-    "is-error"
-  );
-  titleAiLoading.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-  titleAiResult.classList.remove(
-    "is-visible"
-  );
-  titleAiResultBody.textContent =
-    "";
+  titleAiLoading.classList.remove("is-visible", "is-error");
+  titleAiLoading.setAttribute("aria-hidden", "true");
+  titleAiResult.classList.remove("is-visible");
+  titleAiResultBody.textContent = "";
 }
-function formatTitleAiAnswer(
-  answer
-) {
-  const cleanAnswer =
-    String(
-      answer || ""
-    ).trim();
+function formatTitleAiAnswer(answer) {
+  const cleanAnswer = String(answer || "").trim();
   if (!cleanAnswer) {
     return "AI chưa tìm được hướng dẫn phù hợp. Bạn có thể bổ sung mô tả chi tiết ở ô bên dưới.";
   }
@@ -1170,49 +637,32 @@ function formatTitleAiAnswer(
 /* =========================================================
    AI ANALYZE TITLE
 ========================================================= */
-async function analyzeTitleWithAI(
-  title,
-  requestId
-) {
-  const selectedRadio =
-    document.querySelector(
-      'input[name="ticketMainType"]:checked'
-    );
-  const category =
-    selectedRadio
-      ? getCategory(selectedRadio.value)
-      : null;
-  const issue =
-    selectedRadio
-      ? getIssue(
-          selectedRadio.value,
-          issueSelect?.value || ""
-        )
-      : null;
+async function analyzeTitleWithAI(title, requestId) {
+  const selectedRadio = document.querySelector('input[name="ticketMainType"]:checked');
+  const category = selectedRadio ? getCategory(selectedRadio.value) : null;
+  const issue = selectedRadio
+    ? getIssue(selectedRadio.value, issueSelect?.value || "")
+    : null;
 
-  const response = await fetch(
-    TITLE_AI_WEB_APP_URL,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/x-www-form-urlencoded;charset=UTF-8"
-      },
-      body: new URLSearchParams({
-        question: title,
-        history: JSON.stringify([]),
-        faqContext: JSON.stringify([
-          {
-            category: category?.label || "",
-            question: issue?.label || "",
-            answer:
-              "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn."
-          }
-        ]),
-        mode: "title-suggestion"
-      })
-    }
-  );
+  const response = await fetch(TITLE_AI_WEB_APP_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body: new URLSearchParams({
+      question: title,
+      history: JSON.stringify([]),
+      faqContext: JSON.stringify([
+        {
+          category: category?.label || "",
+          question: issue?.label || "",
+          answer:
+            "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn."
+        }
+      ]),
+      mode: "title-suggestion"
+    })
+  });
 
   if (requestId !== titleAiRequestId) {
     return null;
@@ -1225,9 +675,7 @@ async function analyzeTitleWithAI(
   const data = await response.json();
 
   if (!data.success) {
-    throw new Error(
-      data.error || "AI không thể phân tích tiêu đề."
-    );
+    throw new Error(data.error || "AI không thể phân tích tiêu đề.");
   }
 
   // Chỉ trả dữ liệu về cho requestTitleAiSuggestion.
@@ -1252,457 +700,232 @@ function requestTitleAiSuggestion() {
   }
 
   startAITitleLoading();
-  showTitleAiSuggestion(
-    "AI đang đọc tiêu đề và tìm hướng xử lý phù hợp…",
-    {
-      loading: true
-    }
-  );
+  showTitleAiSuggestion("AI đang đọc tiêu đề và tìm hướng xử lý phù hợp…", {
+    loading: true
+  });
 
-  titleAiDebounceTimer = window.setTimeout(
-    async () => {
-      try {
-        const aiAnswer = await analyzeTitleWithAI(
-          title,
-          currentRequestId
-        );
+  titleAiDebounceTimer = window.setTimeout(async () => {
+    try {
+      const aiAnswer = await analyzeTitleWithAI(title, currentRequestId);
 
-        if (currentRequestId !== titleAiRequestId) {
-          return;
-        }
-
-        // Luôn đưa thanh loading lên 100% trước.
-        finishAITitleLoading();
-
-        // Chỉ hiển thị đáp án sau khi đã đạt 100%.
-        if (aiAnswer) {
-          showTitleAiSuggestion(aiAnswer);
-        }
-      } catch (error) {
-        console.error(
-          "TITLE AI ERROR:",
-          error
-        );
-
-        if (currentRequestId !== titleAiRequestId) {
-          return;
-        }
-
-        // Thông báo lỗi cũng chỉ hiện sau khi progress hoàn tất.
-        finishAITitleLoading();
-        showTitleAiSuggestion(
-          "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể nhập mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
-          {
-            error: true
-          }
-        );
+      if (currentRequestId !== titleAiRequestId) {
+        return;
       }
-    },
-    700
-  );
+
+      // Luôn đưa thanh loading lên 100% trước.
+      finishAITitleLoading();
+
+      // Chỉ hiển thị đáp án sau khi đã đạt 100%.
+      if (aiAnswer) {
+        showTitleAiSuggestion(aiAnswer);
+      }
+    } catch (error) {
+      console.error("TITLE AI ERROR:", error);
+
+      if (currentRequestId !== titleAiRequestId) {
+        return;
+      }
+
+      // Thông báo lỗi cũng chỉ hiện sau khi progress hoàn tất.
+      finishAITitleLoading();
+      showTitleAiSuggestion(
+        "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể nhập mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
+        {
+          error: true
+        }
+      );
+    }
+  }, 700);
 }
 /* =========================================================
    TITLE INPUT
 ========================================================= */
 if (fTitle) {
-  fTitle.addEventListener(
-    "input",
-    () => {
-      updateStub();
-      requestTitleAiSuggestion();
-    }
-  );
-  fTitle.addEventListener(
-    "blur",
-    () => {
-      window.setTimeout(
-        () => {
-          if (
-            document.activeElement !==
-            fTitle
-          ) {
-            hideTitleAiSuggestion();
-          }
-        },
-        120
-      );
-    }
-  );
+  fTitle.addEventListener("input", () => {
+    updateStub();
+    requestTitleAiSuggestion();
+  });
+  fTitle.addEventListener("blur", () => {
+    window.setTimeout(() => {
+      if (document.activeElement !== fTitle) {
+        hideTitleAiSuggestion();
+      }
+    }, 120);
+  });
 }
 if (closeTitleAiSuggestion) {
-  closeTitleAiSuggestion.addEventListener(
-    "click",
-    () => {
-      titleAiManuallyClosed =
-        true;
-      titleAiRequestId +=
-        1;
-      window.clearTimeout(
-        titleAiDebounceTimer
-      );
-      hideTitleAiSuggestion();
-      hideAITitleLoading();
-    }
-  );
+  closeTitleAiSuggestion.addEventListener("click", () => {
+    titleAiManuallyClosed = true;
+    titleAiRequestId += 1;
+    window.clearTimeout(titleAiDebounceTimer);
+    hideTitleAiSuggestion();
+    hideAITitleLoading();
+  });
 }
 if (chipGrid) {
-  chipGrid.addEventListener(
-    "click",
-    () => {
-      hideTitleAiSuggestion();
-    }
-  );
+  chipGrid.addEventListener("click", () => {
+    hideTitleAiSuggestion();
+  });
 }
 if (issueSelect) {
-  issueSelect.addEventListener(
-    "change",
-    () => {
-      hideTitleAiSuggestion();
-    }
-  );
+  issueSelect.addEventListener("change", () => {
+    hideTitleAiSuggestion();
+  });
 }
 /* =========================================================
    FIREBASE AUTH
 ========================================================= */
-const authClient =
-  getAuth();
-if (
-  authClient &&
-  typeof authClient.onAuthStateChanged ===
-    "function"
-) {
-  authClient.onAuthStateChanged(
-    async user => {
-      const nameInput =
-        $("fName");
-      const emailInput =
-        $("fEmail");
-      const campusInput =
-        $("fCampus");
-      if (!user) {
-        loggedInUser =
-          null;
-        if (nameInput) {
-          nameInput.value =
-            "";
-          nameInput.readOnly =
-            false;
-        }
-        if (emailInput) {
-          emailInput.value =
-            "";
-          emailInput.readOnly =
-            false;
-        }
-        if (campusInput) {
-          campusInput.value =
-            "";
-          campusInput.readOnly =
-            false;
-        }
-        updateStub();
-        return;
+const authClient = getAuth();
+if (authClient && typeof authClient.onAuthStateChanged === "function") {
+  authClient.onAuthStateChanged(async user => {
+    const nameInput = $("fName");
+    const emailInput = $("fEmail");
+    const campusInput = $("fCampus");
+    if (!user) {
+      loggedInUser = null;
+      if (nameInput) {
+        nameInput.value = "";
+        nameInput.readOnly = false;
       }
-      const database =
-        getDatabase();
-      if (!database) {
-        console.warn(
-          "Firestore chưa sẵn sàng."
-        );
-        return;
+      if (emailInput) {
+        emailInput.value = "";
+        emailInput.readOnly = false;
       }
-      try {
-        const profileSnapshot =
-          await database
-            .collection(
-              USER_COLLECTION
-            )
-            .doc(
-              user.uid
-            )
-            .get();
-        const data =
-          profileSnapshot.exists
-            ? profileSnapshot.data()
-            : {};
-        const name =
-          data.name ||
-          user.displayName ||
-          "Học viên";
-        const email =
-          data.email ||
-          user.email ||
-          "";
-        const phone =
-          data.phone ||
-          "";
-        const campus =
-          data.campus ||
-          "";
-        const campusId =
-          data.campusId ||
-          data["code-campus"] ||
-          campus ||
-          "";
-        const role =
-          data.role ||
-          data.accountType ||
-          "student";
-        loggedInUser = {
-          uid:
-            user.uid,
-          name,
-          email,
-          phone,
-          campus,
-          campusId,
-          role
-        };
-        if (nameInput) {
-          nameInput.value =
-            name;
-          nameInput.readOnly =
-            true;
-        }
-        if (emailInput) {
-          emailInput.value =
-            email;
-          emailInput.readOnly =
-            true;
-        }
-        if (campusInput) {
-          campusInput.value =
-            campus;
-          campusInput.readOnly =
-            Boolean(
-              campus
-            );
-        }
-        updateStub();
-      } catch (error) {
-        console.error(
-          "Không thể lấy thông tin tài khoản hiện tại:",
-          error
-        );
+      if (campusInput) {
+        campusInput.value = "";
+        campusInput.readOnly = false;
       }
+      updateStub();
+      return;
     }
-  );
+    const database = getDatabase();
+    if (!database) {
+      console.warn("Firestore chưa sẵn sàng.");
+      return;
+    }
+    try {
+      const profileSnapshot = await database
+        .collection(USER_COLLECTION)
+        .doc(user.uid)
+        .get();
+      const data = profileSnapshot.exists ? profileSnapshot.data() : {};
+      const name = data.name || user.displayName || "Học viên";
+      const email = data.email || user.email || "";
+      const phone = data.phone || "";
+      const campus = data.campus || "";
+      const campusId = data.campusId || data["code-campus"] || campus || "";
+      const role = data.role || data.accountType || "student";
+      loggedInUser = {
+        uid: user.uid,
+        name,
+        email,
+        phone,
+        campus,
+        campusId,
+        role
+      };
+      if (nameInput) {
+        nameInput.value = name;
+        nameInput.readOnly = true;
+      }
+      if (emailInput) {
+        emailInput.value = email;
+        emailInput.readOnly = true;
+      }
+      if (campusInput) {
+        campusInput.value = campus;
+        campusInput.readOnly = Boolean(campus);
+      }
+      updateStub();
+    } catch (error) {
+      console.error("Không thể lấy thông tin tài khoản hiện tại:", error);
+    }
+  });
 }
 /* =========================================================
    DATE INIT
 ========================================================= */
 if ($("todayStr")) {
-  $("todayStr").textContent =
-    todayLabel();
+  $("todayStr").textContent = todayLabel();
 }
 if (fDateEl) {
-  fDateEl.value =
-    isoToday();
+  fDateEl.value = isoToday();
 }
 /* =========================================================
    COMPRESS IMAGE
 ========================================================= */
-function compressImageToDataUrl(
-  file
-) {
-  return new Promise(
-    (resolve, reject) => {
-      if (!file) {
-        resolve("");
-        return;
-      }
-      if (
-        !file.type?.startsWith(
-          "image/"
-        )
-      ) {
-        reject(
-          new Error(
-            "Tệp đính kèm phải là hình ảnh."
-          )
-        );
-        return;
-      }
-      const reader =
-        new FileReader();
-      reader.onerror =
-        () => {
-          reject(
-            new Error(
-              "Không thể đọc tệp hình ảnh."
-            )
-          );
-        };
-      reader.onload =
-        () => {
-          const image =
-            new Image();
-          image.onerror =
-            () => {
-              reject(
-                new Error(
-                  "Ảnh không hợp lệ hoặc không thể giải mã."
-                )
-              );
-            };
-          image.onload =
-            () => {
-              const maxDataUrlLength =
-                820000;
-              const canvas =
-                document.createElement(
-                  "canvas"
-                );
-              let maxSide =
-                1280;
-              let quality =
-                0.72;
-              let dataUrl =
-                "";
-              for (
-                let attempt = 0;
-                attempt < 6;
-                attempt++
-              ) {
-                const scale =
-                  Math.min(
-                    1,
-                    maxSide /
-                      Math.max(
-                        image.naturalWidth,
-                        image.naturalHeight
-                      )
-                  );
-                canvas.width =
-                  Math.max(
-                    1,
-                    Math.round(
-                      image.naturalWidth *
-                        scale
-                    )
-                  );
-                canvas.height =
-                  Math.max(
-                    1,
-                    Math.round(
-                      image.naturalHeight *
-                        scale
-                    )
-                  );
-                const context =
-                  canvas.getContext(
-                    "2d",
-                    {
-                      alpha: false
-                    }
-                  );
-                if (!context) {
-                  reject(
-                    new Error(
-                      "Trình duyệt không hỗ trợ xử lý hình ảnh."
-                    )
-                  );
-                  return;
-                }
-                context.fillStyle =
-                  "#ffffff";
-                context.fillRect(
-                  0,
-                  0,
-                  canvas.width,
-                  canvas.height
-                );
-                context.drawImage(
-                  image,
-                  0,
-                  0,
-                  canvas.width,
-                  canvas.height
-                );
-                dataUrl =
-                  canvas.toDataURL(
-                    "image/jpeg",
-                    quality
-                  );
-                if (
-                  dataUrl.length <=
-                  maxDataUrlLength
-                ) {
-                  break;
-                }
-                maxSide =
-                  Math.round(
-                    maxSide *
-                      0.82
-                  );
-                quality =
-                  Math.max(
-                    0.45,
-                    quality -
-                      0.06
-                  );
-              }
-              if (
-                !dataUrl ||
-                dataUrl.length >
-                  maxDataUrlLength
-              ) {
-                reject(
-                  new Error(
-                    "Ảnh vẫn quá lớn sau khi nén. Hãy chọn ảnh nhỏ hơn."
-                  )
-                );
-                return;
-              }
-              resolve(
-                dataUrl
-              );
-            };
-          image.src =
-            String(
-              reader.result ||
-              ""
-            );
-        };
-      reader.readAsDataURL(
-        file
-      );
+function compressImageToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve("");
+      return;
     }
-  );
+    if (!file.type?.startsWith("image/")) {
+      reject(new Error("Tệp đính kèm phải là hình ảnh."));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => {
+      reject(new Error("Không thể đọc tệp hình ảnh."));
+    };
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => {
+        reject(new Error("Ảnh không hợp lệ hoặc không thể giải mã."));
+      };
+      image.onload = () => {
+        const maxDataUrlLength = 820000;
+        const canvas = document.createElement("canvas");
+        let maxSide = 1280;
+        let quality = 0.72;
+        let dataUrl = "";
+        for (let attempt = 0; attempt < 6; attempt++) {
+          const scale = Math.min(
+            1,
+            maxSide / Math.max(image.naturalWidth, image.naturalHeight)
+          );
+          canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+          const context = canvas.getContext("2d", { alpha: false });
+          if (!context) {
+            reject(new Error("Trình duyệt không hỗ trợ xử lý hình ảnh."));
+            return;
+          }
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+          if (dataUrl.length <= maxDataUrlLength) {
+            break;
+          }
+          maxSide = Math.round(maxSide * 0.82);
+          quality = Math.max(0.45, quality - 0.06);
+        }
+        if (!dataUrl || dataUrl.length > maxDataUrlLength) {
+          reject(new Error("Ảnh vẫn quá lớn sau khi nén. Hãy chọn ảnh nhỏ hơn."));
+          return;
+        }
+        resolve(dataUrl);
+      };
+      image.src = String(reader.result || "");
+    };
+    reader.readAsDataURL(file);
+  });
 }
 /* =========================================================
    PRIORITY
 ========================================================= */
-function getAutomaticPriority(
-  data
-) {
-  if (
-    typeof window.automaticTicketPriority ===
-    "function"
-  ) {
+function getAutomaticPriority(data) {
+  if (typeof window.automaticTicketPriority === "function") {
     try {
-      return window.automaticTicketPriority(
-        data
-      );
+      return window.automaticTicketPriority(data);
     } catch (error) {
-      console.warn(
-        "automaticTicketPriority error:",
-        error
-      );
+      console.warn("automaticTicketPriority error:", error);
     }
   }
-  const title =
-    String(
-      data.title ||
-      ""
-    ).toLowerCase();
-  const description =
-    String(
-      data.description ||
-      ""
-    ).toLowerCase();
-  const text =
-    `${title} ${description}`;
+  const title = String(data.title || "").toLowerCase();
+  const description = String(data.description || "").toLowerCase();
+  const text = `${title} ${description}`;
   const urgentWords = [
     "khẩn cấp",
     "khẩn",
@@ -1721,127 +944,57 @@ function getAutomaticPriority(
     "không tải được",
     "không thanh toán được"
   ];
-  if (
-    urgentWords.some(
-      word =>
-        text.includes(word)
-    )
-  ) {
+  if (urgentWords.some(word => text.includes(word))) {
     return {
-      level:
-        "urgent",
-      label:
-        "Khẩn cấp",
-      reason:
-        "Nội dung có dấu hiệu ảnh hưởng nghiêm trọng hoặc cần xử lý ngay.",
-      source:
-        "keyword"
+      level: "urgent",
+      label: "Khẩn cấp",
+      reason: "Nội dung có dấu hiệu ảnh hưởng nghiêm trọng hoặc cần xử lý ngay.",
+      source: "keyword"
     };
   }
-  if (
-    highWords.some(
-      word =>
-        text.includes(word)
-    )
-  ) {
+  if (highWords.some(word => text.includes(word))) {
     return {
-      level:
-        "high",
-      label:
-        "Cao",
-      reason:
-        "Nội dung có dấu hiệu lỗi hoặc gián đoạn chức năng.",
-      source:
-        "keyword"
+      level: "high",
+      label: "Cao",
+      reason: "Nội dung có dấu hiệu lỗi hoặc gián đoạn chức năng.",
+      source: "keyword"
     };
   }
   return {
-    level:
-      "medium",
-    label:
-      "Trung bình",
-    reason:
-      "Mức độ mặc định khi chưa phát hiện yếu tố khẩn cấp.",
-    source:
-      "fallback"
+    level: "medium",
+    label: "Trung bình",
+    reason: "Mức độ mặc định khi chưa phát hiện yếu tố khẩn cấp.",
+    source: "fallback"
   };
 }
 /* =========================================================
    SUBMIT TICKET
 ========================================================= */
 async function submitTicket() {
-  const database =
-    getDatabase();
-  const errorEl =
-    $("errorText");
+  const database = getDatabase();
+  const errorEl = $("errorText");
   /* -------------------------------------------------------
      FORM DATA
   ------------------------------------------------------- */
-  const name =
-    getValue(
-      "fName"
-    );
-  const email =
-    getValue(
-      "fEmail"
-    );
-  const phone =
-    loggedInUser?.phone ||
-    getValue(
-      "fPhone"
-    ) ||
-    "";
-  const campus =
-    loggedInUser?.campus ||
-    getValue(
-      "fCampus"
-    ) ||
-    "";
-  const campusId =
-    loggedInUser?.campusId ||
-    getValue(
-      "fCampusId"
-    ) ||
-    campus ||
-    "";
-  const isStudent =
-    chkCourse?.checked ||
-    false;
-  const course =
-    isStudent
-      ? getValue(
-          "fCourse"
-        )
-      : "Không áp dụng";
-  const title =
-    getValue(
-      "fTitle"
-    );
-  const description =
-    getValue(
-      "fDesc"
-    );
-  const selectedMainType =
-    document.querySelector(
-      'input[name="ticketMainType"]:checked'
-    );
-  const selectedIssue =
-    issueSelect?.value ||
-    "";
-  const requiresIssue =
-    selectedMainType &&
-    selectedMainType.value !==
-      "other";
+  const name = getValue("fName");
+  const email = getValue("fEmail");
+  const phone = loggedInUser?.phone || getValue("fPhone") || "";
+  const campus = loggedInUser?.campus || getValue("fCampus") || "";
+  const campusId = loggedInUser?.campusId || getValue("fCampusId") || campus || "";
+  const isStudent = chkCourse?.checked || false;
+  const course = isStudent ? getValue("fCourse") : "Không áp dụng";
+  const title = getValue("fTitle");
+  const description = getValue("fDesc");
+  const selectedMainType = document.querySelector('input[name="ticketMainType"]:checked');
+  const selectedIssue = issueSelect?.value || "";
+  const requiresIssue = selectedMainType && selectedMainType.value !== "other";
   /* -------------------------------------------------------
      DATABASE CHECK
   ------------------------------------------------------- */
   if (!database) {
     if (errorEl) {
-      errorEl.textContent =
-        "Chưa kết nối được với hệ thống. Vui lòng tải lại trang và thử lại.";
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = "Chưa kết nối được với hệ thống. Vui lòng tải lại trang và thử lại.";
+      errorEl.classList.add("show");
     }
     return;
   }
@@ -1855,178 +1008,101 @@ async function submitTicket() {
     !description ||
     (isStudent && !course) ||
     !selectedMainType ||
-    (requiresIssue &&
-      !selectedIssue)
+    (requiresIssue && !selectedIssue)
   ) {
     if (errorEl) {
-      errorEl.textContent =
-        "Vui lòng điền đầy đủ các trường bắt buộc (*) và chọn loại yêu cầu.";
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = "Vui lòng điền đầy đủ các trường bắt buộc (*) và chọn loại yêu cầu.";
+      errorEl.classList.add("show");
     }
     return;
   }
   /* -------------------------------------------------------
      EMAIL VALIDATION
   ------------------------------------------------------- */
-  const emailRegex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (
-    !emailRegex.test(
-      email
-    )
-  ) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
     if (errorEl) {
-      errorEl.textContent =
-        "Email không hợp lệ.";
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = "Email không hợp lệ.";
+      errorEl.classList.add("show");
     }
     return;
   }
   if (errorEl) {
-    errorEl.classList.remove(
-      "show"
-    );
+    errorEl.classList.remove("show");
   }
   /* -------------------------------------------------------
      CATEGORY
   ------------------------------------------------------- */
-  const category =
-    getCategory(
-      selectedMainType.value
-    );
+  const category = getCategory(selectedMainType.value);
   /* -------------------------------------------------------
      ISSUE
   ------------------------------------------------------- */
-  const issue =
-    getIssue(
-      selectedMainType.value,
-      selectedIssue
-    );
+  const issue = getIssue(selectedMainType.value, selectedIssue);
   const ticketIssueLabel =
-    selectedMainType.value ===
-      "other"
+    selectedMainType.value === "other"
       ? "Khác"
-      : issue?.label ||
-        issueSelect
-          ?.selectedOptions?.[0]
-          ?.textContent
-          ?.trim() ||
-        "Khác";
+      : issue?.label || issueSelect?.selectedOptions?.[0]?.textContent?.trim() || "Khác";
   /* -------------------------------------------------------
      DEPARTMENT
   ------------------------------------------------------- */
-  const departmentCode =
-    resolveTicketDepartment(
-      selectedMainType.value,
-      selectedIssue
-    );
+  const departmentCode = resolveTicketDepartment(selectedMainType.value, selectedIssue);
   /* -------------------------------------------------------
      PRIORITY
   ------------------------------------------------------- */
-  const automaticPriority =
-    getAutomaticPriority({
-      categoryId:
-        selectedMainType.value,
-      issueId:
-        selectedIssue,
-      title,
-      description
-    });
+  const automaticPriority = getAutomaticPriority({
+    categoryId: selectedMainType.value,
+    issueId: selectedIssue,
+    title,
+    description
+  });
   /* -------------------------------------------------------
      TICKET NUMBER
   ------------------------------------------------------- */
-  if (
-    ticketNum ===
-    "HV-000000"
-  ) {
+  if (ticketNum === "HV-000000") {
     const ticketValue =
-      selectedMainType.value ===
-        "other"
+      selectedMainType.value === "other"
         ? "other"
         : `${selectedMainType.value}-${selectedIssue}`;
-    ticketNum =
-      genTicketNum(
-        ticketValue
-      );
+    ticketNum = genTicketNum(ticketValue);
     updateStub();
   }
   /* -------------------------------------------------------
      DISABLE BUTTON
   ------------------------------------------------------- */
   if (submitBtn) {
-    submitBtn.disabled =
-      true;
-    submitBtn.textContent =
-      "Đang gửi...";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Đang gửi...";
   }
   try {
     /* -----------------------------------------------------
        AUTH
     ----------------------------------------------------- */
-    const auth =
-      getAuth();
-    const currentUser =
-      auth?.currentUser ||
-      null;
+    const auth = getAuth();
+    const currentUser = auth?.currentUser || null;
     /* -----------------------------------------------------
        USER PROFILE
     ----------------------------------------------------- */
-    let userProfile =
-      {};
-    if (
-      currentUser?.uid
-    ) {
+    let userProfile = {};
+    if (currentUser?.uid) {
       try {
-        const profileSnapshot =
-          await database
-            .collection(
-              USER_COLLECTION
-            )
-            .doc(
-              currentUser.uid
-            )
-            .get();
-        if (
-          profileSnapshot.exists
-        ) {
-          userProfile =
-            profileSnapshot.data() ||
-            {};
+        const profileSnapshot = await database
+          .collection(USER_COLLECTION)
+          .doc(currentUser.uid)
+          .get();
+        if (profileSnapshot.exists) {
+          userProfile = profileSnapshot.data() || {};
         }
-      } catch (
-        profileError
-      ) {
-        console.warn(
-          "Không đọc được hồ sơ học viên:",
-          profileError
-        );
+      } catch (profileError) {
+        console.warn("Không đọc được hồ sơ học viên:", profileError);
       }
     }
     /* -----------------------------------------------------
        FINAL USER DATA
     ----------------------------------------------------- */
-    const finalName =
-      userProfile.name ||
-      loggedInUser?.name ||
-      name;
-    const finalEmail =
-      userProfile.email ||
-      loggedInUser?.email ||
-      email;
-    const finalPhone =
-      userProfile.phone ||
-      loggedInUser?.phone ||
-      phone ||
-      "";
-    const finalCampus =
-      userProfile.campus ||
-      loggedInUser?.campus ||
-      campus ||
-      "";
+    const finalName = userProfile.name || loggedInUser?.name || name;
+    const finalEmail = userProfile.email || loggedInUser?.email || email;
+    const finalPhone = userProfile.phone || loggedInUser?.phone || phone || "";
+    const finalCampus = userProfile.campus || loggedInUser?.campus || campus || "";
     const finalCampusId =
       userProfile.campusId ||
       userProfile["code-campus"] ||
@@ -2034,357 +1110,189 @@ async function submitTicket() {
       campusId ||
       finalCampus ||
       "";
-    const finalRole =
-      userProfile.role ||
-      userProfile.accountType ||
-      loggedInUser?.role ||
-      "student";
+    const finalRole = userProfile.role || userProfile.accountType || loggedInUser?.role || "student";
     /* -----------------------------------------------------
        ATTACHMENT
     ----------------------------------------------------- */
-    let attachmentDataUrl =
-      "";
+    let attachmentDataUrl = "";
     if (selectedFile) {
-      attachmentDataUrl =
-        await compressImageToDataUrl(
-          selectedFile
-        );
+      attachmentDataUrl = await compressImageToDataUrl(selectedFile);
     }
     /* -----------------------------------------------------
        FIREBASE
     ----------------------------------------------------- */
-    const firebaseClient =
-      getFirebase();
-    if (
-      !firebaseClient?.firestore
-    ) {
-      throw new Error(
-        "Firebase Firestore chưa được khởi tạo."
-      );
+    const firebaseClient = getFirebase();
+    if (!firebaseClient?.firestore) {
+      throw new Error("Firebase Firestore chưa được khởi tạo.");
     }
     /* -----------------------------------------------------
        SERVER TIMESTAMP
     ----------------------------------------------------- */
-    const serverTimestamp =
-      firebaseClient.firestore
-        .FieldValue
-        .serverTimestamp();
+    const serverTimestamp = firebaseClient.firestore.FieldValue.serverTimestamp();
     /* -----------------------------------------------------
        TICKET DATA
     ----------------------------------------------------- */
     const ticketData = {
       ticketNum,
-      ticketSchemaVersion:
-        3,
+      ticketSchemaVersion: 3,
       /* Người tạo */
-      studentId:
-        currentUser?.uid ||
-        loggedInUser?.uid ||
-        "",
-      uid:
-        currentUser?.uid ||
-        loggedInUser?.uid ||
-        "",
-      name:
-        finalName,
-      email:
-        finalEmail,
-      phone:
-        finalPhone,
-      createdByRole:
-        finalRole,
+      studentId: currentUser?.uid || loggedInUser?.uid || "",
+      uid: currentUser?.uid || loggedInUser?.uid || "",
+      name: finalName,
+      email: finalEmail,
+      phone: finalPhone,
+      createdByRole: finalRole,
       /* Học viên */
       isStudent,
       course,
       /* Cơ sở */
-      campus:
-        finalCampus,
-      campusId:
-        finalCampusId,
-      "code-campus":
-        finalCampusId,
+      campus: finalCampus,
+      campusId: finalCampusId,
+      "code-campus": finalCampusId,
       /* Ngày */
-      date:
-        fDateEl?.value ||
-        isoToday(),
+      date: fDateEl?.value || isoToday(),
       /* Phân loại */
-      ticketType:
-        selectedIssue ||
-        selectedMainType.value,
-      ticketCategoryId:
-        selectedMainType.value,
-      ticketCategory:
-        category?.label ||
-        "Khác",
-      ticketIssueId:
-        selectedIssue ||
-        "",
-      ticketIssue:
-        ticketIssueLabel,
+      ticketType: selectedIssue || selectedMainType.value,
+      ticketCategoryId: selectedMainType.value,
+      ticketCategory: category?.label || "Khác",
+      ticketIssueId: selectedIssue || "",
+      ticketIssue: ticketIssueLabel,
       /* Phòng ban */
-      department:
-        departmentCode,
-      departmentCode:
-        departmentCode,
+      department: departmentCode,
+      departmentCode: departmentCode,
       /* Priority */
-      priority:
-        automaticPriority.level,
-      priorityLabel:
-        automaticPriority.label,
-      priorityReason:
-        automaticPriority.reason,
-      prioritySource:
-        automaticPriority.source,
+      priority: automaticPriority.level,
+      priorityLabel: automaticPriority.label,
+      priorityReason: automaticPriority.reason,
+      prioritySource: automaticPriority.source,
       /* Nội dung */
       title,
       description,
       /* Attachment */
-      attachmentName:
-        selectedFile?.name ||
-        "",
-      attachmentType:
-        selectedFile?.type ||
-        "",
-      attachmentSize:
-        selectedFile?.size ||
-        0,
-      attachmentCompressed:
-        Boolean(
-          attachmentDataUrl
-        ),
+      attachmentName: selectedFile?.name || "",
+      attachmentType: selectedFile?.type || "",
+      attachmentSize: selectedFile?.size || 0,
+      attachmentCompressed: Boolean(attachmentDataUrl),
       attachmentDataUrl,
       /* Status */
-      status:
-        "open",
-      assignedDepartment:
-        departmentCode,
-      assignedTo:
-        "",
+      status: "open",
+      assignedDepartment: departmentCode,
+      assignedTo: "",
       /* Time */
-      createdAt:
-        serverTimestamp,
-      updatedAt:
-        serverTimestamp
+      createdAt: serverTimestamp,
+      updatedAt: serverTimestamp
     };
-    console.log(
-      "========== TICKET DATA =========="
-    );
-    console.log(
-      ticketData
-    );
-    console.log(
-      "Department:",
-      departmentCode
-    );
-    console.log(
-      "Campus:",
-      finalCampus
-    );
-    console.log(
-      "Campus ID:",
-      finalCampusId
-    );
+    console.log("========== TICKET DATA ==========");
+    console.log(ticketData);
+    console.log("Department:", departmentCode);
+    console.log("Campus:", finalCampus);
+    console.log("Campus ID:", finalCampusId);
     /* -----------------------------------------------------
        SAVE TICKET
     ----------------------------------------------------- */
-    await database
-      .collection(
-        TICKET_COLLECTION
-      )
-      .doc(
-        ticketNum
-      )
-      .set(
-        ticketData
-      );
+    await database.collection(TICKET_COLLECTION).doc(ticketNum).set(ticketData);
     /* -----------------------------------------------------
        FIRST MESSAGE
     ----------------------------------------------------- */
     await database
-      .collection(
-        TICKET_COLLECTION
-      )
-      .doc(
-        ticketNum
-      )
-      .collection(
-        "messages"
-      )
+      .collection(TICKET_COLLECTION)
+      .doc(ticketNum)
+      .collection("messages")
       .add({
-        sender:
-          "student",
-        senderType:
-          "student",
-        senderId:
-          currentUser?.uid ||
-          loggedInUser?.uid ||
-          "",
-        senderName:
-          finalName,
-        message:
-          description,
-        text:
-          description,
-        imageDataUrl:
-          attachmentDataUrl,
-        imageName:
-          selectedFile?.name ||
-          "",
-        imageType:
-          selectedFile?.type ||
-          "",
-        imageSize:
-          selectedFile?.size ||
-          0,
-        createdAt:
-          serverTimestamp
+        sender: "student",
+        senderType: "student",
+        senderId: currentUser?.uid || loggedInUser?.uid || "",
+        senderName: finalName,
+        message: description,
+        text: description,
+        imageDataUrl: attachmentDataUrl,
+        imageName: selectedFile?.name || "",
+        imageType: selectedFile?.type || "",
+        imageSize: selectedFile?.size || 0,
+        createdAt: serverTimestamp
       });
     /* -----------------------------------------------------
        EMAILJS
     ----------------------------------------------------- */
     const templateParams = {
-      ticket_num:
-        ticketNum,
-      name:
-        finalName,
-      email:
-        finalEmail,
-      phone:
-        finalPhone ||
-        "Không cung cấp",
-      campus:
-        finalCampus ||
-        "Không cung cấp",
+      ticket_num: ticketNum,
+      name: finalName,
+      email: finalEmail,
+      phone: finalPhone || "Không cung cấp",
+      campus: finalCampus || "Không cung cấp",
       course,
-      date:
-        formatDateVN(
-          ticketData.date
-        ),
-      department:
-        departmentCode,
-      priority:
-        automaticPriority.label,
+      date: formatDateVN(ticketData.date),
+      department: departmentCode,
+      priority: automaticPriority.label,
       ticket_type:
-        selectedMainType.value ===
-          "other"
+        selectedMainType.value === "other"
           ? ticketData.ticketCategory
           : `${ticketData.ticketCategory} · ${ticketIssueLabel}`,
       title,
-      message:
-        description
+      message: description
     };
     if (window.emailjs) {
       try {
-        await window.emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          templateParams
-        );
-        console.log(
-          "EmailJS gửi thành công."
-        );
-      } catch (
-        emailError
-      ) {
-        console.warn(
-          "Ticket đã lưu nhưng EmailJS không gửi được:",
-          emailError
-        );
+        await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        console.log("EmailJS gửi thành công.");
+      } catch (emailError) {
+        console.warn("Ticket đã lưu nhưng EmailJS không gửi được:", emailError);
       }
     }
     /* -----------------------------------------------------
        SUCCESS
     ----------------------------------------------------- */
-    const successText =
-      $("successText");
+    const successText = $("successText");
     if (successText) {
       successText.innerHTML = `
         Phiếu
         <strong>
-          ${escapeHTML(
-            ticketNum
-          )}
+          ${escapeHTML(ticketNum)}
         </strong>
         —
         "<em>
-          ${escapeHTML(
-            title
-          )}
+          ${escapeHTML(title)}
         </em>"
         đã được gửi thành công.
         Chúng tôi sẽ phản hồi lại
         <strong>
-          ${escapeHTML(
-            finalEmail
-          )}
+          ${escapeHTML(finalEmail)}
         </strong>
         trong thời gian sớm nhất.
       `;
     }
     if (formView) {
-      formView.classList.add(
-        "hide"
-      );
+      formView.classList.add("hide");
     }
     if (successView) {
-      successView.classList.add(
-        "show"
-      );
+      successView.classList.add("show");
     }
     if (layoutContainer) {
-      layoutContainer.classList.add(
-        "has-submitted"
-      );
+      layoutContainer.classList.add("has-submitted");
     }
   } catch (error) {
-    console.error(
-      "Ticket error:",
-      error
-    );
+    console.error("Ticket error:", error);
     if (errorEl) {
-      let message =
-        "Không thể gửi phiếu. Vui lòng kiểm tra kết nối và thử lại.";
-      if (
-        error?.code ===
-        "permission-denied"
-      ) {
-        message =
-          "Bạn không có quyền tạo ticket. Vui lòng đăng nhập lại.";
+      let message = "Không thể gửi phiếu. Vui lòng kiểm tra kết nối và thử lại.";
+      if (error?.code === "permission-denied") {
+        message = "Bạn không có quyền tạo ticket. Vui lòng đăng nhập lại.";
       }
-      if (
-        error?.code ===
-        "failed-precondition"
-      ) {
-        message =
-          "Firebase chưa được cấu hình đúng. Vui lòng kiểm tra Firestore.";
+      if (error?.code === "failed-precondition") {
+        message = "Firebase chưa được cấu hình đúng. Vui lòng kiểm tra Firestore.";
       }
-      if (
-        error?.code ===
-        "unavailable"
-      ) {
-        message =
-          "Không thể kết nối Firebase. Vui lòng kiểm tra mạng và thử lại.";
+      if (error?.code === "unavailable") {
+        message = "Không thể kết nối Firebase. Vui lòng kiểm tra mạng và thử lại.";
       }
-      if (
-        error?.message
-      ) {
-        console.error(
-          "Chi tiết lỗi:",
-          error.message
-        );
+      if (error?.message) {
+        console.error("Chi tiết lỗi:", error.message);
       }
-      errorEl.textContent =
-        message;
-      errorEl.classList.add(
-        "show"
-      );
+      errorEl.textContent = message;
+      errorEl.classList.add("show");
     }
   } finally {
     if (submitBtn) {
-      submitBtn.disabled =
-        false;
-      submitBtn.textContent =
-        "Gửi yêu cầu";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Gửi yêu cầu";
     }
   }
 }
@@ -2392,10 +1300,7 @@ async function submitTicket() {
    SUBMIT EVENT
 ========================================================= */
 if (submitBtn) {
-  submitBtn.addEventListener(
-    "click",
-    submitTicket
-  );
+  submitBtn.addEventListener("click", submitTicket);
 }
 /* =========================================================
    RESET FORM
@@ -2405,118 +1310,72 @@ function resetForm() {
     .querySelectorAll(
       "#formView input:not([type=checkbox]):not([type=radio]), #formView textarea"
     )
-    .forEach(
-      input => {
-        if (
-          loggedInUser &&
-          (
-            input.id ===
-              "fName" ||
-            input.id ===
-              "fEmail" ||
-            input.id ===
-              "fCampus"
-          )
-        ) {
-          return;
-        }
-        input.value =
-          "";
+    .forEach(input => {
+      if (
+        loggedInUser &&
+        (input.id === "fName" || input.id === "fEmail" || input.id === "fCampus")
+      ) {
+        return;
       }
-    );
+      input.value = "";
+    });
   /* FILE */
   if (fFile) {
-    fFile.value =
-      "";
+    fFile.value = "";
   }
-  selectedFile =
-    null;
+  selectedFile = null;
   if (fileNameEl) {
-    fileNameEl.textContent =
-      "";
+    fileNameEl.textContent = "";
   }
   /* COURSE */
   if (chkCourse) {
-    chkCourse.checked =
-      false;
+    chkCourse.checked = false;
   }
   if (courseBoxWrap) {
-    courseBoxWrap.classList.remove(
-      "show"
-    );
+    courseBoxWrap.classList.remove("show");
   }
   /* CATEGORY */
-  chips().forEach(
-    chip => {
-      chip.classList.remove(
-        "active"
-      );
-    }
-  );
-  document
-    .querySelectorAll(
-      'input[name="ticketMainType"]'
-    )
-    .forEach(
-      input => {
-        input.checked =
-          false;
-      }
-    );
+  chips().forEach(chip => {
+    chip.classList.remove("active");
+  });
+  document.querySelectorAll('input[name="ticketMainType"]').forEach(input => {
+    input.checked = false;
+  });
   /* ISSUE */
   if (issueSelect) {
-    issueSelect.innerHTML =
-      '<option value="">-- Chọn chi tiết vấn đề --</option>';
-    issueSelect.disabled =
-      true;
-    issueSelect.value =
-      "";
+    issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>';
+    issueSelect.disabled = true;
+    issueSelect.value = "";
   }
   if (issueField) {
-    issueField.classList.remove(
-      "show"
-    );
+    issueField.classList.remove("show");
   }
   /* DATE */
   if (fDateEl) {
-    fDateEl.value =
-      isoToday();
+    fDateEl.value = isoToday();
   }
   /* TICKET NUMBER */
-  ticketNum =
-    "HV-000000";
+  ticketNum = "HV-000000";
   /* AI */
-  titleAiRequestId +=
-    1;
-  window.clearTimeout(
-    titleAiDebounceTimer
-  );
+  titleAiRequestId += 1;
+  window.clearTimeout(titleAiDebounceTimer);
   hideTitleAiSuggestion();
   hideAITitleLoading();
   /* ERROR */
-  const errorEl =
-    $("errorText");
+  const errorEl = $("errorText");
   if (errorEl) {
-    errorEl.classList.remove(
-      "show"
-    );
+    errorEl.classList.remove("show");
   }
   /* LAYOUT */
   if (layoutContainer) {
-    layoutContainer.classList.remove(
-      "has-submitted"
-    );
+    layoutContainer.classList.remove("has-submitted");
   }
   /* VIEW */
   if (successView) {
-    successView.classList.remove(
-      "show"
-    );
+    successView.classList.remove("show");
   }
   if (formView) {
-    formView.classList.remove(
-      "hide"
-    );
+    formView.classList.remove("hide");
   }
   updateStub();
 }
@@ -2524,41 +1383,28 @@ function resetForm() {
    AGAIN BUTTON
 ========================================================= */
 if (againBtn) {
-  againBtn.addEventListener(
-    "click",
-    resetForm
-  );
+  againBtn.addEventListener("click", resetForm);
 }
 /* =========================================================
    AI LOADING PROGRESS
+   (aiProgressTimer / aiProgress đã khai báo ở phần
+   "AI LOADING DOM" phía trên — KHÔNG khai báo lại ở đây)
 ========================================================= */
+
 /* =========================================================
    UPDATE AI PROGRESS
 ========================================================= */
-function updateAIProgress(
-  percent
-) {
-  if (
-    !titleAiProgressBar ||
-    !titleAiLoadingPercent
-  ) {
+function updateAIProgress(percent) {
+  if (!titleAiProgressBar || !titleAiLoadingPercent) {
     return;
   }
-  const value =
-    Math.round(
-      Math.max(
-        0,
-        Math.min(
-          100,
-          percent
-        )
-      )
-    );
-  titleAiProgressBar.style.width =
-    `${value}%`;
-  titleAiLoadingPercent.textContent =
-    `${value}%`;
+
+  const value = Math.round(Math.max(0, Math.min(100, percent)));
+
+  titleAiProgressBar.style.width = `${value}%`;
+  titleAiLoadingPercent.textContent = `${value}%`;
 }
+
 /* =========================================================
    START AI LOADING
 ========================================================= */
@@ -2566,128 +1412,85 @@ function startAITitleLoading() {
   if (!titleAiLoading) {
     return;
   }
-  clearInterval(
-    aiProgressTimer
-  );
-  aiProgress =
-    0;
-  titleAiLoading.classList.add(
-    "is-visible"
-  );
-  titleAiLoading.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-  updateAIProgress(
-    0
-  );
+
+  clearInterval(aiProgressTimer);
+
+  aiProgress = 0;
+
+  titleAiLoading.classList.add("is-visible");
+  titleAiLoading.classList.remove("is-error");
+  titleAiLoading.setAttribute("aria-hidden", "false");
+
+  updateAIProgress(0);
+
   if (titleAiLoadingText) {
-    titleAiLoadingText.textContent =
-      "AI đang phân tích...";
+    titleAiLoadingText.textContent = "AI đang khởi tạo...";
   }
+
   if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent =
-      "Đang chuẩn bị phân tích nội dung yêu cầu...";
+    titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
   }
-  aiProgressTimer =
-    setInterval(
-      () => {
-        if (
-          aiProgress >=
-          95
-        ) {
-          clearInterval(
-            aiProgressTimer
-          );
-          return;
-        }
-        let step =
-          1;
-        if (
-          aiProgress <
-          20
-        ) {
-          step =
-            4;
-          if (titleAiLoadingText) {
-            titleAiLoadingText.textContent =
-              "AI đang khởi tạo...";
-          }
-          if (titleAiLoadingStatus) {
-            titleAiLoadingStatus.textContent =
-              "Đang chuẩn bị dữ liệu...";
-          }
-        }
-        else if (
-          aiProgress <
-          50
-        ) {
-          step =
-            2;
-          if (titleAiLoadingText) {
-            titleAiLoadingText.textContent =
-              "AI đang phân tích...";
-          }
-          if (titleAiLoadingStatus) {
-            titleAiLoadingStatus.textContent =
-              "Đang phân tích nội dung tiêu đề...";
-          }
-        }
-        else if (
-          aiProgress <
-          75
-        ) {
-          step =
-            1.5;
-          if (titleAiLoadingText) {
-            titleAiLoadingText.textContent =
-              "AI đang tìm kiếm...";
-          }
-          if (titleAiLoadingStatus) {
-            titleAiLoadingStatus.textContent =
-              "Đang đối chiếu với các vấn đề thường gặp...";
-          }
-        }
-        else if (
-          aiProgress <
-          90
-        ) {
-          step =
-            1;
-          if (titleAiLoadingText) {
-            titleAiLoadingText.textContent =
-              "AI đang tạo gợi ý...";
-          }
-          if (titleAiLoadingStatus) {
-            titleAiLoadingStatus.textContent =
-              "Đang xây dựng hướng xử lý phù hợp...";
-          }
-        }
-        else {
-          step =
-            0.3;
-          if (titleAiLoadingText) {
-            titleAiLoadingText.textContent =
-              "AI gần hoàn tất...";
-          }
-          if (titleAiLoadingStatus) {
-            titleAiLoadingStatus.textContent =
-              "Đang chờ kết quả từ hệ thống AI...";
-          }
-        }
-        aiProgress =
-          Math.min(
-            95,
-            aiProgress +
-              step
-          );
-        updateAIProgress(
-          aiProgress
-        );
-      },
-      350
-    );
+
+  aiProgressTimer = setInterval(() => {
+    /*
+     * Không cho thanh loading tự đạt 100%.
+     * Nó chỉ chạy tối đa 95% và chờ API AI trả kết quả.
+     */
+    if (aiProgress >= 95) {
+      clearInterval(aiProgressTimer);
+      return;
+    }
+
+    let step = 1;
+
+    if (aiProgress < 20) {
+      step = 4;
+      if (titleAiLoadingText) {
+        titleAiLoadingText.textContent = "AI đang khởi tạo...";
+      }
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
+      }
+    } else if (aiProgress < 50) {
+      step = 2;
+      if (titleAiLoadingText) {
+        titleAiLoadingText.textContent = "AI đang phân tích...";
+      }
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang phân tích nội dung tiêu đề...";
+      }
+    } else if (aiProgress < 75) {
+      step = 1.5;
+      if (titleAiLoadingText) {
+        titleAiLoadingText.textContent = "AI đang tìm kiếm...";
+      }
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang đối chiếu với các vấn đề thường gặp...";
+      }
+    } else if (aiProgress < 90) {
+      step = 1;
+      if (titleAiLoadingText) {
+        titleAiLoadingText.textContent = "AI đang tạo gợi ý...";
+      }
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang xây dựng hướng xử lý phù hợp...";
+      }
+    } else {
+      step = 0.3;
+      if (titleAiLoadingText) {
+        titleAiLoadingText.textContent = "AI gần hoàn tất...";
+      }
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang chờ kết quả từ hệ thống AI...";
+      }
+    }
+
+    aiProgress = Math.min(95, aiProgress + step);
+
+    updateAIProgress(aiProgress);
+  }, 350);
 }
+
 /* =========================================================
    FINISH AI LOADING
 ========================================================= */
@@ -2695,24 +1498,33 @@ function finishAITitleLoading() {
   if (!titleAiLoading) {
     return;
   }
-  clearInterval(
-    aiProgressTimer
-  );
-  aiProgress =
-    100;
-  updateAIProgress(
-    100
-  );
+
+  clearInterval(aiProgressTimer);
+
+  /*
+   * Đẩy từ trạng thái hiện tại lên 100%.
+   */
+  aiProgress = 100;
+
+  updateAIProgress(100);
+
   if (titleAiLoadingText) {
-    titleAiLoadingText.textContent =
-      "AI đã hoàn tất";
+    titleAiLoadingText.textContent = "AI đã hoàn tất";
   }
+
   if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent =
-      "Đã phân tích xong yêu cầu.";
+    titleAiLoadingStatus.textContent = "Đã phân tích xong yêu cầu.";
   }
-  // Giữ khung mở để người dùng đọc được câu trả lời AI.
+
+  /*
+   * Đợi một chút để người dùng nhìn thấy 100%.
+   */
+  setTimeout(() => {
+    titleAiLoading.classList.remove("is-visible");
+    titleAiLoading.setAttribute("aria-hidden", "true");
+  }, 350);
 }
+
 /* =========================================================
    HIDE AI LOADING
 ========================================================= */
@@ -2720,28 +1532,23 @@ function hideAITitleLoading() {
   if (!titleAiLoading) {
     return;
   }
-  clearInterval(
-    aiProgressTimer
-  );
-  titleAiLoading.classList.remove(
-    "is-visible"
-  );
-  titleAiLoading.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-  updateAIProgress(
-    0
-  );
-  aiProgress =
-    0;
+
+  clearInterval(aiProgressTimer);
+
+  titleAiLoading.classList.remove("is-visible", "is-error");
+
+  titleAiLoading.setAttribute("aria-hidden", "true");
+
+  updateAIProgress(0);
+
+  aiProgress = 0;
+
   if (titleAiLoadingText) {
-    titleAiLoadingText.textContent =
-      "AI đang phân tích...";
+    titleAiLoadingText.textContent = "AI đang phân tích...";
   }
+
   if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent =
-      "Đang chuẩn bị phân tích...";
+    titleAiLoadingStatus.textContent = "Đang chuẩn bị phân tích...";
   }
 }
 /* =========================================================
@@ -2749,14 +1556,6 @@ function hideAITitleLoading() {
 ========================================================= */
 renderCategories();
 updateStub();
-console.log(
-  "phieuhotro-cs.js đã khởi tạo thành công."
-);
-console.log(
-  "Ticket collection:",
-  TICKET_COLLECTION
-);
-console.log(
-  "User collection:",
-  USER_COLLECTION
-);
+console.log("phieuhotro-cs.js đã khởi tạo thành công.");
+console.log("Ticket collection:", TICKET_COLLECTION);
+console.log("User collection:", USER_COLLECTION);

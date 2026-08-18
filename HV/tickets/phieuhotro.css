@@ -135,6 +135,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   opacity: .78;
 }
 
+/* Trạng thái lỗi cho khung kết quả AI */
+.title-ai-suggestion.is-error {
+  border-color: rgba(162, 59, 46, .4);
+  border-left-color: var(--danger);
+}
+.title-ai-suggestion.is-error .title-ai-heading strong {
+  color: var(--danger);
+}
+.title-ai-suggestion.is-error .title-ai-badge {
+  background: var(--danger);
+}
+
 .title-ai-suggestion-head {
   display: flex;
   align-items: center;
@@ -244,6 +256,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   margin-bottom: 9px;
 }
 
+/* Dòng "AI · Đang xử lý yêu cầu" cạnh badge */
 .title-ai-loading-title {
   display: flex;
   align-items: center;
@@ -285,8 +298,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .title-ai-progress-bar {
+  position: relative;
   width: 0%;
   height: 100%;
+  overflow: hidden;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
@@ -299,6 +314,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Hiệu ứng chạy trên thanh */
 .title-ai-progress-bar::after {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   width: 45%;
   height: 100%;

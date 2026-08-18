@@ -43,23 +43,40 @@ function getValue(id) {
 // ======================================================
 // AI PHÂN TÍCH TIÊU ĐỀ
 // ======================================================
-const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxUn053qObh-uTNqfbPehEjM0AJnnOn3BFwN1ZyWkopAPwMlLPZjwTb2bU10v7fsZQ/exec";
+// const TITLE_AI_WEB_APP_URL =
+//   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
 
 const fTitle = $("fTitle" );
 const titleAiSuggestion = $("titleAiSuggestion");
 const titleAiSuggestionBody = $("titleAiSuggestionBody");
 const closeTitleAiSuggestion = $("closeTitleAiSuggestion");
 
+/* ------------------------------------------------------
+   AI LOADING DOM
+   (KHAI BÁO DUY NHẤT của aiProgressTimer / aiProgress —
+   không khai báo lại ở nơi khác trong file.)
+------------------------------------------------------ */
+const titleAiLoading = $("titleAiLoading");
+const titleAiProgressBar = $("titleAiProgressBar");
+const titleAiLoadingPercent = $("titleAiLoadingPercent");
+const titleAiLoadingStatus = $("titleAiLoadingStatus");
+
+let aiProgressTimer = null;
+let aiProgress = 0;
+
 let titleAiDebounceTimer = null;
 let titleAiRequestId = 0;
 let titleAiManuallyClosed = false;
 
+/* ------------------------------------------------------
+   HIỆN / ẨN KẾT QUẢ AI
+   (chỉ gọi khi loading đã xong, hoặc khi có lỗi)
+------------------------------------------------------ */
 function showTitleAiSuggestion(text, options = {}) {
   if (!titleAiSuggestion || !titleAiSuggestionBody) return;
 
   titleAiSuggestionBody.textContent = text || "";
-  titleAiSuggestion.classList.toggle("is-loading", Boolean(options.loading));
+  titleAiSuggestion.classList.toggle("is-error", Boolean(options.error));
   titleAiSuggestion.classList.add("is-visible");
   titleAiSuggestion.setAttribute("aria-hidden", "false");
 }
@@ -67,7 +84,7 @@ function showTitleAiSuggestion(text, options = {}) {
 function hideTitleAiSuggestion() {
   if (!titleAiSuggestion || !titleAiSuggestionBody) return;
 
-  titleAiSuggestion.classList.remove("is-visible", "is-loading");
+  titleAiSuggestion.classList.remove("is-visible", "is-error");
   titleAiSuggestion.setAttribute("aria-hidden", "true");
   titleAiSuggestionBody.textContent = "";
 }
@@ -80,6 +97,12 @@ function formatTitleAiAnswer(answer) {
   return cleanAnswer;
 }
 
+/* ------------------------------------------------------
+   GỌI AI PHÂN TÍCH TIÊU ĐỀ
+   Chỉ TRẢ VỀ văn bản kết quả — không tự hiển thị.
+   Việc hiển thị do requestTitleAiSuggestion() quyết định,
+   sau khi thanh loading đã chạy xong 100%.
+------------------------------------------------------ */
 async function analyzeTitleWithAI(title, requestId) {
   const selectedRadio = document.querySelector(
     'input[name="ticketMainType"]:checked'
@@ -113,7 +136,7 @@ async function analyzeTitleWithAI(title, requestId) {
     })
   });
 
-  if (requestId !== titleAiRequestId) return;
+  if (requestId !== titleAiRequestId) return null;
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
@@ -123,35 +146,56 @@ async function analyzeTitleWithAI(title, requestId) {
     throw new Error(data.error || "AI không thể phân tích tiêu đề.");
   }
 
-  showTitleAiSuggestion(formatTitleAiAnswer(data.answer));
+  return formatTitleAiAnswer(data.answer);
 }
 
+/* ------------------------------------------------------
+   YÊU CẦU GỢI Ý AI (debounce 700ms)
+   Luồng: bắt đầu gõ đủ 8 ký tự
+          → chạy thanh loading (chạy tối đa 95%)
+          → có kết quả: đẩy thanh loading lên 100%
+          → ẩn loading, hiện kết quả
+------------------------------------------------------ */
 function requestTitleAiSuggestion() {
   const title = getValue("fTitle");
   titleAiManuallyClosed = false;
+
   window.clearTimeout(titleAiDebounceTimer);
   titleAiRequestId += 1;
   const currentRequestId = titleAiRequestId;
 
   if (title.length < 8) {
     hideTitleAiSuggestion();
+    hideAITitleLoading();
     return;
   }
 
-  showTitleAiSuggestion("AI đang đọc tiêu đề và tìm hướng xử lý phù hợp…", {
-    loading: true
-  });
+  hideTitleAiSuggestion();
+  startAITitleLoading();
 
   titleAiDebounceTimer = window.setTimeout(async () => {
     try {
-      await analyzeTitleWithAI(title, currentRequestId);
+      const aiAnswer = await analyzeTitleWithAI(title, currentRequestId);
+
+      if (currentRequestId !== titleAiRequestId) return;
+
+      // Luôn đưa thanh loading lên 100% trước.
+      finishAITitleLoading();
+
+      // Chỉ hiển thị đáp án sau khi đã đạt 100%.
+      if (aiAnswer) {
+        showTitleAiSuggestion(aiAnswer);
+      }
     } catch (error) {
       console.error("TITLE AI ERROR:", error);
-      if (currentRequestId === titleAiRequestId) {
-        showTitleAiSuggestion(
-          "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể gửi mô tả chi tiết để bộ phận hỗ trợ kiểm tra."
-        );
-      }
+
+      if (currentRequestId !== titleAiRequestId) return;
+
+      finishAITitleLoading();
+      showTitleAiSuggestion(
+        "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể gửi mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
+        { error: true }
+      );
     }
   }, 700);
 }
@@ -178,16 +222,136 @@ if (closeTitleAiSuggestion) {
     titleAiRequestId += 1;
     window.clearTimeout(titleAiDebounceTimer);
     hideTitleAiSuggestion();
+    hideAITitleLoading();
   });
 }
 
 // Khi người dùng chuyển sang loại yêu cầu khác, khung cũng đóng.
 if (chipGrid) {
-  chipGrid.addEventListener("click", hideTitleAiSuggestion);
+  chipGrid.addEventListener("click", () => {
+    hideTitleAiSuggestion();
+    hideAITitleLoading();
+  });
 }
 if (issueSelect) {
-  issueSelect.addEventListener("change", hideTitleAiSuggestion);
+  issueSelect.addEventListener("change", () => {
+    hideTitleAiSuggestion();
+    hideAITitleLoading();
+  });
 }
+
+/* ------------------------------------------------------
+   CẬP NHẬT % THANH LOADING
+------------------------------------------------------ */
+function updateAIProgress(percent) {
+  if (!titleAiProgressBar || !titleAiLoadingPercent) return;
+
+  const value = Math.round(Math.max(0, Math.min(100, percent)));
+
+  titleAiProgressBar.style.width = `${value}%`;
+  titleAiLoadingPercent.textContent = `${value}%`;
+}
+
+/* ------------------------------------------------------
+   BẮT ĐẦU LOADING
+------------------------------------------------------ */
+function startAITitleLoading() {
+  if (!titleAiLoading) return;
+
+  clearInterval(aiProgressTimer);
+  aiProgress = 0;
+
+  titleAiLoading.classList.add("is-visible");
+  titleAiLoading.setAttribute("aria-hidden", "false");
+
+  updateAIProgress(0);
+
+  if (titleAiLoadingStatus) {
+    titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
+  }
+
+  aiProgressTimer = setInterval(() => {
+    /*
+     * Không cho thanh loading tự đạt 100%.
+     * Nó chỉ chạy tối đa 95% và chờ API AI trả kết quả.
+     */
+    if (aiProgress >= 95) {
+      clearInterval(aiProgressTimer);
+      return;
+    }
+
+    let step = 1;
+
+    if (aiProgress < 20) {
+      step = 4;
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
+      }
+    } else if (aiProgress < 50) {
+      step = 2;
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang phân tích nội dung tiêu đề...";
+      }
+    } else if (aiProgress < 75) {
+      step = 1.5;
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang đối chiếu với các vấn đề thường gặp...";
+      }
+    } else if (aiProgress < 90) {
+      step = 1;
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang xây dựng hướng xử lý phù hợp...";
+      }
+    } else {
+      step = 0.3;
+      if (titleAiLoadingStatus) {
+        titleAiLoadingStatus.textContent = "Đang chờ kết quả từ hệ thống AI...";
+      }
+    }
+
+    aiProgress = Math.min(95, aiProgress + step);
+    updateAIProgress(aiProgress);
+  }, 350);
+}
+
+/* ------------------------------------------------------
+   KẾT THÚC LOADING (đạt 100%, rồi mới ẩn)
+------------------------------------------------------ */
+function finishAITitleLoading() {
+  if (!titleAiLoading) return;
+
+  clearInterval(aiProgressTimer);
+  aiProgress = 100;
+  updateAIProgress(100);
+
+  if (titleAiLoadingStatus) {
+    titleAiLoadingStatus.textContent = "Đã phân tích xong yêu cầu.";
+  }
+
+  setTimeout(() => {
+    titleAiLoading.classList.remove("is-visible");
+    titleAiLoading.setAttribute("aria-hidden", "true");
+  }, 350);
+}
+
+/* ------------------------------------------------------
+   ẨN LOADING NGAY (huỷ / reset)
+------------------------------------------------------ */
+function hideAITitleLoading() {
+  if (!titleAiLoading) return;
+
+  clearInterval(aiProgressTimer);
+  titleAiLoading.classList.remove("is-visible");
+  titleAiLoading.setAttribute("aria-hidden", "true");
+
+  updateAIProgress(0);
+  aiProgress = 0;
+
+  if (titleAiLoadingStatus) {
+    titleAiLoadingStatus.textContent = "Đang chuẩn bị phân tích...";
+  }
+}
+
 let ticketNum = "HV-000000";
 let selectedFile = null;
 let loggedInUser = null;
@@ -400,16 +564,6 @@ async function submitTicket() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-  //   ticketCategory: category?.label || "Khác",
-  //   ticketIssue: issueLabel,
-  //   title, description,
-  //   attachmentName: selectedFile?.name || "",
-  //   attachmentType: selectedFile?.type || "",
-  //   attachmentSize: selectedFile?.size || 0,
-  //   status: "open",
-  //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  //   updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  // };
 
   try {
     await database.collection("tickets").doc(ticketNum).set(ticketData);
@@ -446,6 +600,13 @@ function resetForm() {
   chipGrid.querySelectorAll("input").forEach(input => { input.checked = false; });
   issueSelect.innerHTML = '<option value="">-- Chọn chi tiết vấn đề --</option>'; issueSelect.disabled = true; issueField.classList.remove("show");
   fDateEl.value = isoToday(); ticketNum = "HV-000000"; $("errorText").classList.remove("show"); updateStub();
+
+  // AI: huỷ mọi yêu cầu đang chờ và ẩn cả loading lẫn kết quả
+  titleAiRequestId += 1;
+  window.clearTimeout(titleAiDebounceTimer);
+  hideTitleAiSuggestion();
+  hideAITitleLoading();
+
   successView.classList.remove("show"); formView.classList.remove("hide");
 }
 
