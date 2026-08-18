@@ -40,3 +40,82 @@
   .cs-navbar-brand-copy small { display: none; }
   .cs-navbar-brand-copy strong { max-width: 225px; font-size: 15px; }
 }
+/* =========================================================
+   CUSTOMER SUCCESS NAVBAR - SIDEBAR CỐ ĐỊNH
+   Nạp file này sau /CS/navbar.css.
+   ========================================================= */
+
+@media (min-width: 861px) {
+  html,
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+  }
+
+  .app[data-cs-navbar-ready="true"] {
+    display: flex;
+    min-height: 100vh;
+    height: auto !important;
+    overflow: visible !important;
+    padding-top: 58px;
+  }
+
+  .cs-navbar-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    height: 58px;
+  }
+
+  /* Layout chứa sidebar và nội dung */
+  .cs-navbar-layout {
+    display: block;
+    width: 100%;
+    min-height: calc(100vh - 58px);
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Sidebar Customer Success đứng im khi cuộn */
+  .cs-navbar-sidebar {
+    position: fixed;
+    top: 58px;
+    bottom: 0;
+    left: 0;
+    z-index: 45;
+    width: 260px;
+    height: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Nội dung tự quyết định cách hiển thị và chiều cao */
+  .cs-navbar-content {
+    display: block;
+    width: auto;
+    min-height: calc(100vh - 58px);
+    height: auto !important;
+    margin-left: 260px;
+    overflow: visible !important;
+  }
+
+  /* Thu gọn sidebar trên desktop */
+  .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
+    width: 70px;
+  }
+
+  .cs-navbar-layout.is-collapsed .cs-navbar-content {
+    margin-left: 70px;
+  }
+}
+
+/* Mobile vẫn sử dụng sidebar dạng drawer của navbar.css */
+@media (max-width: 860px) {
+  .cs-navbar-content {
+    margin-left: 0;
+  }
+}
