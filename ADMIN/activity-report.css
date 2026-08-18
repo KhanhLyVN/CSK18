@@ -21,6 +21,7 @@
   --shadow:
     0 8px 28px rgba(62, 4, 2, .055);
 }
+
 /* =========================================================
    RESET
 ========================================================= */
@@ -29,13 +30,16 @@
 *::after {
   box-sizing: border-box;
 }
+
 html {
   scroll-behavior: smooth;
 }
+
 html,
 body {
   overflow-x: hidden;
 }
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -48,23 +52,28 @@ body {
   font-size: 14px;
   line-height: 1.5;
 }
+
 button,
 input,
 select {
   font: inherit;
 }
+
 button {
   cursor: pointer;
 }
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
   outline: 2px solid var(--maroon);
   outline-offset: 2px;
 }
+
 [hidden] {
   display: none !important;
 }
+
 /* =========================================================
    GOOGLE MATERIAL SYMBOLS
 ========================================================= */
@@ -99,12 +108,14 @@ select:focus-visible {
   border-bottom: 2px solid var(--maroon);
   overflow: hidden;
 }
+
 .hero-content {
   position: relative;
   z-index: 2;
   flex: 1;
   min-width: 0;
 }
+
 .eyebrow {
   margin: 0 0 10px;
   color: var(--maroon-soft);
@@ -113,6 +124,7 @@ select:focus-visible {
   letter-spacing: .18em;
   text-transform: uppercase;
 }
+
 .hero h1 {
   margin: 0;
   color: var(--maroon);
@@ -123,9 +135,11 @@ select:focus-visible {
   line-height: .98;
   letter-spacing: -.045em;
 }
+
 .hero h1 span {
   color: var(--maroon-soft);
 }
+
 .hero-copy {
   max-width: 650px;
   margin: 19px 0 0;
@@ -133,6 +147,7 @@ select:focus-visible {
   font-size: 13px;
   line-height: 1.8;
 }
+
 /* =========================================================
    HERO ART
 ========================================================= */
@@ -220,6 +235,7 @@ select:focus-visible {
   gap: 14px;
   padding: 27px 0;
 }
+
 .stat-card {
   position: relative;
   min-width: 0;
@@ -235,6 +251,7 @@ select:focus-visible {
     box-shadow .18s ease,
     border-color .18s ease;
 }
+
 .stat-card::before {
   content: "";
   position: absolute;
@@ -244,6 +261,7 @@ select:focus-visible {
   height: 3px;
   background: var(--maroon);
 }
+
 .stat-card:hover {
   transform: translateY(-2px);
   border-color:
@@ -251,6 +269,7 @@ select:focus-visible {
   box-shadow:
     0 13px 35px rgba(62, 4, 2, .08);
 }
+
 .stat-icon {
   position: absolute;
   top: 18px;
@@ -263,9 +282,11 @@ select:focus-visible {
   background: var(--cream);
   color: var(--maroon);
 }
+
 .stat-icon .material-symbols-rounded {
   font-size: 20px;
 }
+
 .stat-label {
   display: block;
   color: var(--ink-soft);
@@ -274,6 +295,7 @@ select:focus-visible {
   letter-spacing: .14em;
   text-transform: uppercase;
 }
+
 .stat-card strong {
   display: block;
   margin-top: 13px;
@@ -282,12 +304,14 @@ select:focus-visible {
   font-size: 37px;
   line-height: 1;
 }
+
 .stat-card small {
   display: block;
   margin-top: 9px;
   color: var(--muted);
   font-size: 10px;
 }
+
 /* =========================================================
    PANELS
 ========================================================= */
@@ -299,10 +323,12 @@ select:focus-visible {
   border-radius: 14px;
   box-shadow: var(--shadow);
 }
+
 .filter-panel {
   margin-bottom: 18px;
   overflow: hidden;
 }
+
 /* =========================================================
    PANEL HEAD
 ========================================================= */
@@ -314,23 +340,27 @@ select:focus-visible {
   padding: 21px 24px;
   border-bottom: 1px solid var(--line);
 }
+
 .panel-head h2 {
   margin: 0;
   color: var(--maroon);
   font-family: Georgia, serif;
   font-size: 24px;
 }
+
 .panel-head p {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 11px;
 }
+
 .title-line {
   display: flex;
   align-items: center;
   gap: 9px;
   flex-wrap: wrap;
 }
+
 .title-icon {
   width: 32px;
   height: 32px;
@@ -340,10 +370,12 @@ select:focus-visible {
   background: var(--cream);
   color: var(--maroon);
 }
+
 .title-icon .material-symbols-rounded {
   font-size: 18px;
 }
-.title-line > span:last-child:not(.title-icon) {
+
+.title-line>span:last-child:not(.title-icon) {
   padding: 4px 8px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -352,6 +384,7 @@ select:focus-visible {
   font-size: 9px;
   font-weight: 800;
 }
+
 /* =========================================================
    PANEL ACTIONS
 ========================================================= */
@@ -361,6 +394,7 @@ select:focus-visible {
   gap: 8px;
   flex-shrink: 0;
 }
+
 .primary-btn,
 .secondary-btn {
   min-height: 38px;
@@ -374,44 +408,49 @@ select:focus-visible {
   font-weight: 700;
   transition: .18s ease;
 }
+
 .primary-btn {
   border: 0;
   background: var(--maroon);
   color: white;
 }
+
 .primary-btn:hover {
   background: var(--maroon-deep);
   transform: translateY(-1px);
 }
+
 .secondary-btn {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--maroon);
 }
+
 .secondary-btn:hover {
   background: var(--cream-pale);
   transform: translateY(-1px);
 }
+
 .primary-btn .material-symbols-rounded,
 .secondary-btn .material-symbols-rounded {
   font-size: 18px;
 }
+
 /* =========================================================
    FILTERS
 ========================================================= */
 .filters {
   display: grid;
   grid-template-columns:
-    180px
-    180px
-    180px
-    minmax(180px, 1fr);
+    180px 180px 180px minmax(180px, 1fr);
   gap: 12px;
   padding: 18px 24px 22px;
 }
+
 .filter-field {
   min-width: 0;
 }
+
 .filter-field label {
   display: block;
   margin-bottom: 7px;
@@ -421,12 +460,14 @@ select:focus-visible {
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+
 /* =========================================================
    SELECT
 ========================================================= */
 .select-wrap {
   position: relative;
 }
+
 .select-wrap select {
   width: 100%;
   height: 39px;
@@ -439,6 +480,7 @@ select:focus-visible {
   font-size: 11px;
   outline: none;
 }
+
 .select-wrap .material-symbols-rounded {
   position: absolute;
   top: 50%;
@@ -448,6 +490,7 @@ select:focus-visible {
   color: var(--muted);
   font-size: 18px;
 }
+
 /* =========================================================
    SEARCH
 ========================================================= */
@@ -456,13 +499,15 @@ select:focus-visible {
   display: flex;
   align-items: center;
 }
-.search-wrap > .material-symbols-rounded {
+
+.search-wrap>.material-symbols-rounded {
   position: absolute;
   left: 11px;
   color: var(--muted);
   font-size: 18px;
   pointer-events: none;
 }
+
 .search-wrap input {
   width: 100%;
   height: 39px;
@@ -474,12 +519,14 @@ select:focus-visible {
   font-size: 11px;
   outline: none;
 }
+
 .search-wrap input:focus,
 .select-wrap select:focus {
   border-color: var(--maroon);
   box-shadow:
     0 0 0 3px rgba(238, 220, 200, .8);
 }
+
 .search-clear {
   position: absolute;
   right: 7px;
@@ -493,13 +540,16 @@ select:focus-visible {
   background: transparent;
   color: var(--muted);
 }
+
 .search-clear:hover {
   background: var(--cream);
   color: var(--maroon);
 }
+
 .search-clear .material-symbols-rounded {
   font-size: 17px;
 }
+
 /* =========================================================
    REPORT GRID
 ========================================================= */
@@ -510,9 +560,11 @@ select:focus-visible {
   gap: 18px;
   margin-bottom: 18px;
 }
+
 .report-card {
   overflow: hidden;
 }
+
 .report-card-head {
   display: flex;
   align-items: center;
@@ -520,15 +572,18 @@ select:focus-visible {
   padding: 20px 22px;
   border-bottom: 1px solid var(--line);
 }
+
 .report-card-head .eyebrow {
   margin-bottom: 6px;
 }
+
 .report-card-head h2 {
   margin: 0;
   color: var(--maroon);
   font-family: Georgia, serif;
   font-size: 21px;
 }
+
 .report-head-icon {
   width: 38px;
   height: 38px;
@@ -538,9 +593,11 @@ select:focus-visible {
   background: var(--cream);
   color: var(--maroon);
 }
+
 .report-head-icon .material-symbols-rounded {
   font-size: 20px;
 }
+
 /* =========================================================
    DISTRIBUTION
 ========================================================= */
@@ -548,12 +605,15 @@ select:focus-visible {
   min-height: 160px;
   padding: 20px 22px;
 }
+
 .distribution-row {
   margin-bottom: 18px;
 }
+
 .distribution-row:last-child {
   margin-bottom: 0;
 }
+
 .distribution-head {
   display: flex;
   justify-content: space-between;
@@ -562,16 +622,19 @@ select:focus-visible {
   color: var(--ink-soft);
   font-size: 11px;
 }
+
 .distribution-head strong {
   color: var(--maroon);
   font-size: 10px;
 }
+
 .progress {
   height: 7px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--cream);
 }
+
 .progress i {
   display: block;
   width: 0;
@@ -580,6 +643,7 @@ select:focus-visible {
   background: var(--maroon);
   transition: width .35s ease;
 }
+
 /* =========================================================
    LOADING
 ========================================================= */
@@ -592,39 +656,48 @@ select:focus-visible {
   color: var(--muted);
   font-size: 11px;
 }
+
 .loading {
   min-height: 120px;
 }
+
 .loading-cell {
   padding: 55px 20px;
 }
+
 .spin {
   animation:
     spin 1s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 /* =========================================================
    TABLE
 ========================================================= */
 .account-panel {
   overflow: hidden;
 }
+
 .table-wrap {
   width: 100%;
   overflow-x: auto;
 }
+
 table {
   width: 100%;
   min-width: 900px;
   border-collapse: collapse;
 }
+
 thead {
   background: rgba(238, 220, 200, .22);
 }
+
 th {
   padding: 13px 18px;
   border-bottom: 1px solid var(--line);
@@ -635,21 +708,26 @@ th {
   text-align: left;
   white-space: nowrap;
 }
+
 td {
   padding: 14px 18px;
   border-bottom: 1px solid var(--line-soft);
   color: var(--ink);
   font-size: 11px;
 }
+
 tbody tr {
   transition: background .15s ease;
 }
+
 tbody tr:hover {
   background: #FFFDF9;
 }
+
 tbody tr:last-child td {
   border-bottom: 0;
 }
+
 /* =========================================================
    ACCOUNT CELL
 ========================================================= */
@@ -658,6 +736,7 @@ tbody tr:last-child td {
   align-items: center;
   gap: 11px;
 }
+
 .account-avatar {
   width: 34px;
   height: 34px;
@@ -670,14 +749,17 @@ tbody tr:last-child td {
   font-size: 10px;
   font-weight: 800;
 }
+
 .account-info {
   min-width: 0;
 }
+
 .account-info strong {
   display: block;
   color: var(--ink);
   font-size: 12px;
 }
+
 .account-info small {
   display: block;
   margin-top: 3px;
@@ -688,6 +770,7 @@ tbody tr:last-child td {
   white-space: nowrap;
   max-width: 250px;
 }
+
 /* =========================================================
    CAMPUS / DEPARTMENT
 ========================================================= */
@@ -697,6 +780,7 @@ tbody tr:last-child td {
   font-size: 11px;
   font-weight: 600;
 }
+
 /* =========================================================
    STATUS
 ========================================================= */
@@ -710,28 +794,34 @@ tbody tr:last-child td {
   font-weight: 700;
   white-space: nowrap;
 }
+
 .status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: currentColor;
 }
+
 .status-active {
   color: #48613E;
   background: #E9F0E5;
 }
+
 .status-away {
   color: #846523;
   background: #F6EEDC;
 }
+
 .status-pending {
   color: #75685E;
   background: #EFEAE4;
 }
+
 .status-disabled {
   color: var(--danger);
   background: #F5E5E2;
 }
+
 /* =========================================================
    DATE
 ========================================================= */
@@ -741,6 +831,7 @@ tbody tr:last-child td {
   font-size: 9px;
   white-space: nowrap;
 }
+
 /* =========================================================
    FOOTER
 ========================================================= */
@@ -754,11 +845,13 @@ tbody tr:last-child td {
   color: var(--muted);
   font-size: 10px;
 }
+
 .realtime {
   display: inline-flex;
   align-items: center;
   gap: 7px;
 }
+
 .realtime-dot {
   width: 7px;
   height: 7px;
@@ -767,6 +860,7 @@ tbody tr:last-child td {
   box-shadow:
     0 0 0 3px rgba(94, 127, 82, .15);
 }
+
 /* =========================================================
    TOAST
 ========================================================= */
@@ -794,14 +888,17 @@ tbody tr:last-child td {
     opacity .2s ease,
     transform .2s ease;
 }
+
 .toast.show {
   opacity: 1;
   transform:
     translate(-50%, 0);
 }
+
 .toast .material-symbols-rounded {
   font-size: 18px;
 }
+
 /* =========================================================
    RESPONSIVE
 ========================================================= */
@@ -809,96 +906,121 @@ tbody tr:last-child td {
   .content-wrap {
     padding: 34px 30px 48px;
   }
+
   .filters {
     grid-template-columns: 1fr 1fr;
   }
+
   .stats-grid {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
   }
+
   /* .hero-art {
     width: 260px;
     flex-basis: 260px;
   } */
 }
+
 @media (max-width: 900px) {
+
   /* .hero-art {
     display: none;
   } */
   .report-grid {
     grid-template-columns: 1fr;
   }
+
   .mobile-only {
     display: inline-flex;
   }
+
   .topbar {
     padding: 0 22px;
   }
 }
+
 @media (max-width: 780px) {
   .topbar {
     min-height: 62px;
     padding: 12px 16px;
   }
+
   .top-admin {
     display: none;
   }
+
   .content-wrap {
     padding: 26px 15px 40px;
   }
+
   .hero {
     display: block;
     min-height: 0;
     padding-bottom: 28px;
   }
+
   .hero h1 {
     font-size: 40px;
   }
+
   .hero-copy {
     font-size: 12px;
   }
+
   .stats-grid {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
     gap: 10px;
     padding: 20px 0;
   }
+
   .stat-card {
     min-height: 125px;
     padding: 16px;
   }
+
   .stat-card strong {
     font-size: 30px;
   }
+
   .panel-head {
     align-items: flex-start;
     flex-direction: column;
     padding: 18px;
   }
+
   .panel-actions {
     width: 100%;
   }
+
   .panel-actions button {
     flex: 1;
   }
+
   .filters {
     grid-template-columns: 1fr;
     padding: 17px 18px 20px;
   }
 }
+
 @media (max-width: 560px) {
   .top-actions {
     gap: 8px;
   }
+
   .hero h1 {
     font-size: 37px;
   }
+
   .panel-actions {
     flex-direction: column;
   }
+
   .panel-actions button {
     width: 100%;
   }
+
   .notification-panel {
     position: fixed;
     top: 70px;
@@ -907,29 +1029,36 @@ tbody tr:last-child td {
     width: auto;
   }
 }
+
 @media (max-width: 480px) {
   .content-wrap {
     padding: 22px 14px 35px;
   }
+
   .hero h1 {
     font-size: 34px;
   }
+
   .hero-copy {
     margin-top: 15px;
     font-size: 11px;
   }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
+
   .stat-card {
     min-height: 105px;
   }
+
   .panel-foot {
     align-items: flex-start;
     flex-direction: column;
     padding: 12px 17px;
   }
 }
+
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
@@ -937,12 +1066,14 @@ tbody tr:last-child td {
   html {
     scroll-behavior: auto;
   }
+
   *,
   *::before,
   *::after {
     transition: none !important;
     animation: none !important;
   }
+
   .spin {
     animation: none !important;
   }

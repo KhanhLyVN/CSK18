@@ -15,11 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const notificationBackdrop = document.getElementById("notificationBackdrop");
   const notificationList = document.getElementById("notificationList");
   const notificationEmpty = document.getElementById("notificationEmpty");
-  const notificationUnreadLabel = document.getElementById("notificationUnreadLabel");
+  const notificationUnreadLabel = document.getElementById(
+    "notificationUnreadLabel",
+  );
 
   let currentStudentUid = "";
   let notificationRecords = [];
-  const sharedNotificationManager = Boolean(window.__studentNotificationManager);
+  const sharedNotificationManager = Boolean(
+    window.__studentNotificationManager,
+  );
 
   function renderNotifications() {
     if (sharedNotificationManager || !notificationList) return;
@@ -27,12 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const unreadCount = notificationRecords.length;
     if (notificationCountEl) {
       notificationCountEl.hidden = unreadCount === 0;
-      notificationCountEl.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+      notificationCountEl.textContent =
+        unreadCount > 99 ? "99+" : String(unreadCount);
     }
     if (notificationUnreadLabel) {
-      notificationUnreadLabel.textContent = unreadCount ? `${unreadCount} thông báo mới nhất` : "Chưa có thông báo";
+      notificationUnreadLabel.textContent = unreadCount
+        ? `${unreadCount} thông báo mới nhất`
+        : "Chưa có thông báo";
     }
-    if (notificationEmpty) notificationEmpty.classList.toggle("show", notificationRecords.length === 0);
+    if (notificationEmpty)
+      notificationEmpty.classList.toggle(
+        "show",
+        notificationRecords.length === 0,
+      );
 
     notificationList.innerHTML = notificationRecords
       .map(
@@ -45,13 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="notification-item-title">${escapeHTML(item.title || "Ticket hỗ trợ")}</div>
             <div class="notification-item-message">${escapeHTML(
               item.preview ||
-                (item.type === "message" ? "Customer Success đã gửi tin nhắn mới." : "Customer Success đã cập nhật trạng thái ticket.")
+                (item.type === "message"
+                  ? "Customer Success đã gửi tin nhắn mới."
+                  : "Customer Success đã cập nhật trạng thái ticket."),
             )}</div>
             <span class="notification-item-status">${escapeHTML(
-              item.type === "message" ? "Tin nhắn mới" : item.statusLabel || "Cập nhật trạng thái"
+              item.type === "message"
+                ? "Tin nhắn mới"
+                : item.statusLabel || "Cập nhật trạng thái",
             )}</span>
           </a>
-        `
+        `,
       )
       .join("");
   }
@@ -60,12 +75,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sharedNotificationManager) return;
     notificationRecords = tickets
       .flatMap((ticket) => {
-        const history = Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : [];
+        const history = Array.isArray(ticket.notificationHistory)
+          ? ticket.notificationHistory
+          : [];
         return history.map((item) => ({
           ...item,
           ticketId: item.ticketId || ticket.id,
-          ticketNum: item.ticketNum || firstValue(ticket, "ticketNum", "ticket_num", "id") || "Ticket",
-          title: item.title || firstValue(ticket, "title", "subject") || "Ticket hỗ trợ"
+          ticketNum:
+            item.ticketNum ||
+            firstValue(ticket, "ticketNum", "ticket_num", "id") ||
+            "Ticket",
+          title:
+            item.title ||
+            firstValue(ticket, "title", "subject") ||
+            "Ticket hỗ trợ",
         }));
       })
       .sort((a, b) => getMillis(b.createdAt) - getMillis(a.createdAt))
@@ -97,7 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!sharedNotificationManager) {
     notificationButton?.addEventListener("click", () => {
-      notificationPanel?.classList.contains("open") ? closeNotifications() : openNotifications();
+      notificationPanel?.classList.contains("open")
+        ? closeNotifications()
+        : openNotifications();
     });
     notificationClose?.addEventListener("click", closeNotifications);
     notificationBackdrop?.addEventListener("click", closeNotifications);
@@ -115,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pending: { label: "Đang chờ", className: "status-open" },
     in_progress: { label: "Đang xử lý", className: "status-in_progress" },
     resolved: { label: "Đã giải quyết", className: "status-resolved" },
-    closed: { label: "Đã đóng", className: "status-closed" }
+    closed: { label: "Đã đóng", className: "status-closed" },
   };
 
   // ======================================================
@@ -140,7 +165,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ======================================================
   function firstValue(ticket, ...keys) {
     for (const key of keys) {
-      if (ticket[key] !== undefined && ticket[key] !== null && String(ticket[key]).trim()) {
+      if (
+        ticket[key] !== undefined &&
+        ticket[key] !== null &&
+        String(ticket[key]).trim()
+      ) {
         return ticket[key];
       }
     }
@@ -197,8 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
       weekday: "long",
       day: "2-digit",
       month: "2-digit",
-      year: "numeric"
-    })
+      year: "numeric",
+    }),
   );
 
   // ======================================================
@@ -216,7 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // RENDER TICKET
   // ======================================================
   function renderHomepageSatisfaction(ticket, status) {
-    if (status !== "closed" || ticket.satisfactionStatus !== "awaiting") return "";
+    if (status !== "closed" || ticket.satisfactionStatus !== "awaiting")
+      return "";
     const round = Number(ticket.satisfactionRound) || 1;
     return `
       <div class="homepage-satisfaction" aria-label="Đánh giá phản hồi Customer Success">
@@ -249,23 +279,33 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
 
         const latestTicket = snapshot.data();
-        if (latestTicket.studentId !== user.uid || normalizeStatus(latestTicket.status) !== "closed") {
+        if (
+          latestTicket.studentId !== user.uid ||
+          normalizeStatus(latestTicket.status) !== "closed"
+        ) {
           throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
         }
-        if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
-          throw new Error("Yêu cầu đánh giá không còn hiệu lực. Vui lòng tải lại.");
+        if (
+          latestTicket.satisfactionStatus !== "awaiting" ||
+          (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound
+        ) {
+          throw new Error(
+            "Yêu cầu đánh giá không còn hiệu lực. Vui lòng tải lại.",
+          );
         }
 
         const update = {
           satisfactionStatus: choice,
-          satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          satisfactionRespondedAt:
+            firebase.firestore.FieldValue.serverTimestamp(),
           satisfactionRespondedRound: satisfactionRound,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
 
         if (choice === "satisfied") {
           update.status = "closed";
-          update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+          update.closedConfirmedAt =
+            firebase.firestore.FieldValue.serverTimestamp();
         } else {
           update.status = "in_progress";
           update.closedAt = null;
@@ -273,7 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
           update.reopenedBy = "student";
           update.reopenedToStatus = "in_progress";
           update.chatThreadCreated = true;
-          update.chatThreadCreatedAt = firebase.firestore.FieldValue.serverTimestamp();
+          update.chatThreadCreatedAt =
+            firebase.firestore.FieldValue.serverTimestamp();
           update.chatThreadCreatedBy = "student";
           update.chatThreadCreatedByUid = user.uid;
         }
@@ -282,14 +323,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (choice === "unsatisfied") {
-        window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
+        window.location.assign(
+          `/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`,
+        );
       }
     } catch (error) {
       console.error("Không thể lưu đánh giá trang chủ:", error);
       card?.querySelectorAll("[data-home-satisfaction]").forEach((item) => {
         item.disabled = false;
       });
-      window.alert(error?.message || "Không thể lưu đánh giá. Vui lòng thử lại.");
+      window.alert(
+        error?.message || "Không thể lưu đánh giá. Vui lòng thử lại.",
+      );
     }
   }
 
@@ -311,10 +356,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const status = normalizeStatus(ticket.status);
         const meta = STATUS_META[status];
         const number = firstValue(ticket, "ticketNum", "ticket_num", "id");
-        const title = firstValue(ticket, "title", "subject") || "Không có tiêu đề";
-        const category = firstValue(ticket, "ticketCategory", "ticketCategoryId", "category");
-        const issue = firstValue(ticket, "ticketIssue", "ticketIssueId", "ticketType", "ticket_type");
-        const type = category && issue && category !== issue ? `${category} · ${issue}` : issue || category || "Khác";
+        const title =
+          firstValue(ticket, "title", "subject") || "Không có tiêu đề";
+        const category = firstValue(
+          ticket,
+          "ticketCategory",
+          "ticketCategoryId",
+          "category",
+        );
+        const issue = firstValue(
+          ticket,
+          "ticketIssue",
+          "ticketIssueId",
+          "ticketType",
+          "ticket_type",
+        );
+        const type =
+          category && issue && category !== issue
+            ? `${category} · ${issue}`
+            : issue || category || "Khác";
         const query = encodeURIComponent(number);
         return `
           <div class="recent-item-wrap">
@@ -419,7 +479,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ====================================================
     let ticketQuery;
     try {
-      ticketQuery = database.collection("tickets").where("studentId", "==", currentUid);
+      ticketQuery = database
+        .collection("tickets")
+        .where("studentId", "==", currentUid);
     } catch (error) {
       console.error("Không thể tạo truy vấn ticket:", error);
       return;
@@ -443,7 +505,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // ----------------------------------------------
         // ĐẾM STATUS
         // ----------------------------------------------
-        const counts = { open: 0, pending: 0, in_progress: 0, resolved: 0, closed: 0 };
+        const counts = {
+          open: 0,
+          pending: 0,
+          in_progress: 0,
+          resolved: 0,
+          closed: 0,
+        };
         tickets.forEach((ticket) => {
           const status = normalizeStatus(ticket.status);
           counts[status]++;
@@ -452,12 +520,18 @@ document.addEventListener("DOMContentLoaded", () => {
         // ----------------------------------------------
         // HIỂN THỊ THỐNG KÊ
         // ----------------------------------------------
-        setText(openTicketsEl, counts.open + counts.pending + counts.in_progress + counts.resolved);
+        setText(
+          openTicketsEl,
+          counts.open + counts.pending + counts.in_progress + counts.resolved,
+        );
         setText(progressTicketsEl, counts.in_progress);
         setText(resolvedTicketsEl, counts.resolved);
         setText(totalTicketsEl, tickets.length);
         // Tương thích giao diện cũ
-        setText(document.getElementById("completedTicketsCount"), counts.closed + counts.resolved);
+        setText(
+          document.getElementById("completedTicketsCount"),
+          counts.closed + counts.resolved,
+        );
 
         // ----------------------------------------------
         // RENDER
@@ -479,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `;
         }
-      }
+      },
     );
   });
 });

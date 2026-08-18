@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>CS Center - Quản Lý FAQ</title>
@@ -11,185 +12,667 @@
     <script src="/firebase-config.js"></script>
     <style>
         :root {
-  --maroon: #5D0703;
-  --maroon-deep: #3E0402;
-  --maroon-soft: #7A1410;
-  --cream: #EEDCC8;
-  --cream-pale: #FBF4E9;
-  --paper: #FFFBF5;
-  --gold: #B08A4E;
-  --ink: #2A1712;
-  --ink-soft: #6B5348;
-  --line: rgba(93,7,3,0.15);
-  --ok: #4C6B3C;
-  --danger: #A23B2E;
-  --edit: #B08A4E;
-  --muted: #8A7A6D;
-}
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
-body {
-  font-family: 'Inter', sans-serif;
-  color: var(--ink);
-  background: var(--cream-pale);
-  overflow: hidden;
-}
-.app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-/* ---------- Top bar ---------- */
-.topbar {
-  background: var(--maroon);
-  color: var(--cream-pale);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: none;
-  border-bottom: 1px solid rgba(0,0,0,0.15);
-  z-index: 100;
-}
-.menu-toggle {
-  background: none; border: none; color: var(--cream-pale);
-  font-size: 20px; cursor: pointer; padding: 4px;
-  display: flex; align-items: center; justify-content: center;
-}
-.topbar .mark {
-  width: 32px; height: 32px; border-radius: 6px;
-  background: var(--cream);
-  color: var(--maroon-deep);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px;
-  flex: none;
-}
-.topbar .titles { line-height: 1.2; }
-.topbar h1 { margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; }
-.topbar span { font-size: 11px; opacity: 0.8; }
-/* ---------- Body layout ---------- */
-.body { flex: 1; display: flex; min-height: 0; position: relative; overflow: hidden; }
-/* ---------- Sidebar ---------- */
-.sidebar {
-  width: 260px;
-  flex: none;
-  background: var(--paper);
-  border-right: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 90;
-  overflow-x: hidden;
-}
-.sidebar.collapsed { width: 70px; }
-.sidebar.collapsed .menu-item span { display: none; }
-.sidebar.collapsed .menu-item { justify-content: center; padding: 12px; }
-.sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
-.menu-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: var(--ink-soft);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.menu-item svg { width: 18px; height: 18px; flex: none; stroke: currentColor; }
-.menu-item:hover { background: var(--cream-pale); color: var(--maroon); }
-.menu-item.active { background: var(--cream); color: var(--maroon-deep); font-weight: 700; border-left: 3px solid var(--maroon); }
-/* ---------- Main Content Area ---------- */
-.main {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 32px;
-  display: flex;
-  flex-direction: column;
-  background-image: radial-gradient(circle at 1px 1px, rgba(93,7,3,0.03) 1px, transparent 0);
-  background-size: 24px 24px;
-}
-/* ---------- FAQ Content Styles ---------- */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-  background: var(--paper);
-  padding: 32px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 20px rgba(93,7,3,0.05);
-}
-h2 {
-  font-family: 'Fraunces', serif;
-  color: var(--maroon-deep);
-  text-align: center;
-  margin-bottom: 24px;
-  font-size: 28px;
-}
-.form-group { margin-bottom: 20px; }
-label {
-  display: block;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--maroon-deep);
-  font-size: 14px;
-}
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1.5px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  outline: none;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--maroon);
-  box-shadow: 0 0 0 3px rgba(93,7,3,0.1);
-}
-.btn-row { display: flex; gap: 12px; margin-top: 10px; }
-button.btn-add {
-  background: var(--maroon);
-  color: var(--cream-pale);
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  flex: 1;
-  transition: all 0.2s ease;
-}
-button.btn-add:hover { background: var(--maroon-deep); transform: translateY(-1px); }
-button.btn-cancel {
-  background: var(--muted);
-  color: #fff;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  display: none;
-}
-/* Table Styles */
-.table-wrap { overflow-x: auto; margin-top: 32px; border-radius: 8px; border: 1px solid var(--line); }
-table { width: 100%; border-collapse: collapse; background: #fff; }
-th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13.5px; }
-th { background: var(--cream-pale); color: var(--maroon-deep); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--paper); }
-.btn-del, .btn-edit {
-  border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s ease;
-}
-.btn-del { background: #fee2e2; color: var(--danger); }
-.btn-edit { background: #fef3c7; color: var(--edit); margin-right: 6px; }
-.btn-del:hover { background: var(--danger); color: #fff; }
-.btn-edit:hover { background: var(--edit); color: #fff; }
-/* Responsive */
-@media (max-width: 860px) {
-  .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
-  .sidebar.collapsed { transform: translateX(0); width: 260px; }
-  .main { padding: 20px 16px; }
-  .container { padding: 20px; }
-}
+            --maroon: #5d0703;
+            --maroon-deep: #3e0402;
+            --maroon-soft: #7a1410;
+            --cream: #eedcc8;
+            --cream-pale: #fbf4e9;
+            --paper: #fffbf5;
+            --gold: #b08a4e;
+            --ink: #2a1712;
+            --ink-soft: #6b5348;
+            --line: rgba(93, 7, 3, .15);
+            --ok: #4c6b3c;
+            --danger: #a23b2e;
+            --muted: #8a7a6d;
+            --edit: #b08a4e;
+            --topbar-height: 58px;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-width: 0;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
+            color: var(--ink);
+            background: var(--cream-pale);
+            background-image: radial-gradient(circle at 1px 1px, rgba(93, 7, 3, .04) 1px, transparent 0);
+            background-size: 24px 24px;
+            font-family: "Inter", sans-serif;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--maroon);
+            outline-offset: 2px;
+        }
+
+        /* =========================================================
+   APP VÀ NAVBAR CUSTOMER SUCCESS
+   navbar.js sẽ tự chèn topbar/sidebar vào .app
+   ========================================================= */
+
+        .app {
+            width: 100%;
+            min-height: 100vh;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .cs-navbar-topbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: var(--topbar-height);
+            padding: 9px 20px;
+            color: var(--cream-pale);
+            background: var(--maroon);
+            border-bottom: 1px solid rgba(0, 0, 0, .15);
+        }
+
+        .cs-navbar-toggle {
+            width: 34px;
+            height: 34px;
+            display: inline-grid;
+            flex: 0 0 34px;
+            place-items: center;
+            padding: 0;
+            border: 0;
+            border-radius: 7px;
+            color: inherit;
+            background: transparent;
+            cursor: pointer;
+            font-size: 21px;
+            line-height: 1;
+        }
+
+        .cs-navbar-toggle:hover {
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .cs-navbar-brand {
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .cs-navbar-mark {
+            width: 34px;
+            height: 34px;
+            display: inline-grid;
+            flex: 0 0 34px;
+            place-items: center;
+            border-radius: 7px;
+            color: var(--maroon-deep);
+            background: var(--cream);
+            font: 700 15px/1 "Fraunces", serif;
+        }
+
+        .cs-navbar-brand-copy {
+            min-width: 0;
+            display: grid;
+            gap: 2px;
+            line-height: 1.2;
+        }
+
+        .cs-navbar-brand-copy strong {
+            overflow: hidden;
+            max-width: min(420px, 65vw);
+            color: var(--cream-pale);
+            font: 600 17px/1.2 "Fraunces", serif;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cs-navbar-brand-copy small {
+            color: rgba(251, 244, 233, .76);
+            font-size: 10px;
+            line-height: 1.2;
+        }
+
+        .cs-navbar-layout {
+            display: block;
+            width: 100%;
+            min-height: calc(100vh - var(--topbar-height));
+            height: auto !important;
+            padding-top: var(--topbar-height);
+            overflow: visible !important;
+        }
+
+        .cs-navbar-sidebar {
+            position: fixed;
+            top: var(--topbar-height);
+            bottom: 0;
+            left: 0;
+            z-index: 90;
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+            color: var(--ink-soft);
+            background: var(--paper);
+            border-right: 1px solid var(--line);
+            transition: width .22s ease, transform .22s ease;
+        }
+
+        .cs-navbar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 14px 10px;
+        }
+
+        .cs-navbar-menu a {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 9px 12px;
+            border-left: 3px solid transparent;
+            border-radius: 8px;
+            color: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .cs-navbar-menu a svg {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 1.8;
+        }
+
+        .cs-navbar-menu a:hover {
+            color: var(--maroon);
+            background: var(--cream-pale);
+        }
+
+        .cs-navbar-menu a.active {
+            color: var(--maroon-deep);
+            background: var(--cream);
+            border-left-color: var(--maroon);
+            font-weight: 800;
+        }
+
+        .cs-navbar-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: auto 14px 16px;
+            padding: 10px 11px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--ink-soft);
+            background: var(--cream-pale);
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .cs-navbar-note i {
+            width: 8px;
+            height: 8px;
+            flex: 0 0 8px;
+            border-radius: 50%;
+            background: #9ab77c;
+            box-shadow: 0 0 0 3px rgba(154, 183, 124, .18);
+        }
+
+        .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
+            width: 70px;
+        }
+
+        .cs-navbar-layout.is-collapsed .cs-navbar-menu a {
+            justify-content: center;
+            padding-inline: 8px;
+            font-size: 0;
+        }
+
+        .cs-navbar-layout.is-collapsed .cs-navbar-menu a svg {
+            margin: 0;
+        }
+
+        .cs-navbar-layout.is-collapsed .cs-navbar-note {
+            justify-content: center;
+            margin-inline: 10px;
+            padding-inline: 0;
+            font-size: 0;
+        }
+
+        .cs-navbar-content {
+            display: block;
+            width: auto;
+            min-width: 0;
+            min-height: calc(100vh - var(--topbar-height));
+            margin-left: var(--sidebar-width);
+            overflow: visible !important;
+            transition: margin-left .22s ease;
+        }
+
+        .cs-navbar-layout.is-collapsed .cs-navbar-content {
+            margin-left: 70px;
+        }
+
+        .cs-navbar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            border: 0;
+            background: rgba(42, 23, 18, .3);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .cs-navbar-overlay.is-visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* =========================================================
+   MAIN VÀ FORM FAQ
+   ========================================================= */
+        .cs-navbar-content>.main {
+            width: 100%;
+            min-width: 0;
+            min-height: calc(100vh - var(--topbar-height));
+            padding: 26px clamp(16px, 3vw, 38px) 42px;
+            overflow: visible;
+            background-image: radial-gradient(circle at 1px 1px, rgba(93, 7, 3, .03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--paper);
+            box-shadow: 0 4px 20px rgba(93, 7, 3, .05);
+        }
+
+        h2 {
+            margin: 0 0 24px;
+            color: var(--maroon-deep);
+            font: 600 clamp(24px, 3vw, 30px)/1.15 "Fraunces", serif;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--maroon-deep);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--line);
+            border-radius: 8px;
+            outline: none;
+            color: var(--ink);
+            background: #fff;
+            font-size: 13px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(93, 7, 3, .1);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        button.btn-add,
+        button.btn-cancel {
+            min-height: 42px;
+            padding: 10px 20px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        button.btn-add {
+            flex: 1;
+            color: var(--cream-pale);
+            background: var(--maroon);
+        }
+
+        button.btn-add:hover {
+            background: var(--maroon-deep);
+        }
+
+        button.btn-cancel {
+            display: none;
+            color: #fff;
+            background: var(--muted);
+        }
+
+        /* =========================================================
+   BẢNG FAQ
+   ========================================================= */
+        .table-wrap {
+            width: 100%;
+            max-width: 100%;
+            margin-top: 28px;
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 620px;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+
+        th {
+            color: var(--maroon-deep);
+            background: var(--cream-pale);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tr:hover td {
+            background: var(--paper);
+        }
+
+        .btn-del,
+        .btn-edit {
+            min-height: 30px;
+            padding: 6px 10px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .btn-edit {
+            margin-right: 5px;
+            color: var(--edit);
+            background: #fef3c7;
+        }
+
+        .btn-del {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .btn-edit:hover {
+            color: #fff;
+            background: var(--edit);
+        }
+
+        .btn-del:hover {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        /* =========================================================
+   MOBILE
+   ========================================================= */
+        @media (max-width: 860px) {
+            :root {
+                --topbar-height: 56px;
+            }
+
+            html,
+            body {
+                overflow-x: hidden;
+                overflow-y: auto !important;
+            }
+
+            .app {
+                min-height: 100vh;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            .cs-navbar-topbar {
+                position: sticky;
+                top: 0;
+                height: 56px;
+                min-height: 56px;
+                padding: 8px 14px;
+            }
+
+            .cs-navbar-layout {
+                min-height: calc(100vh - 56px);
+                padding-top: 0;
+            }
+
+            .cs-navbar-sidebar {
+                position: fixed;
+                top: 56px;
+                bottom: 0;
+                left: 0;
+                width: min(280px, 84vw);
+                transform: translateX(-105%);
+                box-shadow: 12px 0 30px rgba(62, 4, 2, .16);
+            }
+
+            .cs-navbar-layout.is-mobile-open .cs-navbar-sidebar {
+                transform: translateX(0);
+            }
+
+            .cs-navbar-content,
+            .cs-navbar-layout.is-collapsed .cs-navbar-content {
+                width: 100%;
+                min-height: calc(100vh - 56px);
+                margin-left: 0 !important;
+            }
+
+            .cs-navbar-content>.main {
+                min-height: calc(100vh - 56px);
+                padding: 14px 10px 28px;
+            }
+
+            .container {
+                max-width: none;
+                margin: 0;
+                padding: 20px 16px;
+                border-radius: 10px;
+            }
+
+            h2 {
+                margin-bottom: 18px;
+                font-size: clamp(21px, 6vw, 26px);
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            label {
+                margin-bottom: 6px;
+                font-size: 12px;
+            }
+
+            input,
+            select,
+            textarea {
+                min-height: 42px;
+                padding: 10px 11px;
+                font-size: 13px;
+            }
+
+            .btn-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            button.btn-add,
+            button.btn-cancel {
+                width: 100%;
+                min-height: 42px;
+            }
+
+            .table-wrap {
+                margin-top: 22px;
+            }
+
+            table {
+                min-width: 620px;
+            }
+
+            th,
+            td {
+                padding: 10px 9px;
+                font-size: 11px;
+            }
+
+            th {
+                font-size: 9px;
+            }
+
+            .btn-del,
+            .btn-edit {
+                min-height: 32px;
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            :root {
+                --topbar-height: 54px;
+            }
+
+            .cs-navbar-topbar {
+                height: 54px;
+                min-height: 54px;
+                padding-inline: 12px;
+            }
+
+            .cs-navbar-sidebar {
+                top: 54px;
+            }
+
+            .cs-navbar-brand-copy strong {
+                max-width: 64vw;
+                font-size: 14px;
+            }
+
+            .cs-navbar-brand-copy small {
+                display: none;
+            }
+
+            .cs-navbar-content>.main {
+                min-height: calc(100vh - 54px);
+                padding: 10px 7px 22px;
+            }
+
+            .container {
+                padding: 16px 12px 20px;
+                border-radius: 8px;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+
+            .table-wrap {
+                margin-right: -2px;
+                margin-left: -2px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding-inline: 10px;
+            }
+
+            h2 {
+                font-size: 19px;
+            }
+
+            input,
+            select,
+            textarea {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 
@@ -418,7 +901,7 @@ tr:hover td { background: var(--paper); }
                     "Chỉnh Sửa FAQ";
                 document.getElementById("submitBtn").textContent =
                     "Cập Nhật FAQ";
-   
+
                 document.getElementById("cancelBtn").style.display =
                     "block";
                 window.scrollTo({
@@ -476,4 +959,5 @@ tr:hover td { background: var(--paper); }
     </script>
     <script src="/CS/navbar.js"></script>
 </body>
+
 </html>
