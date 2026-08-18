@@ -82,3 +82,176 @@
 .student-notification-delete { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--muted, #8a7a6d); background: transparent; border: 0; border-radius: 5px; cursor: pointer; font-size: 17px; line-height: 1; opacity: .7; }
 .student-notification-delete:hover { color: var(--maroon, #5d0703); background: var(--cream, #eedcc8); opacity: 1; }
 .student-notification-item.is-removing { max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; transform: translateX(110%); }
+/* =========================================================
+   FIX NAVBAR DESKTOP
+   Topbar và sidebar cố định; chỉ phần nội dung .main được cuộn.
+   ========================================================= */
+
+@media (min-width: 861px) {
+  /* Chừa chỗ cho topbar cố định */
+  .app[data-student-navbar-ready="true"] {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+    padding-top: 58px;
+  }
+
+  .student-navbar-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    height: 58px;
+  }
+
+  /* Layout không tự tạo thêm vùng cuộn */
+  .student-navbar-layout {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: calc(100vh - 58px);
+    min-height: 0;
+    overflow: visible;
+  }
+
+  /* Sidebar đứng im hoàn toàn khi .main cuộn */
+  .student-navbar-sidebar {
+    position: fixed;
+    top: 58px;
+    bottom: 0;
+    left: 0;
+    z-index: 45;
+    width: 260px;
+    height: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Chừa đúng khoảng sidebar cho phần nội dung */
+  .student-navbar-content {
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    margin-left: 260px;
+    overflow: visible;
+  }
+
+  /* .main là nơi duy nhất cuộn dọc */
+  .student-navbar-content > .main {
+    height: 100%;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Trạng thái thu gọn */
+  .student-navbar-layout.is-collapsed .student-navbar-sidebar {
+    width: 70px;
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-content {
+    margin-left: 70px;
+  }
+}
+
+/* Mobile: trả lại cơ chế drawer hiện có của navbar.css */
+@media (max-width: 860px) {
+  .app[data-student-navbar-ready="true"] {
+    padding-top: 0;
+  }
+
+  .student-navbar-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .student-navbar-topbar {
+    height: 56px;
+  }
+}
+/* =========================================================
+   NAVBAR DÙNG CHUNG CHO MỌI TRANG HV
+   Sidebar cố định nhưng nội dung vẫn cuộn tự nhiên.
+   ========================================================= */
+
+@media (min-width: 861px) {
+  html,
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+  }
+
+  .app[data-student-navbar-ready="true"] {
+    display: flex;
+    min-height: 100vh;
+    height: auto !important;
+    overflow: visible !important;
+    padding-top: 58px;
+  }
+
+  .student-navbar-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    height: 58px;
+  }
+
+  .student-navbar-layout {
+    display: block;
+    width: 100%;
+    min-height: calc(100vh - 58px);
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .student-navbar-sidebar {
+    position: fixed;
+    top: 58px;
+    bottom: 0;
+    left: 0;
+    z-index: 45;
+    width: 260px;
+    height: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .student-navbar-content {
+    display: block;
+    width: auto;
+    height: auto !important;
+    min-height: calc(100vh - 58px);
+    margin-left: 260px;
+    overflow: visible !important;
+  }
+
+  /* Không khóa chiều cao .main của từng trang */
+  .student-navbar-content > .main {
+    width: 100%;
+    height: auto !important;
+    min-height: calc(100vh - 58px);
+    overflow: visible !important;
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-sidebar {
+    width: 70px;
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-content {
+    margin-left: 70px;
+  }
+}
+
+/* Mobile giữ nguyên sidebar dạng drawer */
+@media (max-width: 860px) {
+  .student-navbar-content {
+    margin-left: 0;
+  }
+}
