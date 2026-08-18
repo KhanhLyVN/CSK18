@@ -909,7 +909,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 14px;
   padding:
-      16px 20px;
+      69px 20px 19px;
   color: var(--cream-pale);
   background:
       linear-gradient(
@@ -2015,7 +2015,7 @@ textarea:focus-visible {
   .drawer-head {
       min-height: 67px;
       padding:
-          13px 15px;
+          69px 20px 18px;
   }
   .drawer-body {
       overflow-x: hidden;
