@@ -819,6 +819,41 @@
       }
     }
   </style>
+
+  <style id="admin-campus-style">
+    .admin-identity {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .top-admin-campus {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 9px;
+      color: #701b19;
+      background: #f4e7d5;
+      border: 1px solid rgba(112, 27, 25, .17);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      white-space: nowrap;
+      box-shadow: 0 3px 9px rgba(112, 27, 25, .08);
+    }
+
+    .top-admin-campus:empty {
+      display: none;
+    }
+
+    @media (max-width: 520px) {
+      .top-admin-campus {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body data-admin-page="departments">
   <div class="app-shell">
@@ -2724,7 +2759,191 @@
       loadManagers();
     })();
   </script>
-  <script src="admin-bar.js"></script>
+  <script src="/ADMIN/admin-bar.js"></script>
+
+
+  <style id="activity-campus-header-fix">
+    .admin-identity {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .top-admin-campus {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 9px;
+      color: #701b19;
+      background: #f4e7d5;
+      border: 1px solid rgba(112, 27, 25, .17);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .top-admin-campus:empty {
+      display: none;
+    }
+  </style>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const getCampus = (data) => String(
+        data?.campus ||
+        data?.campusName ||
+        data?.['code-campus'] ||
+        data?.campusId ||
+        data?.codeCampus ||
+        data?.campus_code ||
+        'HCM'
+      ).trim() || 'HCM';
+
+      const renderCampus = (campus = 'HCM') => {
+        const node = document.getElementById('topAdminCampus');
+        if (node) {
+          node.textContent = campus || 'HCM';
+          node.title = `Campus ${campus || 'HCM'}`;
+          return true;
+        }
+        return false;
+      };
+
+      const loadCampusDirectly = async () => {
+        // Hiển thị ngay HCM, sau đó thay bằng dữ liệu thật nếu tìm được.
+        renderCampus('HCM');
+
+        if (typeof firebase === 'undefined' || !firebase.auth || !firebase.firestore) return;
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+
+        try {
+          const firestore = firebase.firestore();
+          let data = {};
+          const byUid = await firestore.collection('users').doc(user.uid).get();
+          if (byUid.exists) data = byUid.data() || {};
+
+          if (!Object.keys(data).length && user.email) {
+            const byEmail = await firestore
+              .collection('users')
+              .where('email', '==', user.email)
+              .limit(1)
+              .get();
+            if (!byEmail.empty) data = byEmail.docs[0].data() || {};
+          }
+
+          renderCampus(getCampus(data));
+        } catch (error) {
+          console.warn('Không đọc được campus, giữ giá trị HCM:', error);
+          renderCampus('HCM');
+        }
+      };
+
+      document.addEventListener('adminbar:ready', loadCampusDirectly);
+      window.addEventListener('load', loadCampusDirectly);
+
+      let attempts = 0;
+      const timer = setInterval(() => {
+        attempts += 1;
+        if (renderCampus('HCM') || attempts > 30) clearInterval(timer);
+      }, 100);
+    })();
+  </script>
+
+
+  <style id="activity-header-match">
+    /* Header Phòng ban giống Activity */
+    .topbar .top-actions {
+      display: flex !important;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .topbar .admin-identity {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 10px;
+      order: 2;
+      white-space: nowrap;
+    }
+
+    .topbar .top-admin {
+      order: 1;
+      color: #2a2421 !important;
+      font-size: 16px !important;
+      font-weight: 800 !important;
+    }
+
+    .topbar .top-admin-campus {
+      order: 2;
+      display: inline-flex !important;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border: 1px solid rgba(112, 27, 25, .16);
+      border-radius: 999px;
+      color: #701b19 !important;
+      background: #f4e7d5 !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .topbar .avatar-admin {
+      order: 3;
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 14px !important;
+      background: #7f201e !important;
+      color: #fff !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+    }
+
+    .topbar .notification-wrapper {
+      order: 1;
+    }
+  </style>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const applyActivityHeader = () => {
+        const name = document.getElementById('topAdminName');
+        const campus = document.getElementById('topAdminCampus');
+        const avatar = document.getElementById('topAdminAvatar');
+
+        if (!name || !campus || !avatar) return false;
+
+        // Đúng như Activity: HCM Admin và badge HCM.
+        name.textContent = 'HCM Admin';
+        name.title = 'HCM Admin';
+        campus.textContent = 'HCM';
+        campus.title = 'Campus HCM';
+        avatar.textContent = 'HA';
+        avatar.setAttribute('aria-label', 'Tài khoản HCM Admin');
+        return true;
+      };
+
+      document.addEventListener('adminbar:ready', applyActivityHeader);
+      window.addEventListener('load', applyActivityHeader);
+
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries += 1;
+        if (applyActivityHeader() || tries >= 50) clearInterval(timer);
+      }, 100);
+    })();
+  </script>
+
+
 
 </body>
 </html>

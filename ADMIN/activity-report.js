@@ -932,7 +932,8 @@ function setAdminDisplay(
   }
 
   function renderAdmin(name, campus, email) {
-  const adminName = get("topAdminName");
+    const adminName = get("topAdminName");
+    const adminAvatar = get("topAdminAvatar");
     const adminCampus = get("topAdminCampus");
     const finalName = safeText(name) || safeText(email) || "Admin";
     const finalCampus = safeText(campus);
@@ -1012,7 +1013,7 @@ function setAdminDisplay(
   }
 
   /* Chờ header.html được chèn xong rồi mới tìm topAdminName/avatar. */
-  document.addEventListener("sharedheader:loaded", initAdminProfile);
+  document.addEventListener("adminbar:ready", initAdminProfile);
 
   /* Trường hợp header đã có sẵn khi file này được nạp. */
   if (get("topAdminName")) {
@@ -1288,4 +1289,4 @@ window.addEventListener(
       unsubscribeUsers();
     }
   }
-);
+);  

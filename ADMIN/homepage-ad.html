@@ -67,6 +67,9 @@
             <small>Cần kiểm tra hôm nay</small>
           </article>
         </section>
+
+
+
         <!-- Architecture Card -->
         <!-- <section class="architecture-card">
           <div>
@@ -92,6 +95,79 @@
   <!-- <div class="toast" id="toast"></div> -->
   <!-- App Main Logic -->
 <script src="/ADMIN/homepage-ad.js"></script>
-<script src="admin-bar.js"></script>
+<script src="/ADMIN/admin-bar.js"></script>
+
+  <style id="activity-header-match">
+    .topbar .top-actions {
+      display: flex !important;
+      align-items: center;
+      gap: 13px;
+    }
+    .topbar .admin-identity {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 10px;
+      order: 2;
+      white-space: nowrap;
+    }
+    .topbar .top-admin {
+      order: 1;
+      color: #2a2421 !important;
+      font-size: 16px !important;
+      font-weight: 800 !important;
+    }
+    .topbar .top-admin-campus {
+      order: 2;
+      display: inline-flex !important;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border: 1px solid rgba(112, 27, 25, .16);
+      border-radius: 999px;
+      color: #701b19 !important;
+      background: #f4e7d5 !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .topbar .avatar-admin {
+      order: 3;
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 14px !important;
+      background: #7f201e !important;
+      color: #fff !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+    }
+    .topbar .notification-wrapper { order: 1; }
+  </style>
+  <script>
+    (() => {
+      'use strict';
+      const applyActivityHeader = () => {
+        const name = document.getElementById('topAdminName');
+        const campus = document.getElementById('topAdminCampus');
+        const avatar = document.getElementById('topAdminAvatar');
+        if (!name || !campus || !avatar) return false;
+        name.textContent = 'HCM Admin';
+        name.title = 'HCM Admin';
+        campus.textContent = 'HCM';
+        campus.title = 'Campus HCM';
+        avatar.textContent = 'HA';
+        avatar.setAttribute('aria-label', 'Tài khoản HCM Admin');
+        return true;
+      };
+      document.addEventListener('adminbar:ready', applyActivityHeader);
+      window.addEventListener('load', applyActivityHeader);
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries += 1;
+        if (applyActivityHeader() || tries >= 50) clearInterval(timer);
+      }, 100);
+    })();
+  </script>
+
 </body>
 </html>

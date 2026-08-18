@@ -1,164 +1,233 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  
-  <link rel="stylesheet" href="admin-bar.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tài khoản CS - Admin</title>
-  <link rel="stylesheet" href="accounts.css">
-  <!-- Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+  <!doctype html>
+  <html lang="vi">
+  <head>
+    
+    <link rel="stylesheet" href="admin-bar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản CS - Admin</title>
+    <link rel="stylesheet" href="accounts.css">
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
 
-  <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="../firebase-config.js"></script>
-</head>
-<body data-admin-page="accounts">
-  <div class="app-shell">
-      <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
-    <!-- Main Content Area -->
-    <main class="main-content">
-<div class="content-wrap">
+    <!-- Firebase -->
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+      <script src="../firebase-config.js"></script>
+  </head>
+  <body data-admin-page="accounts">
+    <div class="app-shell">
+        <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+      <!-- Main Content Area -->
+      <main class="main-content">
+  <div class="content-wrap">
 
-        <!-- Hero Section -->
-        <section class="hero">
-          <div>
-            <p class="eyebrow">Bàn điều hành · <span id="todayLabel"></span></p>
-            <h1>Tài khoản CS,<br><span>trong một góc nhìn.</span></h1>
-            <p class="hero-copy">
-              Quản lý hồ sơ, trạng thái, quyền truy cập và hoạt động của đội ngũ Customer Success.
-            </p>
-          </div>
-          <!-- <div class="hero-art" aria-hidden="true">
-            <div class="orbit orbit-one"></div>
-            <div class="orbit orbit-two"></div>
-            <div class="node node-a">CS</div>
-            <div class="node node-b">✓</div>
-            <div class="node node-c">ID</div>
-            <div class="connector connector-one"></div>
-            <div class="connector connector-two"></div>
-          </div> -->
-        </section>
-        <!-- Stats Overview -->
-        <section class="stats-grid" aria-label="Tổng quan">
-          <article class="stat-card">
-            <span>TỔNG TÀI KHOẢN CS</span>
-            <strong id="totalCount">—</strong>
-            <small>Đang tải dữ liệu</small>
-          </article>
-          <article class="stat-card">
-            <span>ĐANG HOẠT ĐỘNG</span>
-            <strong id="activeCount">—</strong>
-            <small id="activeMeta">—</small>
-          </article>
-          <article class="stat-card">
-            <span>VAI TRÒ QUẢN LÝ</span>
-            <strong id="managerCount">—</strong>
-            <small>Trưởng nhóm và CS cấp 2</small>
-          </article>
-          <article class="stat-card attention">
-            <span>CHƯA KÍCH HOẠT</span>
-            <strong id="pendingCount">—</strong>
-            <small>Cần kiểm tra hôm nay</small>
-          </article>
-        </section>
-        <!-- Accounts Data Table Panel -->
-        <section class="account-panel" id="accounts">
-          <div class="panel-head">
+          <!-- Hero Section -->
+          <section class="hero">
             <div>
-              <div class="title-line">
-                <h2>Danh sách tài khoản</h2>
-                <span id="recordBadge">— hồ sơ</span>
+              <p class="eyebrow">Bàn điều hành · <span id="todayLabel"></span></p>
+              <h1>Tài khoản CS,<br><span>trong một góc nhìn.</span></h1>
+              <p class="hero-copy">
+                Quản lý hồ sơ, trạng thái, quyền truy cập và hoạt động của đội ngũ Customer Success.
+              </p>
+            </div>
+            <!-- <div class="hero-art" aria-hidden="true">
+              <div class="orbit orbit-one"></div>
+              <div class="orbit orbit-two"></div>
+              <div class="node node-a">CS</div>
+              <div class="node node-b">✓</div>
+              <div class="node node-c">ID</div>
+              <div class="connector connector-one"></div>
+              <div class="connector connector-two"></div>
+            </div> -->
+          </section>
+          <!-- Stats Overview -->
+          <section class="stats-grid" aria-label="Tổng quan">
+            <article class="stat-card">
+              <span>TỔNG TÀI KHOẢN CS</span>
+              <strong id="totalCount">—</strong>
+              <small>Đang tải dữ liệu</small>
+            </article>
+            <article class="stat-card">
+              <span>ĐANG HOẠT ĐỘNG</span>
+              <strong id="activeCount">—</strong>
+              <small id="activeMeta">—</small>
+            </article>
+            <article class="stat-card">
+              <span>VAI TRÒ QUẢN LÝ</span>
+              <strong id="managerCount">—</strong>
+              <small>Trưởng nhóm và CS cấp 2</small>
+            </article>
+            <article class="stat-card attention">
+              <span>CHƯA KÍCH HOẠT</span>
+              <strong id="pendingCount">—</strong>
+              <small>Cần kiểm tra hôm nay</small>
+            </article>
+          </section>
+          <!-- Accounts Data Table Panel -->
+          <section class="account-panel" id="accounts">
+            <div class="panel-head">
+              <div>
+                <div class="title-line">
+                  <h2>Danh sách tài khoản</h2>
+                  <span id="recordBadge">— hồ sơ</span>
+                </div>
+                <p>Mở hồ sơ để kiểm tra quyền và hoạt động gần đây.</p>
               </div>
-              <p>Mở hồ sơ để kiểm tra quyền và hoạt động gần đây.</p>
+              <button class="primary-btn" id="addAccountBtn">＋ Thêm tài khoản CS</button>
             </div>
-            <button class="primary-btn" id="addAccountBtn">＋ Thêm tài khoản CS</button>
-          </div>
-          <!-- Filters Bar -->
-          <div class="filters">
-            <div class="search-box">
-              <span>⌕</span>
-              <input id="searchInput" type="search" placeholder="Tìm theo tên, email hoặc mã tài khoản...">
+            <!-- Filters Bar -->
+            <div class="filters">
+              <div class="search-box">
+                <span>⌕</span>
+                <input id="searchInput" type="search" placeholder="Tìm theo tên, email hoặc mã tài khoản...">
+              </div>
+              <select id="statusFilter">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="away">Tạm vắng</option>
+                <option value="pending">Chưa kích hoạt</option>
+              </select>
+              <button class="icon-btn" id="clearFilters" title="Xóa bộ lọc">↺</button>
             </div>
-            <select id="statusFilter">
-              <option value="all">Tất cả trạng thái</option>
-              <option value="active">Đang hoạt động</option>
-              <option value="away">Tạm vắng</option>
-              <option value="pending">Chưa kích hoạt</option>
-            </select>
-            <button class="icon-btn" id="clearFilters" title="Xóa bộ lọc">↺</button>
-          </div>
-          <!-- Table Wrapper -->
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>TÀI KHOẢN</th>
-                  <th>VAI TRÒ</th>
-                  <th>TRẠNG THÁI</th>
-                  <th>HOẠT ĐỘNG</th>
-                  <th>NGÀY THAM GIA</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="accountBody">
-                <tr>
-                  <td colspan="6" class="loading-cell">Đang tải tài khoản từ Firestore...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="panel-foot">
-            <span id="entriesNote">—</span>
-            <span class="realtime">
-              <i></i> Dữ liệu cập nhật theo thời gian thực
-            </span>
-          </div>
-        </section>
-        <!-- Architecture Card -->
-        <!-- <section class="architecture-card">
-          <div>
-            <p class="eyebrow">Firebase conversation architecture</p>
-            <h2>Quản trị viên luôn nhìn thấy đường đi của dữ liệu.</h2>
-            <p>
-              Mỗi ticket gắn với một <code>conversationId</code> ổn định. Tài khoản CS, quyền truy cập và lịch sử trao đổi được tổ chức quanh cùng một cấu trúc.
-            </p>
-            <a href="#" data-placeholder="Sơ đồ kiến trúc">Xem kiến trúc ↗</a>
-          </div>
-          <div class="architecture-visual">
-            <span>ticket</span>
-            <b></b>
-            <span>conversation</span>
-            <b></b>
-            <span>messages</span>
-          </div>
-        </section> -->
-      </div>
-    </main>
-  </div>
-  <!-- Detail Drawer & Overlay -->
-  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
-  <aside class="drawer" id="accountDrawer" aria-hidden="true">
-    <div class="drawer-head">
-      <div>
-        <small>HỒ SƠ TÀI KHOẢN</small>
-        <h2>Chi tiết CS</h2>
-      </div>
-      <button class="close-btn" id="closeDrawer">×</button>
+            <!-- Table Wrapper -->
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>TÀI KHOẢN</th>
+                    <th>VAI TRÒ</th>
+                    <th>TRẠNG THÁI</th>
+                    <th>HOẠT ĐỘNG</th>
+                    <th>NGÀY THAM GIA</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="accountBody">
+                  <tr>
+                    <td colspan="6" class="loading-cell">Đang tải tài khoản từ Firestore...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-foot">
+              <span id="entriesNote">—</span>
+              <span class="realtime">
+                <i></i> Dữ liệu cập nhật theo thời gian thực
+              </span>
+            </div>
+          </section>
+          <!-- Architecture Card -->
+          <!-- <section class="architecture-card">
+            <div>
+              <p class="eyebrow">Firebase conversation architecture</p>
+              <h2>Quản trị viên luôn nhìn thấy đường đi của dữ liệu.</h2>
+              <p>
+                Mỗi ticket gắn với một <code>conversationId</code> ổn định. Tài khoản CS, quyền truy cập và lịch sử trao đổi được tổ chức quanh cùng một cấu trúc.
+              </p>
+              <a href="#" data-placeholder="Sơ đồ kiến trúc">Xem kiến trúc ↗</a>
+            </div>
+            <div class="architecture-visual">
+              <span>ticket</span>
+              <b></b>
+              <span>conversation</span>
+              <b></b>
+              <span>messages</span>
+            </div>
+          </section> -->
+        </div>
+      </main>
     </div>
-    <div id="drawerContent"></div>
-  </aside>
-  <!-- Toast Notification -->
-  <!-- <div class="toast" id="toast"></div> -->
-  <!-- App Main Logic -->
-<script src="/ADMIN/accounts.js"></script>
-  <script src="admin-bar.js"></script>
+    <!-- Detail Drawer & Overlay -->
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+    <aside class="drawer" id="accountDrawer" aria-hidden="true">
+      <div class="drawer-head">
+        <div>
+          <small>HỒ SƠ TÀI KHOẢN</small>
+          <h2>Chi tiết CS</h2>
+        </div>
+        <button class="close-btn" id="closeDrawer">×</button>
+      </div>
+      <div id="drawerContent"></div>
+    </aside>
+    <!-- Toast Notification -->
+    <!-- <div class="toast" id="toast"></div> -->
+    <!-- App Main Logic -->
+  <script src="/ADMIN/accounts.js"></script>
+    <script src="/ADMIN/admin-bar.js"></script>
+  
+  <style id="activity-header-match">
+    .topbar .top-actions {
+      display: flex !important;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .topbar .admin-identity {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 10px;
+      order: 2;
+      white-space: nowrap;
+    }
+
+    .topbar .top-admin {
+      order: 1;
+      color: #2a2421 !important;
+      font-size: 16px !important;
+      font-weight: 800 !important;
+    }
+
+    .topbar .avatar-admin {
+      order: 3;
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 14px !important;
+      background: #7f201e !important;
+      color: #fff !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+    }
+
+    .topbar .notification-wrapper {
+      order: 1;
+    }
+  </style>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const applyActivityHeader = () => {
+        const name = document.getElementById('topAdminName');
+        const avatar = document.getElementById('topAdminAvatar');
+
+        if (!name || !campus || !avatar) return false;
+
+        name.textContent = 'HCM Admin';
+        name.title = 'HCM Admin';
+        campus.textContent = 'HCM';
+        campus.title = 'Campus HCM';
+        avatar.textContent = 'HA';
+        avatar.setAttribute('aria-label', 'Tài khoản HCM Admin');
+        return true;
+      };
+
+      document.addEventListener('adminbar:ready', applyActivityHeader);
+      window.addEventListener('load', applyActivityHeader);
+
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries += 1;
+        if (applyActivityHeader() || tries >= 50) clearInterval(timer);
+      }, 100);
+    })();
+  </script>
+
 </body>
-</html>
+  </html>

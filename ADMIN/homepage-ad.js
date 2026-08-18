@@ -1494,3 +1494,32 @@
     init();
   }
 })();
+
+/* =========================================================
+   SHARED ACTIVITY HEADER
+   Hiển thị: HCM Admin | HCM | HA
+========================================================= */
+(() => {
+  "use strict";
+  function applyActivityHeader() {
+    const name = document.getElementById("topAdminName");
+    const campus = document.getElementById("topAdminCampus");
+    const avatar = document.getElementById("topAdminAvatar");
+    if (!name || !campus || !avatar) return false;
+    name.textContent = "HCM Admin";
+    name.title = "HCM Admin";
+    campus.textContent = "HCM";
+    campus.title = "Campus HCM";
+    avatar.textContent = "HA";
+    avatar.setAttribute("aria-label", "Tài khoản HCM Admin");
+    return true;
+  }
+  document.addEventListener("adminbar:ready", applyActivityHeader);
+  window.addEventListener("load", applyActivityHeader);
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    if (applyActivityHeader() || attempts >= 50) clearInterval(timer);
+  }, 100);
+})();
+
