@@ -298,11 +298,9 @@ button {
   height: 2px;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       var(--maroon),
-      rgba(93, 7, 3, .12)
-    );
+      rgba(93, 7, 3, .12));
 }
 
 /* =========================================================
@@ -640,7 +638,7 @@ button {
   border-bottom: 0;
 }
 
-.setting-row > div {
+.setting-row>div {
   flex: 1;
 }
 
@@ -714,11 +712,11 @@ button {
   transition: transform .2s ease;
 }
 
-.setting-row input:checked + .switch {
+.setting-row input:checked+.switch {
   background: var(--maroon);
 }
 
-.setting-row input:checked + .switch::after {
+.setting-row input:checked+.switch::after {
   transform: translateX(19px);
 }
 
@@ -881,7 +879,7 @@ button {
   padding: 8px 24px 18px;
 }
 
-.session-info > div {
+.session-info>div {
   padding: 11px 0;
 
   border-bottom: 1px solid var(--line-soft);
@@ -984,7 +982,7 @@ button {
   font-size: 9px;
 }
 
-.save-bar > div:last-child {
+.save-bar>div:last-child {
   display: flex;
 
   gap: 8px;
@@ -1006,7 +1004,7 @@ button {
 
   transform: translateX(-50%);
 
-  border: 1px solid rgba(255,255,255,.08);
+  border: 1px solid rgba(255, 255, 255, .08);
   border-radius: 9px;
 
   background: var(--ink);
@@ -1086,7 +1084,7 @@ button {
     align-items: stretch;
   }
 
-  .save-bar > div:last-child {
+  .save-bar>div:last-child {
     width: 100%;
   }
 

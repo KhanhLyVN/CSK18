@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,22 +10,26 @@
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" />
 
   <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="../firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="../firebase-config.js"></script>
 </head>
+
 <body data-admin-page="overview">
   <div class="app-shell">
-      <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
     <!-- Main Content Area -->
     <main class="main-content">
-<div class="content-wrap">
+      <div class="content-wrap">
         <!-- Hero Section -->
         <section class="hero">
           <div>
@@ -94,8 +99,8 @@
   <!-- Toast Notification -->
   <!-- <div class="toast" id="toast"></div> -->
   <!-- App Main Logic -->
-<script src="/ADMIN/homepage-ad.js"></script>
-<script src="/ADMIN/admin-bar.js"></script>
+  <script src="/ADMIN/homepage-ad.js"></script>
+  <script src="/ADMIN/admin-bar.js"></script>
 
   <style id="activity-header-match">
     .topbar .top-actions {
@@ -103,6 +108,7 @@
       align-items: center;
       gap: 13px;
     }
+
     .topbar .admin-identity {
       display: inline-flex !important;
       align-items: center;
@@ -110,12 +116,14 @@
       order: 2;
       white-space: nowrap;
     }
+
     .topbar .top-admin {
       order: 1;
       color: #2a2421 !important;
       font-size: 16px !important;
       font-weight: 800 !important;
     }
+
     .topbar .top-admin-campus {
       order: 2;
       display: inline-flex !important;
@@ -131,6 +139,7 @@
       letter-spacing: .04em;
       white-space: nowrap;
     }
+
     .topbar .avatar-admin {
       order: 3;
       width: 44px !important;
@@ -141,7 +150,10 @@
       font-size: 13px !important;
       font-weight: 800 !important;
     }
-    .topbar .notification-wrapper { order: 1; }
+
+    .topbar .notification-wrapper {
+      order: 1;
+    }
   </style>
   <script>
     (() => {
@@ -170,4 +182,5 @@
   </script>
 
 </body>
+
 </html>

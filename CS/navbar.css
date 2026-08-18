@@ -1,51 +1,293 @@
 /* Shared Customer Success Navbar — chỉ dùng cho các trang /CS/. */
-.cs-navbar-topbar { min-height: 58px; display: flex; align-items: center; gap: 12px; padding: 10px 22px; color: var(--cream-pale, #fbf4e9); background: var(--maroon, #5d0703); border-bottom: 1px solid rgba(0,0,0,.14); position: relative; z-index: 70; }
-.cs-navbar-toggle { width: 32px; height: 32px; display: inline-grid; place-items: center; flex: none; border: 0; border-radius: 7px; padding: 0; color: inherit; background: transparent; cursor: pointer; font-size: 20px; line-height: 1; transition: background .16s ease, transform .16s ease; }
-.cs-navbar-toggle:hover { background: rgba(255,255,255,.12); }
-.cs-navbar-toggle:active { transform: scale(.95); }
-.cs-navbar-brand { min-width: 0; display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
-.cs-navbar-mark { width: 32px; height: 32px; display: inline-grid; place-items: center; flex: none; border-radius: 7px; color: var(--maroon-deep, #3e0402); background: var(--cream, #eedcc8); font: 700 15px/1 "Fraunces", serif; }
-.cs-navbar-brand-copy { min-width: 0; display: grid; gap: 2px; line-height: 1.2; }
-.cs-navbar-brand-copy strong { overflow: hidden; font: 600 17px/1.2 "Fraunces", serif; text-overflow: ellipsis; white-space: nowrap; }
-.cs-navbar-brand-copy small { color: rgba(251,244,233,.76); font: 11px/1.2 "Inter", sans-serif; }
-.cs-navbar-layout { min-height: 0; flex: 1; display: flex; position: relative; overflow: hidden; }
-.cs-navbar-sidebar { width: 260px; min-height: 0; display: flex; flex: none; flex-direction: column; overflow: hidden; color: var(--ink-soft, #6b5348); background: var(--paper, #fffbf5); border-right: 1px solid var(--line, rgba(93,7,3,.15)); transition: width .22s ease, transform .22s ease; z-index: 45; }
-.cs-navbar-menu { display: flex; flex-direction: column; gap: 6px; padding: 16px 12px; }
-.cs-navbar-menu a { min-height: 42px; display: flex; align-items: center; padding: 10px 14px; border-left: 3px solid transparent; border-radius: 8px; color: inherit; font: 600 13px/1.25 "Inter", sans-serif; text-decoration: none; white-space: nowrap; transition: background .16s ease, color .16s ease; }
-.cs-navbar-menu a svg { width: 18px; height: 18px; flex: none; margin-right: 12px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
-.cs-navbar-menu a:hover { color: var(--maroon, #5d0703); background: var(--cream-pale, #fbf4e9); }
-.cs-navbar-menu a.active { color: var(--maroon-deep, #3e0402); background: var(--cream, #eedcc8); border-left-color: var(--maroon, #5d0703); font-weight: 800; }
-.cs-navbar-note { display: flex; align-items: center; gap: 8px; margin: auto 16px 18px; padding: 11px 12px; border: 1px solid var(--line, rgba(93,7,3,.15)); border-radius: 8px; background: var(--cream-pale, #fbf4e9); color: var(--ink-soft, #6b5348); font: 700 10.5px/1 "Inter", sans-serif; white-space: nowrap; }
-.cs-navbar-note i { width: 8px; height: 8px; display: inline-block; flex: none; border-radius: 50%; background: #9ab77c; box-shadow: 0 0 0 3px rgba(154,183,124,.18); }
-.cs-navbar-content { min-width: 0; min-height: 0; flex: 1; }
-.app[data-cs-navbar-ready="true"] { min-height: 100vh; display: flex; flex-direction: column; }
-.cs-navbar-overlay { position: fixed; inset: 0; z-index: 40; border: 0; padding: 0; background: rgba(42,23,18,.28); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease, visibility .2s ease; }
-.cs-navbar-overlay.is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
-.cs-navbar-layout.is-collapsed .cs-navbar-sidebar { width: 70px; }
-.cs-navbar-layout.is-collapsed .cs-navbar-menu a { justify-content: center; padding-inline: 10px; font-size: 0; }
-.cs-navbar-layout.is-collapsed .cs-navbar-menu a svg { margin-right: 0; }
-.cs-navbar-layout.is-collapsed .cs-navbar-note { justify-content: center; margin-inline: 12px; padding-inline: 0; font-size: 0; }
-@media (min-width: 861px) { .cs-navbar-overlay { display: none !important; } }
+.cs-navbar-topbar {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  color: var(--cream-pale, #fbf4e9);
+  background: var(--maroon, #5d0703);
+  border-bottom: 1px solid rgba(0, 0, 0, .14);
+  position: relative;
+  z-index: 70;
+}
+
+.cs-navbar-toggle {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  border-radius: 7px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.cs-navbar-toggle:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+.cs-navbar-toggle:active {
+  transform: scale(.95);
+}
+
+.cs-navbar-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cs-navbar-mark {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 7px;
+  color: var(--maroon-deep, #3e0402);
+  background: var(--cream, #eedcc8);
+  font: 700 15px/1 "Fraunces", serif;
+}
+
+.cs-navbar-brand-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.cs-navbar-brand-copy strong {
+  overflow: hidden;
+  font: 600 17px/1.2 "Fraunces", serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-navbar-brand-copy small {
+  color: rgba(251, 244, 233, .76);
+  font: 11px/1.2 "Inter", sans-serif;
+}
+
+.cs-navbar-layout {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-navbar-sidebar {
+  width: 260px;
+  min-height: 0;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ink-soft, #6b5348);
+  background: var(--paper, #fffbf5);
+  border-right: 1px solid var(--line, rgba(93, 7, 3, .15));
+  transition: width .22s ease, transform .22s ease;
+  z-index: 45;
+}
+
+.cs-navbar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 12px;
+}
+
+.cs-navbar-menu a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  color: inherit;
+  font: 600 13px/1.25 "Inter", sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .16s ease, color .16s ease;
+}
+
+.cs-navbar-menu a svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-right: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.cs-navbar-menu a:hover {
+  color: var(--maroon, #5d0703);
+  background: var(--cream-pale, #fbf4e9);
+}
+
+.cs-navbar-menu a.active {
+  color: var(--maroon-deep, #3e0402);
+  background: var(--cream, #eedcc8);
+  border-left-color: var(--maroon, #5d0703);
+  font-weight: 800;
+}
+
+.cs-navbar-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: auto 16px 18px;
+  padding: 11px 12px;
+  border: 1px solid var(--line, rgba(93, 7, 3, .15));
+  border-radius: 8px;
+  background: var(--cream-pale, #fbf4e9);
+  color: var(--ink-soft, #6b5348);
+  font: 700 10.5px/1 "Inter", sans-serif;
+  white-space: nowrap;
+}
+
+.cs-navbar-note i {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+  background: #9ab77c;
+  box-shadow: 0 0 0 3px rgba(154, 183, 124, .18);
+}
+
+.cs-navbar-content {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+}
+
+.app[data-cs-navbar-ready="true"] {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-navbar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border: 0;
+  padding: 0;
+  background: rgba(42, 23, 18, .28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.cs-navbar-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
+  width: 70px;
+}
+
+.cs-navbar-layout.is-collapsed .cs-navbar-menu a {
+  justify-content: center;
+  padding-inline: 10px;
+  font-size: 0;
+}
+
+.cs-navbar-layout.is-collapsed .cs-navbar-menu a svg {
+  margin-right: 0;
+}
+
+.cs-navbar-layout.is-collapsed .cs-navbar-note {
+  justify-content: center;
+  margin-inline: 12px;
+  padding-inline: 0;
+  font-size: 0;
+}
+
+@media (min-width: 861px) {
+  .cs-navbar-overlay {
+    display: none !important;
+  }
+}
+
 @media (max-width: 860px) {
-  .cs-navbar-sidebar { position: fixed; inset: 58px auto 0 0; width: min(280px, 84vw); box-shadow: 12px 0 30px rgba(62,4,2,.14); transform: translateX(-104%); }
-  .cs-navbar-layout.is-mobile-open .cs-navbar-sidebar { transform: translateX(0); }
-  .cs-navbar-layout.is-collapsed .cs-navbar-sidebar { width: min(280px, 84vw); }
-  .cs-navbar-layout.is-collapsed .cs-navbar-menu a { justify-content: flex-start; padding-inline: 14px; font-size: 13px; }
-  .cs-navbar-layout.is-collapsed .cs-navbar-menu a svg { margin-right: 12px; }
-  .cs-navbar-layout.is-collapsed .cs-navbar-note { justify-content: flex-start; margin-inline: 16px; padding-inline: 12px; font-size: 10.5px; }
+  .cs-navbar-sidebar {
+    position: fixed;
+    inset: 58px auto 0 0;
+    width: min(280px, 84vw);
+    box-shadow: 12px 0 30px rgba(62, 4, 2, .14);
+    transform: translateX(-104%);
+  }
+
+  .cs-navbar-layout.is-mobile-open .cs-navbar-sidebar {
+    transform: translateX(0);
+  }
+
+  .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
+    width: min(280px, 84vw);
+  }
+
+  .cs-navbar-layout.is-collapsed .cs-navbar-menu a {
+    justify-content: flex-start;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
+
+  .cs-navbar-layout.is-collapsed .cs-navbar-menu a svg {
+    margin-right: 12px;
+  }
+
+  .cs-navbar-layout.is-collapsed .cs-navbar-note {
+    justify-content: flex-start;
+    margin-inline: 16px;
+    padding-inline: 12px;
+    font-size: 10.5px;
+  }
 }
+
 @media (max-width: 560px) {
-  .cs-navbar-topbar { min-height: 56px; padding-inline: 14px; }
-  .cs-navbar-sidebar { inset-block-start: 56px; }
-  .cs-navbar-brand-copy small { display: none; }
-  .cs-navbar-brand-copy strong { max-width: 225px; font-size: 15px; }
+  .cs-navbar-topbar {
+    min-height: 56px;
+    padding-inline: 14px;
+  }
+
+  .cs-navbar-sidebar {
+    inset-block-start: 56px;
+  }
+
+  .cs-navbar-brand-copy small {
+    display: none;
+  }
+
+  .cs-navbar-brand-copy strong {
+    max-width: 225px;
+    font-size: 15px;
+  }
 }
+
 /* =========================================================
    CUSTOMER SUCCESS NAVBAR - SIDEBAR CỐ ĐỊNH
    Nạp file này sau /CS/navbar.css.
    ========================================================= */
 
 @media (min-width: 861px) {
+
   html,
   body {
     min-height: 100%;
