@@ -1,93 +1,605 @@
 /* Shared Student Navbar — dùng chung cho homepage, create ticket, sent tickets, chat và account. */
-.student-navbar-topbar { min-height: 58px; display: flex; align-items: center; gap: 12px; padding: 10px 22px; color: var(--cream-pale, #fbf4e9); background: var(--maroon, #5d0703); border-bottom: 1px solid rgba(0,0,0,.14); position: relative; z-index: 70; }
-.student-navbar-toggle { width: 32px; height: 32px; display: inline-grid; place-items: center; flex: none; border: 0; border-radius: 7px; padding: 0; color: inherit; background: transparent; cursor: pointer; font-size: 20px; line-height: 1; transition: background .16s ease, transform .16s ease; }
-.student-navbar-toggle:hover { background: rgba(255,255,255,.12); }
-.student-navbar-toggle:active { transform: scale(.95); }
-.student-navbar-brand { min-width: 0; display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
-.student-navbar-mark { width: 32px; height: 32px; display: inline-grid; place-items: center; flex: none; border-radius: 7px; color: var(--maroon-deep, #3e0402); background: var(--cream, #eedcc8); font: 700 15px/1 "Fraunces", serif; }
-.student-navbar-brand-copy { min-width: 0; display: grid; gap: 2px; line-height: 1.2; }
-.student-navbar-brand-copy strong { overflow: hidden; font: 600 17px/1.2 "Fraunces", serif; text-overflow: ellipsis; white-space: nowrap; }
-.student-navbar-brand-copy small { color: rgba(251,244,233,.76); font: 11px/1.2 "Inter", sans-serif; }
-.student-navbar-actions { min-width: 0; display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
-.student-navbar-layout { min-height: 0; flex: 1; display: flex; position: relative; overflow: hidden; }
-.student-navbar-sidebar { width: 260px; min-height: 0; display: flex; flex: none; flex-direction: column; overflow: hidden; color: var(--ink-soft, #6b5348); background: var(--paper, #fffbf5); border-right: 1px solid var(--line, rgba(93,7,3,.15)); transition: width .22s ease, transform .22s ease; z-index: 45; }
-.student-navbar-menu { display: flex; flex-direction: column; gap: 6px; padding: 16px 12px; }
-.student-navbar-menu a { min-height: 42px; display: flex; align-items: center; padding: 10px 14px; border-left: 3px solid transparent; border-radius: 8px; color: inherit; font: 600 13px/1.25 "Inter", sans-serif; text-decoration: none; white-space: nowrap; transition: background .16s ease, color .16s ease; }
-.student-navbar-menu a svg { width: 18px; height: 18px; flex: none; margin-right: 12px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
-.student-navbar-menu a:hover { color: var(--maroon, #5d0703); background: var(--cream-pale, #fbf4e9); }
-.student-navbar-menu a.active { color: var(--maroon-deep, #3e0402); background: var(--cream, #eedcc8); border-left-color: var(--maroon, #5d0703); font-weight: 800; }
-.student-navbar-note { display: flex; align-items: center; gap: 8px; margin: auto 16px 18px; padding: 11px 12px; border: 1px solid var(--line, rgba(93,7,3,.15)); border-radius: 8px; background: var(--cream-pale, #fbf4e9); color: var(--ink-soft, #6b5348); font: 700 10.5px/1 "Inter", sans-serif; white-space: nowrap; }
-.student-navbar-note i { width: 8px; height: 8px; display: inline-block; flex: none; border-radius: 50%; background: #9ab77c; box-shadow: 0 0 0 3px rgba(154,183,124,.18); }
-.student-navbar-content { min-width: 0; min-height: 0; flex: 1; }
-.app[data-student-navbar-ready="true"] { min-height: 100vh; display: flex; flex-direction: column; }
-.student-navbar-overlay { position: fixed; inset: 0; z-index: 40; border: 0; padding: 0; background: rgba(42,23,18,.28); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease, visibility .2s ease; }
-.student-navbar-overlay.is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
-.student-navbar-layout.is-collapsed .student-navbar-sidebar { width: 70px; }
-.student-navbar-layout.is-collapsed .student-navbar-menu a { justify-content: center; padding-inline: 10px; font-size: 0; }
-.student-navbar-layout.is-collapsed .student-navbar-menu a svg { margin-right: 0; }
-.student-navbar-layout.is-collapsed .student-navbar-note { justify-content: center; margin-inline: 12px; padding-inline: 0; font-size: 0; }
-@media (min-width: 861px) { .student-navbar-overlay { display: none !important; } }
-@media (max-width: 860px) {
-  .student-navbar-sidebar { position: fixed; inset: 58px auto 0 0; width: min(280px, 84vw); box-shadow: 12px 0 30px rgba(62,4,2,.14); transform: translateX(-104%); }
-  .student-navbar-layout.is-mobile-open .student-navbar-sidebar { transform: translateX(0); }
-  .student-navbar-layout.is-collapsed .student-navbar-sidebar { width: min(280px, 84vw); }
-  .student-navbar-layout.is-collapsed .student-navbar-menu a { justify-content: flex-start; padding-inline: 14px; font-size: 13px; }
-  .student-navbar-layout.is-collapsed .student-navbar-note { justify-content: flex-start; margin-inline: 16px; padding-inline: 12px; font-size: 10.5px; }
+.student-navbar-topbar {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  color: var(--cream-pale, #fbf4e9);
+  background: var(--maroon, #5d0703);
+  border-bottom: 1px solid rgba(0, 0, 0, .14);
+  position: relative;
+  z-index: 70;
 }
+
+.student-navbar-toggle {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  border-radius: 7px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.student-navbar-toggle:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+.student-navbar-toggle:active {
+  transform: scale(.95);
+}
+
+.student-navbar-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.student-navbar-mark {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 7px;
+  color: var(--maroon-deep, #3e0402);
+  background: var(--cream, #eedcc8);
+  font: 700 15px/1 "Fraunces", serif;
+}
+
+.student-navbar-brand-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.student-navbar-brand-copy strong {
+  overflow: hidden;
+  font: 600 17px/1.2 "Fraunces", serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.student-navbar-brand-copy small {
+  color: rgba(251, 244, 233, .76);
+  font: 11px/1.2 "Inter", sans-serif;
+}
+
+.student-navbar-actions {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.student-navbar-layout {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.student-navbar-sidebar {
+  width: 260px;
+  min-height: 0;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ink-soft, #6b5348);
+  background: var(--paper, #fffbf5);
+  border-right: 1px solid var(--line, rgba(93, 7, 3, .15));
+  transition: width .22s ease, transform .22s ease;
+  z-index: 45;
+}
+
+.student-navbar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 12px;
+}
+
+.student-navbar-menu a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  color: inherit;
+  font: 600 13px/1.25 "Inter", sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .16s ease, color .16s ease;
+}
+
+.student-navbar-menu a svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-right: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.student-navbar-menu a:hover {
+  color: var(--maroon, #5d0703);
+  background: var(--cream-pale, #fbf4e9);
+}
+
+.student-navbar-menu a.active {
+  color: var(--maroon-deep, #3e0402);
+  background: var(--cream, #eedcc8);
+  border-left-color: var(--maroon, #5d0703);
+  font-weight: 800;
+}
+
+.student-navbar-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: auto 16px 18px;
+  padding: 11px 12px;
+  border: 1px solid var(--line, rgba(93, 7, 3, .15));
+  border-radius: 8px;
+  background: var(--cream-pale, #fbf4e9);
+  color: var(--ink-soft, #6b5348);
+  font: 700 10.5px/1 "Inter", sans-serif;
+  white-space: nowrap;
+}
+
+.student-navbar-note i {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+  background: #9ab77c;
+  box-shadow: 0 0 0 3px rgba(154, 183, 124, .18);
+}
+
+.student-navbar-content {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+}
+
+.app[data-student-navbar-ready="true"] {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.student-navbar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border: 0;
+  padding: 0;
+  background: rgba(42, 23, 18, .28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.student-navbar-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.student-navbar-layout.is-collapsed .student-navbar-sidebar {
+  width: 70px;
+}
+
+.student-navbar-layout.is-collapsed .student-navbar-menu a {
+  justify-content: center;
+  padding-inline: 10px;
+  font-size: 0;
+}
+
+.student-navbar-layout.is-collapsed .student-navbar-menu a svg {
+  margin-right: 0;
+}
+
+.student-navbar-layout.is-collapsed .student-navbar-note {
+  justify-content: center;
+  margin-inline: 12px;
+  padding-inline: 0;
+  font-size: 0;
+}
+
+@media (min-width: 861px) {
+  .student-navbar-overlay {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .student-navbar-sidebar {
+    position: fixed;
+    inset: 58px auto 0 0;
+    width: min(280px, 84vw);
+    box-shadow: 12px 0 30px rgba(62, 4, 2, .14);
+    transform: translateX(-104%);
+  }
+
+  .student-navbar-layout.is-mobile-open .student-navbar-sidebar {
+    transform: translateX(0);
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-sidebar {
+    width: min(280px, 84vw);
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-menu a {
+    justify-content: flex-start;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
+
+  .student-navbar-layout.is-collapsed .student-navbar-note {
+    justify-content: flex-start;
+    margin-inline: 16px;
+    padding-inline: 12px;
+    font-size: 10.5px;
+  }
+}
+
 @media (max-width: 560px) {
-  .student-navbar-topbar { min-height: 56px; padding-inline: 14px; }
-  .student-navbar-sidebar { inset-block-start: 56px; }
-  .student-navbar-brand-copy small { display: none; }
-  .student-navbar-brand-copy strong { max-width: 225px; font-size: 15px; }
+  .student-navbar-topbar {
+    min-height: 56px;
+    padding-inline: 14px;
+  }
+
+  .student-navbar-sidebar {
+    inset-block-start: 56px;
+  }
+
+  .student-navbar-brand-copy small {
+    display: none;
+  }
+
+  .student-navbar-brand-copy strong {
+    max-width: 225px;
+    font-size: 15px;
+  }
 }
 
 
 /* Shared notification button and drawer */
-.student-navbar-notification-button { position: relative; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--cream-pale, #fbf4e9); background: rgba(255,255,255,.1); border: 1px solid rgba(251,244,233,.28); border-radius: 8px; cursor: pointer; transition: background .16s ease, transform .16s ease; }
-.student-navbar-notification-button:hover { background: rgba(255,255,255,.2); }
-.student-navbar-notification-button:active { transform: scale(.95); }
-.student-navbar-notification-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
-.student-navbar-notification-count { position: absolute; top: -6px; right: -6px; min-width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; color: var(--maroon-deep, #3e0402); background: var(--gold, #b08a4e); border: 2px solid var(--maroon, #5d0703); border-radius: 999px; font: 800 9px/1 "Inter", sans-serif; }
-.student-notification-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 90; width: min(390px, 100vw); display: flex; flex-direction: column; overflow: hidden; background: var(--paper, #fffbf5); border-left: 1px solid var(--line, rgba(93,7,3,.15)); box-shadow: 0 20px 55px rgba(42,23,18,.22); transform: translateX(105%); transition: transform .28s cubic-bezier(.22,1,.36,1); }
-.student-notification-panel.open { transform: translateX(0); }
-.student-notification-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 20px 18px; color: var(--cream-pale, #fbf4e9); background: linear-gradient(135deg, var(--maroon, #5d0703), var(--maroon-soft, #7a1410)); }
-.student-notification-head h2 { margin: 4px 0 0; color: inherit; font: 600 24px/1.1 "Fraunces", serif; }
-.student-notification-head p { margin: 7px 0 0; color: rgba(251,244,233,.76); font: 11px/1.45 "Inter", sans-serif; }
-.student-notification-kicker { color: rgba(251,244,233,.72); font: 800 9px/1 "Inter", sans-serif; letter-spacing: .13em; }
-.student-notification-close { width: 34px; height: 34px; flex: 0 0 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--cream-pale, #fbf4e9); background: rgba(255,255,255,.1); border: 1px solid rgba(251,244,233,.28); border-radius: 8px; cursor: pointer; font-size: 24px; line-height: 1; }
-.student-notification-toolbar { padding: 11px 16px; color: var(--muted, #8a7a6d); background: var(--cream-pale, #fbf4e9); border-bottom: 1px solid var(--line, rgba(93,7,3,.15)); font: 700 10px/1.2 "Inter", sans-serif; }
-.student-notification-list { min-height: 0; flex: 1; overflow-y: auto; padding: 10px; background: #fffaf4; }
-.student-notification-item { display: block; margin-bottom: 8px; padding: 13px 14px; color: inherit; background: #fff; border: 1px solid var(--line, rgba(93,7,3,.15)); border-left: 3px solid var(--gold, #b08a4e); border-radius: 9px; text-decoration: none; transition: background .16s ease, transform .16s ease; }
-.student-notification-item:hover { background: #fffdf9; transform: translateY(-1px); }
-.student-notification-item-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.student-notification-item-head strong { color: var(--maroon, #5d0703); font: 600 10px/1 "IBM Plex Mono", monospace; }
-.student-notification-item-head span { color: var(--muted, #8a7a6d); font: 9px/1 "Inter", sans-serif; }
-.student-notification-item b { display: block; margin-top: 7px; color: var(--maroon-deep, #3e0402); font: 800 12px/1.3 "Inter", sans-serif; }
-.student-notification-item p { margin: 5px 0 0; color: var(--ink-soft, #6b5348); font: 11px/1.5 "Inter", sans-serif; }
-.student-notification-empty { display: none; padding: 48px 26px; color: var(--muted, #8a7a6d); background: #fffaf4; text-align: center; font: 12px/1.6 "Inter", sans-serif; }
-.student-notification-empty.show { display: block; }
-.student-notification-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(42,23,18,.24); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
-.student-notification-backdrop.show { opacity: 1; pointer-events: auto; }
-@media (max-width: 560px) { .student-navbar-notification-button { width: 34px; height: 34px; } .student-notification-panel { width: 100vw; } .student-notification-head { padding: 18px 16px 15px; } }
+.student-navbar-notification-button {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--cream-pale, #fbf4e9);
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(251, 244, 233, .28);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.student-navbar-notification-button:hover {
+  background: rgba(255, 255, 255, .2);
+}
+
+.student-navbar-notification-button:active {
+  transform: scale(.95);
+}
+
+.student-navbar-notification-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.student-navbar-notification-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  color: var(--maroon-deep, #3e0402);
+  background: var(--gold, #b08a4e);
+  border: 2px solid var(--maroon, #5d0703);
+  border-radius: 999px;
+  font: 800 9px/1 "Inter", sans-serif;
+}
+
+.student-notification-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  width: min(390px, 100vw);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper, #fffbf5);
+  border-left: 1px solid var(--line, rgba(93, 7, 3, .15));
+  box-shadow: 0 20px 55px rgba(42, 23, 18, .22);
+  transform: translateX(105%);
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+.student-notification-panel.open {
+  transform: translateX(0);
+}
+
+.student-notification-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 20px 18px;
+  color: var(--cream-pale, #fbf4e9);
+  background: linear-gradient(135deg, var(--maroon, #5d0703), var(--maroon-soft, #7a1410));
+}
+
+.student-notification-head h2 {
+  margin: 4px 0 0;
+  color: inherit;
+  font: 600 24px/1.1 "Fraunces", serif;
+}
+
+.student-notification-head p {
+  margin: 7px 0 0;
+  color: rgba(251, 244, 233, .76);
+  font: 11px/1.45 "Inter", sans-serif;
+}
+
+.student-notification-kicker {
+  color: rgba(251, 244, 233, .72);
+  font: 800 9px/1 "Inter", sans-serif;
+  letter-spacing: .13em;
+}
+
+.student-notification-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--cream-pale, #fbf4e9);
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(251, 244, 233, .28);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.student-notification-toolbar {
+  padding: 11px 16px;
+  color: var(--muted, #8a7a6d);
+  background: var(--cream-pale, #fbf4e9);
+  border-bottom: 1px solid var(--line, rgba(93, 7, 3, .15));
+  font: 700 10px/1.2 "Inter", sans-serif;
+}
+
+.student-notification-list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #fffaf4;
+}
+
+.student-notification-item {
+  display: block;
+  margin-bottom: 8px;
+  padding: 13px 14px;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--line, rgba(93, 7, 3, .15));
+  border-left: 3px solid var(--gold, #b08a4e);
+  border-radius: 9px;
+  text-decoration: none;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.student-notification-item:hover {
+  background: #fffdf9;
+  transform: translateY(-1px);
+}
+
+.student-notification-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.student-notification-item-head strong {
+  color: var(--maroon, #5d0703);
+  font: 600 10px/1 "IBM Plex Mono", monospace;
+}
+
+.student-notification-item-head span {
+  color: var(--muted, #8a7a6d);
+  font: 9px/1 "Inter", sans-serif;
+}
+
+.student-notification-item b {
+  display: block;
+  margin-top: 7px;
+  color: var(--maroon-deep, #3e0402);
+  font: 800 12px/1.3 "Inter", sans-serif;
+}
+
+.student-notification-item p {
+  margin: 5px 0 0;
+  color: var(--ink-soft, #6b5348);
+  font: 11px/1.5 "Inter", sans-serif;
+}
+
+.student-notification-empty {
+  display: none;
+  padding: 48px 26px;
+  color: var(--muted, #8a7a6d);
+  background: #fffaf4;
+  text-align: center;
+  font: 12px/1.6 "Inter", sans-serif;
+}
+
+.student-notification-empty.show {
+  display: block;
+}
+
+.student-notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(42, 23, 18, .24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.student-notification-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 560px) {
+  .student-navbar-notification-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .student-notification-panel {
+    width: 100vw;
+  }
+
+  .student-notification-head {
+    padding: 18px 16px 15px;
+  }
+}
 
 
 /* Notification read/delete states */
-.student-notification-clear-all { padding: 0; color: var(--maroon, #5d0703); background: transparent; border: 0; cursor: pointer; font: 800 10px/1.2 "Inter", sans-serif; }
-.student-notification-clear-all:hover { text-decoration: underline; }
-.student-notification-clear-all.is-disabled, .student-notification-clear-all:disabled { color: var(--muted, #8a7a6d); cursor: not-allowed; opacity: .5; text-decoration: none; }
-.student-notification-item { position: relative; padding-right: 34px; transition: background .16s ease, transform .16s ease, opacity .22s ease, max-height .26s ease, margin .26s ease, padding .26s ease; }
-.student-notification-item.is-read { border-left-color: rgba(93,7,3,.18); background: #f5f1eb; opacity: .65; }
-.student-notification-item.is-read .student-notification-item-head strong, .student-notification-item.is-read b { color: var(--muted, #8a7a6d); }
-.student-notification-link { display: block; color: inherit; text-decoration: none; }
-.student-notification-delete { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--muted, #8a7a6d); background: transparent; border: 0; border-radius: 5px; cursor: pointer; font-size: 17px; line-height: 1; opacity: .7; }
-.student-notification-delete:hover { color: var(--maroon, #5d0703); background: var(--cream, #eedcc8); opacity: 1; }
-.student-notification-item.is-removing { max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; transform: translateX(110%); }
+.student-notification-clear-all {
+  padding: 0;
+  color: var(--maroon, #5d0703);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: 800 10px/1.2 "Inter", sans-serif;
+}
+
+.student-notification-clear-all:hover {
+  text-decoration: underline;
+}
+
+.student-notification-clear-all.is-disabled,
+.student-notification-clear-all:disabled {
+  color: var(--muted, #8a7a6d);
+  cursor: not-allowed;
+  opacity: .5;
+  text-decoration: none;
+}
+
+.student-notification-item {
+  position: relative;
+  padding-right: 34px;
+  transition: background .16s ease, transform .16s ease, opacity .22s ease, max-height .26s ease, margin .26s ease, padding .26s ease;
+}
+
+.student-notification-item.is-read {
+  border-left-color: rgba(93, 7, 3, .18);
+  background: #f5f1eb;
+  opacity: .65;
+}
+
+.student-notification-item.is-read .student-notification-item-head strong,
+.student-notification-item.is-read b {
+  color: var(--muted, #8a7a6d);
+}
+
+.student-notification-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.student-notification-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--muted, #8a7a6d);
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  opacity: .7;
+}
+
+.student-notification-delete:hover {
+  color: var(--maroon, #5d0703);
+  background: var(--cream, #eedcc8);
+  opacity: 1;
+}
+
+.student-notification-item.is-removing {
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(110%);
+}
+
 /* =========================================================
    FIX NAVBAR DESKTOP
    Topbar và sidebar cố định; chỉ phần nội dung .main được cuộn.
    ========================================================= */
 
 @media (min-width: 861px) {
+
   /* Chừa chỗ cho topbar cố định */
   .app[data-student-navbar-ready="true"] {
     height: 100vh;
@@ -139,7 +651,7 @@
   }
 
   /* .main là nơi duy nhất cuộn dọc */
-  .student-navbar-content > .main {
+  .student-navbar-content>.main {
     height: 100%;
     min-height: 0;
     overflow-x: hidden;
@@ -172,12 +684,14 @@
     height: 56px;
   }
 }
+
 /* =========================================================
    NAVBAR DÙNG CHUNG CHO MỌI TRANG HV
    Sidebar cố định nhưng nội dung vẫn cuộn tự nhiên.
    ========================================================= */
 
 @media (min-width: 861px) {
+
   html,
   body {
     min-height: 100%;
@@ -233,7 +747,7 @@
   }
 
   /* Không khóa chiều cao .main của từng trang */
-  .student-navbar-content > .main {
+  .student-navbar-content>.main {
     width: 100%;
     height: auto !important;
     min-height: calc(100vh - 58px);

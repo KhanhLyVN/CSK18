@@ -61,7 +61,7 @@ const elements = {
   notificationList: $("notificationList"),
   notificationCount: $("notificationCount"),
   markAllReadBtn: $("markAllReadBtn"),
-  menuBtn: $("menuBtn")
+  menuBtn: $("menuBtn"),
 };
 
 /* =========================================================
@@ -148,7 +148,7 @@ function loadUsers() {
         console.error("Lỗi realtime users:", error);
         setConnection(false, "Lỗi kết nối Firestore");
         showTableError("Không thể tải dữ liệu tài khoản.");
-      }
+      },
     );
   } catch (error) {
     console.error("Lỗi khởi tạo users:", error);
@@ -251,10 +251,14 @@ function populateFilters() {
       option.textContent = campus;
       elements.campusFilter.appendChild(option);
     });
-    elements.campusFilter.value = campuses.includes(currentValue) ? currentValue : "all";
+    elements.campusFilter.value = campuses.includes(currentValue)
+      ? currentValue
+      : "all";
   }
   if (elements.departmentFilter) {
-    const departments = uniqueValues(allUsers.map((user) => getDepartment(user)));
+    const departments = uniqueValues(
+      allUsers.map((user) => getDepartment(user)),
+    );
     const currentValue = elements.departmentFilter.value || "all";
     elements.departmentFilter.innerHTML = `<option value="all">Tất cả phòng ban</option>`;
     departments.forEach((department) => {
@@ -264,7 +268,9 @@ function populateFilters() {
       option.textContent = department;
       elements.departmentFilter.appendChild(option);
     });
-    elements.departmentFilter.value = departments.includes(currentValue) ? currentValue : "all";
+    elements.departmentFilter.value = departments.includes(currentValue)
+      ? currentValue
+      : "all";
   }
 }
 
@@ -277,7 +283,10 @@ function applyFilters() {
       return false;
     }
     /* Department */
-    if (currentDepartment !== "all" && getDepartment(user) !== currentDepartment) {
+    if (
+      currentDepartment !== "all" &&
+      getDepartment(user) !== currentDepartment
+    ) {
       return false;
     }
     /* Search */
@@ -289,7 +298,7 @@ function applyFilters() {
         user.username,
         user.email,
         user.phone,
-        user.id
+        user.id,
       ]
         .filter(Boolean)
         .join(" ")
@@ -316,8 +325,12 @@ function renderAll() {
 
 function renderStats() {
   const total = filteredUsers.length;
-  const active = filteredUsers.filter((user) => getAccountStatus(user) === "active").length;
-  const pending = filteredUsers.filter((user) => getAccountStatus(user) === "pending").length;
+  const active = filteredUsers.filter(
+    (user) => getAccountStatus(user) === "active",
+  ).length;
+  const pending = filteredUsers.filter(
+    (user) => getAccountStatus(user) === "pending",
+  ).length;
   const newCount = getNewUsersCount(filteredUsers);
   const activePercent = total > 0 ? Math.round((active / total) * 100) : 0;
 
@@ -325,8 +338,10 @@ function renderStats() {
   if (elements.activeCount) elements.activeCount.textContent = active;
   if (elements.pendingCount) elements.pendingCount.textContent = pending;
   if (elements.newCount) elements.newCount.textContent = newCount;
-  if (elements.activePercent) elements.activePercent.textContent = `${activePercent}% tổng đội ngũ`;
-  if (elements.periodLabel) elements.periodLabel.textContent = getPeriodText(currentPeriod);
+  if (elements.activePercent)
+    elements.activePercent.textContent = `${activePercent}% tổng đội ngũ`;
+  if (elements.periodLabel)
+    elements.periodLabel.textContent = getPeriodText(currentPeriod);
 }
 
 /* NEW USERS */
@@ -340,7 +355,7 @@ function getNewUsersCount(users) {
   const start = now - days * 24 * 60 * 60 * 1000;
   return users.filter((user) => {
     const created = getTimestampValue(
-      user.createdAt || user.created || user.joined || user.created_at
+      user.createdAt || user.created || user.joined || user.created_at,
     );
     return created >= start && created <= now;
   }).length;
@@ -435,7 +450,8 @@ function renderActivityTable() {
     .map((user) => {
       const name = getUserName(user);
       const email = user.email || "Không có email";
-      const username = user.username || user.userName || user.uid || user.id || "—";
+      const username =
+        user.username || user.userName || user.uid || user.id || "—";
       const campus = getCampus(user) || "Chưa xác định";
       const department = getDepartment(user) || "Chưa xác định";
       const status = getAccountStatus(user);
@@ -500,7 +516,9 @@ function getAccountStatus(user) {
     return "pending";
   }
   /* Nếu có lastLogin thì coi là active. */
-  const lastLogin = getTimestampValue(user.lastLoginAt || user.lastLogin || user.lastActive);
+  const lastLogin = getTimestampValue(
+    user.lastLoginAt || user.lastLogin || user.lastActive,
+  );
   if (lastLogin > 0) {
     return "active";
   }
@@ -528,7 +546,11 @@ function renderStatus(status) {
 
 function getCampus(user) {
   return cleanValue(
-    user.campus ?? user.campusName ?? user["code-campus"] ?? user.campusId ?? user.codeCampus
+    user.campus ??
+      user.campusName ??
+      user["code-campus"] ??
+      user.campusId ??
+      user.codeCampus,
   );
 }
 
@@ -542,7 +564,12 @@ function getDepartment(user) {
 
 function getUserName(user) {
   return cleanValue(
-    user.name ?? user.fullName ?? user.displayName ?? user.username ?? user.email ?? "Không có tên"
+    user.name ??
+      user.fullName ??
+      user.displayName ??
+      user.username ??
+      user.email ??
+      "Không có tên",
   );
 }
 
@@ -550,7 +577,11 @@ function getUserName(user) {
 
 function getLastLogin(user) {
   const timestamp =
-    user.lastLoginAt ?? user.lastLogin ?? user.lastActive ?? user.lastActiveAt ?? user.updatedAt;
+    user.lastLoginAt ??
+    user.lastLogin ??
+    user.lastActive ??
+    user.lastActiveAt ??
+    user.updatedAt;
   const value = getTimestampValue(timestamp);
   if (!value) {
     return "Chưa đăng nhập";
@@ -561,7 +592,8 @@ function getLastLogin(user) {
 /* CREATED */
 
 function getCreatedAt(user) {
-  const timestamp = user.createdAt ?? user.created ?? user.joined ?? user.created_at;
+  const timestamp =
+    user.createdAt ?? user.created ?? user.joined ?? user.created_at;
   const value = getTimestampValue(timestamp);
   if (!value) {
     return "—";
@@ -585,7 +617,9 @@ function getTimestampValue(value) {
   }
   /* Firebase Timestamp object */
   if (typeof value === "object" && typeof value.seconds === "number") {
-    return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1000000);
+    return (
+      value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1000000)
+    );
   }
   /* Number */
   if (typeof value === "number") {
@@ -616,7 +650,7 @@ function formatDate(timestamp) {
   return date.toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
@@ -630,7 +664,7 @@ function formatDateTime(timestamp) {
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 }
 
@@ -684,7 +718,8 @@ function updateRecordInfo(count) {
     elements.recordBadge.textContent = `${count} hồ sơ`;
   }
   if (elements.entriesNote) {
-    elements.entriesNote.textContent = count === 0 ? "Không có hồ sơ" : `Hiển thị ${count} hồ sơ`;
+    elements.entriesNote.textContent =
+      count === 0 ? "Không có hồ sơ" : `Hiển thị ${count} hồ sơ`;
   }
 }
 
@@ -713,7 +748,12 @@ function loadAdminAccount() {
             return;
           }
           const data = snapshot.docs[0].data() || {};
-          const name = data.name || data.fullName || data.displayName || data.userName || email;
+          const name =
+            data.name ||
+            data.fullName ||
+            data.displayName ||
+            data.userName ||
+            email;
           const campus =
             data.campus ||
             data.campusName ||
@@ -747,7 +787,7 @@ function setAdminDisplay(name, email, campus = "") {
     elements.topAdminAvatar.textContent = getInitials(finalName);
     elements.topAdminAvatar.setAttribute(
       "aria-label",
-      `Tài khoản ${elements.topAdminName ? elements.topAdminName.textContent : finalName}`
+      `Tài khoản ${elements.topAdminName ? elements.topAdminName.textContent : finalName}`,
     );
   }
 }
@@ -771,7 +811,10 @@ function setAdminDisplay(name, email, campus = "") {
     if (parts.length === 1) {
       return parts[0].slice(0, 2).toUpperCase();
     }
-    return parts.slice(-2).map((part) => part.charAt(0).toUpperCase()).join("");
+    return parts
+      .slice(-2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
   }
 
   function renderAdmin(name, campus, email) {
@@ -793,7 +836,7 @@ function setAdminDisplay(name, email, campus = "") {
       adminAvatar.textContent = getInitials(finalName);
       adminAvatar.setAttribute(
         "aria-label",
-        `Tài khoản ${adminName ? adminName.textContent : finalName}${finalCampus ? ` - ${finalCampus}` : ""}`
+        `Tài khoản ${adminName ? adminName.textContent : finalName}${finalCampus ? ` - ${finalCampus}` : ""}`,
       );
     }
   }
@@ -811,7 +854,12 @@ function setAdminDisplay(name, email, campus = "") {
         const userDoc = await db.collection("users").doc(user.uid).get();
         if (userDoc.exists) {
           const data = userDoc.data() || {};
-          name = data.name || data.fullName || data.displayName || data.userName || name;
+          name =
+            data.name ||
+            data.fullName ||
+            data.displayName ||
+            data.userName ||
+            name;
           campus =
             data.campus ||
             data.campusName ||
@@ -932,7 +980,7 @@ function exportCSV() {
     "Phòng ban",
     "Trạng thái",
     "Đăng nhập gần nhất",
-    "Ngày tạo"
+    "Ngày tạo",
   ];
   const rows = filteredUsers.map((user) => [
     user.id || "",
@@ -943,9 +991,11 @@ function exportCSV() {
     getDepartment(user),
     getStatusText(getAccountStatus(user)),
     getLastLogin(user),
-    getCreatedAt(user)
+    getCreatedAt(user),
   ]);
-  const csv = [headers, ...rows].map((row) => row.map(csvEscape).join(",")).join("\r\n");
+  const csv = [headers, ...rows]
+    .map((row) => row.map(csvEscape).join(","))
+    .join("\r\n");
 
   /* BOM để Excel đọc tiếng Việt. */
   const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -1041,7 +1091,7 @@ function cleanValue(value) {
 
 function uniqueValues(values) {
   return [...new Set(values.map(cleanValue).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b, "vi")
+    a.localeCompare(b, "vi"),
   );
 }
 

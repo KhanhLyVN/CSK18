@@ -19,7 +19,8 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
   // Có thể dùng khi trang cần upload ảnh ở phần trao đổi.
-  const storage = typeof firebase.storage === "function" ? firebase.storage() : null;
+  const storage =
+    typeof firebase.storage === "function" ? firebase.storage() : null;
   const $ = (selector) => document.querySelector(selector);
   // Hỗ trợ cả ID trong bản tách riêng sent-* và bản đang chạy st-*.
   const nodes = {
@@ -28,13 +29,13 @@
     error: $("#sentError") || $("#stStatus"),
     grid: $("#sentTicketGrid") || $("#stTicketGrid"),
     count: $("#sentTicketCount") || $("#stTicketCount"),
-    profile: $("#sentProfileLink") || $("#stProfileLink")
+    profile: $("#sentProfileLink") || $("#stProfileLink"),
   };
   const STATUS_LABELS = {
     open: "Đang mở",
     in_progress: "Đang xử lý",
     resolved: "Đã giải quyết",
-    closed: "Đã đóng"
+    closed: "Đã đóng",
   };
   let unsubscribeTickets = null;
   function escapeHtml(value) {
@@ -57,7 +58,11 @@
   function readValue(ticket, ...keys) {
     for (const key of keys) {
       const value = ticket[key];
-      if (value !== undefined && value !== null && String(value).trim() !== "") {
+      if (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+      ) {
         return value;
       }
     }
@@ -114,7 +119,9 @@
           chatThreadCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           chatThreadCreatedBy: "student",
           chatThreadCreatedByUid: user.uid,
-          studentMessageCount: Number.isInteger(ticket.studentMessageCount) ? ticket.studentMessageCount : 0,
+          studentMessageCount: Number.isInteger(ticket.studentMessageCount)
+            ? ticket.studentMessageCount
+            : 0,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
       });
@@ -155,7 +162,9 @@
     const fieldClass = useStClasses ? "st-card-field" : "sent-card-field";
     const typeClass = useStClasses ? "st-card-type" : "sent-card-type";
     const responseClass = useStClasses ? "st-response" : "sent-response";
-    const responseTitleClass = useStClasses ? "st-response-heading" : "sent-response-title";
+    const responseTitleClass = useStClasses
+      ? "st-response-heading"
+      : "sent-response-title";
     const footClass = useStClasses ? "st-card-foot" : "sent-card-foot";
     if (nodes.count) nodes.count.textContent = String(tickets.length);
     setHidden(nodes.loading, true);
@@ -165,15 +174,19 @@
       nodes.grid.innerHTML = "";
       return;
     }
-    nodes.grid.innerHTML = tickets.map((ticket) => {
-      const ticketId = encodeURIComponent(ticket.id);
-      const status = normalizedStatus(ticket.status);
-      const category = readValue(ticket, "ticketCategory", "categoryLabel") || "Hỗ trợ";
-      const issue = readValue(ticket, "issueLabel", "ticketIssue") || "Chưa chọn vấn đề";
-      const title = readValue(ticket, "title") || "Không có tiêu đề";
-      const response = readValue(ticket, "lastCSReply") ||
-        "Phản hồi của CS sẽ hiển thị tại đây sau khi ban xử lý tiếp nhận yêu cầu.";
-      return `
+    nodes.grid.innerHTML = tickets
+      .map((ticket) => {
+        const ticketId = encodeURIComponent(ticket.id);
+        const status = normalizedStatus(ticket.status);
+        const category =
+          readValue(ticket, "ticketCategory", "categoryLabel") || "Hỗ trợ";
+        const issue =
+          readValue(ticket, "issueLabel", "ticketIssue") || "Chưa chọn vấn đề";
+        const title = readValue(ticket, "title") || "Không có tiêu đề";
+        const response =
+          readValue(ticket, "lastCSReply") ||
+          "Phản hồi của CS sẽ hiển thị tại đây sau khi ban xử lý tiếp nhận yêu cầu.";
+        return `
         <article class="${cardClass}">
           <div class="${headClass}">
             <span>MÃ YÊU CẦU</span>
@@ -198,7 +211,8 @@
             <a href="/HV/chat-hv/trao-doi-ticket.html?ticket=${ticketId}" data-open-exchange data-ticket-id="${escapeHtml(ticket.id)}">${hasChatThread(ticket) ? "Mở trao đổi →" : "Mở trao đổi →"}</a>
           </div>
         </article>`;
-    }).join("");
+      })
+      .join("");
   }
   async function submitSatisfaction(button) {
     const ticketId = button.dataset.ticketId;
@@ -207,19 +221,23 @@
     if (!ticketId || !choice) return;
     const card = button.closest(".sent-ticket-card, .st-ticket-card");
     const buttons = card ? card.querySelectorAll("[data-satisfaction]") : [];
-    buttons.forEach((item) => { item.disabled = true; });
-        try {
+    buttons.forEach((item) => {
+      item.disabled = true;
+    });
+    try {
       const user = auth.currentUser;
       if (!user) throw new Error("Bạn cần đăng nhập để xác nhận ticket.");
       const update = {
         satisfactionStatus: choice,
-        satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        satisfactionRespondedAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
         satisfactionRespondedRound: satisfactionRound,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       if (choice === "satisfied") {
         update.status = "closed";
-        update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.closedConfirmedAt =
+          firebase.firestore.FieldValue.serverTimestamp();
       } else if (choice === "unsatisfied") {
         update.status = "in_progress";
         update.closedAt = null;
@@ -227,7 +245,8 @@
         update.reopenedBy = "student";
         update.reopenedToStatus = "in_progress";
         update.chatThreadCreated = true;
-        update.chatThreadCreatedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.chatThreadCreatedAt =
+          firebase.firestore.FieldValue.serverTimestamp();
         update.chatThreadCreatedBy = "student";
         update.chatThreadCreatedByUid = user.uid;
       }
@@ -242,18 +261,27 @@
         if (normalizedStatus(latestTicket.status) !== "closed") {
           throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
         }
-        if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
-          throw new Error("Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.");
+        if (
+          latestTicket.satisfactionStatus !== "awaiting" ||
+          (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound
+        ) {
+          throw new Error(
+            "Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.",
+          );
         }
-                transaction.update(ticketRef, update);
+        transaction.update(ticketRef, update);
       });
       if (choice === "unsatisfied") {
-        window.location.assign(`/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`);
+        window.location.assign(
+          `/HV/chat-hv/trao-doi-ticket.html?ticket=${encodeURIComponent(ticketId)}`,
+        );
       }
     } catch (error) {
       console.error("Không thể lưu đánh giá phản hồi:", error);
       setError("Không thể lưu đánh giá. Vui lòng thử lại.");
-      buttons.forEach((item) => { item.disabled = false; });
+      buttons.forEach((item) => {
+        item.disabled = false;
+      });
     }
   }
   nodes.grid?.addEventListener("click", (event) => {
@@ -284,7 +312,7 @@
         (error) => {
           console.error("Không thể tải tickets:", error);
           setError("Không thể tải danh sách ticket của tài khoản này.");
-        }
+        },
       );
   }
   auth.onAuthStateChanged((user) => {
@@ -299,10 +327,13 @@
     if (nodes.profile) {
       nodes.profile.textContent = user.displayName || user.email || "Tài khoản";
     }
-    db.collection("users").doc(user.uid).get()
+    db.collection("users")
+      .doc(user.uid)
+      .get()
       .then((profileSnapshot) => {
         if (nodes.profile && profileSnapshot.exists) {
-          nodes.profile.textContent = profileSnapshot.data().name || user.email || "Tài khoản";
+          nodes.profile.textContent =
+            profileSnapshot.data().name || user.email || "Tài khoản";
         }
       })
       .catch((error) => console.warn("Không đọc được profile:", error));

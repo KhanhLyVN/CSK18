@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +15,7 @@
     <!-- =========================
          FONT AWESOME
     ========================== -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- =========================
          FIREBASE
     ========================== -->
@@ -51,45 +50,48 @@
                 0 8px 25px rgba(93, 7, 3, 0.07);
             --radius: 12px;
         }
+
         /* =====================================================
            RESET
         ===================================================== */
         * {
             box-sizing: border-box;
         }
+
         html {
             scroll-behavior: smooth;
         }
+
         body {
             margin: 0;
             background: var(--cream-pale);
             color: var(--text);
             font-family: 'Inter', sans-serif;
         }
+
         button,
         input {
             font-family: inherit;
         }
+
         /* =====================================================
            PAGE CONTAINER
         ===================================================== */
         .container {
-            width: min(
-                1000px,
-                calc(100% - 40px)
-            );
+            width: min(1000px,
+                    calc(100% - 40px));
             margin: 0 auto;
             padding:
-                40px
-                0
-                70px;
+                40px 0 70px;
         }
+
         /* =====================================================
            PAGE HEADER
         ===================================================== */
         .page-header {
             margin-bottom: 25px;
         }
+
         .page-header h1 {
             margin: 0;
             color: var(--maroon);
@@ -97,14 +99,14 @@
             font-size: 34px;
             font-weight: 700;
         }
+
         .page-header p {
             margin:
-                7px
-                0
-                0;
+                7px 0 0;
             color: var(--text-soft);
             font-size: 13px;
         }
+
         /* =====================================================
            PROFILE
         ===================================================== */
@@ -120,6 +122,7 @@
             margin-bottom: 22px;
             animation: fadeIn .25s ease;
         }
+
         .avatar {
             width: 75px;
             height: 75px;
@@ -134,39 +137,40 @@
             font-size: 30px;
             font-weight: 700;
         }
+
         .profile-info {
             min-width: 0;
         }
+
         .profile-info h2 {
             margin: 0;
             font-family: 'Fraunces', serif;
             font-size: 25px;
             word-break: break-word;
         }
+
         .profile-info p {
             margin:
-                5px
-                0
-                0;
+                5px 0 0;
             font-size: 13px;
             opacity: .8;
             word-break: break-word;
         }
+
         .role-badge {
             display: inline-block;
             margin-top: 10px;
             padding:
-                5px
-                10px;
+                5px 10px;
             background:
                 rgba(255, 255, 255, .12);
             border:
-                1px solid
-                rgba(255, 255, 255, .2);
+                1px solid rgba(255, 255, 255, .2);
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
         }
+
         /* =====================================================
            NOT LOGIN
         ===================================================== */
@@ -178,15 +182,16 @@
             margin-bottom: 22px;
             background: var(--paper);
             border:
-                1px solid
-                var(--line);
+                1px solid var(--line);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             animation: fadeIn .25s ease;
         }
+
         .login-empty[hidden] {
             display: none;
         }
+
         .login-empty-icon {
             width: 64px;
             height: 64px;
@@ -199,25 +204,24 @@
             color: var(--maroon);
             font-size: 25px;
         }
+
         .login-empty-content h2 {
             margin:
-                0
-                0
-                7px;
+                0 0 7px;
             color: var(--maroon);
             font-family: 'Fraunces', serif;
             font-size: 23px;
         }
+
         .login-empty-content p {
             margin:
-                0
-                0
-                15px;
+                0 0 15px;
             max-width: 650px;
             color: var(--text-soft);
             font-size: 13px;
             line-height: 1.6;
         }
+
         .login-empty-btn {
             width: auto;
             display: inline-flex;
@@ -225,19 +229,18 @@
             justify-content: center;
             gap: 8px;
             padding:
-                11px
-                20px;
+                11px 20px;
             background: var(--maroon);
             color: var(--white);
             border:
-                1px solid
-                var(--maroon);
+                1px solid var(--maroon);
             transition:
                 background .2s ease,
                 transform .2s ease,
                 box-shadow .2s ease;
             cursor: pointer;
         }
+
         .login-empty-btn:hover {
             background: var(--maroon-deep);
             border-color:
@@ -245,27 +248,29 @@
             transform:
                 translateY(-2px);
             box-shadow:
-                0 6px 16px
-                rgba(93, 7, 3, .18);
+                0 6px 16px rgba(93, 7, 3, .18);
         }
+
         .login-empty-btn:active {
             transform:
                 translateY(0);
             box-shadow: none;
         }
+
         .account-content-hidden {
             display: none !important;
         }
+
         /* =====================================================
            GRID
         ===================================================== */
         .grid {
             display: grid;
             grid-template-columns:
-                1fr
-                1fr;
+                1fr 1fr;
             gap: 22px;
         }
+
         /* =====================================================
            CARD
         ===================================================== */
@@ -273,15 +278,16 @@
             padding: 25px;
             background: var(--paper);
             border:
-                1px solid
-                var(--line);
+                1px solid var(--line);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
         }
+
         .card.full {
             grid-column:
                 1 / -1;
         }
+
         /* =====================================================
            CARD TITLE
         ===================================================== */
@@ -291,6 +297,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .card-icon {
             width: 34px;
             height: 34px;
@@ -303,12 +310,14 @@
             font-size: 12px;
             font-weight: 700;
         }
+
         .card-title h2 {
             margin: 0;
             color: var(--maroon);
             font-family: 'Fraunces', serif;
             font-size: 20px;
         }
+
         /* =====================================================
            INFORMATION
         ===================================================== */
@@ -317,6 +326,7 @@
             flex-direction: column;
             gap: 15px;
         }
+
         .info-item {
             display: flex;
             justify-content: space-between;
@@ -324,13 +334,14 @@
             gap: 20px;
             padding-bottom: 13px;
             border-bottom:
-                1px solid
-                var(--line);
+                1px solid var(--line);
         }
+
         .info-item:last-child {
             padding-bottom: 0;
             border-bottom: none;
         }
+
         .info-label {
             color: var(--text-soft);
             font-size: 11px;
@@ -338,6 +349,7 @@
             text-transform: uppercase;
             letter-spacing: .05em;
         }
+
         .info-value {
             color: var(--text);
             font-size: 13px;
@@ -345,12 +357,14 @@
             text-align: right;
             word-break: break-word;
         }
+
         .mono {
             font-family:
                 'IBM Plex Mono',
                 monospace;
             color: var(--maroon);
         }
+
         /* =====================================================
            STATUS
         ===================================================== */
@@ -360,6 +374,7 @@
             gap: 6px;
             color: var(--success);
         }
+
         .status-dot {
             width: 7px;
             height: 7px;
@@ -367,6 +382,7 @@
             background:
                 var(--success);
         }
+
         /* =====================================================
            SECURITY
         ===================================================== */
@@ -375,22 +391,24 @@
             background:
                 var(--cream-pale);
             border:
-                1px solid
-                var(--line);
+                1px solid var(--line);
             border-radius: 8px;
             margin-bottom: 15px;
         }
+
         .security-box strong {
             display: block;
             color: var(--maroon);
             font-size: 13px;
             margin-bottom: 5px;
         }
+
         .security-box span {
             color: var(--text-soft);
             font-size: 12px;
             line-height: 1.5;
         }
+
         /* =====================================================
            PASSWORD FORM
         ===================================================== */
@@ -402,10 +420,10 @@
             margin-bottom: 15px;
             background: var(--paper);
             border:
-                1px solid
-                var(--line);
+                1px solid var(--line);
             border-radius: 8px;
         }
+
         .password-form label {
             color: var(--text-soft);
             font-size: 11px;
@@ -413,13 +431,15 @@
             text-transform: uppercase;
             letter-spacing: .05em;
         }
+
         .password-input-wrap {
             position: relative;
             display: flex;
             align-items: center;
             margin-top: 6px;
         }
-        .password-input-wrap > .fa-lock {
+
+        .password-input-wrap>.fa-lock {
             position: absolute;
             left: 13px;
             z-index: 1;
@@ -427,16 +447,13 @@
             font-size: 13px;
             pointer-events: none;
         }
+
         .password-form input {
             width: 100%;
             padding:
-                10px
-                42px
-                10px
-                36px;
+                10px 42px 10px 36px;
             border:
-                1px solid
-                var(--line);
+                1px solid var(--line);
             border-radius: 7px;
             background:
                 var(--white);
@@ -447,13 +464,14 @@
                 border-color .2s,
                 box-shadow .2s;
         }
+
         .password-form input:focus {
             border-color:
                 var(--maroon);
             box-shadow:
-                0 0 0 3px
-                rgba(93, 7, 3, .08);
+                0 0 0 3px rgba(93, 7, 3, .08);
         }
+
         .toggle-password {
             position: absolute;
             top: 50%;
@@ -474,46 +492,48 @@
             font-size: 16px;
             cursor: pointer;
         }
+
         .toggle-password:hover {
             color:
                 var(--maroon);
         }
+
         .password-hint {
             margin:
-                -2px
-                0
-                2px;
+                -2px 0 2px;
             color:
                 var(--text-soft);
             font-size: 11px;
             line-height: 1.5;
         }
+
         /* =====================================================
            BUTTON
         ===================================================== */
         .btn {
             width: 100%;
             padding:
-                11px
-                15px;
+                11px 15px;
             border:
-                1px solid
-                transparent;
+                1px solid transparent;
             border-radius: 7px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
         }
+
         .btn-primary {
             background:
                 var(--maroon);
             color:
                 var(--white);
         }
+
         .btn-primary:hover {
             background:
                 var(--maroon-deep);
         }
+
         .btn-danger {
             margin-top: 10px;
             background:
@@ -523,10 +543,12 @@
             color:
                 var(--danger);
         }
+
         .btn-danger:hover {
             background:
                 rgba(153, 27, 27, .06);
         }
+
         /* =====================================================
            LOADING
         ===================================================== */
@@ -536,6 +558,7 @@
             color:
                 var(--text-soft);
         }
+
         /* =====================================================
            TOAST
         ===================================================== */
@@ -544,11 +567,9 @@
             left: 50%;
             bottom: 25px;
             transform:
-                translateX(-50%)
-                translateY(20px);
+                translateX(-50%) translateY(20px);
             padding:
-                11px
-                18px;
+                11px 18px;
             background:
                 var(--maroon);
             color:
@@ -565,12 +586,13 @@
                 calc(100% - 30px);
             text-align: center;
         }
+
         #toast.show {
             opacity: 1;
             transform:
-                translateX(-50%)
-                translateY(0);
+                translateX(-50%) translateY(0);
         }
+
         /* =====================================================
            ANIMATION
         ===================================================== */
@@ -580,12 +602,14 @@
                 transform:
                     translateY(5px);
             }
+
             to {
                 opacity: 1;
                 transform:
                     translateY(0);
             }
         }
+
         /* =====================================================
            MOBILE
         ===================================================== */
@@ -595,27 +619,34 @@
                     calc(100% - 24px);
                 padding-top: 25px;
             }
+
             .page-header h1 {
                 font-size: 28px;
             }
+
             .grid {
                 grid-template-columns:
                     1fr;
             }
+
             .card.full {
                 grid-column: auto;
             }
+
             .profile-card {
                 padding: 20px;
             }
+
             .avatar {
                 width: 60px;
                 height: 60px;
                 font-size: 24px;
             }
+
             .profile-info h2 {
                 font-size: 20px;
             }
+
             .info-item {
                 align-items:
                     flex-start;
@@ -623,10 +654,12 @@
                     column;
                 gap: 4px;
             }
+
             .info-value {
                 text-align:
                     left;
             }
+
             .login-empty {
                 align-items:
                     flex-start;
@@ -634,18 +667,22 @@
                     column;
                 padding: 22px;
             }
+
             .login-empty-icon {
                 width: 55px;
                 height: 55px;
                 font-size: 21px;
             }
+
             .login-empty-content h2 {
                 font-size: 20px;
             }
+
             .login-empty-btn {
                 width: 100%;
             }
         }
+
         @media (max-width: 450px) {
             .profile-card {
                 align-items:
@@ -653,21 +690,24 @@
                 flex-direction:
                     column;
             }
+
             .profile-info {
                 width: 100%;
             }
+
             .card {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body data-nav-page="account">
-<div class="app">
-    <!-- =====================================================
+    <div class="app">
+        <!-- =====================================================
          TOPBAR
     ====================================================== -->
-    <!-- <header class="topbar">
+        <!-- <header class="topbar">
         <button
             class="menu-toggle"
             id="menuToggle"
@@ -688,225 +728,165 @@
             </span>
         </div>
     </header> -->
-    <!-- =====================================================
+        <!-- =====================================================
          BODY
     ====================================================== -->
-    <div
-        class="body"
-        id="bodyEl">
-        <!-- =================================================
+        <div class="body" id="bodyEl">
+            <!-- =================================================
              SIDEBAR
         ================================================== -->
-        <aside
-            class="sidebar"
-            id="sidebarEl">
-            <nav
-                class="sidebar-menu"
-                aria-label="Điều hướng CS">
-                <a
-                    href="/CS/HomepageCS/trangchu-cs.html"
-                    class="menu-item">
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline
-                            points="9 22 9 12 15 12 15 22">
-                        </polyline>
-                    </svg>
-                    <span>
-                        Trang chủ
-                    </span>
-                </a>
-                <a
-                    href="/CS/TicketManagement/cs-ticket.html"
-                    class="menu-item">
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
-                        </path>
-                    </svg>
-                    <span>
-                        Quản lý Ticket
-                    </span>
-                </a>
-                <a
-                    href="/CS/PhieuHoTroCS/phieuhotro-cs.html"
-                    class="menu-item">
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
-                        </path>
-                    </svg>
-                    <span>
-                        Tạo phiếu hỗ trợ
-                    </span>
-                </a>
-                <a
-                    href="/CS/Dashboard/cs-dashboard.html"
-                    class="menu-item">
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path d="M3 3v18h18"></path>
-                        <path d="M7 16l4-5 3 3 5-7"></path>
-                    </svg>
-                    <span>
-                        Báo cáo thống kê
-                    </span>
-                </a>
-                <a
-                    href="/FAQs/CS-FAQ.html"
-                    class="menu-item">
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="10">
-                        </circle>
-                        <path
-                            d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3">
-                        </path>
-                        <line
-                            x1="12"
-                            y1="17"
-                            x2="12.01"
-                            y2="17">
-                        </line>
-                    </svg>
-                    <span>
-                        FAQs
-                    </span>
-                </a>
-                <a
-                    href="/CS/account-CS.html"
-                    class="menu-item active">
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="3">
-                        </circle>
-                        <path
-                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                        </path>
-                    </svg>
-                    <span>
-                        Cài đặt hệ thống
-                    </span>
-                </a>
-            </nav>
-        </aside>
-        <!-- =================================================
+            <aside class="sidebar" id="sidebarEl">
+                <nav class="sidebar-menu" aria-label="Điều hướng CS">
+                    <a href="/CS/HomepageCS/trangchu-cs.html" class="menu-item">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22">
+                            </polyline>
+                        </svg>
+                        <span>
+                            Trang chủ
+                        </span>
+                    </a>
+                    <a href="/CS/TicketManagement/cs-ticket.html" class="menu-item">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
+                            </path>
+                        </svg>
+                        <span>
+                            Quản lý Ticket
+                        </span>
+                    </a>
+                    <a href="/CS/PhieuHoTroCS/phieuhotro-cs.html" class="menu-item">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+                            </path>
+                        </svg>
+                        <span>
+                            Tạo phiếu hỗ trợ
+                        </span>
+                    </a>
+                    <a href="/CS/Dashboard/cs-dashboard.html" class="menu-item">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M7 16l4-5 3 3 5-7"></path>
+                        </svg>
+                        <span>
+                            Báo cáo thống kê
+                        </span>
+                    </a>
+                    <a href="/FAQs/CS-FAQ.html" class="menu-item">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10">
+                            </circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3">
+                            </path>
+                            <line x1="12" y1="17" x2="12.01" y2="17">
+                            </line>
+                        </svg>
+                        <span>
+                            FAQs
+                        </span>
+                    </a>
+                    <a href="/CS/account-CS.html" class="menu-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3">
+                            </circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                        <span>
+                            Cài đặt hệ thống
+                        </span>
+                    </a>
+                </nav>
+            </aside>
+            <!-- =================================================
              MAIN
         ================================================== -->
-        <main class="main">
-            <div class="container">
-                <!-- =========================================
+            <main class="main">
+                <div class="container">
+                    <!-- =========================================
                      HEADER
                 ========================================== -->
-                <div class="page-header">
-                    <h1>
-                        Tài khoản của tôi
-                    </h1>
-                    <p>
-                        Quản lý thông tin và bảo mật tài khoản CS.
-                    </p>
-                </div>
-                <!-- =========================================
+                    <div class="page-header">
+                        <h1>
+                            Tài khoản của tôi
+                        </h1>
+                        <p>
+                            Quản lý thông tin và bảo mật tài khoản CS.
+                        </p>
+                    </div>
+                    <!-- =========================================
                      PROFILE
                 ========================================== -->
-                <section
-                    class="profile-card"
-                    id="profileCard">
-                    <div
-                        class="avatar"
-                        id="avatar">
-                        CS
-                    </div>
-                    <div class="profile-info">
-                        <h2 id="profileName">
-                            Đang kiểm tra tài khoản...
-                        </h2>
-                        <p id="profileEmail">
-                            Vui lòng chờ trong giây lát
-                        </p>
-                        <span
-                            class="role-badge"
-                            id="roleBadge">
-                            Đang tải...
-                        </span>
-                    </div>
-                </section>
-                <!-- =========================================
+                    <section class="profile-card" id="profileCard">
+                        <div class="avatar" id="avatar">
+                            CS
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileName">
+                                Đang kiểm tra tài khoản...
+                            </h2>
+                            <p id="profileEmail">
+                                Vui lòng chờ trong giây lát
+                            </p>
+                            <span class="role-badge" id="roleBadge">
+                                Đang tải...
+                            </span>
+                        </div>
+                    </section>
+                    <!-- =========================================
                      NOT LOGIN
                 ========================================== -->
-                <section
-                    class="login-empty"
-                    id="loginEmpty"
-                    hidden>
-                    <div class="login-empty-icon">
-                        <i class="fa-solid fa-user-lock"></i>
-                    </div>
-                    <div class="login-empty-content">
-                        <h2>
-                            Bạn chưa đăng nhập
-                        </h2>
-                        <p>
-                            Vui lòng đăng nhập vào tài khoản CS
-                            để xem thông tin cá nhân và quản lý
-                            bảo mật tài khoản.
-                        </p>
-                        <button
-                            class="btn login-empty-btn"
-                            id="loginNowBtn"
-                            type="button">
-                            <i class="fa-solid fa-right-to-bracket"></i>
-                            Đăng nhập ngay
-                        </button>
-                    </div>
-                </section>
-                <!-- =========================================
+                    <section class="login-empty" id="loginEmpty" hidden>
+                        <div class="login-empty-icon">
+                            <i class="fa-solid fa-user-lock"></i>
+                        </div>
+                        <div class="login-empty-content">
+                            <h2>
+                                Bạn chưa đăng nhập
+                            </h2>
+                            <p>
+                                Vui lòng đăng nhập vào tài khoản CS
+                                để xem thông tin cá nhân và quản lý
+                                bảo mật tài khoản.
+                            </p>
+                            <button class="btn login-empty-btn" id="loginNowBtn" type="button">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                Đăng nhập ngay
+                            </button>
+                        </div>
+                    </section>
+                    <!-- =========================================
                      ACCOUNT CONTENT
                 ========================================== -->
-                <div
-                    class="grid"
-                    id="accountContent">
-                    <!-- =====================================
+                    <div class="grid" id="accountContent">
+                        <!-- =====================================
                          INFORMATION
                     ====================================== -->
-                    <section class="card">
-                        <div class="card-title">
-                            <div class="card-icon">
-                                01
+                        <section class="card">
+                            <div class="card-title">
+                                <div class="card-icon">
+                                    01
+                                </div>
+                                <h2>
+                                    Thông tin CS
+                                </h2>
                             </div>
-                            <h2>
-                                Thông tin CS
-                            </h2>
-                        </div>
-                        <div class="info-list">
-                            <!-- NAME -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Họ tên
-                                </span>
-                                <span
-                                    class="info-value"
-                                    id="name">
-                                    —
-                                </span>
-                            </div>
-                            <!-- CLASS -->
-                            <!-- <div class="info-item">
+                            <div class="info-list">
+                                <!-- NAME -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Họ tên
+                                    </span>
+                                    <span class="info-value" id="name">
+                                        —
+                                    </span>
+                                </div>
+                                <!-- CLASS -->
+                                <!-- <div class="info-item">
                                 <span class="info-label">
                                     Lớp
                                 </span>
@@ -916,744 +896,699 @@
                                     —
                                 </span>
                             </div> -->
-                            <!-- CAMPUS -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Cơ sở
-                                </span>
-                                <span
-                                    class="info-value"
-                                    id="campus">
-                                    —
-                                </span>
+                                <!-- CAMPUS -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Cơ sở
+                                    </span>
+                                    <span class="info-value" id="campus">
+                                        —
+                                    </span>
+                                </div>
+                                <!-- ROLE -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Vai trò
+                                    </span>
+                                    <span class="info-value" id="department">
+                                        —
+                                    </span>
+                                </div>
                             </div>
-                            <!-- ROLE -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Vai trò
-                                </span>
-                                <span
-                                    class="info-value"
-                                    id="department">
-                                    —
-                                </span>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- =====================================
+                        </section>
+                        <!-- =====================================
                          ACCOUNT
                     ====================================== -->
-                    <section class="card">
-                        <div class="card-title">
-                            <div class="card-icon">
-                                02
+                        <section class="card">
+                            <div class="card-title">
+                                <div class="card-icon">
+                                    02
+                                </div>
+                                <h2>
+                                    Tài khoản
+                                </h2>
                             </div>
-                            <h2>
-                                Tài khoản
-                            </h2>
-                        </div>
-                        <div class="info-list">
-                            <!-- USERNAME -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Username
-                                </span>
-                                <span
-                                    class="info-value mono"
-                                    id="username">
-                                    —
-                                </span>
-                            </div>
-                            <!-- EMAIL -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Email
-                                </span>
-                                <span
-                                    class="info-value"
-                                    id="email">
-                                    —
-                                </span>
-                            </div>
-                            <!-- PHONE -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Phone
-                                </span>
-                                <span
-                                    class="info-value"
-                                    id="phone">
-                                    —
-                                </span>
-                            </div>
-                            <!-- STATUS -->
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Trạng thái
-                                </span>
-                                <span class="info-value status">
-                                    <span
-                                        class="status-dot">
+                            <div class="info-list">
+                                <!-- USERNAME -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Username
                                     </span>
-                                    Đang hoạt động
-                                </span>
+                                    <span class="info-value mono" id="username">
+                                        —
+                                    </span>
+                                </div>
+                                <!-- EMAIL -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Email
+                                    </span>
+                                    <span class="info-value" id="email">
+                                        —
+                                    </span>
+                                </div>
+                                <!-- PHONE -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Phone
+                                    </span>
+                                    <span class="info-value" id="phone">
+                                        —
+                                    </span>
+                                </div>
+                                <!-- STATUS -->
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        Trạng thái
+                                    </span>
+                                    <span class="info-value status">
+                                        <span class="status-dot">
+                                        </span>
+                                        Đang hoạt động
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </section>
-                    <!-- =====================================
+                        </section>
+                        <!-- =====================================
                          SECURITY
                     ====================================== -->
-                    <section class="card full">
-                        <div class="card-title">
-                            <div class="card-icon">
-                                03
+                        <section class="card full">
+                            <div class="card-title">
+                                <div class="card-icon">
+                                    03
+                                </div>
+                                <h2>
+                                    Bảo mật tài khoản
+                                </h2>
                             </div>
-                            <h2>
-                                Bảo mật tài khoản
-                            </h2>
-                        </div>
-                        <!-- SECURITY INFORMATION -->
-                        <div class="security-box">
-                            <strong>
-                                Mật khẩu
-                            </strong>
-                            <span>
-                                Mật khẩu của bạn được bảo vệ
-                                bởi Firebase Authentication.
-                            </span>
-                        </div>
-                        <!-- PASSWORD FORM -->
-                        <form
-                            class="password-form"
-                            id="changePasswordForm">
-                            <!-- NEW PASSWORD -->
-                            <label>
-                                Mật khẩu mới
-                                <span
-                                    class="password-input-wrap">
-                                    <i
-                                        class="fa-solid fa-lock"
-                                        aria-hidden="true">
-                                    </i>
-                                    <input
-                                        type="password"
-                                        id="newPassword"
-                                        minlength="6"
-                                        autocomplete="new-password"
-                                        placeholder="Nhập mật khẩu mới"
-                                        required>
-                                    <button
-                                        class="toggle-password"
-                                        type="button"
-                                        data-target="newPassword"
-                                        aria-label="Hiện mật khẩu"
-                                        title="Hiện mật khẩu">
-                                        <i
-                                            class="fa-solid fa-eye"
-                                            aria-hidden="true">
-                                        </i>
-                                    </button>
+                            <!-- SECURITY INFORMATION -->
+                            <div class="security-box">
+                                <strong>
+                                    Mật khẩu
+                                </strong>
+                                <span>
+                                    Mật khẩu của bạn được bảo vệ
+                                    bởi Firebase Authentication.
                                 </span>
-                            </label>
-                            <!-- CONFIRM PASSWORD -->
-                            <label>
-                                Xác nhận mật khẩu mới
-                                <span
-                                    class="password-input-wrap">
-                                    <i
-                                        class="fa-solid fa-lock"
-                                        aria-hidden="true">
-                                    </i>
-                                    <input
-                                        type="password"
-                                        id="confirmPassword"
-                                        minlength="6"
-                                        autocomplete="new-password"
-                                        placeholder="Nhập lại mật khẩu mới"
-                                        required>
-                                    <button
-                                        class="toggle-password"
-                                        type="button"
-                                        data-target="confirmPassword"
-                                        aria-label="Hiện mật khẩu"
-                                        title="Hiện mật khẩu">
-                                        <i
-                                            class="fa-solid fa-eye"
-                                            aria-hidden="true">
+                            </div>
+                            <!-- PASSWORD FORM -->
+                            <form class="password-form" id="changePasswordForm">
+                                <!-- NEW PASSWORD -->
+                                <label>
+                                    Mật khẩu mới
+                                    <span class="password-input-wrap">
+                                        <i class="fa-solid fa-lock" aria-hidden="true">
                                         </i>
-                                    </button>
-                                </span>
-                            </label>
-                            <p class="password-hint">
-                                Mật khẩu cần có ít nhất 6 ký tự.
-                            </p>
-                            <button
-                                class="btn btn-primary"
-                                type="submit">
-                                Đổi mật khẩu
+                                        <input type="password" id="newPassword" minlength="6"
+                                            autocomplete="new-password" placeholder="Nhập mật khẩu mới" required>
+                                        <button class="toggle-password" type="button" data-target="newPassword"
+                                            aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
+                                            <i class="fa-solid fa-eye" aria-hidden="true">
+                                            </i>
+                                        </button>
+                                    </span>
+                                </label>
+                                <!-- CONFIRM PASSWORD -->
+                                <label>
+                                    Xác nhận mật khẩu mới
+                                    <span class="password-input-wrap">
+                                        <i class="fa-solid fa-lock" aria-hidden="true">
+                                        </i>
+                                        <input type="password" id="confirmPassword" minlength="6"
+                                            autocomplete="new-password" placeholder="Nhập lại mật khẩu mới" required>
+                                        <button class="toggle-password" type="button" data-target="confirmPassword"
+                                            aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
+                                            <i class="fa-solid fa-eye" aria-hidden="true">
+                                            </i>
+                                        </button>
+                                    </span>
+                                </label>
+                                <p class="password-hint">
+                                    Mật khẩu cần có ít nhất 6 ký tự.
+                                </p>
+                                <button class="btn btn-primary" type="submit">
+                                    Đổi mật khẩu
+                                </button>
+                            </form>
+                            <!-- LOGOUT -->
+                            <button class="btn btn-danger" id="logoutBtn" type="button">
+                                Đăng xuất
                             </button>
-                        </form>
-                        <!-- LOGOUT -->
-                        <button
-                            class="btn btn-danger"
-                            id="logoutBtn"
-                            type="button">
-                            Đăng xuất
-                        </button>
-                    </section>
+                        </section>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-</div>
-<!-- =====================================================
+    <!-- =====================================================
      TOAST
 ====================================================== -->
-<div id="toast"></div>
-<script>
-"use strict";
-/* =====================================================
-   ELEMENT HELPER
-===================================================== */
-const $ = id => document.getElementById(id);
-/* =====================================================
-   ACCOUNT ELEMENTS
-===================================================== */
-const profileCard =
-    $("profileCard");
-const loginEmpty =
-    $("loginEmpty");
-const accountContent =
-    $("accountContent");
-const roleBadge =
-    $("roleBadge");
-/* =====================================================
-   TOAST
-===================================================== */
-function toast(message) {
-    const element =
-        $("toast");
-    if (!element) {
-        return;
-    }
-    element.textContent =
-        message;
-    element.classList.add("show");
-    clearTimeout(
-        window.toastTimer
-    );
-    window.toastTimer =
-        setTimeout(() => {
-            element.classList.remove("show");
-        }, 2500);
-}
-/* =====================================================
-   SHOW LOGGED OUT
-===================================================== */
-function showLoggedOutState() {
-    if (profileCard) {
-        profileCard.style.display = "none";
-    }
-    if (loginEmpty) {
-        loginEmpty.hidden = false;
-    }
-    if (accountContent) {
-        accountContent.classList.add("account-content-hidden");
-    }
-}
-/* =====================================================
-   SHOW LOGGED IN
-===================================================== */
-function showLoggedInState() {
-    if (profileCard) {
-        profileCard.style.display = "flex";
-    }
-    if (loginEmpty) {
-        loginEmpty.hidden = true;
-    }
-    if (accountContent) {
-        accountContent.classList.remove("account-content-hidden");
-    }
-}
-/* =====================================================
-   ROLE FORMAT
-===================================================== */
-function formatRole(role) {
-    if (!role) {
-        return "Chưa xác định";
-    }
-    const roles = {
-        admin:
-            "Admin",
-        administrator:
-            "Admin",
-        cs:
-            "CS",
-        customer_success:
-            "Customer Success",
-        "customer success":
-            "Customer Success",
-        manager:
-            "Manager",
-        staff:
-            "Staff",
-        teacher:
-            "Teacher",
-        gv:
-            "Giảng viên",
-        student:
-            "Học viên",
-        hocvien:
-            "Học viên"
-    };
-    const key =
-        String(role)
-            .trim()
-            .toLowerCase();
-    return roles[key] ||
-        role;
-}
-/* =====================================================
-   AVATAR INITIALS
-===================================================== */
-function getInitials(name) {
-    if (!name) {
-        return "CS";
-    }
-    const parts =
-        String(name)
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean);
-    if (parts.length >= 2) {
-        return (
-            parts[0][0] +
-            parts[parts.length - 1][0]
-        ).toUpperCase();
-    }
-    return parts[0][0]
-        .toUpperCase();
-}
-/* =====================================================
-   SHOW PASSWORD
-===================================================== */
-document
-    .querySelectorAll(".toggle-password")
-    .forEach(button => {
-        button.addEventListener(
-            "click",
-            () => {
-                const input =
-                    $(button.dataset.target);
-                if (!input) {
-                    return;
-                }
-                const icon =
-                    button.querySelector("i");
-                const isHidden =
-                    input.type === "password";
-                input.type =
-                    isHidden
-                        ? "text"
-                        : "password";
-                if (icon) {
-                    icon.classList.toggle(
-                        "fa-eye",
-                        !isHidden
-                    );
-                    icon.classList.toggle(
-                        "fa-eye-slash",
-                        isHidden
-                    );
-                }
-                button.setAttribute(
-                    "aria-label",
-                    isHidden
-                        ? "Ẩn mật khẩu"
-                        : "Hiện mật khẩu"
-                );
-                button.setAttribute(
-                    "title",
-                    isHidden
-                        ? "Ẩn mật khẩu"
-                        : "Hiện mật khẩu"
-                );
-            }
-        );
-    });
-/* =====================================================
-   CHECK FIREBASE
-===================================================== */
-if (
-    typeof firebase === "undefined" ||
-    typeof auth === "undefined" ||
-    typeof db === "undefined"
-) {
-    console.error(
-        "Firebase/Auth/Firestore chưa được tải."
-    );
-    showLoggedOutState();
-    const loginTitle = loginEmpty.querySelector("h2");
-    const loginMessage = loginEmpty.querySelector("p");
-    if (loginTitle) {
-        loginTitle.textContent = "Không thể kết nối Firebase";
-    }
-    if (loginMessage) {
-        loginMessage.textContent =
-            "Firebase, Authentication hoặc Firestore chưa được tải. Vui lòng kiểm tra firebase-config.js và thứ tự các script.";
-    }
-} else {
-    /* =================================================
-       AUTH STATE
-    ================================================= */
-    auth.onAuthStateChanged(
-        async user => {
-            console.log(
-                "Firebase Auth:",
-                user
-            );
-            /* =========================================
-               CHƯA ĐĂNG NHẬP
-            ========================================== */
-            if (!user) {
-                console.log(
-                    "Không có tài khoản đăng nhập."
-                );
-                showLoggedOutState();
+    <div id="toast"></div>
+    <script>
+        "use strict";
+        /* =====================================================
+           ELEMENT HELPER
+        ===================================================== */
+        const $ = id => document.getElementById(id);
+        /* =====================================================
+           ACCOUNT ELEMENTS
+        ===================================================== */
+        const profileCard =
+            $("profileCard");
+        const loginEmpty =
+            $("loginEmpty");
+        const accountContent =
+            $("accountContent");
+        const roleBadge =
+            $("roleBadge");
+        /* =====================================================
+           TOAST
+        ===================================================== */
+        function toast(message) {
+            const element =
+                $("toast");
+            if (!element) {
                 return;
             }
-            /* =========================================
-               ĐÃ ĐĂNG NHẬP
-            ========================================== */
-            console.log(
-                "User UID:",
-                user.uid
+            element.textContent =
+                message;
+            element.classList.add("show");
+            clearTimeout(
+                window.toastTimer
             );
-            console.log(
-                "User Email:",
-                user.email
-            );
-            try {
-                /* =====================================
-                   GET USER DOCUMENT
-                ====================================== */
-                const userRef =
-                    db
-                        .collection("users")
-                        .doc(user.uid);
-                const doc =
-                    await userRef.get();
-                /* =====================================
-                   DOCUMENT NOT FOUND
-                ====================================== */
-                if (!doc.exists) {
-                    console.error(
-                        "Không tìm thấy:",
-                        `users/${user.uid}`
-                    );
-                    showLoggedOutState();
-                    loginEmpty.querySelector("h2")
-                        .textContent =
-                        "Chưa có thông tin tài khoản";
-                    loginEmpty.querySelector("p")
-                        .textContent =
-                        "Tài khoản Firebase đã đăng nhập nhưng chưa có dữ liệu trong hệ thống. Vui lòng liên hệ quản trị viên.";
-                    return;
-                }
-                /* =====================================
-                   DATA
-                ====================================== */
-                const data =
-                    doc.data();
-                console.log(
-                    "Firestore user:",
-                    data
-                );
-                /* =====================================
-                   BASIC INFORMATION
-                ====================================== */
-                const name =
-                    data.name ||
-                    data.fullName ||
-                    user.displayName ||
-                    "Người dùng";
-                const email =
-                    data.email ||
-                    user.email ||
-                    "Chưa cập nhật";
-                const username =
-                    data.username ||
-                    "Chưa cập nhật";
-                const phone =
-                    data.phone ||
-                    data.phoneNumber ||
-                    "Chưa cập nhật";
-                const campus =
-                    data.campus ||
-                    data.campusName ||
-                    "Chưa cập nhật";
-                /* =====================================
-                   ROLE
-                ====================================== */
-                const rawRole =
-                    data.role ||
-                    data.department ||
-                    "Chưa cập nhật";
-                const displayRole =
-                    formatRole(
-                        rawRole
-                    );
-                /* =====================================
-                   SHOW ACCOUNT
-                ====================================== */
-                showLoggedInState();
-                /* =====================================
-                   PROFILE
-                ====================================== */
-                const profileNameEl = $("profileName");
-                if (profileNameEl) {
-                    profileNameEl.textContent = name;
-                }
-                const profileEmailEl = $("profileEmail");
-                if (profileEmailEl) {
-                    profileEmailEl.textContent = email;
-                }
-                const roleBadgeEl = $("roleBadge");
-                if (roleBadgeEl) {
-                    roleBadgeEl.textContent = displayRole;
-                }
-                const avatarEl = $("avatar");
-                if (avatarEl) {
-                    avatarEl.textContent = getInitials(name);
-                }
-                /* =====================================
-                   PERSONAL INFORMATION
-                ====================================== */
-                const nameEl = $("name");
-                if (nameEl) {
-                    nameEl.textContent = name;
-                }
-                const campusEl = $("campus");
-                if (campusEl) {
-                    campusEl.textContent = campus;
-                }
-                /*
-                 * QUAN TRỌNG:
-                 *
-                 * HTML dùng:
-                 *
-                 * id="department"
-                 *
-                 * nên phải cập nhật department.
-                 *
-                 * Không dùng $("role")
-                 */
-                const departmentEl = $("department");
-                if (departmentEl) {
-                    departmentEl.textContent = displayRole;
-                }
-                /* =====================================
-                   ACCOUNT INFORMATION
-                ====================================== */
-                const usernameEl = $("username");
-                if (usernameEl) {
-                    usernameEl.textContent = username;
-                }
-                const emailEl = $("email");
-                if (emailEl) {
-                    emailEl.textContent = email;
-                }
-                const phoneEl = $("phone");
-                if (phoneEl) {
-                    phoneEl.textContent = phone;
-                }
-            } catch (error) {
-                console.error(
-                    "LOAD ACCOUNT ERROR:",
-                    error
-                );
-                showLoggedOutState();
-                loginEmpty.hidden =
-                    false;
-                loginEmpty.querySelector("h2")
-                    .textContent =
-                    "Không thể tải tài khoản";
-                loginEmpty.querySelector("p")
-                    .textContent =
-                    "Đã xảy ra lỗi khi tải thông tin tài khoản. Vui lòng kiểm tra Firebase và thử lại.";
-                toast(
-                    "Không thể tải thông tin tài khoản."
-                );
+            window.toastTimer =
+                setTimeout(() => {
+                    element.classList.remove("show");
+                }, 2500);
+        }
+        /* =====================================================
+           SHOW LOGGED OUT
+        ===================================================== */
+        function showLoggedOutState() {
+            if (profileCard) {
+                profileCard.style.display = "none";
+            }
+            if (loginEmpty) {
+                loginEmpty.hidden = false;
+            }
+            if (accountContent) {
+                accountContent.classList.add("account-content-hidden");
             }
         }
-    );
-}
-/* =====================================================
-   CHANGE PASSWORD
-===================================================== */
-const changePasswordForm = $("changePasswordForm");
-if (changePasswordForm) {
-    changePasswordForm.addEventListener(
-        "submit",
-        async event => {
-            event.preventDefault();
-            const user =
-                auth.currentUser;
-            /* =========================================
-               CHECK USER
-            ========================================== */
-            if (!user) {
-                toast(
-                    "Bạn chưa đăng nhập."
-                );
-                return;
+        /* =====================================================
+           SHOW LOGGED IN
+        ===================================================== */
+        function showLoggedInState() {
+            if (profileCard) {
+                profileCard.style.display = "flex";
             }
-            /* =========================================
-               GET PASSWORD
-            ========================================== */
-            const newPassword =
-                $("newPassword")
-                    .value
-                    .trim();
-            const confirmPassword =
-                $("confirmPassword")
-                    .value
-                    .trim();
-            /* =========================================
-               VALIDATE
-            ========================================== */
-            if (
-                newPassword.length < 6
-            ) {
-                toast(
-                    "Mật khẩu phải có ít nhất 6 ký tự."
-                );
-                return;
+            if (loginEmpty) {
+                loginEmpty.hidden = true;
             }
-            if (
-                newPassword !==
-                confirmPassword
-            ) {
-                toast(
-                    "Mật khẩu xác nhận không khớp."
-                );
-                return;
+            if (accountContent) {
+                accountContent.classList.remove("account-content-hidden");
             }
-            /* =========================================
-               CHANGE PASSWORD
-            ========================================== */
-            try {
-                await user.updatePassword(
-                    newPassword
-                );
-                $("changePasswordForm")
-                    .reset();
-                /* Reset icon */
-                document
-                    .querySelectorAll(
-                        ".toggle-password"
-                    )
-                    .forEach(button => {
-                        const target =
+        }
+        /* =====================================================
+           ROLE FORMAT
+        ===================================================== */
+        function formatRole(role) {
+            if (!role) {
+                return "Chưa xác định";
+            }
+            const roles = {
+                admin:
+                    "Admin",
+                administrator:
+                    "Admin",
+                cs:
+                    "CS",
+                customer_success:
+                    "Customer Success",
+                "customer success":
+                    "Customer Success",
+                manager:
+                    "Manager",
+                staff:
+                    "Staff",
+                teacher:
+                    "Teacher",
+                gv:
+                    "Giảng viên",
+                student:
+                    "Học viên",
+                hocvien:
+                    "Học viên"
+            };
+            const key =
+                String(role)
+                    .trim()
+                    .toLowerCase();
+            return roles[key] ||
+                role;
+        }
+        /* =====================================================
+           AVATAR INITIALS
+        ===================================================== */
+        function getInitials(name) {
+            if (!name) {
+                return "CS";
+            }
+            const parts =
+                String(name)
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean);
+            if (parts.length >= 2) {
+                return (
+                    parts[0][0] +
+                    parts[parts.length - 1][0]
+                ).toUpperCase();
+            }
+            return parts[0][0]
+                .toUpperCase();
+        }
+        /* =====================================================
+           SHOW PASSWORD
+        ===================================================== */
+        document
+            .querySelectorAll(".toggle-password")
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    () => {
+                        const input =
                             $(button.dataset.target);
+                        if (!input) {
+                            return;
+                        }
                         const icon =
                             button.querySelector("i");
-                        if (target) {
-                            target.type =
-                                "password";
-                        }
+                        const isHidden =
+                            input.type === "password";
+                        input.type =
+                            isHidden
+                                ? "text"
+                                : "password";
                         if (icon) {
-                            icon.classList.remove(
-                                "fa-eye-slash"
+                            icon.classList.toggle(
+                                "fa-eye",
+                                !isHidden
                             );
-                            icon.classList.add(
-                                "fa-eye"
+                            icon.classList.toggle(
+                                "fa-eye-slash",
+                                isHidden
                             );
                         }
-                    });
-                toast(
-                    "Đổi mật khẩu thành công."
+                        button.setAttribute(
+                            "aria-label",
+                            isHidden
+                                ? "Ẩn mật khẩu"
+                                : "Hiện mật khẩu"
+                        );
+                        button.setAttribute(
+                            "title",
+                            isHidden
+                                ? "Ẩn mật khẩu"
+                                : "Hiện mật khẩu"
+                        );
+                    }
                 );
-            } catch (error) {
-                console.error(
-                    "CHANGE PASSWORD ERROR:",
-                    error
-                );
-                /* =====================================
-                   RE-AUTH REQUIRED
-                ====================================== */
-                if (
-                    error.code ===
-                    "auth/requires-recent-login"
-                ) {
-                    toast(
-                        "Phiên đăng nhập đã cũ. Vui lòng đăng nhập lại."
-                    );
-                    return;
-                }
-                /* =====================================
-                   WEAK PASSWORD
-                ====================================== */
-                if (
-                    error.code ===
-                    "auth/weak-password"
-                ) {
-                    toast(
-                        "Mật khẩu quá yếu."
-                    );
-                    return;
-                }
-                /* =====================================
-                   DEFAULT
-                ====================================== */
-                toast(
-                    "Không thể đổi mật khẩu. Vui lòng thử lại."
-                );
+            });
+        /* =====================================================
+           CHECK FIREBASE
+        ===================================================== */
+        if (
+            typeof firebase === "undefined" ||
+            typeof auth === "undefined" ||
+            typeof db === "undefined"
+        ) {
+            console.error(
+                "Firebase/Auth/Firestore chưa được tải."
+            );
+            showLoggedOutState();
+            const loginTitle = loginEmpty.querySelector("h2");
+            const loginMessage = loginEmpty.querySelector("p");
+            if (loginTitle) {
+                loginTitle.textContent = "Không thể kết nối Firebase";
             }
-        }
-    );
-}
-/* =====================================================
-   LOGOUT
-===================================================== */
-const logoutBtn = $("logoutBtn");
-if (logoutBtn) {
-    logoutBtn.addEventListener(
-        "click",
-        async () => {
-            try {
-                await auth.signOut();
-                window.location.href =
-                    "/CS/login/login.html";
-            } catch (error) {
-                console.error(
-                    "LOGOUT ERROR:",
-                    error
-                );
-                toast(
-                    "Đăng xuất thất bại."
-                );
+            if (loginMessage) {
+                loginMessage.textContent =
+                    "Firebase, Authentication hoặc Firestore chưa được tải. Vui lòng kiểm tra firebase-config.js và thứ tự các script.";
             }
+        } else {
+            /* =================================================
+               AUTH STATE
+            ================================================= */
+            auth.onAuthStateChanged(
+                async user => {
+                    console.log(
+                        "Firebase Auth:",
+                        user
+                    );
+                    /* =========================================
+                       CHƯA ĐĂNG NHẬP
+                    ========================================== */
+                    if (!user) {
+                        console.log(
+                            "Không có tài khoản đăng nhập."
+                        );
+                        showLoggedOutState();
+                        return;
+                    }
+                    /* =========================================
+                       ĐÃ ĐĂNG NHẬP
+                    ========================================== */
+                    console.log(
+                        "User UID:",
+                        user.uid
+                    );
+                    console.log(
+                        "User Email:",
+                        user.email
+                    );
+                    try {
+                        /* =====================================
+                           GET USER DOCUMENT
+                        ====================================== */
+                        const userRef =
+                            db
+                                .collection("users")
+                                .doc(user.uid);
+                        const doc =
+                            await userRef.get();
+                        /* =====================================
+                           DOCUMENT NOT FOUND
+                        ====================================== */
+                        if (!doc.exists) {
+                            console.error(
+                                "Không tìm thấy:",
+                                `users/${user.uid}`
+                            );
+                            showLoggedOutState();
+                            loginEmpty.querySelector("h2")
+                                .textContent =
+                                "Chưa có thông tin tài khoản";
+                            loginEmpty.querySelector("p")
+                                .textContent =
+                                "Tài khoản Firebase đã đăng nhập nhưng chưa có dữ liệu trong hệ thống. Vui lòng liên hệ quản trị viên.";
+                            return;
+                        }
+                        /* =====================================
+                           DATA
+                        ====================================== */
+                        const data =
+                            doc.data();
+                        console.log(
+                            "Firestore user:",
+                            data
+                        );
+                        /* =====================================
+                           BASIC INFORMATION
+                        ====================================== */
+                        const name =
+                            data.name ||
+                            data.fullName ||
+                            user.displayName ||
+                            "Người dùng";
+                        const email =
+                            data.email ||
+                            user.email ||
+                            "Chưa cập nhật";
+                        const username =
+                            data.username ||
+                            "Chưa cập nhật";
+                        const phone =
+                            data.phone ||
+                            data.phoneNumber ||
+                            "Chưa cập nhật";
+                        const campus =
+                            data.campus ||
+                            data.campusName ||
+                            "Chưa cập nhật";
+                        /* =====================================
+                           ROLE
+                        ====================================== */
+                        const rawRole =
+                            data.role ||
+                            data.department ||
+                            "Chưa cập nhật";
+                        const displayRole =
+                            formatRole(
+                                rawRole
+                            );
+                        /* =====================================
+                           SHOW ACCOUNT
+                        ====================================== */
+                        showLoggedInState();
+                        /* =====================================
+                           PROFILE
+                        ====================================== */
+                        const profileNameEl = $("profileName");
+                        if (profileNameEl) {
+                            profileNameEl.textContent = name;
+                        }
+                        const profileEmailEl = $("profileEmail");
+                        if (profileEmailEl) {
+                            profileEmailEl.textContent = email;
+                        }
+                        const roleBadgeEl = $("roleBadge");
+                        if (roleBadgeEl) {
+                            roleBadgeEl.textContent = displayRole;
+                        }
+                        const avatarEl = $("avatar");
+                        if (avatarEl) {
+                            avatarEl.textContent = getInitials(name);
+                        }
+                        /* =====================================
+                           PERSONAL INFORMATION
+                        ====================================== */
+                        const nameEl = $("name");
+                        if (nameEl) {
+                            nameEl.textContent = name;
+                        }
+                        const campusEl = $("campus");
+                        if (campusEl) {
+                            campusEl.textContent = campus;
+                        }
+                        /*
+                         * QUAN TRỌNG:
+                         *
+                         * HTML dùng:
+                         *
+                         * id="department"
+                         *
+                         * nên phải cập nhật department.
+                         *
+                         * Không dùng $("role")
+                         */
+                        const departmentEl = $("department");
+                        if (departmentEl) {
+                            departmentEl.textContent = displayRole;
+                        }
+                        /* =====================================
+                           ACCOUNT INFORMATION
+                        ====================================== */
+                        const usernameEl = $("username");
+                        if (usernameEl) {
+                            usernameEl.textContent = username;
+                        }
+                        const emailEl = $("email");
+                        if (emailEl) {
+                            emailEl.textContent = email;
+                        }
+                        const phoneEl = $("phone");
+                        if (phoneEl) {
+                            phoneEl.textContent = phone;
+                        }
+                    } catch (error) {
+                        console.error(
+                            "LOAD ACCOUNT ERROR:",
+                            error
+                        );
+                        showLoggedOutState();
+                        loginEmpty.hidden =
+                            false;
+                        loginEmpty.querySelector("h2")
+                            .textContent =
+                            "Không thể tải tài khoản";
+                        loginEmpty.querySelector("p")
+                            .textContent =
+                            "Đã xảy ra lỗi khi tải thông tin tài khoản. Vui lòng kiểm tra Firebase và thử lại.";
+                        toast(
+                            "Không thể tải thông tin tài khoản."
+                        );
+                    }
+                }
+            );
         }
-    );
-}
-/* =====================================================
-   LOGIN NOW
-===================================================== */
-const loginNowBtn = $("loginNowBtn");
-if (loginNowBtn) {
-    loginNowBtn.addEventListener(
-        "click",
-        () => {
-            window.location.href =
-                "/CS/login/login.html";
+        /* =====================================================
+           CHANGE PASSWORD
+        ===================================================== */
+        const changePasswordForm = $("changePasswordForm");
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener(
+                "submit",
+                async event => {
+                    event.preventDefault();
+                    const user =
+                        auth.currentUser;
+                    /* =========================================
+                       CHECK USER
+                    ========================================== */
+                    if (!user) {
+                        toast(
+                            "Bạn chưa đăng nhập."
+                        );
+                        return;
+                    }
+                    /* =========================================
+                       GET PASSWORD
+                    ========================================== */
+                    const newPassword =
+                        $("newPassword")
+                            .value
+                            .trim();
+                    const confirmPassword =
+                        $("confirmPassword")
+                            .value
+                            .trim();
+                    /* =========================================
+                       VALIDATE
+                    ========================================== */
+                    if (
+                        newPassword.length < 6
+                    ) {
+                        toast(
+                            "Mật khẩu phải có ít nhất 6 ký tự."
+                        );
+                        return;
+                    }
+                    if (
+                        newPassword !==
+                        confirmPassword
+                    ) {
+                        toast(
+                            "Mật khẩu xác nhận không khớp."
+                        );
+                        return;
+                    }
+                    /* =========================================
+                       CHANGE PASSWORD
+                    ========================================== */
+                    try {
+                        await user.updatePassword(
+                            newPassword
+                        );
+                        $("changePasswordForm")
+                            .reset();
+                        /* Reset icon */
+                        document
+                            .querySelectorAll(
+                                ".toggle-password"
+                            )
+                            .forEach(button => {
+                                const target =
+                                    $(button.dataset.target);
+                                const icon =
+                                    button.querySelector("i");
+                                if (target) {
+                                    target.type =
+                                        "password";
+                                }
+                                if (icon) {
+                                    icon.classList.remove(
+                                        "fa-eye-slash"
+                                    );
+                                    icon.classList.add(
+                                        "fa-eye"
+                                    );
+                                }
+                            });
+                        toast(
+                            "Đổi mật khẩu thành công."
+                        );
+                    } catch (error) {
+                        console.error(
+                            "CHANGE PASSWORD ERROR:",
+                            error
+                        );
+                        /* =====================================
+                           RE-AUTH REQUIRED
+                        ====================================== */
+                        if (
+                            error.code ===
+                            "auth/requires-recent-login"
+                        ) {
+                            toast(
+                                "Phiên đăng nhập đã cũ. Vui lòng đăng nhập lại."
+                            );
+                            return;
+                        }
+                        /* =====================================
+                           WEAK PASSWORD
+                        ====================================== */
+                        if (
+                            error.code ===
+                            "auth/weak-password"
+                        ) {
+                            toast(
+                                "Mật khẩu quá yếu."
+                            );
+                            return;
+                        }
+                        /* =====================================
+                           DEFAULT
+                        ====================================== */
+                        toast(
+                            "Không thể đổi mật khẩu. Vui lòng thử lại."
+                        );
+                    }
+                }
+            );
         }
-    );
-}
-</script>
-<!-- =====================================================
+        /* =====================================================
+           LOGOUT
+        ===================================================== */
+        const logoutBtn = $("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener(
+                "click",
+                async () => {
+                    try {
+                        await auth.signOut();
+                        window.location.href =
+                            "/CS/login/login.html";
+                    } catch (error) {
+                        console.error(
+                            "LOGOUT ERROR:",
+                            error
+                        );
+                        toast(
+                            "Đăng xuất thất bại."
+                        );
+                    }
+                }
+            );
+        }
+        /* =====================================================
+           LOGIN NOW
+        ===================================================== */
+        const loginNowBtn = $("loginNowBtn");
+        if (loginNowBtn) {
+            loginNowBtn.addEventListener(
+                "click",
+                () => {
+                    window.location.href =
+                        "/CS/login/login.html";
+                }
+            );
+        }
+    </script>
+    <!-- =====================================================
      NAVBAR JS
 ====================================================== -->
-<script src="/CS/navbar.js"></script>
+    <script src="/CS/navbar.js"></script>
 </body>
+
 </html>

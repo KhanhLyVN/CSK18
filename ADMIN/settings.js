@@ -31,18 +31,18 @@
     confirmLogout: true,
 
     interfaceSize: "normal",
-    language: "vi"
+    language: "vi",
   };
 
   let settings = {
-    ...DEFAULT_SETTINGS
+    ...DEFAULT_SETTINGS,
   };
 
   /* =======================================================
      DOM HELPER
   ======================================================= */
 
-  const $ = id => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
 
   /* =======================================================
      FIREBASE
@@ -100,16 +100,9 @@
     node.textContent = message;
     node.hidden = false;
 
-    node.classList.remove(
-      "toast-success",
-      "toast-error"
-    );
+    node.classList.remove("toast-success", "toast-error");
 
-    node.classList.add(
-      type === "error"
-        ? "toast-error"
-        : "toast-success"
-    );
+    node.classList.add(type === "error" ? "toast-error" : "toast-success");
 
     clearTimeout(window.__settingsToastTimer);
 
@@ -127,19 +120,15 @@
 
     if (!text) return "AD";
 
-    const parts = text
-      .split(/\s+/)
-      .filter(Boolean);
+    const parts = text.split(/\s+/).filter(Boolean);
 
     if (parts.length === 1) {
-      return parts[0]
-        .substring(0, 2)
-        .toUpperCase();
+      return parts[0].substring(0, 2).toUpperCase();
     }
 
     return parts
       .slice(-2)
-      .map(item => item.charAt(0))
+      .map((item) => item.charAt(0))
       .join("")
       .toUpperCase();
   }
@@ -150,25 +139,21 @@
 
   function loadSettings() {
     try {
-      const saved =
-        localStorage.getItem("adminSettings");
+      const saved = localStorage.getItem("adminSettings");
 
       if (saved) {
         const parsed = JSON.parse(saved);
 
         settings = {
           ...DEFAULT_SETTINGS,
-          ...parsed
+          ...parsed,
         };
       }
     } catch (error) {
-      console.warn(
-        "Không thể đọc Admin Settings:",
-        error
-      );
+      console.warn("Không thể đọc Admin Settings:", error);
 
       settings = {
-        ...DEFAULT_SETTINGS
+        ...DEFAULT_SETTINGS,
       };
     }
 
@@ -188,10 +173,10 @@
       "realtimeEnabled",
       "autoLoad",
       "activityLogging",
-      "confirmLogout"
+      "confirmLogout",
     ];
 
-    ids.forEach(id => {
+    ids.forEach((id) => {
       const node = $(id);
 
       if (!node) return;
@@ -200,13 +185,11 @@
     });
 
     if ($("interfaceSize")) {
-      $("interfaceSize").value =
-        settings.interfaceSize;
+      $("interfaceSize").value = settings.interfaceSize;
     }
 
     if ($("language")) {
-      $("language").value =
-        settings.language;
+      $("language").value = settings.language;
     }
 
     applyInterfaceSize();
@@ -225,10 +208,10 @@
       "realtimeEnabled",
       "autoLoad",
       "activityLogging",
-      "confirmLogout"
+      "confirmLogout",
     ];
 
-    ids.forEach(id => {
+    ids.forEach((id) => {
       const node = $(id);
 
       if (!node) return;
@@ -237,13 +220,11 @@
     });
 
     if ($("interfaceSize")) {
-      settings.interfaceSize =
-        $("interfaceSize").value;
+      settings.interfaceSize = $("interfaceSize").value;
     }
 
     if ($("language")) {
-      settings.language =
-        $("language").value;
+      settings.language = $("language").value;
     }
   }
 
@@ -255,10 +236,7 @@
     readSettings();
 
     try {
-      localStorage.setItem(
-        "adminSettings",
-        JSON.stringify(settings)
-      );
+      localStorage.setItem("adminSettings", JSON.stringify(settings));
 
       applyInterfaceSize();
 
@@ -266,10 +244,7 @@
     } catch (error) {
       console.error(error);
 
-      toast(
-        "Không thể lưu cài đặt",
-        "error"
-      );
+      toast("Không thể lưu cài đặt", "error");
     }
   }
 
@@ -279,14 +254,11 @@
 
   function resetSettings() {
     settings = {
-      ...DEFAULT_SETTINGS
+      ...DEFAULT_SETTINGS,
     };
 
     try {
-      localStorage.setItem(
-        "adminSettings",
-        JSON.stringify(settings)
-      );
+      localStorage.setItem("adminSettings", JSON.stringify(settings));
     } catch (error) {
       console.warn(error);
     }
@@ -301,15 +273,9 @@
   ======================================================= */
 
   function applyInterfaceSize() {
-    document.body.classList.remove(
-      "size-compact",
-      "size-normal",
-      "size-large"
-    );
+    document.body.classList.remove("size-compact", "size-normal", "size-large");
 
-    document.body.classList.add(
-      `size-${settings.interfaceSize}`
-    );
+    document.body.classList.add(`size-${settings.interfaceSize}`);
   }
 
   /* =======================================================
@@ -321,10 +287,9 @@
       return false;
     }
 
-    const email =
-      String(user.email || "")
-        .trim()
-        .toLowerCase();
+    const email = String(user.email || "")
+      .trim()
+      .toLowerCase();
 
     /*
      * Admin chính:
@@ -347,11 +312,10 @@
     }
 
     try {
-      const snapshot =
-        await database
-          .collection(USER_COLLECTION)
-          .doc(user.uid)
-          .get();
+      const snapshot = await database
+        .collection(USER_COLLECTION)
+        .doc(user.uid)
+        .get();
 
       if (!snapshot.exists) {
         return false;
@@ -365,10 +329,7 @@
         data.status !== "disabled"
       );
     } catch (error) {
-      console.error(
-        "Không thể kiểm tra quyền Admin:",
-        error
-      );
+      console.error("Không thể kiểm tra quyền Admin:", error);
 
       return false;
     }
@@ -392,137 +353,88 @@
     if (!firebaseAuth) {
       updateFirebaseStatus(false, false);
 
-      setAdminUI(
-        "Administrator",
-        "Firebase Auth chưa sẵn sàng",
-        "—"
-      );
+      setAdminUI("Administrator", "Firebase Auth chưa sẵn sàng", "—");
 
       return;
     }
 
-    firebaseAuth.onAuthStateChanged(
-      async user => {
+    firebaseAuth.onAuthStateChanged(async (user) => {
+      /*
+       * Chưa đăng nhập
+       */
 
-        /*
-         * Chưa đăng nhập
-         */
+      if (!user) {
+        setAdminUI("Administrator", "Chưa đăng nhập", "—");
 
-        if (!user) {
-          setAdminUI(
-            "Administrator",
-            "Chưa đăng nhập",
-            "—"
-          );
+        updateSessionUI(null);
 
-          updateSessionUI(null);
+        setTimeout(redirectToLogin, 700);
 
-          setTimeout(
-            redirectToLogin,
-            700
-          );
-
-          return;
-        }
-
-        /*
-         * Kiểm tra quyền
-         */
-
-        const isAdmin =
-          await verifyAdmin(user);
-
-        if (!isAdmin) {
-          toast(
-            "Tài khoản này không có quyền Admin",
-            "error"
-          );
-
-          await firebaseAuth.signOut();
-
-          setTimeout(
-            redirectToLogin,
-            900
-          );
-
-          return;
-        }
-
-        /*
-         * Admin hợp lệ
-         */
-
-        const email =
-          user.email ||
-          ADMIN_EMAIL;
-
-        let name =
-          user.displayName ||
-          "HCM Admin";
-
-        let campus =
-          ADMIN_CAMPUS;
-
-        const database =
-          getFirestore();
-
-        if (database) {
-          try {
-            const snapshot =
-              await database
-                .collection(USER_COLLECTION)
-                .doc(user.uid)
-                .get();
-
-            if (snapshot.exists) {
-              const data =
-                snapshot.data() || {};
-
-              name =
-                data.displayName ||
-                data.name ||
-                user.displayName ||
-                "HCM Admin";
-
-              campus =
-                data.campus ||
-                ADMIN_CAMPUS;
-            }
-          } catch (error) {
-            console.warn(
-              "Không thể lấy Admin profile:",
-              error
-            );
-          }
-        }
-
-        setAdminUI(
-          name,
-          email,
-          campus
-        );
-
-        updateSessionUI(user);
-
-        updateFirebaseStatus(
-          true,
-          true
-        );
+        return;
       }
-    );
+
+      /*
+       * Kiểm tra quyền
+       */
+
+      const isAdmin = await verifyAdmin(user);
+
+      if (!isAdmin) {
+        toast("Tài khoản này không có quyền Admin", "error");
+
+        await firebaseAuth.signOut();
+
+        setTimeout(redirectToLogin, 900);
+
+        return;
+      }
+
+      /*
+       * Admin hợp lệ
+       */
+
+      const email = user.email || ADMIN_EMAIL;
+
+      let name = user.displayName || "HCM Admin";
+
+      let campus = ADMIN_CAMPUS;
+
+      const database = getFirestore();
+
+      if (database) {
+        try {
+          const snapshot = await database
+            .collection(USER_COLLECTION)
+            .doc(user.uid)
+            .get();
+
+          if (snapshot.exists) {
+            const data = snapshot.data() || {};
+
+            name =
+              data.displayName || data.name || user.displayName || "HCM Admin";
+
+            campus = data.campus || ADMIN_CAMPUS;
+          }
+        } catch (error) {
+          console.warn("Không thể lấy Admin profile:", error);
+        }
+      }
+
+      setAdminUI(name, email, campus);
+
+      updateSessionUI(user);
+
+      updateFirebaseStatus(true, true);
+    });
   }
 
   /* =======================================================
      SET ADMIN UI
   ======================================================= */
 
-  function setAdminUI(
-    name,
-    email,
-    campus
-  ) {
-    const avatar =
-      initials(name);
+  function setAdminUI(name, email, campus) {
+    const avatar = initials(name);
 
     const elements = {
       sidebarAdminName: name,
@@ -538,27 +450,23 @@
       adminName: name,
       adminEmail: email,
 
-      adminCampus: campus
+      adminCampus: campus,
     };
 
-    Object.entries(elements)
-      .forEach(([id, value]) => {
-        const node = $(id);
+    Object.entries(elements).forEach(([id, value]) => {
+      const node = $(id);
 
-        if (!node) return;
+      if (!node) return;
 
-        if (
-          node.tagName === "INPUT"
-        ) {
-          node.value = value;
-        } else {
-          node.textContent = value;
-        }
-      });
+      if (node.tagName === "INPUT") {
+        node.value = value;
+      } else {
+        node.textContent = value;
+      }
+    });
 
     if ($("adminRole")) {
-      $("adminRole").textContent =
-        "SYSTEM ADMIN";
+      $("adminRole").textContent = "SYSTEM ADMIN";
     }
   }
 
@@ -567,75 +475,56 @@
   ======================================================= */
 
   async function saveProfile() {
-    const nameNode =
-      $("adminName");
+    const nameNode = $("adminName");
 
     if (!nameNode) return;
 
-    const name =
-      nameNode.value.trim();
+    const name = nameNode.value.trim();
 
     if (!name) {
-      toast(
-        "Vui lòng nhập họ tên",
-        "error"
-      );
+      toast("Vui lòng nhập họ tên", "error");
 
       return;
     }
 
-    const firebaseAuth =
-      getAuth();
+    const firebaseAuth = getAuth();
 
     if (!firebaseAuth) {
-      toast(
-        "Firebase Auth chưa sẵn sàng",
-        "error"
-      );
+      toast("Firebase Auth chưa sẵn sàng", "error");
 
       return;
     }
 
-    const user =
-      firebaseAuth.currentUser;
+    const user = firebaseAuth.currentUser;
 
     if (!user) {
-      toast(
-        "Chưa có phiên đăng nhập",
-        "error"
-      );
+      toast("Chưa có phiên đăng nhập", "error");
 
       return;
     }
 
-    const isAdmin =
-      await verifyAdmin(user);
+    const isAdmin = await verifyAdmin(user);
 
     if (!isAdmin) {
-      toast(
-        "Bạn không có quyền Admin",
-        "error"
-      );
+      toast("Bạn không có quyền Admin", "error");
 
       return;
     }
 
     try {
-
       /*
        * Firebase Authentication
        */
 
       await user.updateProfile({
-        displayName: name
+        displayName: name,
       });
 
       /*
        * Firestore
        */
 
-      const database =
-        getFirestore();
+      const database = getFirestore();
 
       if (database) {
         await database
@@ -650,42 +539,23 @@
               name,
               displayName: name,
 
-              email:
-                user.email ||
-                ADMIN_EMAIL,
+              email: user.email || ADMIN_EMAIL,
 
-              updatedAt:
-                firebase.firestore
-                  .FieldValue
-                  .serverTimestamp()
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             },
             {
-              merge: true
-            }
+              merge: true,
+            },
           );
       }
 
-      setAdminUI(
-        name,
-        user.email ||
-          ADMIN_EMAIL,
-        ADMIN_CAMPUS
-      );
+      setAdminUI(name, user.email || ADMIN_EMAIL, ADMIN_CAMPUS);
 
-      toast(
-        "Đã cập nhật thông tin Admin"
-      );
-
+      toast("Đã cập nhật thông tin Admin");
     } catch (error) {
-      console.error(
-        "Save profile:",
-        error
-      );
+      console.error("Save profile:", error);
 
-      toast(
-        "Không thể cập nhật thông tin",
-        "error"
-      );
+      toast("Không thể cập nhật thông tin", "error");
     }
   }
 
@@ -693,62 +563,40 @@
      FIREBASE STATUS
   ======================================================= */
 
-  function updateFirebaseStatus(
-    connected,
-    authenticated
-  ) {
-    const firebaseStatus =
-      $("firebaseStatus");
+  function updateFirebaseStatus(connected, authenticated) {
+    const firebaseStatus = $("firebaseStatus");
 
-    const connectionLabel =
-      $("connectionLabel");
+    const connectionLabel = $("connectionLabel");
 
-    const connectionDot =
-      $("connectionDot");
+    const connectionDot = $("connectionDot");
 
-    const authStatus =
-      $("authStatus");
+    const authStatus = $("authStatus");
 
     if (firebaseStatus) {
-      firebaseStatus.textContent =
-        connected
-          ? "CONNECTED"
-          : "OFFLINE";
+      firebaseStatus.textContent = connected ? "CONNECTED" : "OFFLINE";
     }
 
     if (connectionLabel) {
-      connectionLabel.textContent =
-        connected
-          ? "Firebase đang hoạt động"
-          : "Firebase chưa kết nối";
+      connectionLabel.textContent = connected
+        ? "Firebase đang hoạt động"
+        : "Firebase chưa kết nối";
     }
 
     if (connectionDot) {
-      connectionDot.classList.toggle(
-        "live",
-        connected
-      );
+      connectionDot.classList.toggle("live", connected);
     }
 
     if (authStatus) {
-      authStatus.textContent =
-        authenticated
-          ? "AUTHORIZED"
-          : "WAITING";
+      authStatus.textContent = authenticated ? "AUTHORIZED" : "WAITING";
     }
   }
 
   function checkFirebase() {
-    const database =
-      getFirestore();
+    const database = getFirestore();
 
-    const firebaseAuth =
-      getAuth();
+    const firebaseAuth = getAuth();
 
-    updateFirebaseStatus(
-      !!database,
-      !!firebaseAuth
-    );
+    updateFirebaseStatus(!!database, !!firebaseAuth);
   }
 
   /* =======================================================
@@ -756,14 +604,11 @@
   ======================================================= */
 
   function updateSessionUI(user) {
-    const uid =
-      $("sessionUid");
+    const uid = $("sessionUid");
 
-    const provider =
-      $("sessionProvider");
+    const provider = $("sessionProvider");
 
-    const sessionEmail =
-      $("sessionEmail");
+    const sessionEmail = $("sessionEmail");
 
     if (!user) {
       if (uid) uid.textContent = "—";
@@ -774,25 +619,20 @@
     }
 
     if (uid) {
-      uid.textContent =
-        user.uid;
+      uid.textContent = user.uid;
     }
 
     if (sessionEmail) {
-      sessionEmail.textContent =
-        user.email ||
-        ADMIN_EMAIL;
+      sessionEmail.textContent = user.email || ADMIN_EMAIL;
     }
 
     const providerId =
-      user.providerData &&
-      user.providerData.length
+      user.providerData && user.providerData.length
         ? user.providerData[0].providerId
         : "password";
 
     if (provider) {
-      provider.textContent =
-        providerId;
+      provider.textContent = providerId;
     }
   }
 
@@ -801,23 +641,16 @@
   ======================================================= */
 
   async function logout() {
-    const firebaseAuth =
-      getAuth();
+    const firebaseAuth = getAuth();
 
     if (!firebaseAuth) {
-      toast(
-        "Firebase Auth chưa sẵn sàng",
-        "error"
-      );
+      toast("Firebase Auth chưa sẵn sàng", "error");
 
       return;
     }
 
     if (settings.confirmLogout) {
-      const confirmed =
-        confirm(
-          "Bạn có chắc muốn đăng xuất khỏi Admin?"
-        );
+      const confirmed = confirm("Bạn có chắc muốn đăng xuất khỏi Admin?");
 
       if (!confirmed) return;
     }
@@ -825,24 +658,15 @@
     try {
       await firebaseAuth.signOut();
 
-      toast(
-        "Đã đăng xuất Admin"
-      );
+      toast("Đã đăng xuất Admin");
 
       setTimeout(() => {
         redirectToLogin();
       }, 500);
-
     } catch (error) {
-      console.error(
-        "Logout:",
-        error
-      );
+      console.error("Logout:", error);
 
-      toast(
-        "Đăng xuất thất bại",
-        "error"
-      );
+      toast("Đăng xuất thất bại", "error");
     }
   }
 
@@ -852,16 +676,12 @@
 
   function showNotification() {
     if (!settings.notifySystem) {
-      toast(
-        "Thông báo hệ thống đang tắt"
-      );
+      toast("Thông báo hệ thống đang tắt");
 
       return;
     }
 
-    toast(
-      "Không có thông báo mới"
-    );
+    toast("Không có thông báo mới");
   }
 
   /* =======================================================
@@ -869,46 +689,30 @@
   ======================================================= */
 
   function setupMobileMenu() {
-    const menuBtn =
-      $("menuBtn");
+    const menuBtn = $("menuBtn");
 
-    const sidebar =
-      $("sidebar");
+    const sidebar = $("sidebar");
 
-    const backdrop =
-      $("sidebarBackdrop");
+    const backdrop = $("sidebarBackdrop");
 
     if (!menuBtn || !sidebar) {
       return;
     }
 
-    menuBtn.addEventListener(
-      "click",
-      () => {
-        sidebar.classList.toggle(
-          "open"
-        );
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
 
-        if (backdrop) {
-          backdrop.hidden =
-            !sidebar.classList.contains(
-              "open"
-            );
-        }
+      if (backdrop) {
+        backdrop.hidden = !sidebar.classList.contains("open");
       }
-    );
+    });
 
     if (backdrop) {
-      backdrop.addEventListener(
-        "click",
-        () => {
-          sidebar.classList.remove(
-            "open"
-          );
+      backdrop.addEventListener("click", () => {
+        sidebar.classList.remove("open");
 
-          backdrop.hidden = true;
-        }
-      );
+        backdrop.hidden = true;
+      });
     }
   }
 
@@ -917,29 +721,16 @@
   ======================================================= */
 
   function setupSidebar() {
-    const navItems =
-      document.querySelectorAll(
-        ".nav-item[data-page]"
-      );
+    const navItems = document.querySelectorAll(".nav-item[data-page]");
 
-    navItems.forEach(item => {
-      item.addEventListener(
-        "click",
-        () => {
-          try {
-            localStorage.setItem(
-              "adminActivePage",
-              item.dataset.page
-            );
-          } catch (error) {}
-        }
-      );
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        try {
+          localStorage.setItem("adminActivePage", item.dataset.page);
+        } catch (error) {}
+      });
 
-      item.classList.toggle(
-        "active",
-        item.dataset.page ===
-          "settings"
-      );
+      item.classList.toggle("active", item.dataset.page === "settings");
     });
   }
 
@@ -948,65 +739,29 @@
   ======================================================= */
 
   function setupEvents() {
+    $("saveSettingsBtn")?.addEventListener("click", saveSettings);
 
-    $("saveSettingsBtn")
-      ?.addEventListener(
-        "click",
-        saveSettings
-      );
+    $("resetSettingsBtn")?.addEventListener("click", resetSettings);
 
-    $("resetSettingsBtn")
-      ?.addEventListener(
-        "click",
-        resetSettings
-      );
+    $("resetAllBtn")?.addEventListener("click", () => {
+      renderSettings();
 
-    $("resetAllBtn")
-      ?.addEventListener(
-        "click",
-        () => {
-          renderSettings();
+      toast("Đã hủy thay đổi");
+    });
 
-          toast(
-            "Đã hủy thay đổi"
-          );
-        }
-      );
+    $("saveProfileBtn")?.addEventListener("click", saveProfile);
 
-    $("saveProfileBtn")
-      ?.addEventListener(
-        "click",
-        saveProfile
-      );
+    $("logoutBtn")?.addEventListener("click", logout);
 
-    $("logoutBtn")
-      ?.addEventListener(
-        "click",
-        logout
-      );
+    $("logoutSessionBtn")?.addEventListener("click", logout);
 
-    $("logoutSessionBtn")
-      ?.addEventListener(
-        "click",
-        logout
-      );
+    $("noticeBtn")?.addEventListener("click", showNotification);
 
-    $("noticeBtn")
-      ?.addEventListener(
-        "click",
-        showNotification
-      );
+    $("interfaceSize")?.addEventListener("change", () => {
+      settings.interfaceSize = $("interfaceSize").value;
 
-    $("interfaceSize")
-      ?.addEventListener(
-        "change",
-        () => {
-          settings.interfaceSize =
-            $("interfaceSize").value;
-
-          applyInterfaceSize();
-        }
-      );
+      applyInterfaceSize();
+    });
 
     setupMobileMenu();
     setupSidebar();
@@ -1024,5 +779,4 @@
   }
 
   init();
-
 })();

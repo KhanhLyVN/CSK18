@@ -16,6 +16,7 @@
   --radius-sm: 10px;
   --radius-md: 16px;
 }
+
 /* =========================================================
    RESET
 ========================================================= */
@@ -24,10 +25,12 @@
 *::after {
   box-sizing: border-box;
 }
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
+
 body {
   margin: 0;
   min-width: 320px;
@@ -44,16 +47,19 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
 }
+
 button,
 input,
 select {
   font: inherit;
 }
+
 button,
 a {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+
 [hidden] {
   display: none !important;
 }
@@ -74,6 +80,7 @@ a {
     2px solid var(--maroon);
   overflow: hidden;
 }
+
 .eyebrow {
   margin:
     0 0 13px;
@@ -83,20 +90,22 @@ a {
   letter-spacing: .18em;
   text-transform: uppercase;
 }
+
 .hero h1 {
   max-width: 900px;
   margin: 0;
   color: var(--maroon);
   font:
-    700 clamp(40px, 4.2vw, 64px)/.98
-    Fraunces,
+    700 clamp(40px, 4.2vw, 64px)/.98 Fraunces,
     Georgia,
     serif;
   letter-spacing: -.045em;
 }
+
 .hero h1 span {
   color: var(--maroon-soft);
 }
+
 .hero-copy {
   max-width: 700px;
   margin:
@@ -105,6 +114,7 @@ a {
   font-size: 14px;
   line-height: 1.8;
 }
+
 /* =========================================================
    HERO ART
 ========================================================= */
@@ -115,21 +125,24 @@ a {
   margin-right: 10px;
   flex: 0 0 auto;
 }
+
 .orbit {
   position: absolute;
   border:
-    1px solid
-    rgba(111,29,27,.16);
+    1px solid rgba(111, 29, 27, .16);
   border-radius: 50%;
 }
+
 .orbit-one {
   inset:
     18px 0 0 25px;
 }
+
 .orbit-two {
   inset:
     44px 24px 22px 52px;
 }
+
 .node {
   position: absolute;
   width: 54px;
@@ -137,38 +150,41 @@ a {
   display: grid;
   place-items: center;
   border:
-    1px solid
-    rgba(111,29,27,.18);
+    1px solid rgba(111, 29, 27, .18);
   border-radius: 10px;
   background: var(--paper);
   box-shadow: var(--shadow-sm);
   color: var(--maroon);
   font:
-    600 11px
-    "IBM Plex Mono",
+    600 11px "IBM Plex Mono",
     monospace;
 }
+
 .node-a {
   left: 8px;
   top: 75px;
 }
+
 .node-b {
   right: 12px;
   top: 35px;
   color: var(--green);
 }
+
 .node-c {
   right: 50px;
   bottom: 18px;
   color: var(--gold);
 }
+
 .connector {
   position: absolute;
   height: 1px;
   background:
-    rgba(111,29,27,.28);
+    rgba(111, 29, 27, .28);
   transform-origin: left center;
 }
+
 .connector-one {
   left: 59px;
   top: 95px;
@@ -176,6 +192,7 @@ a {
   transform:
     rotate(-19deg);
 }
+
 .connector-two {
   left: 59px;
   top: 95px;
@@ -183,6 +200,7 @@ a {
   transform:
     rotate(21deg);
 }
+
 /* =========================================================
    STATS
 ========================================================= */
@@ -194,6 +212,7 @@ a {
   padding:
     28px 0;
 }
+
 .stat-card {
   min-width: 0;
   min-height: 128px;
@@ -211,12 +230,14 @@ a {
     transform .18s ease,
     box-shadow .18s ease;
 }
+
 .stat-card:hover {
   transform:
     translateY(-3px);
   box-shadow:
     var(--shadow-md);
 }
+
 .stat-card span {
   display: block;
   color: var(--soft);
@@ -224,25 +245,28 @@ a {
   font-weight: 800;
   letter-spacing: .14em;
 }
+
 .stat-card strong {
   display: block;
   margin-top: 12px;
   color: var(--maroon);
   font:
-    700 38px/1
-    Fraunces,
+    700 38px/1 Fraunces,
     Georgia,
     serif;
 }
+
 .stat-card small {
   display: block;
   margin-top: 8px;
   color: var(--green);
   font-size: 11px;
 }
+
 .stat-card.attention small {
   color: #92702d;
 }
+
 /* =========================================================
    ACCOUNT PANEL
 ========================================================= */
@@ -258,6 +282,7 @@ a {
   box-shadow:
     var(--shadow-md);
 }
+
 .panel-head {
   display: flex;
   align-items: center;
@@ -268,21 +293,23 @@ a {
   border-bottom:
     1px solid var(--line);
 }
+
 .title-line {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
+
 .title-line h2 {
   margin: 0;
   color: var(--maroon);
   font:
-    700 26px
-    Fraunces,
+    700 26px Fraunces,
     Georgia,
     serif;
 }
+
 .title-line span {
   padding:
     5px 9px;
@@ -295,6 +322,7 @@ a {
   font-size: 10px;
   font-weight: 800;
 }
+
 .panel-head p {
   margin:
     6px 0 0;
@@ -302,6 +330,7 @@ a {
     var(--muted);
   font-size: 12px;
 }
+
 /* =========================================================
    BUTTON
 ========================================================= */
@@ -316,16 +345,17 @@ a {
   font-size: 12px;
   font-weight: 700;
   box-shadow:
-    0 5px 12px
-    rgba(111,29,27,.14);
+    0 5px 12px rgba(111, 29, 27, .14);
   transition: .18s ease;
 }
+
 .primary-btn:hover {
   background:
     var(--maroon-dark);
   transform:
     translateY(-2px);
 }
+
 /* =========================================================
    FILTER
 ========================================================= */
@@ -340,11 +370,13 @@ a {
   background:
     #fbf7f1;
 }
+
 .search-box {
   position: relative;
   flex: 1;
   min-width: 0;
 }
+
 .search-box span {
   position: absolute;
   left: 13px;
@@ -352,6 +384,7 @@ a {
   color: var(--muted);
   font-size: 20px;
 }
+
 .search-box input,
 .filters select {
   height: 40px;
@@ -365,24 +398,27 @@ a {
     var(--ink);
   font-size: 12px;
 }
+
 .search-box input {
   width: 100%;
   padding:
     0 13px 0 36px;
 }
+
 .filters select {
   width: 190px;
   padding:
     0 11px;
 }
+
 .search-box input:focus,
 .filters select:focus {
   border-color:
     var(--maroon-soft);
   box-shadow:
-    0 0 0 4px
-    rgba(143,61,56,.12);
+    0 0 0 4px rgba(143, 61, 56, .12);
 }
+
 /* =========================================================
    TABLE
 ========================================================= */
@@ -390,12 +426,14 @@ a {
   width: 100%;
   overflow-x: auto;
 }
+
 table {
   width: 100%;
   min-width: 850px;
   border-collapse:
     collapse;
 }
+
 th {
   padding:
     14px 20px;
@@ -408,6 +446,7 @@ th {
   text-align: left;
   white-space: nowrap;
 }
+
 td {
   padding:
     17px 20px;
@@ -416,25 +455,30 @@ td {
   font-size: 12px;
   vertical-align: middle;
 }
+
 tbody tr {
   cursor: pointer;
   transition:
     background .16s ease;
 }
+
 tbody tr:hover {
   background:
     #fffaf4;
 }
+
 /* ACCOUNT */
 .account-cell {
   display: flex;
   align-items: center;
   gap: 11px;
 }
+
 .account-cell strong {
   display: block;
   font-size: 13px;
 }
+
 .account-cell small {
   display: block;
   margin-top: 4px;
@@ -442,20 +486,22 @@ tbody tr:hover {
     var(--muted);
   font-size: 10px;
 }
+
 .account-cell code {
   margin-right: 6px;
   color:
     var(--maroon-soft);
   font:
-    500 10px
-    "IBM Plex Mono",
+    500 10px "IBM Plex Mono",
     monospace;
 }
+
 .role {
   color:
     var(--soft);
   font-weight: 600;
 }
+
 /* STATUS */
 .status {
   display: inline-flex;
@@ -468,6 +514,7 @@ tbody tr:hover {
   font-size: 10px;
   font-weight: 700;
 }
+
 .status i {
   width: 6px;
   height: 6px;
@@ -475,29 +522,34 @@ tbody tr:hover {
   background:
     currentColor;
 }
+
 .status-active {
   color: #486b42;
   background: #eaf3e7;
 }
+
 .status-away {
   color: #8a6b29;
   background: #f8efd9;
 }
+
 .status-pending {
   color: #786e66;
   background: #f0ece7;
 }
+
 .last-active {
   color: var(--soft);
   font-size: 11px;
 }
+
 .joined {
   color: var(--soft);
   font:
-    500 11px
-    "IBM Plex Mono",
+    500 11px "IBM Plex Mono",
     monospace;
 }
+
 /* =========================================================
    DRAWER
 ========================================================= */
@@ -506,10 +558,11 @@ tbody tr:hover {
   inset: 0;
   z-index: 200;
   background:
-    rgba(43,33,29,.42);
+    rgba(43, 33, 29, .42);
   backdrop-filter:
     blur(2px);
 }
+
 .drawer {
   position: fixed;
   top: 0;
@@ -517,57 +570,57 @@ tbody tr:hover {
   bottom: 0;
   z-index: 210;
   width:
-    min(450px,100vw);
+    min(450px, 100vw);
   overflow-y: auto;
   background:
     var(--paper);
   box-shadow:
-    -16px 0 40px
-    rgba(67,31,22,.2);
+    -16px 0 40px rgba(67, 31, 22, .2);
   transform:
     translateX(105%);
   transition:
     transform .28s ease;
 }
+
 .drawer.open {
   transform:
     translateX(0);
 }
+
 .drawer-head {
   display: flex;
   justify-content: space-between;
   padding: 26px;
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       var(--maroon),
-      var(--maroon-dark)
-    );
+      var(--maroon-dark));
   color:
     var(--paper);
 }
+
 .drawer-head small {
   color:
-    rgba(244,231,213,.72);
+    rgba(244, 231, 213, .72);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: .15em;
 }
+
 .drawer-head h2 {
   margin:
     4px 0 0;
   font:
-    600 23px
-    Fraunces,
+    600 23px Fraunces,
     Georgia,
     serif;
 }
+
 .close-btn {
   width: 36px;
   height: 36px;
   border:
-    1px solid
-    rgba(255,255,255,.28);
+    1px solid rgba(255, 255, 255, .28);
   border-radius: 10px;
   background:
     transparent;
@@ -575,6 +628,7 @@ tbody tr:hover {
     var(--paper);
   font-size: 24px;
 }
+
 /* =========================================================
    MOBILE
 ========================================================= */
@@ -582,22 +636,27 @@ tbody tr:hover {
   .content-wrap {
     padding-inline: 28px;
   }
+
   .topbar {
     padding-inline: 28px;
   }
+
   .hero-art {
     width: 240px;
   }
 }
+
 @media (max-width: 780px) {
   .mobile-only {
     display: inline-grid;
   }
+
   .topbar {
     height: 62px;
     padding:
       0 16px;
   }
+
   .connection {
     max-width: 180px;
     overflow: hidden;
@@ -605,85 +664,104 @@ tbody tr:hover {
     text-overflow: ellipsis;
     font-size: 10px;
   }
+
   .top-admin {
     display: none;
   }
+
   .content-wrap {
     padding:
       28px 14px 42px;
   }
+
   .hero {
     min-height: 0;
     padding-bottom: 28px;
   }
+
   .hero-art {
     display: none;
   }
+
   .hero h1 {
     font-size:
       clamp(37px, 11vw, 50px);
   }
+
   .hero-copy {
     font-size: 13px;
     line-height: 1.7;
   }
+
   .stats-grid {
     grid-template-columns:
-      repeat(2,minmax(0,1fr));
+      repeat(2, minmax(0, 1fr));
     gap: 10px;
     padding:
       20px 0;
   }
+
   .stat-card {
     min-height: 116px;
     padding: 16px;
   }
+
   .stat-card strong {
     font-size: 32px;
   }
+
   .panel-head {
     align-items: stretch;
     flex-direction: column;
     padding:
       20px 16px;
   }
+
   .primary-btn {
     width: 100%;
   }
+
   .filters {
     flex-wrap: wrap;
     align-items: stretch;
     padding:
       13px 12px;
   }
+
   .search-box {
     flex-basis: 100%;
   }
+
   .filters select {
     flex: 1;
     width: auto;
     min-width: 0;
   }
+
   .panel-foot {
     flex-direction: column;
     align-items: flex-start;
     padding:
       14px 16px;
   }
+
   th,
   td {
     padding-inline: 15px;
   }
 }
+
 @media (max-width: 420px) {
   .stats-grid {
     grid-template-columns:
       1fr;
   }
+
   .title-line h2 {
     font-size: 23px;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
@@ -693,5 +771,3 @@ tbody tr:hover {
       .01ms !important;
   }
 }
-
-

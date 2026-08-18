@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,44 +9,70 @@
   <link rel="stylesheet" href="/HV/ticketssent/ticketssent.css">
   <link rel="stylesheet" href="/HV/navbar.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
 </head>
+
 <body data-nav-page="home">
   <div class="app">
     <main class="main">
-      <section class="page-head"><div><span class="eyebrow">TỔNG QUAN HỖ TRỢ</span><h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2><p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p></div><div class="date-block"><span id="todayLabel">—</span>
-        <!-- <span class="last-sync">Cập nhật realtime</span> -->
-      </div></section>
-      <section class="welcome-banner"><div><span class="banner-kicker">CẦN HỖ TRỢ?</span><h3>Bắt đầu từ nơi phù hợp nhất</h3><p>Tra cứu câu hỏi thường gặp trước, hoặc gửi một ticket mới nếu bạn cần hỗ trợ riêng.</p></div><a class="banner-link" href="/HV/tickets/phieuhotro.html">Tạo ticket <span>→</span></a></section>
+      <section class="page-head">
+        <div><span class="eyebrow">TỔNG QUAN HỖ TRỢ</span>
+          <h2>Xin chào, <span id="welcomeName">Học viên</span>!</h2>
+          <p>Theo dõi các yêu cầu hỗ trợ và kết nối với Customer Success trong một nơi.</p>
+        </div>
+        <div class="date-block"><span id="todayLabel">—</span>
+          <!-- <span class="last-sync">Cập nhật realtime</span> -->
+        </div>
+      </section>
+      <section class="welcome-banner">
+        <div><span class="banner-kicker">CẦN HỖ TRỢ?</span>
+          <h3>Bắt đầu từ nơi phù hợp nhất</h3>
+          <p>Tra cứu câu hỏi thường gặp trước, hoặc gửi một ticket mới nếu bạn cần hỗ trợ riêng.</p>
+        </div><a class="banner-link" href="/HV/tickets/phieuhotro.html">Tạo ticket <span>→</span></a>
+      </section>
       <section class="homepage-sent-area sent-tickets-page" aria-labelledby="homepageSentTitle">
         <div class="sent-page-head">
-          <div><span class="sent-eyebrow">LƯU TRỮ YÊU CẦU</span><h2 id="homepageSentTitle">Những phiếu bạn đã gửi.</h2><p>Xem mã yêu cầu, trạng thái và phản hồi của Customer Success ngay dưới trang chủ.</p></div>
+          <div><span class="sent-eyebrow">LƯU TRỮ YÊU CẦU</span>
+            <h2 id="homepageSentTitle">Những phiếu bạn đã gửi.</h2>
+            <p>Xem mã yêu cầu, trạng thái và phản hồi của Customer Success ngay dưới trang chủ.</p>
+          </div>
           <div class="sent-count"><strong id="sentTicketCount">0</strong><span>phiếu đã tạo</span></div>
         </div>
         <div id="sentError" class="sent-error" hidden></div>
         <section id="sentLoading" class="sent-panel">Đang đồng bộ hồ sơ...</section>
-        <section id="sentEmpty" class="sent-panel" hidden><div class="sent-empty-icon">⌁</div><p>Phiếu hỗ trợ đầu tiên của bạn sẽ xuất hiện tại đây.</p><a href="/HV/tickets/phieuhotro.html" class="sent-create-link">Tạo phiếu hỗ trợ <span>→</span></a></section>
+        <section id="sentEmpty" class="sent-panel" hidden>
+          <div class="sent-empty-icon">⌁</div>
+          <p>Phiếu hỗ trợ đầu tiên của bạn sẽ xuất hiện tại đây.</p><a href="/HV/tickets/phieuhotro.html"
+            class="sent-create-link">Tạo phiếu hỗ trợ <span>→</span></a>
+        </section>
         <section id="sentTicketGrid" class="sent-ticket-grid" hidden></section>
       </section>
     </main>
   </div>
   <aside class="notification-panel" id="notificationPanel" aria-hidden="true" aria-labelledby="notificationTitle">
     <div class="notification-panel-head">
-      <div><span class="notification-kicker">CẬP NHẬT MỚI</span><h2 id="notificationTitle">Thông báo</h2><p id="notificationSummary">Các thay đổi mới từ Customer Success.</p></div>
+      <div><span class="notification-kicker">CẬP NHẬT MỚI</span>
+        <h2 id="notificationTitle">Thông báo</h2>
+        <p id="notificationSummary">Các thay đổi mới từ Customer Success.</p>
+      </div>
       <button class="notification-close" id="notificationClose" type="button" aria-label="Đóng thông báo">×</button>
     </div>
     <div class="notification-toolbar"><span id="notificationUnreadLabel">Chưa có thông báo</span></div>
     <div class="notification-list" id="notificationList"></div>
-    <div class="notification-empty" id="notificationEmpty">Khi CS cập nhật trạng thái ticket, thông báo sẽ xuất hiện tại đây.</div>
+    <div class="notification-empty" id="notificationEmpty">Khi CS cập nhật trạng thái ticket, thông báo sẽ xuất hiện tại
+      đây.</div>
   </aside>
   <div class="notification-backdrop" id="notificationBackdrop" hidden></div>
   <script src="/HV/navbar.js"></script>
   <script src="/HV/homepage-hv/homepage.js"></script>
   <script type="module" src="/HV/ticketssent/ticketssent.js"></script>
 </body>
+
 </html>

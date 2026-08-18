@@ -6,9 +6,11 @@
 *::after {
     box-sizing: border-box;
 }
+
 html {
     scroll-behavior: smooth;
 }
+
 body {
     margin: 0;
     min-height: 100vh;
@@ -23,6 +25,7 @@ body {
     color: #2b211d;
     font-family: "Poppins", sans-serif;
 }
+
 /* =========================================================
    MAIN CONTAINER
 ========================================================= */
@@ -39,6 +42,7 @@ body {
         0 35px 90px rgba(55, 25, 18, .12),
         0 8px 30px rgba(55, 25, 18, .06);
 }
+
 /* =========================================================
    LEFT PANEL
 ========================================================= */
@@ -51,15 +55,14 @@ body {
     justify-content: center;
     padding: 60px;
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             #fffdf9 0%,
-            #fffaf4 100%
-        );
+            #fffaf4 100%);
     z-index: 2;
     transition:
         transform .75s cubic-bezier(.77, 0, .18, 1);
 }
+
 /* =========================================================
    FORM
 ========================================================= */
@@ -67,9 +70,11 @@ body {
     width: 100%;
     max-width: 420px;
 }
+
 form {
     width: 100%;
 }
+
 form h1 {
     margin: 0 0 12px;
     color: #5d0703;
@@ -78,12 +83,14 @@ form h1 {
     line-height: 1.1;
     letter-spacing: -.04em;
 }
+
 form p {
     margin: 0 0 32px;
     color: #85766d;
     font-size: 14px;
     line-height: 1.8;
 }
+
 /* =========================================================
    INPUT
 ========================================================= */
@@ -103,23 +110,28 @@ form p {
         box-shadow .2s ease,
         transform .2s ease;
 }
+
 .input-box:hover {
     border-color: rgba(93, 7, 3, .35);
 }
+
 .input-box:focus-within {
     border-color: #5d0703;
     box-shadow:
         0 0 0 4px rgba(93, 7, 3, .07);
 }
+
 .input-box .material-symbols-outlined {
     width: 24px;
     color: #9b8e85;
     font-size: 21px;
     transition: color .2s ease;
 }
+
 .input-box:focus-within .material-symbols-outlined {
     color: #5d0703;
 }
+
 .input-box input {
     flex: 1;
     width: 100%;
@@ -131,29 +143,36 @@ form p {
     font-family: "Poppins", sans-serif;
     font-size: 14px;
 }
+
 .input-box input::placeholder {
     color: #aaa099;
 }
+
 .google-btn .material-symbols-outlined {
     font-size: 20px;
 }
+
 .spin {
     animation: spin .8s linear infinite;
 }
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
 }
+
 /* =========================================================
    PASSWORD
 ========================================================= */
 .password-box {
     position: relative;
 }
+
 .toggle-password {
     width: 30px;
     height: 30px;
@@ -166,21 +185,26 @@ form p {
         color .2s ease,
         background .2s ease;
 }
+
 .toggle-password:hover {
     color: #5d0703;
     background: #f6eee6;
 }
+
 .toggle-password .material-symbols-outlined {
     width: auto;
 }
+
 /* Ẩn icon password mặc định của Edge/Chrome */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
 }
+
 input[type="password"]::-webkit-credentials-auto-fill-button {
     display: none !important;
 }
+
 /* =========================================================
    OPTIONS
 ========================================================= */
@@ -192,6 +216,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     margin: 18px 0 22px;
     font-size: 12px;
 }
+
 .option label {
     display: flex;
     align-items: center;
@@ -199,21 +224,25 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     color: #756860;
     cursor: pointer;
 }
+
 .option input[type="checkbox"] {
     width: 15px;
     height: 15px;
     accent-color: #5d0703;
     cursor: pointer;
 }
+
 .option a {
     color: #5d0703;
     font-weight: 600;
     text-decoration: none;
     transition: color .2s ease;
 }
+
 .option a:hover {
     color: #9a4c45;
 }
+
 /* =========================================================
    LOGIN BUTTON
 ========================================================= */
@@ -238,15 +267,18 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
         box-shadow .2s ease,
         background .2s ease;
 }
+
 .btn:hover {
     background: #74110c;
     transform: translateY(-2px);
     box-shadow:
         0 12px 25px rgba(93, 7, 3, .24);
 }
+
 .btn:active {
     transform: translateY(0);
 }
+
 /* =========================================================
    DIVIDER
 ========================================================= */
@@ -256,6 +288,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     gap: 14px;
     margin: 24px 0;
 }
+
 .line::before,
 .line::after {
     content: "";
@@ -263,11 +296,13 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     height: 1px;
     background: #e8ddd4;
 }
+
 .line span {
     color: #a1968e;
     font-size: 11px;
     font-weight: 500;
 }
+
 /* =========================================================
    GOOGLE BUTTON
 ========================================================= */
@@ -292,6 +327,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
         box-shadow .2s ease,
         transform .2s ease;
 }
+
 .google-btn:hover {
     border-color: #cfc4bb;
     background: #fffdfb;
@@ -299,11 +335,13 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
         0 7px 18px rgba(55, 25, 18, .08);
     transform: translateY(-1px);
 }
+
 .google-icon {
     width: 19px;
     height: 19px;
     flex: 0 0 19px;
 }
+
 /* =========================================================
    RIGHT PANEL
 ========================================================= */
@@ -316,6 +354,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     transition:
         transform .75s cubic-bezier(.77, 0, .18, 1);
 }
+
 .overlay {
     position: relative;
     width: 100%;
@@ -328,12 +367,14 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     color: white;
     isolation: isolate;
 }
+
 .overlay::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: 1;
 }
+
 .overlay img {
     position: absolute;
     inset: 0;
@@ -343,14 +384,17 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     z-index: 0;
     transition: transform .8s ease;
 }
+
 .container:hover .overlay img {
     transform: scale(1.025);
 }
+
 .overlay h1,
 .overlay p {
     position: relative;
     z-index: 2;
 }
+
 .overlay h1 {
     max-width: 480px;
     margin: 0 0 14px;
@@ -359,13 +403,15 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     line-height: 1.08;
     letter-spacing: -.035em;
 }
+
 .overlay p {
     max-width: 440px;
     margin: 0;
-    color: rgba(255,255,255,.82);
+    color: rgba(255, 255, 255, .82);
     font-size: 14px;
     line-height: 1.8;
 }
+
 /* =========================================================
    FORM SWITCH ANIMATION
 ========================================================= */
@@ -376,6 +422,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
         transform .6s ease,
         visibility .5s ease;
 }
+
 .register-form {
     position: absolute;
     left: 0;
@@ -384,27 +431,33 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     visibility: hidden;
     transform: translateX(-30px);
 }
+
 .active-form {
     opacity: 1;
     visibility: visible;
     transform: translateX(0);
 }
+
 .container.active .left-panel {
     transform: translateX(100%);
 }
+
 .container.active .right-panel {
     transform: translateX(-100%);
 }
+
 .container.active .login-form {
     opacity: 0;
     visibility: hidden;
     transform: translateX(30px);
 }
+
 .container.active .register-form {
     opacity: 1;
     visibility: visible;
     transform: translateX(0);
 }
+
 /* =========================================================
    RESPONSIVE
 ========================================================= */
@@ -412,73 +465,91 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     body {
         padding: 20px;
     }
+
     .container {
         width: min(480px, 100%);
         min-height: auto;
         display: block;
     }
+
     .right-panel {
         display: none;
     }
+
     .left-panel {
         width: 100%;
         min-height: auto;
         padding: 50px 38px;
         transform: none !important;
     }
+
     .container.active .left-panel {
         transform: none !important;
     }
+
     .form-wrapper {
         max-width: 100%;
     }
+
     .register-form {
         position: relative;
         display: none;
         transform: none;
     }
+
     .container.active .login-form {
         display: none;
     }
+
     .container.active .register-form {
         display: block;
     }
+
     .login-form,
     .register-form {
         opacity: 1 !important;
         visibility: visible !important;
     }
 }
+
 @media (max-width: 520px) {
     body {
         padding: 12px;
     }
+
     .container {
         border-radius: 22px;
     }
+
     .left-panel {
         padding: 38px 24px;
     }
+
     form h1 {
         font-size: 32px;
     }
+
     form p {
         font-size: 13px;
         line-height: 1.7;
         margin-bottom: 25px;
     }
+
     .input-box {
         height: 54px;
     }
+
     .option {
         align-items: flex-start;
         flex-direction: column;
     }
+
     .btn,
     .google-btn {
         height: 53px;
     }
 }
+
 /* =========================================================
    ACCESSIBILITY
 ========================================================= */
@@ -488,6 +559,7 @@ a:focus-visible {
     outline: 3px solid rgba(184, 138, 67, .35);
     outline-offset: 3px;
 }
+
 /* =========================================================
    MATERIAL SYMBOLS
 ========================================================= */

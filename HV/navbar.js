@@ -50,7 +50,7 @@
         <path d="M20 21a8 8 0 0 0-16 0"></path>
         <circle cx="12" cy="7" r="4"></circle>
       </svg>
-    `
+    `,
   };
 
   /* =====================================================
@@ -87,7 +87,7 @@
       ":scope > .sent-tickets-page",
       ":scope > .homepage",
       ":scope > .faq-page-content",
-      ":scope > [data-page-content]"
+      ":scope > [data-page-content]",
     ];
     for (const selector of selectors) {
       const element = app.querySelector(selector);
@@ -234,7 +234,9 @@
 
     let clearAll = panel.querySelector("#notificationClearAll");
     if (!clearAll) {
-      const toolbar = panel.querySelector(".student-notification-toolbar, .notification-toolbar");
+      const toolbar = panel.querySelector(
+        ".student-notification-toolbar, .notification-toolbar",
+      );
       if (toolbar) {
         clearAll = document.createElement("button");
         clearAll.type = "button";
@@ -269,7 +271,9 @@
     let database = null;
 
     const stateRef = () =>
-      currentUserId && database ? database.collection("studentNotificationState").doc(currentUserId) : null;
+      currentUserId && database
+        ? database.collection("studentNotificationState").doc(currentUserId)
+        : null;
 
     const loadState = async () => {
       const ref = stateRef();
@@ -277,9 +281,15 @@
       try {
         const snapshot = await ref.get();
         const saved = snapshot.exists ? snapshot.data() : {};
-        notificationState = { read: saved.read || {}, deleted: saved.deleted || {} };
+        notificationState = {
+          read: saved.read || {},
+          deleted: saved.deleted || {},
+        };
       } catch (error) {
-        console.warn("[Student Notifications] Không thể tải trạng thái từ Firestore", error);
+        console.warn(
+          "[Student Notifications] Không thể tải trạng thái từ Firestore",
+          error,
+        );
         notificationState = { read: {}, deleted: {} };
       }
     };
@@ -290,15 +300,22 @@
       const payload = {
         read: notificationState.read,
         deleted: notificationState.deleted,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       stateWriteQueue = stateWriteQueue
         .then(() => ref.set(payload, { merge: true }))
-        .catch((error) => console.warn("[Student Notifications] Không thể lưu trạng thái Firestore", error));
+        .catch((error) =>
+          console.warn(
+            "[Student Notifications] Không thể lưu trạng thái Firestore",
+            error,
+          ),
+        );
     };
 
-    const isRead = (item) => Boolean(notificationState.read[item.notificationKey]);
-    const isDeleted = (item) => Boolean(notificationState.deleted[item.notificationKey]);
+    const isRead = (item) =>
+      Boolean(notificationState.read[item.notificationKey]);
+    const isDeleted = (item) =>
+      Boolean(notificationState.deleted[item.notificationKey]);
 
     const millis = (value) => {
       if (!value) return 0;
@@ -319,14 +336,15 @@
 
       if (count) {
         count.hidden = unreadRecords.length === 0;
-        count.textContent = unreadRecords.length > 99 ? "99+" : String(unreadRecords.length);
+        count.textContent =
+          unreadRecords.length > 99 ? "99+" : String(unreadRecords.length);
       }
       if (unreadLabel) {
         unreadLabel.textContent = unreadRecords.length
           ? `${unreadRecords.length} thông báo chưa đọc`
           : visibleRecords.length
-          ? "Tất cả thông báo đã đọc"
-          : "Chưa có thông báo";
+            ? "Tất cả thông báo đã đọc"
+            : "Chưa có thông báo";
       }
       if (empty) {
         empty.classList.toggle("show", visibleRecords.length === 0);
@@ -350,7 +368,7 @@
                 </a>
                 <button class="student-notification-delete" type="button" data-notification-delete="${esc(item.notificationKey)}" aria-label="Xóa thông báo">×</button>
               </div>
-            `
+            `,
           )
           .join("");
       }
@@ -374,7 +392,9 @@
       requestAnimationFrame(() => backdrop.classList.add("show"));
     };
 
-    button?.addEventListener("click", () => (panel.classList.contains("open") ? closePanel() : openPanel()));
+    button?.addEventListener("click", () =>
+      panel.classList.contains("open") ? closePanel() : openPanel(),
+    );
     close?.addEventListener("click", closePanel);
     backdrop.addEventListener("click", closePanel);
 
@@ -386,7 +406,8 @@
         const item = deleteButton.closest(".student-notification-item");
         item?.classList.add("is-removing");
         window.setTimeout(() => {
-          notificationState.deleted[deleteButton.dataset.notificationDelete] = true;
+          notificationState.deleted[deleteButton.dataset.notificationDelete] =
+            true;
           saveState();
           render();
         }, 260);
@@ -410,7 +431,9 @@
     clearAll?.addEventListener("click", (event) => {
       event.preventDefault();
       if (clearAll.disabled) return;
-      list?.querySelectorAll(".student-notification-item").forEach((item) => item.classList.add("is-removing"));
+      list
+        ?.querySelectorAll(".student-notification-item")
+        .forEach((item) => item.classList.add("is-removing"));
       window.setTimeout(() => {
         records.forEach((item) => {
           notificationState.deleted[item.notificationKey] = true;
@@ -437,26 +460,43 @@
         }
         currentUserId = user.uid;
         loadState().then(render);
-        database.collection("tickets").where("studentId", "==", user.uid).onSnapshot(
-          (snapshot) => {
-            records = snapshot.docs
-              .flatMap((doc) => {
-                const ticket = { id: doc.id, ...doc.data() };
-                return (Array.isArray(ticket.notificationHistory) ? ticket.notificationHistory : []).map((item, index) => ({
-                  ...item,
-                  ticketId: item.ticketId || ticket.id,
-                  notificationKey: `${ticket.id}:${item.id || item.notificationId || millis(item.createdAt) || index}`,
-                  ticketNum: item.ticketNum || ticket.ticketNum || ticket.ticket_num || ticket.id,
-                  title: item.title || ticket.title || "Ticket hỗ trợ",
-                  time: new Date(millis(item.createdAt || item.updatedAt)).toLocaleString("vi-VN")
-                }));
-              })
-              .sort((a, b) => millis(b.createdAt) - millis(a.createdAt))
-              .slice(0, 50);
-            render();
-          },
-          (error) => console.warn("[Student Notifications] Không thể tải thông báo", error)
-        );
+        database
+          .collection("tickets")
+          .where("studentId", "==", user.uid)
+          .onSnapshot(
+            (snapshot) => {
+              records = snapshot.docs
+                .flatMap((doc) => {
+                  const ticket = { id: doc.id, ...doc.data() };
+                  return (
+                    Array.isArray(ticket.notificationHistory)
+                      ? ticket.notificationHistory
+                      : []
+                  ).map((item, index) => ({
+                    ...item,
+                    ticketId: item.ticketId || ticket.id,
+                    notificationKey: `${ticket.id}:${item.id || item.notificationId || millis(item.createdAt) || index}`,
+                    ticketNum:
+                      item.ticketNum ||
+                      ticket.ticketNum ||
+                      ticket.ticket_num ||
+                      ticket.id,
+                    title: item.title || ticket.title || "Ticket hỗ trợ",
+                    time: new Date(
+                      millis(item.createdAt || item.updatedAt),
+                    ).toLocaleString("vi-VN"),
+                  }));
+                })
+                .sort((a, b) => millis(b.createdAt) - millis(a.createdAt))
+                .slice(0, 50);
+              render();
+            },
+            (error) =>
+              console.warn(
+                "[Student Notifications] Không thể tải thông báo",
+                error,
+              ),
+          );
       });
     }
 
@@ -528,8 +568,14 @@
         layout.classList.remove("is-collapsed");
         closeMobile();
       } else {
-        layout.classList.toggle("is-collapsed", safeGet(COLLAPSE_KEY) === "true");
-        toggle.setAttribute("aria-expanded", String(!layout.classList.contains("is-collapsed")));
+        layout.classList.toggle(
+          "is-collapsed",
+          safeGet(COLLAPSE_KEY) === "true",
+        );
+        toggle.setAttribute(
+          "aria-expanded",
+          String(!layout.classList.contains("is-collapsed")),
+        );
       }
     }
 

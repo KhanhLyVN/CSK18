@@ -1,27 +1,15 @@
-const ticketListEl =
-  document.getElementById("ticketListEl");
-const mainPaneEl =
-  document.getElementById("mainPaneEl");
-const bodyLayoutEl =
-  document.getElementById("bodyLayoutEl");
-const searchInputEl =
-  document.getElementById("searchInputEl");
-const filterRowEl =
-  document.getElementById("filterRowEl");
-const backButtonEl =
-  document.getElementById("backButtonEl");
-const menuToggleEl =
-  document.getElementById("menuToggle");
-const navSidebarEl =
-  document.getElementById("navSidebarEl");
-const ticketTotalEl =
-  document.getElementById("ticketTotalEl");
-const ticketBrowserEl =
-  document.getElementById("ticketBrowserEl");
-const historyBackdropEl =
-  document.getElementById("historyBackdrop");
-const historyCloseButtonEl =
-  document.getElementById("historyCloseButton");
+const ticketListEl = document.getElementById("ticketListEl");
+const mainPaneEl = document.getElementById("mainPaneEl");
+const bodyLayoutEl = document.getElementById("bodyLayoutEl");
+const searchInputEl = document.getElementById("searchInputEl");
+const filterRowEl = document.getElementById("filterRowEl");
+const backButtonEl = document.getElementById("backButtonEl");
+const menuToggleEl = document.getElementById("menuToggle");
+const navSidebarEl = document.getElementById("navSidebarEl");
+const ticketTotalEl = document.getElementById("ticketTotalEl");
+const ticketBrowserEl = document.getElementById("ticketBrowserEl");
+const historyBackdropEl = document.getElementById("historyBackdrop");
+const historyCloseButtonEl = document.getElementById("historyCloseButton");
 /* =====================================================
    BIẾN
 ===================================================== */
@@ -31,50 +19,40 @@ let currentStatusFilter = "all";
 let activeChatSubscription = null;
 let firebaseCurrentUser = null;
 let unsubscribeTickets = null;
-const requestedTicketNumber =
-  new URLSearchParams(
-    window.location.search
-  ).get("ticket");
+const requestedTicketNumber = new URLSearchParams(window.location.search).get(
+  "ticket",
+);
 let requestedTicketOpened = false;
 /* =====================================================
    FIREBASE
 ===================================================== */
-const database =
-  typeof db !== "undefined"
-    ? db
-    : window.db || null;
-const authInstance =
-  typeof auth !== "undefined"
-    ? auth
-    : window.auth || null;
+const database = typeof db !== "undefined" ? db : window.db || null;
+const authInstance = typeof auth !== "undefined" ? auth : window.auth || null;
 /* =====================================================
    STATUS
 ===================================================== */
 const STATUS_META = {
   open: {
     label: "Đang mở",
-    className: "open"
+    className: "open",
   },
   in_progress: {
     label: "Đang xử lý",
-    className: "in_progress"
+    className: "in_progress",
   },
   resolved: {
     label: "Đã giải quyết",
-    className: "resolved"
+    className: "resolved",
   },
   closed: {
     label: "Đã đóng",
-    className: "closed"
-  }
+    className: "closed",
+  },
 };
 /* =====================================================
    HELPER
 ===================================================== */
-function firstValue(
-  object,
-  ...keys
-) {
+function firstValue(object, ...keys) {
   for (const key of keys) {
     if (
       object &&
@@ -89,37 +67,17 @@ function firstValue(
 }
 function escapeHTMLValue(value) {
   return String(value ?? "")
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 function normalizeStatus(status) {
-  if (
-    !status ||
-    status === "pending"
-  ) {
+  if (!status || status === "pending") {
     return "open";
   }
-  return STATUS_META[status]
-    ? status
-    : "open";
+  return STATUS_META[status] ? status : "open";
 }
 function isMobileChatLayout() {
   return window.matchMedia("(max-width: 860px)").matches;
@@ -131,12 +89,14 @@ function setHistoryPanel(open, shouldFocus = false) {
   bodyLayoutEl.classList.toggle("history-open", shouldOpen);
   ticketBrowserEl.setAttribute(
     "aria-hidden",
-    String(isMobileChatLayout() && isShowingChat && !shouldOpen)
+    String(isMobileChatLayout() && isShowingChat && !shouldOpen),
   );
   if (historyBackdropEl) historyBackdropEl.hidden = !shouldOpen;
   const toggleButton = document.getElementById("historyToggleButton");
-  if (toggleButton) toggleButton.setAttribute("aria-expanded", String(shouldOpen));
-  if (shouldOpen && shouldFocus) requestAnimationFrame(() => searchInputEl?.focus());
+  if (toggleButton)
+    toggleButton.setAttribute("aria-expanded", String(shouldOpen));
+  if (shouldOpen && shouldFocus)
+    requestAnimationFrame(() => searchInputEl?.focus());
 }
 function renderStudentChatSetup(ticketRecord) {
   return `
@@ -157,7 +117,7 @@ async function createStudentChatThread(ticketRecord) {
   }
   try {
     const ticketRef = database.collection("tickets").doc(ticketRecord.id);
-    await database.runTransaction(async transaction => {
+    await database.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(ticketRef);
       if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
       const latestTicket = snapshot.data();
@@ -170,8 +130,10 @@ async function createStudentChatThread(ticketRecord) {
         chatThreadCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         chatThreadCreatedBy: "student",
         chatThreadCreatedByUid: firebaseCurrentUser.uid,
-        studentMessageCount: Number.isInteger(latestTicket.studentMessageCount) ? latestTicket.studentMessageCount : 0,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        studentMessageCount: Number.isInteger(latestTicket.studentMessageCount)
+          ? latestTicket.studentMessageCount
+          : 0,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     });
     openSelectedTicket({ ...ticketRecord, chatThreadCreated: true });
@@ -181,7 +143,9 @@ async function createStudentChatThread(ticketRecord) {
       button.disabled = false;
       button.textContent = "Tạo đoạn chat";
     }
-    window.alert(error?.message || "Không thể tạo đoạn chat. Vui lòng thử lại.");
+    window.alert(
+      error?.message || "Không thể tạo đoạn chat. Vui lòng thử lại.",
+    );
   }
 }
 function renderClosedTicketSatisfaction(ticketRecord, status) {
@@ -198,13 +162,19 @@ function renderClosedTicketSatisfaction(ticketRecord, status) {
     </section>
   `;
 }
-async function submitClosedTicketSatisfaction(ticketRecord, choice, satisfactionRound) {
+async function submitClosedTicketSatisfaction(
+  ticketRecord,
+  choice,
+  satisfactionRound,
+) {
   if (!database || !firebaseCurrentUser || !ticketRecord?.id) return;
   const buttons = document.querySelectorAll("[data-closed-satisfaction]");
-  buttons.forEach(item => { item.disabled = true; });
+  buttons.forEach((item) => {
+    item.disabled = true;
+  });
   try {
     const ticketRef = database.collection("tickets").doc(ticketRecord.id);
-    await database.runTransaction(async transaction => {
+    await database.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(ticketRef);
       if (!snapshot.exists) throw new Error("Không tìm thấy ticket.");
       const latestTicket = snapshot.data();
@@ -214,18 +184,25 @@ async function submitClosedTicketSatisfaction(ticketRecord, choice, satisfaction
       if (normalizeStatus(latestTicket.status) !== "closed") {
         throw new Error("Ticket đã thay đổi trạng thái. Vui lòng tải lại.");
       }
-      if (latestTicket.satisfactionStatus !== "awaiting" || (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound) {
-        throw new Error("Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.");
+      if (
+        latestTicket.satisfactionStatus !== "awaiting" ||
+        (Number(latestTicket.satisfactionRound) || 1) !== satisfactionRound
+      ) {
+        throw new Error(
+          "Yêu cầu đánh giá này không còn hiệu lực. Vui lòng tải lại.",
+        );
       }
       const update = {
         satisfactionStatus: choice,
-        satisfactionRespondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        satisfactionRespondedAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
         satisfactionRespondedRound: satisfactionRound,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       if (choice === "satisfied") {
         update.status = "closed";
-        update.closedConfirmedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.closedConfirmedAt =
+          firebase.firestore.FieldValue.serverTimestamp();
       } else {
         update.status = "in_progress";
         update.closedAt = null;
@@ -237,7 +214,9 @@ async function submitClosedTicketSatisfaction(ticketRecord, choice, satisfaction
     });
   } catch (error) {
     console.error("Không thể lưu xác nhận đóng ticket:", error);
-    buttons.forEach(item => { item.disabled = false; });
+    buttons.forEach((item) => {
+      item.disabled = false;
+    });
     window.alert(error?.message || "Không thể lưu xác nhận. Vui lòng thử lại.");
   }
 }
@@ -245,89 +224,40 @@ function getTimestampMillis(value) {
   if (!value) {
     return 0;
   }
-  if (
-    typeof value.toMillis ===
-    "function"
-  ) {
+  if (typeof value.toMillis === "function") {
     return value.toMillis();
   }
-  if (
-    typeof value.toDate ===
-    "function"
-  ) {
+  if (typeof value.toDate === "function") {
     return value.toDate().getTime();
   }
-  if (
-    typeof value.seconds ===
-    "number"
-  ) {
+  if (typeof value.seconds === "number") {
     return value.seconds * 1000;
   }
-  const result =
-    new Date(value).getTime();
-  return Number.isNaN(result)
-    ? 0
-    : result;
+  const result = new Date(value).getTime();
+  return Number.isNaN(result) ? 0 : result;
 }
 function ticketNumber(ticket) {
-  return (
-    firstValue(
-      ticket,
-      "ticketNum",
-      "ticket_num",
-      "id"
-    ) ||
-    "—"
-  );
+  return firstValue(ticket, "ticketNum", "ticket_num", "id") || "—";
 }
 function ticketTitle(ticket) {
-  return (
-    firstValue(
-      ticket,
-      "title",
-      "subject"
-    ) ||
-    "Không có tiêu đề"
-  );
+  return firstValue(ticket, "title", "subject") || "Không có tiêu đề";
 }
 function ticketType(ticket) {
-  const category =
-    firstValue(
-      ticket,
-      "ticketCategory"
-    );
-  const issue =
-    firstValue(
-      ticket,
-      "ticketIssue"
-    );
-  if (
-    category &&
-    issue &&
-    category !== issue
-  ) {
+  const category = firstValue(ticket, "ticketCategory");
+  const issue = firstValue(ticket, "ticketIssue");
+  if (category && issue && category !== issue) {
     return `${category} · ${issue}`;
   }
   return (
     issue ||
     category ||
-    firstValue(
-      ticket,
-      "ticketType",
-      "ticket_type",
-      "category"
-    ) ||
+    firstValue(ticket, "ticketType", "ticket_type", "category") ||
     "Khác"
   );
 }
 function ticketDescription(ticket) {
   return (
-    firstValue(
-      ticket,
-      "description",
-      "message",
-      "content"
-    ) ||
+    firstValue(ticket, "description", "message", "content") ||
     "Không có mô tả chi tiết."
   );
 }
@@ -335,71 +265,44 @@ function ticketDescription(ticket) {
    KIỂM TRA TICKET THUỘC USER
 ===================================================== */
 function isMyTicket(ticket) {
-  if (
-    !ticket ||
-    !firebaseCurrentUser
-  ) {
+  if (!ticket || !firebaseCurrentUser) {
     return false;
   }
   /*
      ƯU TIÊN UID
   */
-  const ticketUid =
-    firstValue(
-      ticket,
-      "studentUid",
-      "userId",
-      "userUid",
-      "uid"
-    );
+  const ticketUid = firstValue(
+    ticket,
+    "studentUid",
+    "userId",
+    "userUid",
+    "uid",
+  );
   if (ticketUid) {
-    return (
-      String(ticketUid) ===
-      String(firebaseCurrentUser.uid)
-    );
+    return String(ticketUid) === String(firebaseCurrentUser.uid);
   }
   /*
      FALLBACK EMAIL
      cho ticket cũ.
   */
-  const ticketEmail =
-    String(
-      firstValue(
-        ticket,
-        "studentEmail",
-        "userEmail",
-        "email"
-      )
-    )
+  const ticketEmail = String(
+    firstValue(ticket, "studentEmail", "userEmail", "email"),
+  )
     .trim()
     .toLowerCase();
-  const currentEmail =
-    String(
-      firebaseCurrentUser.email || ""
-    )
+  const currentEmail = String(firebaseCurrentUser.email || "")
     .trim()
     .toLowerCase();
-  if (
-    ticketEmail &&
-    currentEmail
-  ) {
-    return (
-      ticketEmail ===
-      currentEmail
-    );
+  if (ticketEmail && currentEmail) {
+    return ticketEmail === currentEmail;
   }
   return false;
 }
 /* =====================================================
    STATUS HTML
 ===================================================== */
-function renderTicketStatus(
-  status
-) {
-  const meta =
-    STATUS_META[
-      normalizeStatus(status)
-    ];
+function renderTicketStatus(status) {
+  const meta = STATUS_META[normalizeStatus(status)];
   return `
     <span
       class="ticket-status ${meta.className}"
@@ -413,180 +316,106 @@ function renderTicketStatus(
    LOAD TICKETS
 ===================================================== */
 function loadTicketsData() {
-  if (
-    !database ||
-    !firebaseCurrentUser
-  ) {
+  if (!database || !firebaseCurrentUser) {
     return;
   }
   if (unsubscribeTickets) {
     unsubscribeTickets();
     unsubscribeTickets = null;
   }
-  unsubscribeTickets =
-    database
-      .collection("tickets")
-      .onSnapshot(
-        snapshot => {
-          /*
+  unsubscribeTickets = database.collection("tickets").onSnapshot(
+    (snapshot) => {
+      /*
              CHỈ LẤY TICKET CỦA
              USER ĐANG ĐĂNG NHẬP.
           */
-          ticketsDataList =
-            snapshot.docs
-              .map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              }))
-              .filter(ticket =>
-                isMyTicket(ticket)
-              )
-              .sort(
-                (a, b) =>
-                  getTimestampMillis(
-                    b.createdAt
-                  ) -
-                  getTimestampMillis(
-                    a.createdAt
-                  )
-              );
-          renderTicketsList();
-          /*
+      ticketsDataList = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((ticket) => isMyTicket(ticket))
+        .sort(
+          (a, b) =>
+            getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt),
+        );
+      renderTicketsList();
+      /*
              Nếu đang mở ticket
              thì cập nhật realtime.
           */
-          if (activeTicketItem) {
-            const freshTicket =
-              ticketsDataList.find(
-                ticket =>
-                  ticket.id ===
-                  activeTicketItem.id
-              );
-            if (freshTicket) {
-              openSelectedTicket(
-                freshTicket
-              );
-            } else {
-              activeTicketItem = null;
-              bodyLayoutEl
-                .classList
-                .remove(
-                  "show-chat"
-                );
-              setHistoryPanel(false);
-            }
-          }
-          /*
+      if (activeTicketItem) {
+        const freshTicket = ticketsDataList.find(
+          (ticket) => ticket.id === activeTicketItem.id,
+        );
+        if (freshTicket) {
+          openSelectedTicket(freshTicket);
+        } else {
+          activeTicketItem = null;
+          bodyLayoutEl.classList.remove("show-chat");
+          setHistoryPanel(false);
+        }
+      } else if (requestedTicketNumber && !requestedTicketOpened) {
+      /*
              Mở ticket từ URL.
           */
-          else if (
-            requestedTicketNumber &&
-            !requestedTicketOpened
-          ) {
-            const requestedTicket =
-              ticketsDataList.find(
-                ticket =>
-                  ticketNumber(
-                    ticket
-                  ) ===
-                  requestedTicketNumber ||
-                  ticket.id ===
-                  requestedTicketNumber
-              );
-            if (requestedTicket) {
-              requestedTicketOpened =
-                true;
-              openSelectedTicket(
-                requestedTicket
-              );
-            }
-          }
-        },
-        error => {
-          console.error(
-            "Firebase load tickets error:",
-            error
-          );
-          ticketListEl.innerHTML = `
+        const requestedTicket = ticketsDataList.find(
+          (ticket) =>
+            ticketNumber(ticket) === requestedTicketNumber ||
+            ticket.id === requestedTicketNumber,
+        );
+        if (requestedTicket) {
+          requestedTicketOpened = true;
+          openSelectedTicket(requestedTicket);
+        }
+      }
+    },
+    (error) => {
+      console.error("Firebase load tickets error:", error);
+      ticketListEl.innerHTML = `
             <div class="ticket-error">
               Không thể tải danh sách ticket.
             </div>
           `;
-        }
-      );
+    },
+  );
 }
 /* =====================================================
    FILTER
 ===================================================== */
-function matchesStatusFilter(
-  ticket
-) {
-  const status =
-    normalizeStatus(
-      ticket.status
-    );
-  if (
-    currentStatusFilter ===
-    "all"
-  ) {
+function matchesStatusFilter(ticket) {
+  const status = normalizeStatus(ticket.status);
+  if (currentStatusFilter === "all") {
     return true;
   }
-  if (
-    currentStatusFilter ===
-    "open"
-  ) {
+  if (currentStatusFilter === "open") {
     return status !== "closed";
   }
-  return (
-    status ===
-    currentStatusFilter
-  );
+  return status === currentStatusFilter;
 }
 /* =====================================================
    RENDER LIST
 ===================================================== */
 function renderTicketsList() {
-  const searchKeyword =
-    (
-      searchInputEl?.value ||
-      ""
-    )
+  const searchKeyword = (searchInputEl?.value || "")
     .trim()
     .toLocaleLowerCase("vi");
-  const filteredTickets =
-    ticketsDataList.filter(
-      ticket => {
-        const searchable = [
-          ticketNumber(ticket),
-          firstValue(
-            ticket,
-            "name"
-          ),
-          firstValue(
-            ticket,
-            "email"
-          ),
-          ticketTitle(ticket),
-          ticketType(ticket)
-        ]
-        .join(" ")
-        .toLocaleLowerCase("vi");
-        return (
-          (
-            !searchKeyword ||
-            searchable.includes(
-              searchKeyword
-            )
-          )
-          &&
-          matchesStatusFilter(
-            ticket
-          )
-        );
-      }
+  const filteredTickets = ticketsDataList.filter((ticket) => {
+    const searchable = [
+      ticketNumber(ticket),
+      firstValue(ticket, "name"),
+      firstValue(ticket, "email"),
+      ticketTitle(ticket),
+      ticketType(ticket),
+    ]
+      .join(" ")
+      .toLocaleLowerCase("vi");
+    return (
+      (!searchKeyword || searchable.includes(searchKeyword)) &&
+      matchesStatusFilter(ticket)
     );
-  ticketTotalEl.textContent =
-    filteredTickets.length;
+  });
+  ticketTotalEl.textContent = filteredTickets.length;
   ticketListEl.innerHTML = "";
   if (!filteredTickets.length) {
     ticketListEl.innerHTML = `
@@ -598,189 +427,85 @@ function renderTicketsList() {
     `;
     return;
   }
-  filteredTickets.forEach(
-    ticket => {
-      const ticketNode =
-        document.createElement(
-          "div"
-        );
-      ticketNode.className =
-        "ticket-item";
-      if (
-        activeTicketItem &&
-        activeTicketItem.id ===
-        ticket.id
-      ) {
-        ticketNode.classList.add(
-          "active"
-        );
-      }
-      const date =
-        firstValue(
-          ticket,
-          "date"
-        ) ||
-        (
-          getTimestampMillis(
-            ticket.createdAt
-          )
-            ? new Date(
-                getTimestampMillis(
-                  ticket.createdAt
-                )
-              )
-              .toLocaleString(
-                "vi-VN"
-              )
-            : "—"
-        );
-      ticketNode.innerHTML = `
+  filteredTickets.forEach((ticket) => {
+    const ticketNode = document.createElement("div");
+    ticketNode.className = "ticket-item";
+    if (activeTicketItem && activeTicketItem.id === ticket.id) {
+      ticketNode.classList.add("active");
+    }
+    const date =
+      firstValue(ticket, "date") ||
+      (getTimestampMillis(ticket.createdAt)
+        ? new Date(getTimestampMillis(ticket.createdAt)).toLocaleString("vi-VN")
+        : "—");
+    ticketNode.innerHTML = `
         <div class="ticket-item-top">
           <strong>
-            ${escapeHTMLValue(
-              ticketNumber(ticket)
-            )}
+            ${escapeHTMLValue(ticketNumber(ticket))}
           </strong>
-          ${renderTicketStatus(
-            ticket.status
-          )}
+          ${renderTicketStatus(ticket.status)}
         </div>
         <div class="ticket-item-title">
-          ${escapeHTMLValue(
-            ticketTitle(ticket)
-          )}
+          ${escapeHTMLValue(ticketTitle(ticket))}
         </div>
         <div class="ticket-item-info">
           <span>
-            ${escapeHTMLValue(
-              ticketType(ticket)
-            )}
+            ${escapeHTMLValue(ticketType(ticket))}
           </span>
           <span>
-            ${escapeHTMLValue(
-              date
-            )}
+            ${escapeHTMLValue(date)}
           </span>
         </div>
       `;
-      ticketNode.addEventListener(
-        "click",
-        () =>
-          openSelectedTicket(
-            ticket
-          )
-      );
-      ticketListEl.appendChild(
-        ticketNode
-      );
-    }
-  );
+    ticketNode.addEventListener("click", () => openSelectedTicket(ticket));
+    ticketListEl.appendChild(ticketNode);
+  });
 }
 /* =====================================================
    OPEN TICKET
 ===================================================== */
-function openSelectedTicket(
-  ticketRecord
-) {
+function openSelectedTicket(ticketRecord) {
   /*
      CHẶN TRUY CẬP TRỰC TIẾP
      BẰNG URL.
   */
-  if (
-    !isMyTicket(
-      ticketRecord
-    )
-  ) {
-    alert(
-      "Bạn không có quyền xem ticket này."
-    );
+  if (!isMyTicket(ticketRecord)) {
+    alert("Bạn không có quyền xem ticket này.");
     return;
   }
-  activeTicketItem =
-    ticketRecord;
+  activeTicketItem = ticketRecord;
   const hasChatThread = ticketRecord.chatThreadCreated === true;
   renderTicketsList();
-  bodyLayoutEl
-    .classList
-    .add(
-      "show-chat"
-    );
+  bodyLayoutEl.classList.add("show-chat");
   setHistoryPanel(false);
-  const status =
-    normalizeStatus(
-      ticketRecord.status
-    );
-  const meta =
-    STATUS_META[status];
+  const status = normalizeStatus(ticketRecord.status);
+  const meta = STATUS_META[status];
   const createdDate =
-    firstValue(
-      ticketRecord,
-      "date"
-    ) ||
-    (
-      getTimestampMillis(
-        ticketRecord.createdAt
-      )
-        ? new Date(
-            getTimestampMillis(
-              ticketRecord.createdAt
-            )
-          )
-          .toLocaleString(
-            "vi-VN"
-          )
-        : "—"
-    );
-  const studentName =
-    firstValue(
-      ticketRecord,
-      "name"
-    ) ||
-    "—";
-  const email =
-    firstValue(
-      ticketRecord,
-      "email"
-    ) ||
-    "—";
-  const phone =
-    firstValue(
-      ticketRecord,
-      "phone"
-    ) ||
-    "—";
-  const course =
-    firstValue(
-      ticketRecord,
-      "course"
-    ) ||
-    "Không có";
+    firstValue(ticketRecord, "date") ||
+    (getTimestampMillis(ticketRecord.createdAt)
+      ? new Date(getTimestampMillis(ticketRecord.createdAt)).toLocaleString(
+          "vi-VN",
+        )
+      : "—");
+  const studentName = firstValue(ticketRecord, "name") || "—";
+  const email = firstValue(ticketRecord, "email") || "—";
+  const phone = firstValue(ticketRecord, "phone") || "—";
+  const course = firstValue(ticketRecord, "course") || "Không có";
   mainPaneEl.innerHTML = `
     <div class="conversation">
       <div class="conversation-header">
         <div>
           <div class="conversation-code">
-            ${escapeHTMLValue(
-              ticketNumber(
-                ticketRecord
-              )
-            )}
+            ${escapeHTMLValue(ticketNumber(ticketRecord))}
           </div>
           <h2>
-            ${escapeHTMLValue(
-              ticketTitle(
-                ticketRecord
-              )
-            )}
+            ${escapeHTMLValue(ticketTitle(ticketRecord))}
           </h2>
         </div>
         <div class="conversation-header-actions">
-          ${renderTicketStatus(
-            ticketRecord.status
-          )
-          .replace(
+          ${renderTicketStatus(ticketRecord.status).replace(
             "ticket-status",
-            "conversation-status"
+            "conversation-status",
           )}
           <button class="history-toggle" id="historyToggleButton" type="button" aria-controls="ticketBrowserEl" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
@@ -796,19 +521,11 @@ function openSelectedTicket(
                 Mã yêu cầu:
               </span>
               <span class="num">
-                ${escapeHTMLValue(
-                  ticketNumber(
-                    ticketRecord
-                  )
-                )}
+                ${escapeHTMLValue(ticketNumber(ticketRecord))}
               </span>
             </div>
             <div class="cat">
-              ${escapeHTMLValue(
-                ticketType(
-                  ticketRecord
-                )
-              )}
+              ${escapeHTMLValue(ticketType(ticketRecord))}
             </div>
           </div>
           <div
@@ -825,9 +542,7 @@ function openSelectedTicket(
                 Người gửi
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  studentName
-                )}
+                ${escapeHTMLValue(studentName)}
               </div>
             </div>
             <div class="stub-field">
@@ -835,9 +550,7 @@ function openSelectedTicket(
                 Email
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  email
-                )}
+                ${escapeHTMLValue(email)}
               </div>
             </div>
             <div class="stub-field">
@@ -845,9 +558,7 @@ function openSelectedTicket(
                 Điện thoại
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  phone
-                )}
+                ${escapeHTMLValue(phone)}
               </div>
             </div>
             <div class="stub-field">
@@ -855,9 +566,7 @@ function openSelectedTicket(
                 Khóa học
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  course
-                )}
+                ${escapeHTMLValue(course)}
               </div>
             </div>
             <div class="stub-field">
@@ -865,9 +574,7 @@ function openSelectedTicket(
                 Ngày gửi
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  createdDate
-                )}
+                ${escapeHTMLValue(createdDate)}
               </div>
             </div>
             <div class="stub-field stub-field-wide">
@@ -875,11 +582,7 @@ function openSelectedTicket(
                 Loại yêu cầu học viên cần hỗ trợ
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  ticketType(
-                    ticketRecord
-                  )
-                )}
+                ${escapeHTMLValue(ticketType(ticketRecord))}
               </div>
             </div>
             <div class="stub-field stub-field-wide">
@@ -887,21 +590,21 @@ function openSelectedTicket(
                 Mô tả yêu cầu
               </div>
               <div class="v">
-                ${escapeHTMLValue(
-                  ticketDescription(
-                    ticketRecord
-                  )
-                )}
+                ${escapeHTMLValue(ticketDescription(ticketRecord))}
               </div>
             </div>
           </div>
         </div>
       </div>
-      ${hasChatThread ? `
+      ${
+        hasChatThread
+          ? `
         <div class="messages" id="messagesContainerEl">
           <div class="loading-message">Đang tải trao đổi...</div>
         </div>
-      ` : renderStudentChatSetup(ticketRecord)}
+      `
+          : renderStudentChatSetup(ticketRecord)
+      }
       ${hasChatThread ? renderClosedTicketSatisfaction(ticketRecord, status) : ""}
       ${
         hasChatThread && status !== "closed"
@@ -931,84 +634,47 @@ function openSelectedTicket(
   document
     .getElementById("historyToggleButton")
     ?.addEventListener("click", () => setHistoryPanel(true, true));
-    if (hasChatThread) {
+  if (hasChatThread) {
     loadTicketMessagesRealtime(ticketRecord.id);
   } else {
     const createChatButton = document.getElementById("createChatThreadButton");
     if (createChatButton) {
-      createChatButton.addEventListener("click", () => createStudentChatThread(ticketRecord));
+      createChatButton.addEventListener("click", () =>
+        createStudentChatThread(ticketRecord),
+      );
     }
   }
-  const sendButton =
-    document.getElementById(
-      "sendMessageButton"
-    );
+  const sendButton = document.getElementById("sendMessageButton");
   if (sendButton) {
-    sendButton.addEventListener(
-      "click",
-      () =>
-        sendNewMessage(
-          ticketRecord
-        )
-    );
+    sendButton.addEventListener("click", () => sendNewMessage(ticketRecord));
   }
-  const input =
-    document.getElementById(
-      "messageInputArea"
-    );
+  const input = document.getElementById("messageInputArea");
   if (input) {
-    input.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Enter" &&
-          (
-            event.ctrlKey ||
-            event.metaKey
-          )
-        ) {
-          event.preventDefault();
-          sendNewMessage(
-            ticketRecord
-          );
-        }
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        sendNewMessage(ticketRecord);
       }
-    );
+    });
   }
 }
 /* =====================================================
    LOAD MESSAGE
 ===================================================== */
-function loadTicketMessagesRealtime(
-  ticketRecordId
-) {
-  const messagesContainerEl =
-    document.getElementById(
-      "messagesContainerEl"
-    );
-  if (
-    !messagesContainerEl ||
-    !database
-  ) {
+function loadTicketMessagesRealtime(ticketRecordId) {
+  const messagesContainerEl = document.getElementById("messagesContainerEl");
+  if (!messagesContainerEl || !database) {
     return;
   }
   /*
      TÌM TICKET TRONG DANH SÁCH
   */
-  const ticket =
-    ticketsDataList.find(
-      t =>
-        t.id ===
-        ticketRecordId
-    );
+  const ticket = ticketsDataList.find((t) => t.id === ticketRecordId);
   /*
      KHÔNG TỒN TẠI
      HOẶC KHÔNG PHẢI CỦA USER
   */
-  if (
-    !ticket ||
-    !isMyTicket(ticket)
-  ) {
+  if (!ticket || !isMyTicket(ticket)) {
     messagesContainerEl.innerHTML = `
       <div class="empty-message">
         Bạn không có quyền xem ticket này.
@@ -1016,270 +682,157 @@ function loadTicketMessagesRealtime(
     `;
     return;
   }
-  if (
-    activeChatSubscription
-  ) {
+  if (activeChatSubscription) {
     activeChatSubscription();
-    activeChatSubscription =
-      null;
+    activeChatSubscription = null;
   }
-  activeChatSubscription =
-    database
-      .collection("tickets")
-      .doc(ticketRecordId)
-      .collection("messages")
-      .onSnapshot(
-        messagesSnapshot => {
-          const messages =
-            messagesSnapshot.docs
-              .map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              }))
-              .sort(
-                (a, b) =>
-                  getTimestampMillis(
-                    a.createdAt
-                  ) -
-                  getTimestampMillis(
-                    b.createdAt
-                  )
-              );
-          if (!messages.length) {
-            messagesContainerEl.innerHTML = `
+  activeChatSubscription = database
+    .collection("tickets")
+    .doc(ticketRecordId)
+    .collection("messages")
+    .onSnapshot(
+      (messagesSnapshot) => {
+        const messages = messagesSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .sort(
+            (a, b) =>
+              getTimestampMillis(a.createdAt) - getTimestampMillis(b.createdAt),
+          );
+        if (!messages.length) {
+          messagesContainerEl.innerHTML = `
               <div class="empty-message">
                 Chưa có trao đổi nào.
                 Bạn có thể gửi tin nhắn đầu tiên.
               </div>
             `;
-            return;
-          }
-          messagesContainerEl.innerHTML =
-            messages
-              .map(messageData => {
-                const isCS =
-                  messageData.senderType ===
-                    "cs" ||
-                  messageData.sender ===
-                    "admin";
-                const senderName =
-                  firstValue(
-                    messageData,
-                    "senderName"
-                  ) ||
-                  (
-                    isCS
-                      ? "Customer Success"
-                      : "Học viên"
-                  );
-                const messageText =
-                  firstValue(
-                    messageData,
-                    "message",
-                    "text"
-                  );
-                const messageTime =
-                  getTimestampMillis(
-                    messageData.createdAt
-                  )
-                    ? new Date(
-                        getTimestampMillis(
-                          messageData.createdAt
-                        )
-                      )
-                      .toLocaleString(
-                        "vi-VN"
-                      )
-                    : "—";
-                return `
+          return;
+        }
+        messagesContainerEl.innerHTML = messages
+          .map((messageData) => {
+            const isCS =
+              messageData.senderType === "cs" || messageData.sender === "admin";
+            const senderName =
+              firstValue(messageData, "senderName") ||
+              (isCS ? "Customer Success" : "Học viên");
+            const messageText = firstValue(messageData, "message", "text");
+            const messageTime = getTimestampMillis(messageData.createdAt)
+              ? new Date(
+                  getTimestampMillis(messageData.createdAt),
+                ).toLocaleString("vi-VN")
+              : "—";
+            return `
                   <div
-                    class="message ${
-                      isCS
-                        ? "admin"
-                        : "student"
-                    }"
+                    class="message ${isCS ? "admin" : "student"}"
                   >
                     <div class="message-name">
-                      ${escapeHTMLValue(
-                        senderName
-                      )}
+                      ${escapeHTMLValue(senderName)}
                     </div>
                     <div class="message-content">
-                      ${escapeHTMLValue(
-                        messageText
-                      )}
+                      ${escapeHTMLValue(messageText)}
                     </div>
                     <div class="message-time">
-                      ${escapeHTMLValue(
-                        messageTime
-                      )}
+                      ${escapeHTMLValue(messageTime)}
                     </div>
                   </div>
                 `;
-              })
-              .join("");
-          messagesContainerEl.scrollTop =
-            messagesContainerEl.scrollHeight;
-        },
-        error => {
-          console.error(
-            "Load messages error:",
-            error
-          );
-          messagesContainerEl.innerHTML = `
+          })
+          .join("");
+        messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
+      },
+      (error) => {
+        console.error("Load messages error:", error);
+        messagesContainerEl.innerHTML = `
             <div class="empty-message">
               Không thể tải nội dung trao đổi.
             </div>
           `;
-        }
-      );
+      },
+    );
 }
 /* =====================================================
    GỬI MESSAGE
 ===================================================== */
-async function sendNewMessage(
-  ticketRecord
-) {
+async function sendNewMessage(ticketRecord) {
   /*
      KIỂM TRA QUYỀN
   */
-  if (
-    !firebaseCurrentUser ||
-    !isMyTicket(
-      ticketRecord
-    )
-  ) {
-    alert(
-      "Bạn không có quyền gửi tin nhắn vào ticket này."
-    );
+  if (!firebaseCurrentUser || !isMyTicket(ticketRecord)) {
+    alert("Bạn không có quyền gửi tin nhắn vào ticket này.");
     return;
   }
-  const input =
-    document.getElementById(
-      "messageInputArea"
-    );
-  const button =
-    document.getElementById(
-      "sendMessageButton"
-    );
-  const messageText =
-    input?.value.trim();
-  if (
-    !input ||
-    !messageText ||
-    !database
-  ) {
+  const input = document.getElementById("messageInputArea");
+  const button = document.getElementById("sendMessageButton");
+  const messageText = input?.value.trim();
+  if (!input || !messageText || !database) {
     return;
   }
   try {
     if (button) {
-      button.disabled =
-        true;
-      button.textContent =
-        "Đang gửi...";
+      button.disabled = true;
+      button.textContent = "Đang gửi...";
     }
     await database
       .collection("tickets")
       .doc(ticketRecord.id)
       .collection("messages")
       .add({
-        sender:
-          "student",
-        senderType:
-          "student",
-        senderUid:
-          firebaseCurrentUser.uid,
-        senderEmail:
-          firebaseCurrentUser.email || "",
+        sender: "student",
+        senderType: "student",
+        senderUid: firebaseCurrentUser.uid,
+        senderEmail: firebaseCurrentUser.email || "",
         senderName:
-          firstValue(
-            ticketRecord,
-            "name"
-          ) ||
+          firstValue(ticketRecord, "name") ||
           firebaseCurrentUser.displayName ||
           "Học viên",
-        message:
-          messageText,
-        text:
-          messageText,
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        message: messageText,
+        text: messageText,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
-    await database
-      .collection("tickets")
-      .doc(ticketRecord.id)
-      .update({
-        updatedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-      });
+    await database.collection("tickets").doc(ticketRecord.id).update({
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
     input.value = "";
   } catch (error) {
-    console.error(
-      "Send message error:",
-      error
-    );
-    alert(
-      "Không thể gửi tin nhắn. Vui lòng thử lại."
-    );
+    console.error("Send message error:", error);
+    alert("Không thể gửi tin nhắn. Vui lòng thử lại.");
   } finally {
     if (button) {
-      button.disabled =
-        false;
-      button.textContent =
-        "Gửi";
+      button.disabled = false;
+      button.textContent = "Gửi";
     }
   }
 }
 /* =====================================================
    NAVIGATION
 ===================================================== */
-document.addEventListener(
-  "click",
-  event => {
-    const button = event.target.closest("[data-closed-satisfaction]");
-    if (!button || !activeTicketItem) return;
-    event.preventDefault();
-    submitClosedTicketSatisfaction(
-      activeTicketItem,
-      button.dataset.closedSatisfaction,
-      Number(button.dataset.satisfactionRound) || 1
-    );
-  }
-);
-if (menuToggleEl) {
-  menuToggleEl.addEventListener(
-    "click",
-    () => {
-      navSidebarEl?.classList.toggle(
-        "mobile-open"
-      );
-    }
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-closed-satisfaction]");
+  if (!button || !activeTicketItem) return;
+  event.preventDefault();
+  submitClosedTicketSatisfaction(
+    activeTicketItem,
+    button.dataset.closedSatisfaction,
+    Number(button.dataset.satisfactionRound) || 1,
   );
+});
+if (menuToggleEl) {
+  menuToggleEl.addEventListener("click", () => {
+    navSidebarEl?.classList.toggle("mobile-open");
+  });
 }
 if (backButtonEl) {
-  backButtonEl.addEventListener(
-    "click",
-    () => {
-      bodyLayoutEl
-        .classList
-        .remove(
-          "show-chat"
-        );
-      setHistoryPanel(false);
-      activeTicketItem =
-        null;
-      if (
-        activeChatSubscription
-      ) {
-        activeChatSubscription();
-        activeChatSubscription =
-          null;
-      }
-      mainPaneEl.innerHTML = `
+  backButtonEl.addEventListener("click", () => {
+    bodyLayoutEl.classList.remove("show-chat");
+    setHistoryPanel(false);
+    activeTicketItem = null;
+    if (activeChatSubscription) {
+      activeChatSubscription();
+      activeChatSubscription = null;
+    }
+    mainPaneEl.innerHTML = `
         <div class="empty-conversation">
           <div class="empty-conversation-icon">
             ⌁
@@ -1292,14 +845,16 @@ if (backButtonEl) {
           </p>
         </div>
       `;
-      renderTicketsList();
-    }
-  );
+    renderTicketsList();
+  });
 }
 historyCloseButtonEl?.addEventListener("click", () => setHistoryPanel(false));
 historyBackdropEl?.addEventListener("click", () => setHistoryPanel(false));
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && bodyLayoutEl?.classList.contains("history-open")) {
+document.addEventListener("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    bodyLayoutEl?.classList.contains("history-open")
+  ) {
     setHistoryPanel(false);
     document.getElementById("historyToggleButton")?.focus();
   }
@@ -1309,96 +864,63 @@ window.addEventListener("resize", () => setHistoryPanel(false));
    SEARCH
 ===================================================== */
 if (searchInputEl) {
-  searchInputEl.addEventListener(
-    "input",
-    renderTicketsList
-  );
+  searchInputEl.addEventListener("input", renderTicketsList);
 }
 /* =====================================================
    FILTER
 ===================================================== */
 if (filterRowEl) {
-  filterRowEl
-    .querySelectorAll(
-      ".filter-chip"
-    )
-    .forEach(chip => {
-      chip.addEventListener(
-        "click",
-        () => {
-          filterRowEl
-            .querySelectorAll(
-              ".filter-chip"
-            )
-            .forEach(item =>
-              item.classList.remove(
-                "active"
-              )
-            );
-          chip.classList.add(
-            "active"
-          );
-          currentStatusFilter =
-            chip.dataset.filter;
-          renderTicketsList();
-        }
-      );
+  filterRowEl.querySelectorAll(".filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      filterRowEl
+        .querySelectorAll(".filter-chip")
+        .forEach((item) => item.classList.remove("active"));
+      chip.classList.add("active");
+      currentStatusFilter = chip.dataset.filter;
+      renderTicketsList();
     });
+  });
 }
 /* =====================================================
    FIREBASE AUTH
 ===================================================== */
 if (authInstance) {
-  authInstance.onAuthStateChanged(
-    user => {
-      /*
+  authInstance.onAuthStateChanged((user) => {
+    /*
          HỦY LISTENER CŨ
       */
-      if (unsubscribeTickets) {
-        unsubscribeTickets();
-        unsubscribeTickets =
-          null;
-      }
-      /*
+    if (unsubscribeTickets) {
+      unsubscribeTickets();
+      unsubscribeTickets = null;
+    }
+    /*
          CHƯA ĐĂNG NHẬP
       */
-      if (!user) {
-        firebaseCurrentUser =
-          null;
-        ticketsDataList =
-          [];
-        if (ticketTotalEl) {
-          ticketTotalEl.textContent =
-            "0";
-        }
-        if (ticketListEl) {
-          ticketListEl.innerHTML = `
+    if (!user) {
+      firebaseCurrentUser = null;
+      ticketsDataList = [];
+      if (ticketTotalEl) {
+        ticketTotalEl.textContent = "0";
+      }
+      if (ticketListEl) {
+        ticketListEl.innerHTML = `
             <div class="ticket-error">
               Vui lòng đăng nhập để xem ticket của bạn.
             </div>
           `;
-        }
-        return;
       }
-      /*
+      return;
+    }
+    /*
          USER HIỆN TẠI
       */
-      firebaseCurrentUser =
-        user;
-      requestedTicketOpened =
-        false;
-      console.log(
-        "Học viên đăng nhập:",
-        user.uid,
-        user.email
-      );
-      loadTicketsData();
-    }
-  );
+    firebaseCurrentUser = user;
+    requestedTicketOpened = false;
+    console.log("Học viên đăng nhập:", user.uid, user.email);
+    loadTicketsData();
+  });
 } else {
-  console.error(
-    "Firebase Auth chưa được khởi tạo."
-  );
+  console.error("Firebase Auth chưa được khởi tạo.");
   if (ticketListEl) {
     ticketListEl.innerHTML = `
       <div class="ticket-error">
