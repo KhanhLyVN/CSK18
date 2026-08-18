@@ -184,6 +184,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .title-ai-suggestion-body strong {
   color: var(--maroon, #5d0703);
 }
+.title-ai-result.is-error .title-ai-result-label {
+  color: var(--danger, #a23b2e);
+}
+.title-ai-result.is-error .title-ai-result-icon {
+  background: var(--danger, #a23b2e);
+}
 @keyframes titleAiSuggestionIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }

@@ -44,7 +44,7 @@ function getValue(id) {
 // AI PHÂN TÍCH TIÊU ĐỀ
 // ======================================================
 const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  "https://script.google.com/macros/s/AKfycbxUn053qObh-uTNqfbPehEjM0AJnnOn3BFwN1ZyWkopAPwMlLPZjwTb2bU10v7fsZQ/exec";
 
 const fTitle = $("fTitle" );
 const titleAiSuggestion = $("titleAiSuggestion");

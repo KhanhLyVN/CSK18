@@ -34,7 +34,7 @@ if (window.emailjs) {
    AI CONFIG
 ========================================================= */
 const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  "https://script.google.com/macros/s/AKfycbxUn053qObh-uTNqfbPehEjM0AJnnOn3BFwN1ZyWkopAPwMlLPZjwTb2bU10v7fsZQ/exec";
 /* =========================================================
    FIRESTORE COLLECTION
 ========================================================= */
@@ -602,11 +602,6 @@ const titleAiLoadingText =
 const titleAiLoadingStatus =
   document.getElementById("titleAiLoadingStatus");
 
-const titleAiResult =
-  document.getElementById("titleAiResult");
-
-const titleAiResultBody =
-  document.getElementById("titleAiResultBody");
 
 let aiProgressTimer = null;
 let aiProgress = 0;
@@ -1093,18 +1088,23 @@ function showTitleAiSuggestion(
     );
     return;
   }
-  titleAiLoading.classList.add(
-    "is-visible"
-  );
-  titleAiLoading.classList.toggle(
-    "is-error",
-    Boolean(options.error)
-  );
-  titleAiLoading.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-  if (options.loading) {
+
+  const isLoading = Boolean(options.loading);
+  const isError = Boolean(options.error);
+
+  if (isLoading) {
+    // Trong lúc AI xử lý: chỉ hiện thanh loading.
+    titleAiLoading.classList.add(
+      "is-visible"
+    );
+    titleAiLoading.classList.remove(
+      "is-error",
+      "is-result"
+    );
+    titleAiLoading.setAttribute(
+      "aria-hidden",
+      "false"
+    );
     titleAiResult.classList.remove(
       "is-visible"
     );
@@ -1112,6 +1112,21 @@ function showTitleAiSuggestion(
       "";
     return;
   }
+
+  // Khi đã đạt 100%: ẩn loading trước, rồi mới hiện đáp án.
+  titleAiLoading.classList.remove(
+    "is-visible",
+    "is-error",
+    "is-result"
+  );
+  titleAiLoading.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+  titleAiResult.classList.toggle(
+    "is-error",
+    isError
+  );
   titleAiResultBody.textContent =
     String(text || "").trim();
   titleAiResult.classList.add(
@@ -1165,96 +1180,77 @@ async function analyzeTitleWithAI(
     );
   const category =
     selectedRadio
-      ? getCategory(
-          selectedRadio.value
-        )
+      ? getCategory(selectedRadio.value)
       : null;
   const issue =
     selectedRadio
       ? getIssue(
           selectedRadio.value,
-          issueSelect?.value ||
-            ""
+          issueSelect?.value || ""
         )
       : null;
-  const response =
-    await fetch(
-      TITLE_AI_WEB_APP_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded;charset=UTF-8"
-        },
-        body:
-          new URLSearchParams({
-            question:
-              title,
-            history:
-              JSON.stringify([]),
-            faqContext:
-              JSON.stringify([
-                {
-                  category:
-                    category?.label ||
-                    "",
-                  question:
-                    issue?.label ||
-                    "",
-                  answer:
-                    "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn."
-                }
-              ]),
-            mode:
-              "title-suggestion"
-          })
-      }
-    );
-  if (
-    requestId !==
-    titleAiRequestId
-  ) {
-    return;
+
+  const response = await fetch(
+    TITLE_AI_WEB_APP_URL,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body: new URLSearchParams({
+        question: title,
+        history: JSON.stringify([]),
+        faqContext: JSON.stringify([
+          {
+            category: category?.label || "",
+            question: issue?.label || "",
+            answer:
+              "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn."
+          }
+        ]),
+        mode: "title-suggestion"
+      })
+    }
+  );
+
+  if (requestId !== titleAiRequestId) {
+    return null;
   }
+
   if (!response.ok) {
-    throw new Error(
-      `HTTP ${response.status}`
-    );
+    throw new Error(`HTTP ${response.status}`);
   }
-  const data =
-    await response.json();
+
+  const data = await response.json();
+
   if (!data.success) {
     throw new Error(
-      data.error ||
-      "AI không thể phân tích tiêu đề."
+      data.error || "AI không thể phân tích tiêu đề."
     );
   }
-  showTitleAiSuggestion(
-    formatTitleAiAnswer(
-      data.answer
-    )
-  );
+
+  // Chỉ trả dữ liệu về cho requestTitleAiSuggestion.
+  // Không hiển thị kết quả trước khi loading đạt 100%.
+  return formatTitleAiAnswer(data.answer);
 }
 /* =========================================================
    REQUEST AI SUGGESTION
 ========================================================= */
 function requestTitleAiSuggestion() {
-  const title =
-    getValue(
-      "fTitle"
-    );
-  titleAiManuallyClosed =
-    false;
-  window.clearTimeout(
-    titleAiDebounceTimer
-  );
+  const title = getValue("fTitle");
+  titleAiManuallyClosed = false;
+
+  window.clearTimeout(titleAiDebounceTimer);
   titleAiRequestId += 1;
-  const currentRequestId =
-    titleAiRequestId;
+  const currentRequestId = titleAiRequestId;
+
   if (title.length < 8) {
     hideTitleAiSuggestion();
+    hideAITitleLoading();
     return;
   }
+
   startAITitleLoading();
   showTitleAiSuggestion(
     "AI đang đọc tiêu đề và tìm hướng xử lý phù hợp…",
@@ -1262,39 +1258,48 @@ function requestTitleAiSuggestion() {
       loading: true
     }
   );
-  titleAiDebounceTimer =
-    window.setTimeout(
-      async () => {
-        try {
-          await analyzeTitleWithAI(
-            title,
-            currentRequestId
-          );
-          if (
-            currentRequestId ===
-            titleAiRequestId
-          ) {
-            finishAITitleLoading();
-          }
-        } catch (error) {
-          console.error(
-            "TITLE AI ERROR:",
-            error
-          );
-          if (
-            currentRequestId ===
-            titleAiRequestId
-          ) {
-            finishAITitleLoading();
-            showTitleAiSuggestion(
-              "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể nhập mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
-              { error: true }
-            );
-          }
+
+  titleAiDebounceTimer = window.setTimeout(
+    async () => {
+      try {
+        const aiAnswer = await analyzeTitleWithAI(
+          title,
+          currentRequestId
+        );
+
+        if (currentRequestId !== titleAiRequestId) {
+          return;
         }
-      },
-      700
-    );
+
+        // Luôn đưa thanh loading lên 100% trước.
+        finishAITitleLoading();
+
+        // Chỉ hiển thị đáp án sau khi đã đạt 100%.
+        if (aiAnswer) {
+          showTitleAiSuggestion(aiAnswer);
+        }
+      } catch (error) {
+        console.error(
+          "TITLE AI ERROR:",
+          error
+        );
+
+        if (currentRequestId !== titleAiRequestId) {
+          return;
+        }
+
+        // Thông báo lỗi cũng chỉ hiện sau khi progress hoàn tất.
+        finishAITitleLoading();
+        showTitleAiSuggestion(
+          "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể nhập mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
+          {
+            error: true
+          }
+        );
+      }
+    },
+    700
+  );
 }
 /* =========================================================
    TITLE INPUT
@@ -2527,30 +2532,6 @@ if (againBtn) {
 /* =========================================================
    AI LOADING PROGRESS
 ========================================================= */
-// const titleAiLoading =
-//   document.getElementById(
-//     "titleAiLoading"
-//   );
-// const titleAiProgressBar =
-//   document.getElementById(
-//     "titleAiProgressBar"
-//   );
-// const titleAiLoadingPercent =
-//   document.getElementById(
-//     "titleAiLoadingPercent"
-//   );
-// const titleAiLoadingText =
-//   document.getElementById(
-//     "titleAiLoadingText"
-//   );
-// const titleAiLoadingStatus =
-//   document.getElementById(
-//     "titleAiLoadingStatus"
-//   );
-// let aiProgressTimer =
-//   null;
-// let aiProgress =
-//   0;
 /* =========================================================
    UPDATE AI PROGRESS
 ========================================================= */

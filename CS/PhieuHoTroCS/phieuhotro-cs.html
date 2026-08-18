@@ -449,8 +449,8 @@
                 autocomplete="off"
               >
               <!-- =============================================
-                   AI LOADING + RESULT
-                   Không còn titleAiSuggestion
+                   AI PROGRESS LOADING
+                   Chỉ hiện thanh loading trong lúc AI xử lý.
               ============================================== -->
               <section
                 id="titleAiLoading"
@@ -458,16 +458,13 @@
                 aria-live="polite"
                 aria-hidden="true"
               >
-                <!-- =========================================
-                     AI HEADER
-                ========================================== -->
                 <div class="title-ai-loading-head">
                   <div class="title-ai-loading-title">
                     <span class="title-ai-loading-badge">
                       AI
                     </span>
-                    <span id="titleAiLoadingText">
-                      AI đang phân tích...
+                    <span>
+                      Đang xử lý yêu cầu
                     </span>
                   </div>
                   <span
@@ -477,49 +474,41 @@
                     0%
                   </span>
                 </div>
-                <!-- =========================================
-                     PROGRESS BAR
-                ========================================== -->
                 <div class="title-ai-progress">
                   <div
                     id="titleAiProgressBar"
                     class="title-ai-progress-bar"
                   ></div>
                 </div>
-                <!-- =========================================
-                     STATUS
-                ========================================== -->
                 <div
                   id="titleAiLoadingStatus"
                   class="title-ai-loading-status"
                 >
                   Đang chuẩn bị phân tích...
                 </div>
-                <!-- =========================================
-                     AI RESULT
-                     Quan trọng:
-                     - Không có titleAiSuggestion
-                     - Không đóng loading khi 100%
-                     - Kết quả xuất hiện tại đây
-                ========================================== -->
-                <div
-                  id="titleAiResult"
-                  class="title-ai-result"
-                >
-                  <div class="title-ai-result-label">
-                    <span class="title-ai-result-icon">
-                      ✓
-                    </span>
-                    <span>
-                      Kết quả phân tích từ AI
-                    </span>
-                  </div>
-                  <div
-                    id="titleAiResultBody"
-                    class="title-ai-result-body"
-                  ></div>
-                </div>
               </section>
+              <!-- =============================================
+                   AI ANSWER
+                   Chỉ hiện sau khi loading đã đạt 100%.
+              ============================================== -->
+              <div
+                id="titleAiResult"
+                class="title-ai-result"
+                aria-live="polite"
+              >
+                <div class="title-ai-result-label">
+                  <span class="title-ai-result-icon">
+                    ✓
+                  </span>
+                  <span>
+                    Kết quả phân tích từ AI
+                  </span>
+                </div>
+                <div
+                  id="titleAiResultBody"
+                  class="title-ai-result-body"
+                ></div>
+              </div>
             </div>
             <!-- ===============================================
                  DESCRIPTION
