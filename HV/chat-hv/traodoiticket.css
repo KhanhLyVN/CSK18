@@ -28,9 +28,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .ticket-browser { width: 350px; flex: none; min-height: 0; display: flex; flex-direction: column; background: var(--paper); border-right: 1px solid var(--line); }
 .browser-head { flex: none; padding: 18px 16px 14px; border-bottom: 1px solid var(--line); background: var(--paper); }
 .browser-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+.browser-head-actions { display: inline-flex; align-items: center; gap: 8px; }
 .browser-kicker { display: block; color: var(--maroon); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
 .browser-title-row h2 { margin: 4px 0 0; color: var(--maroon-deep); font: 600 21px/1.1 "Fraunces", serif; }
 .ticket-total { min-width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--cream-pale); background: var(--maroon); font-size: 12px; font-weight: 800; }
+.history-close, .history-toggle { border: 1px solid var(--line); color: var(--maroon); background: #fff; cursor: pointer; font-weight: 800; }
+.history-close { display: none; width: 32px; height: 32px; border-radius: 8px; font-size: 21px; line-height: 1; }
+.history-toggle { display: none; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 8px 11px; border-radius: 8px; font-size: 11px; white-space: nowrap; }
+.history-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.history-backdrop { display: none; border: 0; background: rgba(42, 23, 18, .36); }
 .search-box { position: relative; display: block; }
 .search-box svg { position: absolute; top: 50%; left: 12px; width: 15px; height: 15px; transform: translateY(-50%); fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
 .search-box input { width: 100%; min-height: 38px; padding: 9px 13px 9px 34px; border: 1px solid var(--line); border-radius: 9px; outline: none; background: #fff; color: var(--ink); font-size: 12.5px; }
@@ -66,6 +72,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .empty-conversation p { margin: 0; font-size: 12.5px; }
 .conversation { min-height: 0; height: 100%; display: flex; flex-direction: column; }
 .conversation-header { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 28px; background: var(--paper); border-bottom: 1px solid var(--line); }
+.conversation-header-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .conversation-code { margin-bottom: 4px; color: var(--gold); font: 600 11px/1 "IBM Plex Mono", monospace; }
 .conversation-header h2 { margin: 0; color: var(--maroon-deep); font: 600 20px/1.2 "Fraunces", serif; }
 
@@ -129,11 +136,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 @media (max-width: 1050px) { .ticket-browser { width: 310px; } .stub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
-  .exchange-shell { width: 100%; }
-  .ticket-browser { width: 100%; }
-  .main { display: none; }
-  .exchange-shell.show-chat .ticket-browser { display: none; }
-  .exchange-shell.show-chat .main { display: flex; }
+  .exchange-shell { position: relative; width: 100%; }
+  .ticket-browser { position: absolute; inset: 0 auto 0 0; z-index: 30; width: min(88vw, 360px); transform: translateX(-105%); transition: transform 240ms cubic-bezier(.23, 1, .32, 1), box-shadow 240ms cubic-bezier(.23, 1, .32, 1); box-shadow: none; }
+  .exchange-shell:not(.show-chat) .ticket-browser, .exchange-shell.history-open .ticket-browser { transform: translateX(0); box-shadow: 16px 0 36px rgba(62, 4, 2, .18); }
+  .main { display: flex; }
+  .exchange-shell:not(.show-chat) .main { display: none; }
+  .exchange-shell.show-chat .history-backdrop:not([hidden]) { position: absolute; inset: 0; z-index: 20; display: block; }
+  .exchange-shell.show-chat .history-close, .exchange-shell.show-chat .history-toggle { display: inline-flex; }
   .stub-card { margin-inline: 16px; }
   .conversation-satisfaction { margin-inline: 16px; }
   .conversation-header, .messages { padding-inline: 16px; }
@@ -141,6 +150,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 @media (max-width: 560px) {
   .conversation-header { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .conversation-header > div:first-child { width: 100%; }
+  .conversation-header-actions { width: 100%; justify-content: space-between; }
+  .history-toggle { flex: 1; }
   .stub-top { align-items: flex-start; flex-direction: column; }
   .stub-grid { grid-template-columns: 1fr 1fr; gap: 11px 13px; }
   .stub-field-wide { grid-column: span 2; }

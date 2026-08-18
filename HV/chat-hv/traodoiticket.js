@@ -16,6 +16,12 @@ const navSidebarEl =
   document.getElementById("navSidebarEl");
 const ticketTotalEl =
   document.getElementById("ticketTotalEl");
+const ticketBrowserEl =
+  document.getElementById("ticketBrowserEl");
+const historyBackdropEl =
+  document.getElementById("historyBackdrop");
+const historyCloseButtonEl =
+  document.getElementById("historyCloseButton");
 /* =====================================================
    BIẾN
 ===================================================== */
@@ -114,6 +120,23 @@ function normalizeStatus(status) {
   return STATUS_META[status]
     ? status
     : "open";
+}
+function isMobileChatLayout() {
+  return window.matchMedia("(max-width: 860px)").matches;
+}
+function setHistoryPanel(open, shouldFocus = false) {
+  if (!bodyLayoutEl || !ticketBrowserEl) return;
+  const isShowingChat = bodyLayoutEl.classList.contains("show-chat");
+  const shouldOpen = isMobileChatLayout() && isShowingChat && open;
+  bodyLayoutEl.classList.toggle("history-open", shouldOpen);
+  ticketBrowserEl.setAttribute(
+    "aria-hidden",
+    String(isMobileChatLayout() && isShowingChat && !shouldOpen)
+  );
+  if (historyBackdropEl) historyBackdropEl.hidden = !shouldOpen;
+  const toggleButton = document.getElementById("historyToggleButton");
+  if (toggleButton) toggleButton.setAttribute("aria-expanded", String(shouldOpen));
+  if (shouldOpen && shouldFocus) requestAnimationFrame(() => searchInputEl?.focus());
 }
 function renderStudentChatSetup(ticketRecord) {
   return `
@@ -450,6 +473,7 @@ function loadTicketsData() {
                 .remove(
                   "show-chat"
                 );
+              setHistoryPanel(false);
             }
           }
           /*
@@ -681,6 +705,7 @@ function openSelectedTicket(
     .add(
       "show-chat"
     );
+  setHistoryPanel(false);
   const status =
     normalizeStatus(
       ticketRecord.status
@@ -749,13 +774,19 @@ function openSelectedTicket(
             )}
           </h2>
         </div>
-        ${renderTicketStatus(
-          ticketRecord.status
-        )
-        .replace(
-          "ticket-status",
-          "conversation-status"
-        )}
+        <div class="conversation-header-actions">
+          ${renderTicketStatus(
+            ticketRecord.status
+          )
+          .replace(
+            "ticket-status",
+            "conversation-status"
+          )}
+          <button class="history-toggle" id="historyToggleButton" type="button" aria-controls="ticketBrowserEl" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+            Lịch sử ticket
+          </button>
+        </div>
       </div>
       <div class="stub-card">
         <div class="stub-top">
@@ -897,6 +928,9 @@ function openSelectedTicket(
       }
     </div>
   `;
+  document
+    .getElementById("historyToggleButton")
+    ?.addEventListener("click", () => setHistoryPanel(true, true));
     if (hasChatThread) {
     loadTicketMessagesRealtime(ticketRecord.id);
   } else {
@@ -1235,6 +1269,7 @@ if (backButtonEl) {
         .remove(
           "show-chat"
         );
+      setHistoryPanel(false);
       activeTicketItem =
         null;
       if (
@@ -1261,6 +1296,15 @@ if (backButtonEl) {
     }
   );
 }
+historyCloseButtonEl?.addEventListener("click", () => setHistoryPanel(false));
+historyBackdropEl?.addEventListener("click", () => setHistoryPanel(false));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && bodyLayoutEl?.classList.contains("history-open")) {
+    setHistoryPanel(false);
+    document.getElementById("historyToggleButton")?.focus();
+  }
+});
+window.addEventListener("resize", () => setHistoryPanel(false));
 /* =====================================================
    SEARCH
 ===================================================== */
