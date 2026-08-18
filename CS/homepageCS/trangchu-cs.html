@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
   <link rel="stylesheet" href="/CS/homepageCS/trangchu-cs.css">
   <link rel="stylesheet" href="/CS/navbar.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -15,29 +18,88 @@
   <script src="/firebase-config.js"></script>
   <script>window.db = window.db || (typeof db !== "undefined" ? db : null); window.auth = window.auth || (typeof auth !== "undefined" ? auth : null);</script>
 </head>
+
 <body data-nav-page="home">
   <div class="app">
     <main class="main">
       <div class="masthead">
-        <div class="masthead-left"><div class="eyebrow">Hệ thống Quản lý Hỗ trợ</div><h1>Trang Chủ Customer Success</h1><p id="greetingLine">Đang tải thông tin chào buổi...</p></div>
-        <div class="masthead-right"><div class="clock-badge"><span class="live-dot"></span><span id="todayStr">--/--/----</span></div><div class="action-buttons"><a class="btn-main" href="/CS/TicketManagement/cs-ticket.html">Quản lý Trao đổi →</a><a class="btn-sub" href="/CS/PhieuHoTroCS/phieuhotro-cs.html" target="_blank">+ Tạo phiếu mới</a></div></div>
+        <div class="masthead-left">
+          <div class="eyebrow">Hệ thống Quản lý Hỗ trợ</div>
+          <h1>Trang Chủ Customer Success</h1>
+          <p id="greetingLine">Đang tải thông tin chào buổi...</p>
+        </div>
+        <div class="masthead-right">
+          <div class="clock-badge"><span class="live-dot"></span><span id="todayStr">--/--/----</span></div>
+          <div class="action-buttons"><a class="btn-main" href="/CS/TicketManagement/cs-ticket.html">Quản lý Trao đổi
+              →</a><a class="btn-sub" href="/CS/PhieuHoTroCS/phieuhotro-cs.html" target="_blank">+ Tạo phiếu mới</a>
+          </div>
+        </div>
       </div>
-      <div class="quick-find"><input type="text" id="quickFindInput" placeholder="Nhập mã ticket cần tra cứu nhanh (VD: BL-482910 hoặc ID)..."><button id="quickFindBtn">Mở Ticket</button><div class="quick-find-err" id="quickFindErr">Vui lòng nhập mã ticket hợp lệ.</div></div>
+      <div class="quick-find"><input type="text" id="quickFindInput"
+          placeholder="Nhập mã ticket cần tra cứu nhanh (VD: BL-482910 hoặc ID)..."><button id="quickFindBtn">Mở
+          Ticket</button>
+        <div class="quick-find-err" id="quickFindErr">Vui lòng nhập mã ticket hợp lệ.</div>
+      </div>
       <div class="stat-grid" id="statGrid">
-        <div class="stat-card" data-filter="all"><div class="stat-num" id="statAll">0</div><div class="stat-label">Tổng số phiếu</div><div class="stat-trend">Tất cả trạng thái</div></div>
-        <div class="stat-card open" data-filter="open" data-status="open"><div class="stat-num" id="statOpen">0</div><div class="stat-label">Đang mở</div><div class="stat-trend">Cần tiếp nhận</div></div>
-        <div class="stat-card progress" data-filter="open" data-status="in_progress"><div class="stat-num" id="statProgress">0</div><div class="stat-label">Đang xử lý</div><div class="stat-trend">Đang giải quyết</div></div>
-        <div class="stat-card resolved" data-filter="closed" data-status="resolved"><div class="stat-num" id="statResolved">0</div><div class="stat-label">Đã giải quyết</div><div class="stat-trend">Chờ xác nhận đóng</div></div>
-        <div class="stat-card closed" data-filter="closed" data-status="closed"><div class="stat-num" id="statClosed">0</div><div class="stat-label">Đã đóng</div><div class="stat-trend">Hoàn tất</div></div>
+        <div class="stat-card" data-filter="all">
+          <div class="stat-num" id="statAll">0</div>
+          <div class="stat-label">Tổng số phiếu</div>
+          <div class="stat-trend">Tất cả trạng thái</div>
+        </div>
+        <div class="stat-card open" data-filter="open" data-status="open">
+          <div class="stat-num" id="statOpen">0</div>
+          <div class="stat-label">Đang mở</div>
+          <div class="stat-trend">Cần tiếp nhận</div>
+        </div>
+        <div class="stat-card progress" data-filter="open" data-status="in_progress">
+          <div class="stat-num" id="statProgress">0</div>
+          <div class="stat-label">Đang xử lý</div>
+          <div class="stat-trend">Đang giải quyết</div>
+        </div>
+        <div class="stat-card resolved" data-filter="closed" data-status="resolved">
+          <div class="stat-num" id="statResolved">0</div>
+          <div class="stat-label">Đã giải quyết</div>
+          <div class="stat-trend">Chờ xác nhận đóng</div>
+        </div>
+        <div class="stat-card closed" data-filter="closed" data-status="closed">
+          <div class="stat-num" id="statClosed">0</div>
+          <div class="stat-label">Đã đóng</div>
+          <div class="stat-trend">Hoàn tất</div>
+        </div>
       </div>
       <div class="dash-columns">
-        <div class="panel"><div class="panel-head"><h2>Cần phản hồi gấp</h2><span class="panel-count" id="unansweredCount">0</span></div><p class="panel-desc">Các phiếu mới gửi hoặc đang mở cần Customer Success tương tác.</p><div class="mini-list" id="unansweredList"><div class="empty-note">Đang đồng bộ dữ liệu...</div></div></div>
-        <div class="panel"><div class="panel-head"><h2>Phân loại yêu cầu</h2><span class="panel-count-sub">Tỷ trọng</span></div><p class="panel-desc">Thống kê các nhóm vấn đề học viên gặp phải trên hệ thống.</p><div class="bar-list" id="typeBarList"><div class="empty-note">Đang phân tích dữ liệu...</div></div></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Cần phản hồi gấp</h2><span class="panel-count" id="unansweredCount">0</span>
+          </div>
+          <p class="panel-desc">Các phiếu mới gửi hoặc đang mở cần Customer Success tương tác.</p>
+          <div class="mini-list" id="unansweredList">
+            <div class="empty-note">Đang đồng bộ dữ liệu...</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Phân loại yêu cầu</h2><span class="panel-count-sub">Tỷ trọng</span>
+          </div>
+          <p class="panel-desc">Thống kê các nhóm vấn đề học viên gặp phải trên hệ thống.</p>
+          <div class="bar-list" id="typeBarList">
+            <div class="empty-note">Đang phân tích dữ liệu...</div>
+          </div>
+        </div>
       </div>
-      <div class="panel panel-wide"><div class="panel-head"><h2>Danh sách Ticket Gần đây</h2><span class="panel-count" id="recentCount">0</span></div><p class="panel-desc" style="margin-bottom: 16px;">10 yêu cầu hỗ trợ mới nhất ghi nhận từ học viên.</p><div class="recent-list" id="recentList"><div class="empty-note">Đang tải danh sách ticket...</div></div></div>
+      <div class="panel panel-wide">
+        <div class="panel-head">
+          <h2>Danh sách Ticket Gần đây</h2><span class="panel-count" id="recentCount">0</span>
+        </div>
+        <p class="panel-desc" style="margin-bottom: 16px;">10 yêu cầu hỗ trợ mới nhất ghi nhận từ học viên.</p>
+        <div class="recent-list" id="recentList">
+          <div class="empty-note">Đang tải danh sách ticket...</div>
+        </div>
+      </div>
     </main>
   </div>
   <script src="/CS/navbar.js"></script>
   <script type="module" src="/CS/homepageCS/trangchu-cs.js"></script>
 </body>
+
 </html>

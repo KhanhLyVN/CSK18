@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <link rel="stylesheet" href="admin-bar.css">
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Log - Admin</title>
   <link rel="stylesheet" href="/ADMIN/system-log.css">
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" />
   <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="../firebase-config.js"></script>
-<style id="system-log-detail-overrides">
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <style id="system-log-detail-overrides">
 
-</style>
+  </style>
 </head>
+
 <body data-admin-page="logs">
-<div class="app-shell">
+  <div class="app-shell">
     <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
     <main class="main-content">
-<div class="content-wrap">
-      <!-- =================================================
+      <div class="content-wrap">
+        <!-- =================================================
            HERO
       ================================================== -->
-      <section class="hero">
-        <div>
-          <p class="eyebrow">
-            SYSTEM / LOGS
-          </p>
-          <h1>
-            Nhật ký
-            <span>hệ thống.</span>
-          </h1>
-          <p class="hero-copy">
-            Theo dõi các hoạt động phát sinh trong hệ thống
-            quản trị, tài khoản Customer Success và dữ liệu
-            Firebase.
-          </p>
-        </div>
-        <!-- <div class="hero-art">
+        <section class="hero">
+          <div>
+            <p class="eyebrow">
+              SYSTEM / LOGS
+            </p>
+            <h1>
+              Nhật ký
+              <span>hệ thống.</span>
+            </h1>
+            <p class="hero-copy">
+              Theo dõi các hoạt động phát sinh trong hệ thống
+              quản trị, tài khoản Customer Success và dữ liệu
+              Firebase.
+            </p>
+          </div>
+          <!-- <div class="hero-art">
           <div class="orbit orbit-one"></div>
           <div class="orbit orbit-two"></div>
           <div class="node node-a">
@@ -59,244 +64,213 @@
           <div class="connector connector-one"></div>
           <div class="connector connector-two"></div>
         </div> -->
-      </section>
-      <!-- =================================================
+        </section>
+        <!-- =================================================
            STATS
       ================================================== -->
-      <section class="stats-grid">
-        <div class="stat-card">
-          <span>
-            TỔNG LOG
-          </span>
-          <strong id="totalLogs">
-            0
-          </strong>
-          <small>
-            Nhật ký hệ thống
-          </small>
-        </div>
-        <div class="stat-card">
-          <span>
-            HÔM NAY
-          </span>
-          <strong id="todayLogs">
-            0
-          </strong>
-          <small>
-            Hoạt động trong ngày
-          </small>
-        </div>
-        <div class="stat-card">
-          <span>
-            ADMIN
-          </span>
-          <strong id="adminLogs">
-            0
-          </strong>
-          <small>
-            Hoạt động quản trị
-          </small>
-        </div>
-        <div class="stat-card attention">
-          <span>
-            ERROR
-          </span>
-          <strong id="errorLogs">
-            0
-          </strong>
-          <small>
-            Sự kiện lỗi
-          </small>
-        </div>
-      </section>
-      <!-- =================================================
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span>
+              TỔNG LOG
+            </span>
+            <strong id="totalLogs">
+              0
+            </strong>
+            <small>
+              Nhật ký hệ thống
+            </small>
+          </div>
+          <div class="stat-card">
+            <span>
+              HÔM NAY
+            </span>
+            <strong id="todayLogs">
+              0
+            </strong>
+            <small>
+              Hoạt động trong ngày
+            </small>
+          </div>
+          <div class="stat-card">
+            <span>
+              ADMIN
+            </span>
+            <strong id="adminLogs">
+              0
+            </strong>
+            <small>
+              Hoạt động quản trị
+            </small>
+          </div>
+          <div class="stat-card attention">
+            <span>
+              ERROR
+            </span>
+            <strong id="errorLogs">
+              0
+            </strong>
+            <small>
+              Sự kiện lỗi
+            </small>
+          </div>
+        </section>
+        <!-- =================================================
            LOG PANEL
       ================================================== -->
-      <section class="account-panel">
-        <div class="panel-head">
-          <div>
-            <div class="title-line">
-              <h2>
-                System Log
-              </h2>
-              <span id="recordBadge">
-                0 log
-              </span>
+        <section class="account-panel">
+          <div class="panel-head">
+            <div>
+              <div class="title-line">
+                <h2>
+                  System Log
+                </h2>
+                <span id="recordBadge">
+                  0 log
+                </span>
+              </div>
+              <p>
+                Lịch sử hoạt động gần đây của hệ thống.
+              </p>
             </div>
-            <p>
-              Lịch sử hoạt động gần đây của hệ thống.
-            </p>
+            <button class="primary-btn" id="refreshBtn">
+              ↻ Làm mới
+            </button>
           </div>
-          <button
-            class="primary-btn"
-            id="refreshBtn"
-          >
-            ↻ Làm mới
-          </button>
-        </div>
-        <!-- FILTER -->
-        <div class="filters">
-          <div class="search-box">
-            <span>
-              ⌕
+          <!-- FILTER -->
+          <div class="filters">
+            <div class="search-box">
+              <span>
+                ⌕
+              </span>
+              <input type="text" id="searchInput" placeholder="Tìm kiếm log...">
+            </div>
+            <select id="typeFilter">
+              <option value="all">
+                Tất cả hoạt động
+              </option>
+              <option value="login">
+                Đăng nhập
+              </option>
+              <option value="logout">
+                Đăng xuất
+              </option>
+              <option value="create">
+                Tạo dữ liệu
+              </option>
+              <option value="update">
+                Cập nhật
+              </option>
+              <option value="delete">
+                Xóa dữ liệu
+              </option>
+              <option value="error">
+                Lỗi
+              </option>
+              <option value="message">
+                CS phản hồi ticket
+              </option>
+              <option value="claim_ticket">
+                CS nhận ticket
+              </option>
+              <option value="complete_ticket">
+                CS hoàn thành ticket
+              </option>
+              <option value="update_status">
+                CS cập nhật trạng thái
+              </option>
+            </select>
+            <select id="severityFilter">
+              <option value="all">
+                Tất cả mức độ
+              </option>
+              <option value="info">
+                Thông tin
+              </option>
+              <option value="warning">
+                Cảnh báo
+              </option>
+              <option value="error">
+                Lỗi
+              </option>
+            </select>
+            <button class="icon-btn" id="clearFilters" title="Xóa bộ lọc">
+              ×
+            </button>
+          </div>
+          <!-- TABLE -->
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    THỜI GIAN
+                  </th>
+                  <th>
+                    NGƯỜI THỰC HIỆN
+                  </th>
+                  <th>
+                    HOẠT ĐỘNG
+                  </th>
+                  <th>
+                    ĐỐI TƯỢNG
+                  </th>
+                  <th>
+                    MỨC ĐỘ
+                  </th>
+                  <th>
+                    CHI TIẾT
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="logBody">
+                <tr>
+                  <td colspan="6" class="loading-cell">
+                    Đang tải nhật ký hệ thống...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-foot">
+            <span id="entriesNote">
+              Hiển thị 0 log
             </span>
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Tìm kiếm log..."
-            >
+            <span class="realtime">
+              <i></i>
+              Realtime
+            </span>
           </div>
-          <select id="typeFilter">
-            <option value="all">
-              Tất cả hoạt động
-            </option>
-            <option value="login">
-              Đăng nhập
-            </option>
-            <option value="logout">
-              Đăng xuất
-            </option>
-            <option value="create">
-              Tạo dữ liệu
-            </option>
-            <option value="update">
-              Cập nhật
-            </option>
-            <option value="delete">
-              Xóa dữ liệu
-            </option>
-            <option value="error">
-              Lỗi
-            </option>
-            <option value="message">
-              CS phản hồi ticket
-            </option>
-            <option value="claim_ticket">
-              CS nhận ticket
-            </option>
-            <option value="complete_ticket">
-              CS hoàn thành ticket
-            </option>
-            <option value="update_status">
-              CS cập nhật trạng thái
-            </option>
-          </select>
-          <select id="severityFilter">
-            <option value="all">
-              Tất cả mức độ
-            </option>
-            <option value="info">
-              Thông tin
-            </option>
-            <option value="warning">
-              Cảnh báo
-            </option>
-            <option value="error">
-              Lỗi
-            </option>
-          </select>
-          <button
-            class="icon-btn"
-            id="clearFilters"
-            title="Xóa bộ lọc"
-          >
-            ×
-          </button>
-        </div>
-        <!-- TABLE -->
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  THỜI GIAN
-                </th>
-                <th>
-                  NGƯỜI THỰC HIỆN
-                </th>
-                <th>
-                  HOẠT ĐỘNG
-                </th>
-                <th>
-                  ĐỐI TƯỢNG
-                </th>
-                <th>
-                  MỨC ĐỘ
-                </th>
-                <th>
-                  CHI TIẾT
-                </th>
-              </tr>
-            </thead>
-            <tbody id="logBody">
-              <tr>
-                <td
-                  colspan="6"
-                  class="loading-cell"
-                >
-                  Đang tải nhật ký hệ thống...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="panel-foot">
-          <span id="entriesNote">
-            Hiển thị 0 log
-          </span>
-          <span class="realtime">
-            <i></i>
-            Realtime
-          </span>
-        </div>
-      </section>
-    </div>
-  </main>
-</div>
-<!-- =====================================================
+        </section>
+      </div>
+    </main>
+  </div>
+  <!-- =====================================================
      DETAIL DRAWER
 ====================================================== -->
-<div
-  class="drawer-backdrop"
-  id="drawerBackdrop"
-  hidden
-></div>
-<aside
-  class="drawer"
-  id="logDrawer"
-  aria-hidden="true"
->
-  <div class="drawer-head">
-    <div>
-      <small>
-        SYSTEM EVENT
-      </small>
-      <h2>
-        Chi tiết hoạt động
-      </h2>
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="logDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <small>
+          SYSTEM EVENT
+        </small>
+        <h2>
+          Chi tiết hoạt động
+        </h2>
+      </div>
+      <button class="close-btn" id="closeDrawer">
+        ×
+      </button>
     </div>
-    <button
-      class="close-btn"
-      id="closeDrawer"
-    >
-      ×
-    </button>
-  </div>
-  <div
-    id="drawerContent"
-    class="drawer-content"
-  >
-  </div>
-</aside>
-<!-- =====================================================
+    <div id="drawerContent" class="drawer-content">
+    </div>
+  </aside>
+  <!-- =====================================================
      TOAST
 ====================================================== -->
-<div
-  class="toast"
-  id="toast"
-  hidden
-></div>
-<script src="/ADMIN/system-log.js"></script>
+  <div class="toast" id="toast" hidden></div>
+  <script src="/ADMIN/system-log.js"></script>
   <script src="/ADMIN/admin-bar.js"></script>
 </body>
+
 </html>

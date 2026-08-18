@@ -112,105 +112,119 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 </style>
 </head>
+
 <body data-nav-page="faq">
   <div class="app">
     <main class="main faq-page-content">
-      <header class="page-head"><div><span class="eyebrow">KHO KIẾN THỨC HỖ TRỢ</span><h2>Câu hỏi thường gặp</h2><p>Tìm câu trả lời nhanh hoặc hỏi trợ lý AI khi bạn cần hướng dẫn thêm.</p></div><a class="page-head-link" href="/HV/tickets/phieuhotro.html">Chưa tìm thấy câu trả lời? Gửi ticket →</a></header>
+      <header class="page-head">
+        <div><span class="eyebrow">KHO KIẾN THỨC HỖ TRỢ</span>
+          <h2>Câu hỏi thường gặp</h2>
+          <p>Tìm câu trả lời nhanh hoặc hỏi trợ lý AI khi bạn cần hướng dẫn thêm.</p>
+        </div><a class="page-head-link" href="/HV/tickets/phieuhotro.html">Chưa tìm thấy câu trả lời? Gửi ticket →</a>
+      </header>
       <section class="faq-container">
-        <div class="faq-toolbar"><div><span class="eyebrow">TRA CỨU HỖ TRỢ</span><h3 class="faq-title">Hỏi đáp học viên</h3></div></div>
-        <div class="faq-controls"><input type="search" id="searchInput" class="faq-search" placeholder="Tìm theo câu hỏi hoặc nội dung trả lời..."><select id="categoryFilter" class="faq-category-filter"><option value="all">Tất cả chủ đề</option></select></div>
-        <div class="faq-list" id="faqList"><div class="status-box">Đang tải danh sách câu hỏi...</div></div>
-        <div id="noResults" class="status-box" style="display:none;">Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.</div>
+        <div class="faq-toolbar">
+          <div><span class="eyebrow">TRA CỨU HỖ TRỢ</span>
+            <h3 class="faq-title">Hỏi đáp học viên</h3>
+          </div>
+        </div>
+        <div class="faq-controls"><input type="search" id="searchInput" class="faq-search"
+            placeholder="Tìm theo câu hỏi hoặc nội dung trả lời..."><select id="categoryFilter"
+            class="faq-category-filter">
+            <option value="all">Tất cả chủ đề</option>
+          </select></div>
+        <div class="faq-list" id="faqList">
+          <div class="status-box">Đang tải danh sách câu hỏi...</div>
+        </div>
+        <div id="noResults" class="status-box" style="display:none;">Không tìm thấy câu hỏi phù hợp với tìm kiếm của
+          bạn.</div>
       </section>
     </main>
+  </div>
+  <button class="ai-floating-button" id="aiFloatingButton" type="button" title="Hỏi trợ lý AI"
+    aria-label="Mở trợ lý AI">AI</button>
+  <section class="ai-chat" id="aiChat" aria-label="Trợ lý AI">
+    <div class="ai-header">
+      <div class="ai-header-left">
+        <div class="ai-avatar">AI</div>
+        <div>
+          <div class="ai-title">CS Center AI</div>
+          <div class="ai-status">Trợ lý hỗ trợ học viên</div>
+        </div>
+      </div>
+      <div class="ai-header-buttons"><button class="ai-header-button" i d="clearChatButton" type="button"
+          title="Xóa cuộc trò chuyện">⌫</button><button class="ai-header-button" id="closeAiButton" type="button"
+          title="Đóng">×</button></div>
     </div>
-<button class="ai-floating-button" id="aiFloatingButton" type="button" title="Hỏi trợ lý AI" aria-label="Mở trợ lý AI">AI</button>
-<section class="ai-chat" id="aiChat" aria-label="Trợ lý AI">
-  <div class="ai-header"><div class="ai-header-left"><div class="ai-avatar">AI</div><div><div class="ai-title">CS Center AI</div><div class="ai-status">Trợ lý hỗ trợ học viên</div></div></div><div class="ai-header-buttons"><button class="ai-header-button" id="clearChatButton" type="button" title="Xóa cuộc trò chuyện">⌫</button><button class="ai-header-button" id="closeAiButton" type="button" title="Đóng">×</button></div></div>
-  <div class="ai-messages" id="aiMessages"><div class="ai-message bot">Xin chào!<br><br>Mình là trợ lý AI của CS Center. Bạn có thể hỏi về lịch học, học phí, tài khoản, bảo lưu, chuyển lớp hoặc chứng chỉ.</div></div>
-  <div class="ai-input-area"><textarea id="aiInput" class="ai-input" rows="2" placeholder="Nhập câu hỏi của bạn..."></textarea><button id="aiSend" class="ai-send" type="button" title="Gửi">➤</button></div>
-</section>
+    <div class="ai-messages" id="aiMessages">
+      <div class="ai-message bot">Xin chào!<br><br>Mình là trợ lý AI của CS Center. Bạn có thể hỏi về lịch học, học phí,
+        tài khoản, bảo lưu, chuyển lớp hoặc chứng chỉ.</div>
+    </div>
+    <div class="ai-input-area"><textarea id="aiInput" class="ai-input" rows="2"
+        placeholder="Nhập câu hỏi của bạn..."></textarea><button id="aiSend" class="ai-send" type="button"
+        title="Gửi">➤</button></div>
+  </section>
 <script>
-/* =====================================================
+  /* =====================================================
      CONFIG
   ===================================================== */
   // const AI_WEB_APP_URL =
   //   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
+
   /* =====================================================
      FAQ VARIABLES
   ===================================================== */
   let faqData = [];
-  const faqListContainer =
-    document.getElementById('faqList');
-  const searchInput =
-    document.getElementById('searchInput');
-  const categoryFilter =
-    document.getElementById('categoryFilter');
-  const noResults =
-    document.getElementById('noResults');
+  const faqListContainer = document.getElementById('faqList');
+  const searchInput = document.getElementById('searchInput');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const noResults = document.getElementById('noResults');
+
   /* =====================================================
      AI VARIABLES
   ===================================================== */
-  const aiFloatingButton =
-    document.getElementById('aiFloatingButton');
-  const aiChat =
-    document.getElementById('aiChat');
-  const closeAiButton =
-    document.getElementById('closeAiButton');
-  const clearChatButton =
-    document.getElementById('clearChatButton');
-  const aiMessages =
-    document.getElementById('aiMessages');
-  const aiInput =
-    document.getElementById('aiInput');
-  const aiSend =
-    document.getElementById('aiSend');
+  const aiFloatingButton = document.getElementById('aiFloatingButton');
+  const aiChat = document.getElementById('aiChat');
+  const closeAiButton = document.getElementById('closeAiButton');
+  const clearChatButton = document.getElementById('clearChatButton');
+  const aiMessages = document.getElementById('aiMessages');
+  const aiInput = document.getElementById('aiInput');
+  const aiSend = document.getElementById('aiSend');
+
   // Lịch sử hội thoại
   let conversationHistory = [];
   // Những FAQ người dùng vừa tìm/xem
   let learnedFAQContext = [];
+
   /* =====================================================
      LOCAL STORAGE
   ===================================================== */
   function loadAIHistory() {
     try {
-      const savedConversation =
-        localStorage.getItem('cs_ai_conversation');
-      const savedContext =
-        localStorage.getItem('cs_ai_faq_context');
+      const savedConversation = localStorage.getItem('cs_ai_conversation');
+      const savedContext = localStorage.getItem('cs_ai_faq_context');
       if (savedConversation) {
-        conversationHistory =
-          JSON.parse(savedConversation);
+        conversationHistory = JSON.parse(savedConversation);
       }
       if (savedContext) {
-        learnedFAQContext =
-          JSON.parse(savedContext);
+        learnedFAQContext = JSON.parse(savedContext);
       }
     } catch (error) {
-      console.error(
-        "Không thể tải lịch sử AI:",
-        error
-      );
+      console.error("Không thể tải lịch sử AI:", error);
     }
   }
+
   function saveAIHistory() {
     try {
-      localStorage.setItem(
-        'cs_ai_conversation',
-        JSON.stringify(conversationHistory)
-      );
-      localStorage.setItem(
-        'cs_ai_faq_context',
-        JSON.stringify(learnedFAQContext)
-      );
+      localStorage.setItem('cs_ai_conversation', JSON.stringify(conversationHistory));
+      localStorage.setItem('cs_ai_faq_context', JSON.stringify(learnedFAQContext));
     } catch (error) {
-      console.error(
-        "Không thể lưu lịch sử AI:",
-        error
-      );
+      console.error("Không thể lưu lịch sử AI:", error);
     }
   }
+
   loadAIHistory();
+
   /* =====================================================
      VIETNAMESE SEARCH
   ===================================================== */
@@ -223,6 +237,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       .replace(/Đ/g, 'D')
       .toLowerCase();
   }
+
   /* =====================================================
      ESCAPE HTML
   ===================================================== */
@@ -236,6 +251,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       .replace(/'/g, "&#039;")
       .replace(/\n/g, "<br>");
   }
+
   /* =====================================================
      FIREBASE TIMESTAMP
   ===================================================== */
@@ -252,16 +268,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     }
     return new Date(ts).getTime() || 0;
   }
+
   /* =====================================================
      SAVE FAQ INTO AI MEMORY
   ===================================================== */
   function rememberFAQ(item) {
     if (!item || !item.question) return;
-    const exists =
-      learnedFAQContext.some(
-        faq =>
-          faq.question === item.question
-      );
+    const exists = learnedFAQContext.some(faq => faq.question === item.question);
     if (!exists) {
       learnedFAQContext.push({
         question: item.question,
@@ -271,11 +284,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     }
     // Không cho bộ nhớ quá lớn
     if (learnedFAQContext.length > 15) {
-      learnedFAQContext =
-        learnedFAQContext.slice(-15);
+      learnedFAQContext = learnedFAQContext.slice(-15);
     }
     saveAIHistory();
   }
+
   /* =====================================================
      FIRESTORE
   ===================================================== */
@@ -289,70 +302,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       </div>
     `;
   } else {
-    db.collection('faqs')
-      .onSnapshot(
-        snapshot => {
-          let rawData =
-            snapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            }));
-          rawData.sort(
-            (a, b) =>
-              getTimestampMillis(b.createdAt) -
-              getTimestampMillis(a.createdAt)
-          );
-          faqData =
-            rawData.map(
-              (item, index) => ({
-                ...item,
-                stt: index + 1
-              })
-            );
-          initCategories();
-          filterData();
-        },
-        error => {
-          console.error(
-            "Lỗi Realtime Firestore:",
-            error
-          );
-          faqListContainer.innerHTML = `
-            <div class="status-box error-box">
-              <b>Lỗi kết nối dữ liệu:</b>
-              ${escapeHTML(error.message)}
-            </div>
-          `;
-        }
-      );
+    db.collection('faqs').onSnapshot(
+      snapshot => {
+        let rawData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        rawData.sort((a, b) => getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt));
+        faqData = rawData.map((item, index) => ({ ...item, stt: index + 1 }));
+        initCategories();
+        filterData();
+      },
+      error => {
+        console.error("Lỗi Realtime Firestore:", error);
+        faqListContainer.innerHTML = `
+          <div class="status-box error-box">
+            <b>Lỗi kết nối dữ liệu:</b>
+            ${escapeHTML(error.message)}
+          </div>
+        `;
+      }
+    );
   }
+
   /* =====================================================
      CATEGORIES
   ===================================================== */
   function initCategories() {
-    const selected =
-      categoryFilter.value;
-    categoryFilter.innerHTML =
-      '<option value="all">Tất cả chủ đề</option>';
-    const categories = [
-      ...new Set(
-        faqData
-          .map(item => item.category)
-          .filter(Boolean)
-      )
-    ];
+    const selected = categoryFilter.value;
+    categoryFilter.innerHTML = '<option value="all">Tất cả chủ đề</option>';
+    const categories = [...new Set(faqData.map(item => item.category).filter(Boolean))];
     categories.forEach(cat => {
-      const option =
-        document.createElement('option');
+      const option = document.createElement('option');
       option.value = cat;
       option.textContent = cat;
       categoryFilter.appendChild(option);
     });
-    categoryFilter.value =
-      categories.includes(selected)
-        ? selected
-        : 'all';
+    categoryFilter.value = categories.includes(selected) ? selected : 'all';
   }
+
   /* =====================================================
      RENDER FAQ
   ===================================================== */
@@ -364,429 +349,271 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     }
     noResults.style.display = 'none';
     data.forEach(item => {
-      const faqItem =
-        document.createElement('div');
-      faqItem.className =
-        'faq-item';
+      const faqItem = document.createElement('div');
+      faqItem.className = 'faq-item';
       faqItem.innerHTML = `
-        <div
-          class="faq-header"
-          onclick="toggleFAQ(this)"
-        >
+        <div class="faq-header" onclick="toggleFAQ(this)">
           <div>
-            <span class="faq-badge">
-              ${escapeHTML(
-                item.category ||
-                'Thông thường'
-              )}
-            </span>
-            <div class="faq-question-text">
-              ${item.stt}.
-              ${escapeHTML(item.question)}
-            </div>
+            <span class="faq-badge">${escapeHTML(item.category || 'Thông thường')}</span>
+            <div class="faq-question-text">${item.stt}. ${escapeHTML(item.question)}</div>
           </div>
-          <span class="faq-icon">
-            +
-          </span>
+          <span class="faq-icon">+</span>
         </div>
-        <div class="faq-answer">
-          ${escapeHTML(item.answer)}
-        </div>
+        <div class="faq-answer">${escapeHTML(item.answer)}</div>
       `;
-      faqListContainer.appendChild(
-        faqItem
-      );
+      faqListContainer.appendChild(faqItem);
     });
   }
+
   /* =====================================================
      TOGGLE FAQ
   ===================================================== */
   function toggleFAQ(headerElement) {
-    const faqItem =
-      headerElement.parentElement;
-    const isActive =
-      faqItem.classList.contains('active');
-    document
-      .querySelectorAll('.faq-item')
-      .forEach(item => {
-        item.classList.remove('active');
-      });
+    const faqItem = headerElement.parentElement;
+    const isActive = faqItem.classList.contains('active');
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.classList.remove('active');
+    });
     if (!isActive) {
       faqItem.classList.add('active');
       /*
        * Lấy câu hỏi đang được mở
        * để AI có thể nhớ.
        */
-      const questionText =
-        faqItem.querySelector(
-          '.faq-question-text'
-        );
+      const questionText = faqItem.querySelector('.faq-question-text');
       if (questionText) {
-        const question =
-          questionText.textContent
-            .replace(/^\d+\.\s*/, '')
-            .trim();
-        const found =
-          faqData.find(
-            item =>
-              item.question &&
-              removeVietnameseTones(
-                item.question
-              ) ===
-              removeVietnameseTones(
-                question
-              )
-          );
+        const question = questionText.textContent.replace(/^\d+\.\s*/, '').trim();
+        const found = faqData.find(
+          item =>
+            item.question &&
+            removeVietnameseTones(item.question) === removeVietnameseTones(question)
+        );
         if (found) {
           rememberFAQ(found);
         }
       }
     }
   }
+
   /* =====================================================
      FILTER FAQ
   ===================================================== */
   function filterData() {
-    const rawSearch =
-      searchInput.value.trim();
-    const searchTerm =
-      removeVietnameseTones(
-        rawSearch
-      );
-    const selectedCategory =
-      categoryFilter.value;
-    const filtered =
-      faqData.filter(item => {
-        const q =
-          removeVietnameseTones(
-            item.question || ''
-          );
-        const a =
-          removeVietnameseTones(
-            item.answer || ''
-          );
-        const matchesSearch =
-          q.includes(searchTerm) ||
-          a.includes(searchTerm);
-        const matchesCategory =
-          selectedCategory === 'all' ||
-          item.category === selectedCategory;
-        return (
-          matchesSearch &&
-          matchesCategory
-        );
-      });
+    const rawSearch = searchInput.value.trim();
+    const searchTerm = removeVietnameseTones(rawSearch);
+    const selectedCategory = categoryFilter.value;
+    const filtered = faqData.filter(item => {
+      const q = removeVietnameseTones(item.question || '');
+      const a = removeVietnameseTones(item.answer || '');
+      const matchesSearch = q.includes(searchTerm) || a.includes(searchTerm);
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
     /*
      * Nếu người dùng tìm kiếm,
      * ghi nhớ những FAQ phù hợp.
      */
     if (searchTerm && filtered.length > 0) {
-      filtered
-        .slice(0, 5)
-        .forEach(item => {
-          rememberFAQ(item);
-        });
+      filtered.slice(0, 5).forEach(item => {
+        rememberFAQ(item);
+      });
     }
     renderFAQ(filtered);
   }
-  searchInput.addEventListener(
-    'input',
-    filterData
-  );
-  categoryFilter.addEventListener(
-    'change',
-    filterData
-  );
+
+  searchInput.addEventListener('input', filterData);
+  categoryFilter.addEventListener('change', filterData);
+
   /* =====================================================
      AI OPEN / CLOSE
   ===================================================== */
-  aiFloatingButton.addEventListener(
-    'click',
-    () => {
-      aiChat.classList.toggle('open');
-      if (aiChat.classList.contains('open')) {
-        setTimeout(() => {
-          aiInput.focus();
-        }, 100);
-      }
+  aiFloatingButton.addEventListener('click', () => {
+    aiChat.classList.toggle('open');
+    if (aiChat.classList.contains('open')) {
+      setTimeout(() => {
+        aiInput.focus();
+      }, 100);
     }
-  );
-  closeAiButton.addEventListener(
-    'click',
-    () => {
-      aiChat.classList.remove('open');
-    }
-  );
+  });
+
+  closeAiButton.addEventListener('click', () => {
+    aiChat.classList.remove('open');
+  });
+
   /* =====================================================
      CLEAR AI
   ===================================================== */
-  clearChatButton.addEventListener(
-    'click',
-    () => {
-      conversationHistory = [];
-      learnedFAQContext = [];
-      localStorage.removeItem(
-        'cs_ai_conversation'
-      );
-      localStorage.removeItem(
-        'cs_ai_faq_context'
-      );
-      aiMessages.innerHTML = `
-        <div class="ai-message bot">
-          Đã xóa lịch sử trò chuyện. 🗑️
-          <br><br>
-          Bạn có thể bắt đầu cuộc trò chuyện mới.
-        </div>
-      `;
-    }
-  );
+  clearChatButton.addEventListener('click', () => {
+    conversationHistory = [];
+    learnedFAQContext = [];
+    localStorage.removeItem('cs_ai_conversation');
+    localStorage.removeItem('cs_ai_faq_context');
+    aiMessages.innerHTML = `
+      <div class="ai-message bot">
+        Đã xóa lịch sử trò chuyện. 🗑️
+        <br><br>
+        Bạn có thể bắt đầu cuộc trò chuyện mới.
+      </div>
+    `;
+  });
+
   /* =====================================================
      ADD CHAT MESSAGE
   ===================================================== */
-  function addChatMessage(
-    text,
-    type
-  ) {
-    const message =
-      document.createElement('div');
-    message.className =
-      `ai-message ${type}`;
-    message.innerHTML =
-      escapeHTML(text);
-    aiMessages.appendChild(
-      message
-    );
-    aiMessages.scrollTop =
-      aiMessages.scrollHeight;
+  function addChatMessage(text, type) {
+    const message = document.createElement('div');
+    message.className = `ai-message ${type}`;
+    message.innerHTML = escapeHTML(text);
+    aiMessages.appendChild(message);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
   }
+
   /* =====================================================
      TYPING
   ===================================================== */
   function showTyping() {
-    const typing =
-      document.createElement('div');
-    typing.className =
-      'ai-typing';
-    typing.id =
-      'aiTyping';
-    typing.textContent =
-      '🤖 AI đang suy nghĩ...';
-    aiMessages.appendChild(
-      typing
-    );
-    aiMessages.scrollTop =
-      aiMessages.scrollHeight;
+    const typing = document.createElement('div');
+    typing.className = 'ai-typing';
+    typing.id = 'aiTyping';
+    typing.textContent = '🤖 AI đang suy nghĩ...';
+    aiMessages.appendChild(typing);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
   }
+
   function hideTyping() {
-    const typing =
-      document.getElementById(
-        'aiTyping'
-      );
+    const typing = document.getElementById('aiTyping');
     if (typing) {
       typing.remove();
     }
   }
+
   /* =====================================================
      FIND RELATED FAQ
   ===================================================== */
   function findRelatedFAQs(question) {
-    const words =
-      removeVietnameseTones(question)
-        .split(/\s+/)
-        .filter(word => word.length >= 3);
+    const words = removeVietnameseTones(question).split(/\s+/).filter(word => word.length >= 3);
     if (words.length === 0) {
       return [];
     }
-    const results =
-      faqData.map(item => {
-        const text =
-          removeVietnameseTones(
-            `${item.question || ''} ${
-              item.answer || ''
-            }`
-          );
-        let score = 0;
-        words.forEach(word => {
-          if (text.includes(word)) {
-            score++;
-          }
-        });
-        return {
-          item,
-          score
-        };
+    const results = faqData.map(item => {
+      const text = removeVietnameseTones(`${item.question || ''} ${item.answer || ''}`);
+      let score = 0;
+      words.forEach(word => {
+        if (text.includes(word)) {
+          score++;
+        }
       });
+      return { item, score };
+    });
     return results
       .filter(result => result.score > 0)
-      .sort(
-        (a, b) =>
-          b.score - a.score
-      )
+      .sort((a, b) => b.score - a.score)
       .slice(0, 5)
       .map(result => result.item);
   }
+
   /* =====================================================
      SEND TO AI
   ===================================================== */
   async function askAI(question) {
-    const relatedFAQs =
-      findRelatedFAQs(question);
+    const relatedFAQs = findRelatedFAQs(question);
     /*
      * Gộp FAQ vừa tìm được
      * với FAQ người dùng đã xem trước.
      */
-    const allContext = [
-      ...relatedFAQs,
-      ...learnedFAQContext
-    ];
+    const allContext = [...relatedFAQs, ...learnedFAQContext];
     const uniqueContext = [];
     allContext.forEach(item => {
       if (!item) return;
-      const exists =
-        uniqueContext.some(
-          x =>
-            x.question === item.question
-        );
+      const exists = uniqueContext.some(x => x.question === item.question);
       if (!exists) {
         uniqueContext.push(item);
       }
     });
-    const faqContext =
-      uniqueContext
-        .slice(0, 12)
-        .map(item => ({
-          category:
-            item.category || '',
-          question:
-            item.question || '',
-          answer:
-            item.answer || ''
-        }));
+    const faqContext = uniqueContext.slice(0, 12).map(item => ({
+      category: item.category || '',
+      question: item.question || '',
+      answer: item.answer || ''
+    }));
     /*
      * Lưu câu hỏi vào lịch sử.
      */
-    conversationHistory.push({
-      role: 'user',
-      text: question
-    });
+    conversationHistory.push({ role: 'user', text: question });
     /*
      * Chỉ gửi khoảng 10 lượt gần nhất
      * để tránh request quá lớn.
      */
-    const recentHistory =
-      conversationHistory
-        .slice(-10);
+    const recentHistory = conversationHistory.slice(-10);
     saveAIHistory();
-    const response =
-      await fetch(
-        AI_WEB_APP_URL,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type':
-              'application/x-www-form-urlencoded;charset=UTF-8'
-          },
-          body:
-            new URLSearchParams({
-              question: question,
-              history:
-                JSON.stringify(
-                  recentHistory
-                ),
-              faqContext:
-                JSON.stringify(
-                  faqContext
-                )
-            })
-        }
-      );
+    const response = await fetch(AI_WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      body: new URLSearchParams({
+        question: question,
+        history: JSON.stringify(recentHistory),
+        faqContext: JSON.stringify(faqContext)
+      })
+    });
     if (!response.ok) {
-      throw new Error(
-        `HTTP ${response.status}`
-      );
+      throw new Error(`HTTP ${response.status}`);
     }
-    const data =
-      await response.json();
+    const data = await response.json();
     if (!data.success) {
-      throw new Error(
-        data.error ||
-        'AI không thể trả lời.'
-      );
+      throw new Error(data.error || 'AI không thể trả lời.');
     }
-    const answer =
-      data.answer || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
+    const answer = data.answer || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
     /*
      * Lưu câu trả lời vào lịch sử.
      */
-    conversationHistory.push({
-      role: 'assistant',
-      text: answer
-    });
+    conversationHistory.push({ role: 'assistant', text: answer });
     saveAIHistory();
     return answer;
   }
+
   /* =====================================================
      SEND MESSAGE
   ===================================================== */
   async function sendAIMessage() {
-    const question =
-      aiInput.value.trim();
+    const question = aiInput.value.trim();
     if (!question) return;
     /*
      * Hiện câu hỏi của user.
      */
-    addChatMessage(
-      question,
-      'user'
-    );
+    addChatMessage(question, 'user');
     aiInput.value = '';
     aiSend.disabled = true;
     showTyping();
     try {
-      const answer =
-        await askAI(question);
+      const answer = await askAI(question);
       hideTyping();
-      addChatMessage(
-        answer,
-        'bot'
-      );
+      addChatMessage(answer, 'bot');
     } catch (error) {
-      console.error(
-        'AI ERROR:',
-        error
-      );
+      console.error('AI ERROR:', error);
       hideTyping();
-      addChatMessage(
-        'Xin lỗi, hiện tại AI chưa thể trả lời. Vui lòng thử lại sau.',
-        'bot'
-      );
+      addChatMessage('Xin lỗi, hiện tại AI chưa thể trả lời. Vui lòng thử lại sau.', 'bot');
     }
     aiSend.disabled = false;
     aiInput.focus();
   }
+
   /* =====================================================
      SEND BUTTON
   ===================================================== */
-  aiSend.addEventListener(
-    'click',
-    sendAIMessage
-  );
+  aiSend.addEventListener('click', sendAIMessage);
+
   /* =====================================================
      ENTER TO SEND
   ===================================================== */
-  aiInput.addEventListener(
-    'keydown',
-    event => {
-      if (
-        event.key === 'Enter' &&
-        !event.shiftKey
-      ) {
-        event.preventDefault();
-        sendAIMessage();
-      }
+  aiInput.addEventListener('keydown', event => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendAIMessage();
     }
-  );
+  });
 </script>
+
 <script src="/HV/navbar.js"></script>
 </body>
 </html>

@@ -4,8 +4,7 @@
   const NOTIFICATION_READ_KEY = 'admin.notification.read.v1';
   const MAX_NOTIFICATIONS = 8;
 
-  const getInitials = (name) => (
-    String(name || 'Admin')
+  const getInitials = (name) => (String(name || 'Admin')
       .trim()
       .split(/\s+/)
       .filter(Boolean)

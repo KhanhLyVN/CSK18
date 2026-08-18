@@ -306,9 +306,7 @@
     });
   }
 
-  /* =======================================================
-     ACCOUNT ROW
-  ======================================================= */
+  /* ACCOUNT ROW */
   function createAccountRow(account) {
     const name = escapeHTML(account.name || "Chưa có tên");
     const email = escapeHTML(account.email || "Chưa có email");
@@ -402,7 +400,6 @@
   }
 
   /*ROLE*/
-
   function getRoleLabel(account) {
     if (isManager(account)) {
       return account.role || "Quản lý";
@@ -411,7 +408,6 @@
   }
 
   /*DRAWER*/
-
   function openDrawer(account) {
     selectedAccount = account;
     if (!elements.accountDrawer) {
@@ -437,7 +433,6 @@
   }
 
   /*DRAWER CONTENT*/
-
   function renderDrawer(account) {
     const name = escapeHTML(account.name || "Chưa có tên");
     const email = escapeHTML(account.email || "Chưa có email");
@@ -559,7 +554,6 @@
   }
 
   /*ACCOUNT ACTION*/
-
   async function handleAccountAction(action, account) {
     if (action === "view") {
       openDrawer(account);
@@ -568,7 +562,6 @@
   }
 
   /*TOGGLE ACCOUNT*/
-
   async function toggleAccount(account) {
     const current = normalizeStatus(account.status);
     const next = current === "active" ? "inactive" : "active";
@@ -596,7 +589,6 @@
   }
 
   /*DELETE ACCOUNT*/
-
   async function deleteAccount(account) {
     const confirmed = window.confirm(
       `Bạn có chắc muốn xóa hồ sơ "${account.name || account.email}" khỏi Firestore?\n\nLưu ý: thao tác này chỉ xóa document users, không xóa tài khoản Firebase Authentication.`
@@ -618,7 +610,6 @@
   }
 
   /*FIRESTORE*/
-
   function getFirestore() {
     if (window.db && typeof window.db.collection === "function") {
       return window.db;
@@ -630,15 +621,13 @@
   }
 
   /*RECORD INFO*/
-
   function updateRecordInfo() {
     const total = filteredAccounts.length;
     setText(elements.recordBadge, `${total} hồ sơ`);
     setText(elements.entriesNote, `Hiển thị ${total} / ${accounts.length} tài khoản`);
   }
 
-  /* TABLE ERROR*/
-
+  /*TABLE ERROR*/
   function showTableError(message) {
     if (!elements.accountBody) {
       return;
@@ -661,7 +650,6 @@
   }
 
   /*DATE*/
-
   function getTimestamp(value) {
     if (!value) {
       return 0;
@@ -706,7 +694,6 @@
   }
 
   /*INITIALS*/
-  
   function getInitials(value) {
     if (!value) {
       return "CS";
@@ -723,7 +710,6 @@
   }
 
   /*DRAWER STATUS*/
-
   function getStatusText(status) {
     const map = {
       active: "Đang hoạt động",
@@ -744,7 +730,6 @@
   }
 
   /*SET TEXT*/
-
   function setText(element, value) {
     if (element) {
       element.textContent = value ?? "";
@@ -752,7 +737,6 @@
   }
 
   /*ESCAPE HTML*/
-
   function escapeHTML(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -767,7 +751,6 @@
   }
 
   /*CLEANUP*/
-
   window.addEventListener("beforeunload", () => {
     if (unsubscribeAccounts) {
       unsubscribeAccounts();
@@ -775,35 +758,3 @@
   });
 
 })();
-
-  /* =========================================================
-     SHARED ACTIVITY HEADER
-     Hiển thị: HCM Admin | HCM | HA
-  ========================================================= */
-  function applyActivityHeader() {
-    const name = document.getElementById("topAdminName");
-    const campus = document.getElementById("topAdminCampus");
-    const avatar = document.getElementById("topAdminAvatar");
-
-    if (!name || !campus || !avatar) return false;
-
-    name.textContent = "HCM Admin";
-    name.title = "HCM Admin";
-    campus.textContent = "HCM";
-    campus.title = "Campus HCM";
-    avatar.textContent = "HA";
-    avatar.setAttribute("aria-label", "Tài khoản HCM Admin");
-    return true;
-  }
-
-  document.addEventListener("adminbar:ready", applyActivityHeader);
-  window.addEventListener("load", applyActivityHeader);
-
-  let headerAttempts = 0;
-  const headerTimer = setInterval(() => {
-    headerAttempts += 1;
-    if (applyActivityHeader() || headerAttempts >= 50) {
-      clearInterval(headerTimer);
-    }
-  }, 100);
-

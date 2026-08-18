@@ -18,9 +18,9 @@
     0 12px 28px rgba(112, 27, 25, 0.16);
   --header-radius: 15px;
 }
-/* =========================================================
-   RESET / BASE
-========================================================= */
+
+/*RESET BASE*/
+
 .shared-header,
 .topbar,
 .topbar * {
@@ -36,9 +36,9 @@
 .topbar .notice-badge.hidden {
   display: none !important;
 }
-/* =========================================================
-   HEADER
-========================================================= */
+
+/*HEADER*/
+
 .topbar {
   position: sticky;
   top: 0;
@@ -63,9 +63,9 @@
   -webkit-backdrop-filter: blur(18px);
   isolation: isolate;
 }
-/* =========================================================
-   LEFT / RIGHT
-========================================================= */
+
+/*LEFT RIGHT*/
+
 .topbar-left,
 .top-actions {
   display: flex;
@@ -77,9 +77,9 @@
 .top-actions {
   gap: 10px;
 }
-/* =========================================================
-   ICON BUTTON
-========================================================= */
+
+/*ICON BUTTON*/
+
 .icon-btn {
   position: relative;
   width: 42px;
@@ -134,22 +134,23 @@
     "GRAD" 0,
     "opsz" 24;
 }
-/* =========================================================
-   MOBILE MENU
-========================================================= */
+
+/*MOBILE MENU*/
 .mobile-only {
   display: none;
 }
-/* =========================================================
-   NOTIFICATION
-========================================================= */
+
+/*NOTIFICATION*/
+
 .notification-wrapper {
   position: relative;
 }
 .notification-btn {
   isolation: isolate;
 }
+
 /* Small inner glow */
+
 .notification-btn::after {
   content: "";
   position: absolute;
@@ -163,9 +164,9 @@
 .notification-btn:hover::after {
   opacity: 0;
 }
-/* =========================================================
-   NOTIFICATION BADGE
-========================================================= */
+
+/*NOTIFICATION BADGE*/
+
 .notice-badge {
   position: absolute;
   top: -6px;
@@ -201,9 +202,9 @@
     transform: scale(1);
   }
 }
-/* =========================================================
-   ADMIN NAME
-========================================================= */
+
+/*ADMIN NAME*/
+
 .top-admin {
   max-width: 190px;
   overflow: hidden;
@@ -215,9 +216,9 @@
   text-overflow: ellipsis;
   padding-left: 2px;
 }
-/* =========================================================
-   ADMIN AVATAR
-========================================================= */
+
+/*ADMIN AVATAR*/
+
 .avatar {
   width: 42px;
   height: 42px;
@@ -249,9 +250,9 @@
     translateY(-1px)
     rotate(1deg);
 }
-/* =========================================================
-   NOTIFICATION PANEL
-========================================================= */
+
+/*NOTIFICATION PANEL*/
+
 .notification-panel {
   position: absolute;
   top: calc(100% + 13px);
@@ -268,7 +269,9 @@
   -webkit-backdrop-filter: blur(20px);
   animation: header-panel-in 0.2s ease-out;
 }
+
 /* Top accent */
+
 .notification-panel::before {
   content: "";
   position: absolute;
@@ -283,9 +286,9 @@
       var(--header-maroon-soft)
     );
 }
-/* =========================================================
-   NOTIFICATION HEADER
-========================================================= */
+
+/*NOTIFICATION HEADER*/
+
 .notification-header {
   display: flex;
   align-items: center;
@@ -314,9 +317,9 @@
   font-size: 10px;
   font-weight: 500;
 }
-/* =========================================================
-   MARK ALL READ
-========================================================= */
+
+/*MARK ALL READ*/
+
 .notification-action {
   padding: 6px 0;
   color: var(--header-maroon);
@@ -335,9 +338,9 @@
   text-underline-offset: 3px;
   transform: translateY(-1px);
 }
-/* =========================================================
-   NOTIFICATION LIST
-========================================================= */
+
+/*NOTIFICATION LIST*/
+
 .notification-list {
   max-height: 350px;
   overflow-y: auto;
@@ -356,9 +359,9 @@
   background: rgba(112, 27, 25, 0.22);
   border-radius: 999px;
 }
-/* =========================================================
-   NOTIFICATION ITEM
-========================================================= */
+
+/*NOTIFICATION ITEM*/
+
 .notification-item {
   position: relative;
   display: flex;
@@ -390,9 +393,9 @@
     );
   padding-left: 22px;
 }
-/* =========================================================
-   NOTIFICATION ICON
-========================================================= */
+
+/*NOTIFICATION ICON*/
+
 .notification-icon {
   width: 36px;
   height: 36px;
@@ -417,9 +420,9 @@
     "GRAD" 0,
     "opsz" 24;
 }
-/* =========================================================
-   NOTIFICATION CONTENT
-========================================================= */
+
+/*NOTIFICATION CONTENT*/
+
 .notification-content {
   min-width: 0;
   flex: 1;
@@ -444,9 +447,9 @@
   color: var(--header-light-text);
   font-size: 9px;
 }
-/* =========================================================
-   EMPTY STATE
-========================================================= */
+
+/*EMPTY STATE*/
+
 .notification-empty {
   display: flex;
   flex-direction: column;
@@ -473,9 +476,9 @@
   color: var(--header-muted);
   font-size: 11px;
 }
-/* =========================================================
-   PANEL ANIMATION
-========================================================= */
+
+/*PANEL ANIMATION*/
+
 @keyframes header-panel-in {
   from {
     opacity: 0;
@@ -490,10 +493,50 @@
       scale(1);
   }
 }
-/* Sidebar mobile được quản lý độc quyền bởi admin.css. */
-/* =========================================================
-   MOBILE
-========================================================= */
+
+/*MOBILE SIDEBAR*/
+
+@media (max-width: 780px) {
+  #adminSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition:
+      transform 0.28s cubic-bezier(.4, 0, .2, 1);
+    box-shadow:
+      12px 0 35px rgba(40, 15, 10, 0.16);
+  }
+  #adminSidebar.open {
+    transform: translateX(0);
+  }
+  /* Overlay */
+  body.sidebar-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1999;
+    background: rgba(35, 15, 12, 0.38);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  /* Header nằm dưới sidebar */
+  .topbar {
+    z-index: 1000;
+  }
+  /* Sidebar nằm trên overlay */
+  #adminSidebar {
+    z-index: 2000;
+  }
+  /* Không cho trang phía sau scroll */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+/*MOBILE*/
 @media (max-width: 520px) {
   .topbar {
     min-height: 62px;
@@ -526,9 +569,9 @@
       calc(100vh - 175px);
   }
 }
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
+
+/*SMALL MOBILE*/
+
 @media (max-width: 380px) {
   .topbar {
     gap: 8px;
@@ -552,9 +595,9 @@
     height: 18px;
   }
 }
-/* =========================================================
-   ACCESSIBILITY
-========================================================= */
+
+/*ACCESSIBILITY*/
+
 @media (prefers-reduced-motion: reduce) {
   .topbar *,
   .topbar *::before,
@@ -564,9 +607,9 @@
     transition-duration: 0.01ms !important;
   }
 }
-/* =========================================================
-   DARK BACKDROP SAFETY
-========================================================= */
+
+/*DARK BACKDROP SAFETY*/
+
 @media (prefers-color-scheme: dark) {
   /*
     Không ép dark mode.
