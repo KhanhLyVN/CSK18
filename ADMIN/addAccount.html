@@ -696,101 +696,121 @@ header.page {
 }
 </style>
 </head>
+
 <body data-admin-page="add-cs">
-<div class="app-shell">
-    <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
-    <main class="main-content">
-<div class="wrap">
-  <header class="page">
-    <h1>Tạo tài khoản CS</h1>
-    <div>
-        <button class="template-btn" id="downloadTemplateBtn" type="button">
-            <span class="material-symbols-outlined">download</span>
-            Tải file mẫu Excel
-        </button>
-        <div class="template-hint">Tải file mẫu Excel để nhập danh sách nhân sự CS.</div>
-    </div>
-  </header>
-  <!-- STEP 1: UPLOAD -->
-  <div class="step">
-    <div class="step-head"><div class="step-num">1</div><h2>Tải danh sách CS</h2></div>
-    <div class="step-desc">Chấp nhận .xlsx, .xls hoặc .csv. File mẫu chỉ gồm 4 cột: Họ và tên, Số điện thoại, Phòng ban, Cơ sở.</div>
-    <div class="dropzone" id="dropzone">
-      <div>Kéo thả file vào đây, hoặc <strong>bấm để chọn file</strong></div>
-      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
-      <div id="fileBadge"></div>
-    </div>
-  </div>
-  <!-- STEP 2: MAPPING -->
-  <div class="step" id="mapStep" style="display:none;">
-    <div class="step-head"><div class="step-num">2</div><h2>Gán thông tin tài khoản CS</h2></div>
-    <div class="step-desc">Cho hệ thống biết cột nào chứa thông tin gì. Có thể để trống các mục không dùng đến.</div>
-    <div class="grid-map" id="mapGrid"></div>
-    <div style="margin-top:20px;">
-        <label class="field-label">Quy tắc sinh Gmail tài khoản CS</label>
-        <div class="row-inline">
-            <div>
-                <input
-                    type="text"
-                    value="Họ tên đầy đủ không dấu"
-                    readonly
-                >
+    <div class="app-shell">
+        <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+        <main class="main-content">
+            <div class="wrap">
+                <header class="page">
+                    <h1>Tạo tài khoản CS</h1>
+                    <div>
+                        <button class="template-btn" id="downloadTemplateBtn" type="button">
+                            <span class="material-symbols-outlined">download</span>
+                            Tải file mẫu Excel
+                        </button>
+                        <div class="template-hint">Tải file mẫu Excel để nhập danh sách nhân sự CS.</div>
+                    </div>
+                </header>
+                <!-- STEP 1: UPLOAD -->
+                <div class="step">
+                    <div class="step-head">
+                        <div class="step-num">1</div>
+                        <h2>Tải danh sách CS</h2>
+                    </div>
+                    <div class="step-desc">Chấp nhận .xlsx, .xls hoặc .csv. File mẫu chỉ gồm 4 cột: Họ và tên, Số điện
+                        thoại, Phòng ban, Cơ sở.</div>
+                    <div class="dropzone" id="dropzone">
+                        <div>Kéo thả file vào đây, hoặc <strong>bấm để chọn file</strong></div>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+                        <div id="fileBadge"></div>
+                    </div>
+                </div>
+                <!-- STEP 2: MAPPING -->
+                <div class="step" id="mapStep" style="display:none;">
+                    <div class="step-head">
+                        <div class="step-num">2</div>
+                        <h2>Gán thông tin tài khoản CS</h2>
+                    </div>
+                    <div class="step-desc">Cho hệ thống biết cột nào chứa thông tin gì. Có thể để trống các mục không
+                        dùng đến.</div>
+                    <div class="grid-map" id="mapGrid"></div>
+                    <div style="margin-top:20px;">
+                        <label class="field-label">Quy tắc sinh Gmail tài khoản CS</label>
+                        <div class="row-inline">
+                            <div>
+                                <input type="text" value="Họ tên đầy đủ không dấu" readonly>
+                            </div>
+                            <div>
+                                <input type="text" value="@gmail.com" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:14px;">
+                        <label class="field-label">Độ dài mật khẩu</label>
+                        <input type="number" id="pwLength" value="8" min="6" max="20" style="max-width:120px;">
+                    </div>
+                    <div class="actions-row">
+                        <button class="btn-primary" id="generateBtn">Tạo dữ liệu xem trước</button>
+                    </div>
+                </div>
+                <!-- STEP 3: PREVIEW / EDIT -->
+                <div class="step" id="reviewStep" style="display:none;">
+                    <div class="step-head">
+                        <div class="step-num">3</div>
+                        <h2>Xem trước tài khoản CS</h2>
+                    </div>
+                    <div class="step-desc">Gmail và mật khẩu có thể sửa trực tiếp trong bảng trước khi tạo tài khoản.
+                        Bấm biểu tượng ↻ để tạo lại mật khẩu ngẫu nhiên cho một dòng.</div>
+                    <div style="overflow-x:auto;">
+                        <table id="previewTable">
+                            <thead>
+                                <tr id="tableHead"></tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
+                    <div class="actions-row">
+                        <button class="btn-primary" id="confirmAccountsBtn">
+                            Xác nhận & tiếp tục
+                        </button>
+                    </div>
+                </div>
+                <!-- STEP 4: SEND / EXPORT -->
+                <div class="step" id="sendStep" style="display:none;">
+                    <div class="step-head">
+                        <div class="step-num">4</div>
+                        <h2>Hoàn tất tài khoản CS</h2>
+                    </div>
+                    <div class="step-desc">Chỉ xuất hiện sau khi bạn bấm “Xác nhận & tạo tài khoản Firebase”. Tại đây có
+                        thể sao chép thông tin hoặc xuất toàn bộ tài khoản CS đang có trong Firebase.</div>
+                    <div style="overflow-x:auto;">
+                        <table id="sendTable">
+                            <thead>
+                                <tr>
+                                    <th>Họ và tên</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Phòng ban</th>
+                                    <th>Cơ sở</th>
+                                    <th>Gmail</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sendBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="actions-row">
+                        <button class="btn-ghost" id="exportCsvBtn">
+                            <span class="material-symbols-outlined">download</span>
+                            Xuất CSV (kèm username/mật khẩu)
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div>
-                <input
-                    type="text"
-                    value="@gmail.com"
-                    readonly
-                >
-            </div>
-        </div>
+        </main>
     </div>
-    <div style="margin-top:14px;">
-      <label class="field-label">Độ dài mật khẩu</label>
-      <input type="number" id="pwLength" value="8" min="6" max="20" style="max-width:120px;">
-    </div>
-    <div class="actions-row">
-      <button class="btn-primary" id="generateBtn">Tạo dữ liệu xem trước</button>
-    </div>
-  </div>
-  <!-- STEP 3: PREVIEW / EDIT -->
-  <div class="step" id="reviewStep" style="display:none;">
-    <div class="step-head"><div class="step-num">3</div><h2>Xem trước tài khoản CS</h2></div>
-    <div class="step-desc">Gmail và mật khẩu có thể sửa trực tiếp trong bảng trước khi tạo tài khoản. Bấm biểu tượng ↻ để tạo lại mật khẩu ngẫu nhiên cho một dòng.</div>
-    <div style="overflow-x:auto;">
-      <table id="previewTable">
-        <thead><tr id="tableHead"></tr></thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-    <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
-    <div class="actions-row">
-        <button class="btn-primary" id="confirmAccountsBtn">
-            Xác nhận & tiếp tục
-        </button>
-    </div>
-  </div>
-  <!-- STEP 4: SEND / EXPORT -->
-  <div class="step" id="sendStep" style="display:none;">
-    <div class="step-head"><div class="step-num">4</div><h2>Hoàn tất tài khoản CS</h2></div>
-    <div class="step-desc">Chỉ xuất hiện sau khi bạn bấm “Xác nhận & tạo tài khoản Firebase”. Tại đây có thể sao chép thông tin hoặc xuất toàn bộ tài khoản CS đang có trong Firebase.</div>
-    <div style="overflow-x:auto;">
-      <table id="sendTable">
-        <thead><tr><th>Họ và tên</th><th>Số điện thoại</th><th>Phòng ban</th><th>Cơ sở</th><th>Gmail</th><th>Thao tác</th></tr></thead>
-        <tbody id="sendBody"></tbody>
-      </table>
-    </div>
-    <div class="actions-row">
-      <button class="btn-ghost" id="exportCsvBtn">
-            <span class="material-symbols-outlined">download</span>
-            Xuất CSV (kèm username/mật khẩu)
-        </button>
-    </div>
-  </div>
-</div>
-  </main>
-</div>
-<div id="toast"></div>
+    <div id="toast"></div>
 <script>
 const VN_MAP = {
   'à':'a','á':'a','ạ':'a','ả':'a','ã':'a','â':'a','ầ':'a','ấ':'a','ậ':'a','ẩ':'a','ẫ':'a','ă':'a','ằ':'a','ắ':'a','ặ':'a','ẳ':'a','ẵ':'a',

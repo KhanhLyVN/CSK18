@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,31 +8,54 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="/HV/chat-hv/traodoiticket.css">
   <link rel="stylesheet" href="/HV/navbar.css">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
 </head>
+
 <body data-nav-page="chat">
   <div class="app">
     <div class="exchange-shell" id="bodyLayoutEl">
       <aside class="ticket-browser" id="ticketBrowserEl" aria-label="Danh sách ticket của tôi">
         <div class="browser-head">
-          <div class="browser-title-row"><div><span class="browser-kicker">HỖ TRỢ CỦA TÔI</span><h2>Danh sách Ticket</h2></div><div class="browser-head-actions"><span class="ticket-total" id="ticketTotalEl">0</span><button class="history-close" id="historyCloseButton" type="button" aria-label="Đóng lịch sử ticket" title="Đóng lịch sử">×</button></div></div>
-          <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input class="search" id="searchInputEl" type="search" placeholder="Tìm mã phiếu, tiêu đề..."></label>
-          <div class="filter-row" id="filterRowEl"><button class="filter-chip active" type="button" data-filter="all">Tất cả</button><button class="filter-chip" type="button" data-filter="open">Đang mở</button><button class="filter-chip" type="button" data-filter="in_progress">Đang xử lý</button><button class="filter-chip" type="button" data-filter="resolved">Đã giải quyết</button><button class="filter-chip" type="button" data-filter="closed">Đã đóng</button></div>
+          <div class="browser-title-row">
+            <div><span class="browser-kicker">HỖ TRỢ CỦA TÔI</span>
+              <h2>Danh sách Ticket</h2>
+            </div>
+            <div class="browser-head-actions"><span class="ticket-total" id="ticketTotalEl">0</span><button
+                class="history-close" id="historyCloseButton" type="button" aria-label="Đóng lịch sử ticket"
+                title="Đóng lịch sử">×</button></div>
+          </div>
+          <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-4-4"></path>
+            </svg><input class="search" id="searchInputEl" type="search" placeholder="Tìm mã phiếu, tiêu đề..."></label>
+          <div class="filter-row" id="filterRowEl"><button class="filter-chip active" type="button"
+              data-filter="all">Tất cả</button><button class="filter-chip" type="button" data-filter="open">Đang
+              mở</button><button class="filter-chip" type="button" data-filter="in_progress">Đang xử lý</button><button
+              class="filter-chip" type="button" data-filter="resolved">Đã giải quyết</button><button class="filter-chip"
+              type="button" data-filter="closed">Đã đóng</button></div>
         </div>
         <div class="ticket-list" id="ticketListEl"></div>
       </aside>
-      <button class="history-backdrop" id="historyBackdrop" type="button" aria-label="Đóng lịch sử ticket" hidden></button>
+      <button class="history-backdrop" id="historyBackdrop" type="button" aria-label="Đóng lịch sử ticket"
+        hidden></button>
       <main class="main" id="mainPaneEl">
-        <div class="empty-conversation"><div class="empty-conversation-icon">⌁</div><h2>Chọn một ticket để trao đổi</h2><p>Danh sách các phiếu hỗ trợ của bạn nằm ở bên trái.</p></div>
+        <div class="empty-conversation">
+          <div class="empty-conversation-icon">⌁</div>
+          <h2>Chọn một ticket để trao đổi</h2>
+          <p>Danh sách các phiếu hỗ trợ của bạn nằm ở bên trái.</p>
+        </div>
       </main>
     </div>
   </div>
   <script src="/HV/navbar.js"></script>
   <script src="/HV/chat-hv/traodoiticket.js"></script>
 </body>
+
 </html>

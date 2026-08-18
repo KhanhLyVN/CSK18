@@ -854,362 +854,271 @@
       }
     }
   </style>
-</head>
-<body data-admin-page="departments">
-  <div class="app-shell">
-    <div
-      id="adminBar"
-      aria-label="Thanh điều hướng quản trị dùng chung"></div>
-    <div class="main-content">
-      <!-- =========================================================
-           MAIN
-      ========================================================== -->
-      <main class="page">
-    <div class="page-inner">
-      <!-- =====================================================
-           HEADER
-      ====================================================== -->
-      <header class="page-header">
-        <div>
-          <p class="eyebrow">
-            ADMINISTRATION / QUẢN LÝ
-          </p>
-          <h1>
-            Quản lý phòng ban
-          </h1>
-          <p class="subtitle">
-            Tạo và quản lý phòng ban theo từng cơ sở.
-          </p>
-        </div>
-        <div class="header-mark">
-          <strong id="todayLabel">
-            —
-          </strong>
-          <span>
-            Cập nhật realtime
-          </span>
-        </div>
-      </header>
-      <!-- =====================================================
-           CONTENT
-      ====================================================== -->
-      <div class="grid">
-        <!-- ===================================================
-             CREATE
-        ==================================================== -->
-        <section class="card">
-          <div class="card-head">
-            <div>
-              <h2 id="formTitle">
-                Tạo phòng ban
-              </h2>
-              <p>
-                Chọn phòng ban và người phụ trách.
-                Cơ sở sẽ tự động lấy từ tài khoản người phụ trách.
-              </p>
-            </div>
-          </div>
-          <form id="departmentForm">
-            <!-- ID DOCUMENT CŨ KHI EDIT -->
-            <input
-              type="hidden"
-              id="editingId"
-            >
-            <div class="form-grid">
-              <!-- =================================================
-                   NAME
-              ================================================== -->
-              <div class="field">
-                <label for="departmentName">
-                  Tên phòng ban
-                  <span class="required">
-                    *
-                  </span>
-                </label>
-                <input
-                  id="departmentName"
-                  required
-                  maxlength="100"
-                  placeholder="Ví dụ: Customer Success"
-                >
+  </head>
+  
+  <body data-admin-page="departments">
+    <div class="app-shell">
+      <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
+      <div class="main-content">
+        <!-- =========================================================
+             MAIN
+        ========================================================== -->
+        <main class="page">
+          <div class="page-inner">
+            <!-- =====================================================
+             HEADER
+        ====================================================== -->
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">
+                  ADMINISTRATION / QUẢN LÝ
+                </p>
+                <h1>
+                  Quản lý phòng ban
+                </h1>
+                <p class="subtitle">
+                  Tạo và quản lý phòng ban theo từng cơ sở.
+                </p>
               </div>
-              <!-- =================================================
-                   CODE
-              ================================================== -->
-              <div class="field">
-                <label for="departmentCode">
-                  Mã phòng ban
-                  <span class="required">
-                    *
-                  </span>
-                </label>
-                <input
-                  id="departmentCode"
-                  required
-                  maxlength="20"
-                  placeholder="Ví dụ: CS"
-                  autocomplete="off"
-                >
-                <small>
-                  Ví dụ: IT, CS, RND, SALE, TEACHING.
-                  Mã này dùng để lọc người phụ trách.
-                </small>
+              <div class="header-mark">
+                <strong id="todayLabel">
+                  —
+                </strong>
+                <span>
+                  Cập nhật realtime
+                </span>
               </div>
-              <!-- =================================================
-                   DESCRIPTION
-              ================================================== -->
-              <div class="field full">
-                <label for="departmentDescription">
-                  Mô tả
-                </label>
-                <textarea
-                  id="departmentDescription"
-                  maxlength="500"
-                  placeholder="Nhập mô tả ngắn về phòng ban..."
-                ></textarea>
-              </div>
-              <!-- =================================================
-                   MANAGER
-              ================================================== -->
-              <div class="field">
-                <label>
-                  Người phụ trách
-                  <span class="required">
-                    *
-                  </span>
-                </label>
-                <div
-                  class="custom-select"
-                  id="managerSelect"
-                >
-                  <button
-                    type="button"
-                    class="custom-select-trigger"
-                    id="managerTrigger"
-                  >
-                    <span id="managerSelected">
-                      Nhập mã phòng ban trước
-                    </span>
-                    <span class="material-symbols-rounded">
-                      expand_more
-                    </span>
-                  </button>
-                  <div
-                    class="custom-select-menu"
-                    id="managerMenu"
-                  >
-                    <div class="select-search">
-                      <input
-                        type="text"
-                        id="managerSearch"
-                        placeholder="Tìm tên hoặc email..."
-                        autocomplete="off"
-                      >
+            </header>
+            <!-- =====================================================
+             CONTENT
+        ====================================================== -->
+            <div class="grid">
+              <!-- ===================================================
+               CREATE
+          ==================================================== -->
+              <section class="card">
+                <div class="card-head">
+                  <div>
+                    <h2 id="formTitle">
+                      Tạo phòng ban
+                    </h2>
+                    <p>
+                      Chọn phòng ban và người phụ trách.
+                      Cơ sở sẽ tự động lấy từ tài khoản người phụ trách.
+                    </p>
+                  </div>
+                </div>
+                <form id="departmentForm">
+                  <!-- ID DOCUMENT CŨ KHI EDIT -->
+                  <input type="hidden" id="editingId">
+                  <div class="form-grid">
+                    <!-- =================================================
+                     NAME
+                ================================================== -->
+                    <div class="field">
+                      <label for="departmentName">
+                        Tên phòng ban
+                        <span class="required">
+                          *
+                        </span>
+                      </label>
+                      <input id="departmentName" required maxlength="100" placeholder="Ví dụ: Customer Success">
                     </div>
-                    <div id="managerOptions">
-                      <div class="select-empty">
-                        Nhập mã phòng ban để xem người phụ trách.
+                    <!-- =================================================
+                     CODE
+                ================================================== -->
+                    <div class="field">
+                      <label for="departmentCode">
+                        Mã phòng ban
+                        <span class="required">
+                          *
+                        </span>
+                      </label>
+                      <input id="departmentCode" required maxlength="20" placeholder="Ví dụ: CS" autocomplete="off">
+                      <small>
+                        Ví dụ: IT, CS, RND, SALE, TEACHING.
+                        Mã này dùng để lọc người phụ trách.
+                      </small>
+                    </div>
+                    <!-- =================================================
+                     DESCRIPTION
+                ================================================== -->
+                    <div class="field full">
+                      <label for="departmentDescription">
+                        Mô tả
+                      </label>
+                      <textarea id="departmentDescription" maxlength="500"
+                        placeholder="Nhập mô tả ngắn về phòng ban..."></textarea>
+                    </div>
+                    <!-- =================================================
+                     MANAGER
+                ================================================== -->
+                    <div class="field">
+                      <label>
+                        Người phụ trách
+                        <span class="required">
+                          *
+                        </span>
+                      </label>
+                      <div class="custom-select" id="managerSelect">
+                        <button type="button" class="custom-select-trigger" id="managerTrigger">
+                          <span id="managerSelected">
+                            Nhập mã phòng ban trước
+                          </span>
+                          <span class="material-symbols-rounded">
+                            expand_more
+                          </span>
+                        </button>
+                        <div class="custom-select-menu" id="managerMenu">
+                          <div class="select-search">
+                            <input type="text" id="managerSearch" placeholder="Tìm tên hoặc email..." autocomplete="off">
+                          </div>
+                          <div id="managerOptions">
+                            <div class="select-empty">
+                              Nhập mã phòng ban để xem người phụ trách.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- USER UID -->
+                      <input type="hidden" id="departmentManagerUid">
+                      <!-- MANAGER NAME -->
+                      <input type="hidden" id="departmentManagerName">
+                      <!-- MANAGER EMAIL -->
+                      <input type="hidden" id="departmentManagerEmail">
+                      <div class="manager-filter-note">
+                        <span class="material-symbols-rounded">
+                          filter_alt
+                        </span>
+                        <span>
+                          Danh sách chỉ hiện tài khoản có
+                          <strong>@gmail.com</strong>
+                          và có
+                          <strong>department</strong>
+                          trùng với mã phòng ban.
+                        </span>
                       </div>
                     </div>
+                    <!-- =================================================
+                     CAMPUS AUTO
+                ================================================== -->
+                    <div class="field">
+                      <label>
+                        Cơ sở
+                      </label>
+                      <div class="campus-preview" id="campusPreview">
+                        <div class="campus-preview-icon">
+                          <span class="material-symbols-rounded">
+                            location_on
+                          </span>
+                        </div>
+                        <div class="campus-preview-info">
+                          <span class="campus-preview-name" id="campusPreviewName">
+                            Chưa chọn người phụ trách
+                          </span>
+                          <span class="campus-preview-id" id="campusPreviewId">
+                            campusId sẽ tự tạo sau khi chọn người phụ trách
+                          </span>
+                        </div>
+                      </div>
+                      <!-- GIÁ TRỊ CAMPUS -->
+                      <input type="hidden" id="departmentCampus">
+                      <!-- CAMPUS ID -->
+                      <input type="hidden" id="departmentCampusId">
+                      <small>
+                        Cơ sở được lấy tự động từ trường
+                        <strong>campus</strong>
+                        của người phụ trách.
+                      </small>
+                    </div>
+                    <!-- =================================================
+                     STATUS
+                ================================================== -->
+                    <div class="field">
+                      <label for="departmentStatus">
+                        Trạng thái
+                      </label>
+                      <select id="departmentStatus">
+                        <option value="active">
+                          Đang hoạt động
+                        </option>
+                        <option value="inactive">
+                          Ngừng hoạt động
+                        </option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-                <!-- USER UID -->
-                <input
-                  type="hidden"
-                  id="departmentManagerUid"
-                >
-                <!-- MANAGER NAME -->
-                <input
-                  type="hidden"
-                  id="departmentManagerName"
-                >
-                <!-- MANAGER EMAIL -->
-                <input
-                  type="hidden"
-                  id="departmentManagerEmail"
-                >
-                <div class="manager-filter-note">
-                  <span class="material-symbols-rounded">
-                    filter_alt
-                  </span>
-                  <span>
-                    Danh sách chỉ hiện tài khoản có
-                    <strong>@gmail.com</strong>
-                    và có
-                    <strong>department</strong>
-                    trùng với mã phòng ban.
-                  </span>
-                </div>
-              </div>
-              <!-- =================================================
-                   CAMPUS AUTO
+                  <!-- =================================================
+                   ACTION
               ================================================== -->
-              <div class="field">
-                <label>
-                  Cơ sở
-                </label>
-                <div
-                  class="campus-preview"
-                  id="campusPreview"
-                >
-                  <div class="campus-preview-icon">
-                    <span class="material-symbols-rounded">
-                      location_on
-                    </span>
+                  <div class="actions">
+                    <button class="btn btn-secondary" type="button" id="cancelBtn" hidden>
+                      Hủy chỉnh sửa
+                    </button>
+                    <button class="btn btn-primary" type="submit" id="submitBtn">
+                      + Tạo phòng ban
+                    </button>
                   </div>
-                  <div class="campus-preview-info">
-                    <span
-                      class="campus-preview-name"
-                      id="campusPreviewName"
-                    >
-                      Chưa chọn người phụ trách
-                    </span>
-                    <span
-                      class="campus-preview-id"
-                      id="campusPreviewId"
-                    >
-                      campusId sẽ tự tạo sau khi chọn người phụ trách
-                    </span>
+                </form>
+              </section>
+              <!-- ===================================================
+               LIST
+          ==================================================== -->
+              <section class="card">
+                <div class="card-head">
+                  <div>
+                    <h2>
+                      Danh sách phòng ban
+                    </h2>
+                    <p id="departmentCount">
+                      Đang tải...
+                    </p>
+                  </div>
+                  <button class="btn btn-secondary" id="refreshBtn" type="button">
+                    Làm mới
+                  </button>
+                </div>
+                <div class="department-list" id="departmentList">
+                  <div class="loading">
+                    Đang tải danh sách phòng ban...
                   </div>
                 </div>
-                <!-- GIÁ TRỊ CAMPUS -->
-                <input
-                  type="hidden"
-                  id="departmentCampus"
-                >
-                <!-- CAMPUS ID -->
-                <input
-                  type="hidden"
-                  id="departmentCampusId"
-                >
-                <small>
-                  Cơ sở được lấy tự động từ trường
-                  <strong>campus</strong>
-                  của người phụ trách.
-                </small>
-              </div>
-              <!-- =================================================
-                   STATUS
-              ================================================== -->
-              <div class="field">
-                <label for="departmentStatus">
-                  Trạng thái
-                </label>
-                <select id="departmentStatus">
-                  <option value="active">
-                    Đang hoạt động
-                  </option>
-                  <option value="inactive">
-                    Ngừng hoạt động
-                  </option>
-                </select>
-              </div>
+              </section>
             </div>
-            <!-- =================================================
-                 ACTION
-            ================================================== -->
-            <div class="actions">
-              <button
-                class="btn btn-secondary"
-                type="button"
-                id="cancelBtn"
-                hidden
-              >
-                Hủy chỉnh sửa
-              </button>
-              <button
-                class="btn btn-primary"
-                type="submit"
-                id="submitBtn"
-              >
-                + Tạo phòng ban
-              </button>
-            </div>
-          </form>
-        </section>
-        <!-- ===================================================
-             LIST
-        ==================================================== -->
-        <section class="card">
-          <div class="card-head">
-            <div>
+          </div>
+        </main>
+        <!-- =========================================================
+         TOAST
+    ========================================================== -->
+        <div class="toast" id="toast"></div>
+        <!-- =========================================================
+         DELETE MODAL
+    ========================================================== -->
+        <div class="modal" id="deleteModal">
+          <div class="modal-box">
+            <div class="modal-head">
               <h2>
-                Danh sách phòng ban
+                Xóa phòng ban?
               </h2>
-              <p id="departmentCount">
-                Đang tải...
-              </p>
+              <button class="close" type="button" data-close-modal>
+                ×
+              </button>
             </div>
-            <button
-              class="btn btn-secondary"
-              id="refreshBtn"
-              type="button"
-            >
-              Làm mới
-            </button>
-          </div>
-          <div
-            class="department-list"
-            id="departmentList"
-          >
-            <div class="loading">
-              Đang tải danh sách phòng ban...
+            <p id="deleteText">
+              Bạn có chắc muốn xóa phòng ban này?
+            </p>
+            <div class="actions">
+              <button class="btn btn-secondary" type="button" data-close-modal>
+                Hủy
+              </button>
+              <button class="btn btn-primary" type="button" id="confirmDelete">
+                Xóa phòng ban
+              </button>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
-  </main>
-  <!-- =========================================================
-       TOAST
-  ========================================================== -->
-  <div
-    class="toast"
-    id="toast"
-  ></div>
-  <!-- =========================================================
-       DELETE MODAL
-  ========================================================== -->
-  <div
-    class="modal"
-    id="deleteModal"
-  >
-    <div class="modal-box">
-      <div class="modal-head">
-        <h2>
-          Xóa phòng ban?
-        </h2>
-        <button
-          class="close"
-          type="button"
-          data-close-modal
-        >
-          ×
-        </button>
-      </div>
-      <p id="deleteText">
-        Bạn có chắc muốn xóa phòng ban này?
-      </p>
-      <div class="actions">
-        <button
-          class="btn btn-secondary"
-          type="button"
-          data-close-modal
-        >
-          Hủy
-        </button>
-        <button
-          class="btn btn-primary"
-          type="button"
-          id="confirmDelete"
-        >
-          Xóa phòng ban
-        </button>
-      </div>
-    </div>
-  </div>
-    </div>
-  </div>
   <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->

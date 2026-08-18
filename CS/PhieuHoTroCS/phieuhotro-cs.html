@@ -211,6 +211,7 @@
     }
   </style>
 </head>
+
 <body data-nav-page="create">
   <!-- =========================================================
        APP
@@ -237,10 +238,7 @@
           </p>
         </div>
         <div class="masthead-right">
-          <div
-            class="clock"
-            id="todayStr"
-          >
+          <div class="clock" id="todayStr">
             —
           </div>
           <div class="response-note">
@@ -251,24 +249,15 @@
       <!-- =====================================================
            LAYOUT
       ====================================================== -->
-      <div
-        class="layout"
-        id="layoutContainer"
-      >
+      <div class="layout" id="layoutContainer">
         <!-- ===================================================
              FORM CARD
         ==================================================== -->
-        <div
-          class="card"
-          id="formCard"
-        >
+        <div class="card" id="formCard">
           <!-- =================================================
                FORM VIEW
           ================================================== -->
-          <div
-            class="form-view"
-            id="formView"
-          >
+          <div class="form-view" id="formView">
             <!-- ===============================================
                  SECTION 01
             ================================================ -->
@@ -289,12 +278,7 @@
                 Họ và tên
                 <span class="req">*</span>
               </label>
-              <input
-                type="text"
-                id="fName"
-                placeholder="Nguyễn Văn A"
-                autocomplete="name"
-              >
+              <input type="text" id="fName" placeholder="Nguyễn Văn A" autocomplete="name">
             </div>
             <!-- ===============================================
                  EMAIL + CAMPUS
@@ -305,12 +289,7 @@
                   Email
                   <span class="req">*</span>
                 </label>
-                <input
-                  type="email"
-                  id="fEmail"
-                  placeholder="ban@email.com"
-                  autocomplete="email"
-                >
+                <input type="email" id="fEmail" placeholder="ban@email.com" autocomplete="email">
               </div>
               <div class="field">
                 <label for="fCampus">
@@ -319,12 +298,7 @@
                     (nếu có)
                   </span>
                 </label>
-                <input
-                  type="text"
-                  id="fCampus"
-                  placeholder="VD: Hà Nội / TP. Hồ Chí Minh"
-                  readonly
-                >
+                <input type="text" id="fCampus" placeholder="VD: Hà Nội / TP. Hồ Chí Minh" readonly>
               </div>
             </div>
             <!-- ===============================================
@@ -332,28 +306,18 @@
             ================================================ -->
             <div class="field">
               <label class="checkbox-field">
-                <input
-                  type="checkbox"
-                  id="chkCourse"
-                >
+                <input type="checkbox" id="chkCourse">
                 <span>
                   Tôi là Học viên
                   (hỗ trợ liên quan đến Khóa học)
                 </span>
               </label>
-              <div
-                class="course-box-wrap"
-                id="courseBoxWrap"
-              >
+              <div class="course-box-wrap" id="courseBoxWrap">
                 <label for="fCourse">
                   Tên Khóa học
                   <span class="req">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="fCourse"
-                  placeholder="VD: Lập trình Python - Lớp K15"
-                >
+                <input type="text" id="fCourse" placeholder="VD: Lập trình Python - Lớp K15">
               </div>
             </div>
             <!-- ===============================================
@@ -363,11 +327,7 @@
               <label for="fDate">
                 Ngày gửi yêu cầu
               </label>
-              <input
-                type="date"
-                id="fDate"
-                readonly
-              >
+              <input type="date" id="fDate" readonly>
             </div>
             <hr class="divider">
             <!-- ===============================================
@@ -385,27 +345,18 @@
             <!-- ===============================================
                  CATEGORY CHIPS
             ================================================ -->
-            <div
-              class="chip-grid"
-              id="chipGrid"
-            >
+            <div class="chip-grid" id="chipGrid">
               <!-- JS render -->
             </div>
             <!-- ===============================================
                  ISSUE DETAIL
             ================================================ -->
-            <div
-              class="field issue-field"
-              id="issueField"
-            >
+            <div class="field issue-field" id="issueField">
               <label for="issueSelect">
                 Chi tiết vấn đề
                 <span class="req">*</span>
               </label>
-              <select
-                id="issueSelect"
-                disabled
-              >
+              <select id="issueSelect" disabled>
                 <option value="">
                   -- Chọn chi tiết --
                 </option>
@@ -424,32 +375,20 @@
             <!-- ===============================================
                  TITLE + AI
             ================================================ -->
-            <div
-              class="field title-ai-field"
-              id="titleAiField"
-            >
+            <div class="field title-ai-field" id="titleAiField">
               <label for="fTitle">
                 Tiêu đề
                 <span class="opt">
                   (không bắt buộc)
                 </span>
               </label>
-              <input
-                type="text"
-                id="fTitle"
-                placeholder="Ví dụ: Em không đăng nhập được vào khóa học"
-                autocomplete="off"
-              >
+              <input type="text" id="fTitle" placeholder="Ví dụ: Em không đăng nhập được vào khóa học"
+                autocomplete="off">
               <!-- =============================================
                    AI PROGRESS LOADING
                    Chỉ hiện thanh loading trong lúc AI xử lý.
               ============================================== -->
-              <section
-                id="titleAiLoading"
-                class="title-ai-loading"
-                aria-live="polite"
-                aria-hidden="true"
-              >
+              <section id="titleAiLoading" class="title-ai-loading" aria-live="polite" aria-hidden="true">
                 <div class="title-ai-loading-head">
                   <div class="title-ai-loading-title">
                     <span class="title-ai-loading-badge">
@@ -459,23 +398,14 @@
                       Đang xử lý yêu cầu
                     </span>
                   </div>
-                  <span
-                    id="titleAiLoadingPercent"
-                    class="title-ai-loading-percent"
-                  >
+                  <span id="titleAiLoadingPercent" class="title-ai-loading-percent">
                     0%
                   </span>
                 </div>
                 <div class="title-ai-progress">
-                  <div
-                    id="titleAiProgressBar"
-                    class="title-ai-progress-bar"
-                  ></div>
+                  <div id="titleAiProgressBar" class="title-ai-progress-bar"></div>
                 </div>
-                <div
-                  id="titleAiLoadingStatus"
-                  class="title-ai-loading-status"
-                >
+                <div id="titleAiLoadingStatus" class="title-ai-loading-status">
                   Đang chuẩn bị phân tích...
                 </div>
               </section>
@@ -483,11 +413,7 @@
                    AI ANSWER
                    Chỉ hiện sau khi loading đã đạt 100%.
               ============================================== -->
-              <div
-                id="titleAiResult"
-                class="title-ai-result"
-                aria-live="polite"
-              >
+              <div id="titleAiResult" class="title-ai-result" aria-live="polite">
                 <div class="title-ai-result-label">
                   <span class="title-ai-result-icon">
                     ✓
@@ -496,10 +422,7 @@
                     Kết quả phân tích từ AI
                   </span>
                 </div>
-                <div
-                  id="titleAiResultBody"
-                  class="title-ai-result-body"
-                ></div>
+                <div id="titleAiResultBody" class="title-ai-result-body"></div>
               </div>
             </div>
             <!-- ===============================================
@@ -512,10 +435,7 @@
                   (không bắt buộc)
                 </span>
               </label>
-              <textarea
-                id="fDesc"
-                placeholder="Mô tả rõ vấn đề của bạn..."
-              ></textarea>
+              <textarea id="fDesc" placeholder="Mô tả rõ vấn đề của bạn..."></textarea>
             </div>
             <!-- ===============================================
                  FILE ATTACHMENT
@@ -527,44 +447,26 @@
                   (ảnh chụp, minh chứng...)
                 </span>
               </label>
-              <div
-                class="file-drop"
-                id="fileDrop"
-              >
+              <div class="file-drop" id="fileDrop">
                 <strong>
                   Chọn tệp
                 </strong>
                 hoặc kéo thả vào đây
-                <div
-                  class="file-name"
-                  id="fileName"
-                ></div>
+                <div class="file-name" id="fileName"></div>
               </div>
-              <input
-                type="file"
-                id="fFile"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                style="display:none"
-              >
+              <input type="file" id="fFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none">
             </div>
             <!-- ===============================================
                  ERROR
             ================================================ -->
-            <div
-              class="error-text"
-              id="errorText"
-            >
+            <div class="error-text" id="errorText">
               Vui lòng điền đầy đủ các trường bắt buộc (*).
             </div>
             <!-- ===============================================
                  SUBMIT
             ================================================ -->
             <div class="submit-row">
-              <button
-                type="button"
-                class="btn-submit"
-                id="submitBtn"
-              >
+              <button type="button" class="btn-submit" id="submitBtn">
                 Gửi yêu cầu
               </button>
               <span class="submit-hint">
@@ -575,18 +477,10 @@
           <!-- =================================================
                SUCCESS VIEW
           ================================================== -->
-          <div
-            class="success-view"
-            id="successView"
-          >
+          <div class="success-view" id="successView">
             <div class="check">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M20 6L9 17l-5-5"/>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5" />
               </svg>
             </div>
             <h2>
@@ -596,11 +490,7 @@
               Phiếu của bạn đã được ghi nhận.
               Vui lòng lưu lại mã số tra cứu.
             </p>
-            <button
-              type="button"
-              class="btn-again"
-              id="againBtn"
-            >
+            <button type="button" class="btn-again" id="againBtn">
               Tạo yêu cầu mới
             </button>
           </div>
@@ -608,10 +498,7 @@
         <!-- ===================================================
              STUB / TICKET RECEIPT
         ==================================================== -->
-        <div
-          class="stub-wrap"
-          id="stubWrap"
-        >
+        <div class="stub-wrap" id="stubWrap">
           <div class="stub-label">
             Phiếu ghi nhận
           </div>
@@ -623,24 +510,15 @@
               <div class="k1">
                 Mã yêu cầu
               </div>
-              <div
-                class="num"
-                id="stubNum"
-              >
+              <div class="num" id="stubNum">
                 HV-000000
               </div>
-              <div
-                class="cat"
-                id="stubCat"
-              >
+              <div class="cat" id="stubCat">
                 <span>
                   Chưa chọn loại
                 </span>
               </div>
-              <div
-                class="course"
-                id="stubCourse"
-              ></div>
+              <div class="course" id="stubCourse"></div>
             </div>
             <!-- ===============================================
                  PERF
@@ -655,10 +533,7 @@
                 <span class="k">
                   Người gửi
                 </span>
-                <span
-                  class="v"
-                  id="stubName"
-                >
+                <span class="v" id="stubName">
                   —
                 </span>
               </div>
@@ -667,10 +542,7 @@
                 <span class="k">
                   Tiêu đề
                 </span>
-                <span
-                  class="v"
-                  id="stubTitle"
-                >
+                <span class="v" id="stubTitle">
                   —
                 </span>
               </div>
@@ -679,10 +551,7 @@
                 <span class="k">
                   Khóa học
                 </span>
-                <span
-                  class="v"
-                  id="stubCourseBody"
-                >
+                <span class="v" id="stubCourseBody">
                   —
                 </span>
               </div>
@@ -691,10 +560,7 @@
                 <span class="k">
                   Ngày gửi
                 </span>
-                <span
-                  class="v"
-                  id="stubDate"
-                >
+                <span class="v" id="stubDate">
                   —
                 </span>
               </div>
@@ -706,9 +572,7 @@
               <!-- Note -->
               <div class="stub-note">
                 Tra cứu tại mục
-                <a
-                  href="/CS/Ticket Management/cs-ticket.html"
-                >
+                <a href="/CS/Ticket Management/cs-ticket.html">
                   "Yêu cầu của tôi"
                 </a>.
               </div>
@@ -734,9 +598,8 @@
   <!-- =========================================================
        PHIEU HO TRO JS
   ========================================================== -->
-  <script
-    type="module"
-    src="phieuhotro-cs.js">
+  <script type="module" src="phieuhotro-cs.js">
   </script>
 </body>
+
 </html>
