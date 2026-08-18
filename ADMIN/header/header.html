@@ -1,82 +1,17 @@
-<header class="topbar">
-  <div class="topbar-left">
-    <button
-      type="button"
-      id="menuBtn"
-      class="icon-btn mobile-only"
-      title="Mở menu"
-      aria-label="Mở menu"
-    >
-      <span class="material-symbols-rounded">menu</span>
-    </button>
-  </div>
-  <div class="top-actions">
-    <div class="notification-wrapper">
-      <button
-        type="button"
-        class="icon-btn notification-btn"
-        id="noticeBtn"
-        title="Thông báo"
-        aria-label="Thông báo"
-        aria-expanded="false"
-      >
-        <span class="material-symbols-rounded">notifications</span>
-        <span id="noticeBadge" class="notice-badge hidden">0</span>
-      </button>
-      <div id="notificationPanel" class="notification-panel" hidden>
-        <div class="notification-header">
-          <div>
-            <strong>Thông báo</strong>
-            <small id="notificationCount">Không có thông báo mới</small>
-          </div>
-          <button type="button" id="markAllReadBtn" class="notification-action">
-            Đánh dấu đã đọc
-          </button>
-        </div>
-        <div id="notificationList" class="notification-list">
-          <div class="notification-empty">
-            <span class="material-symbols-rounded">notifications_none</span>
-            <p>Không có thông báo mới</p>
-          </div>
-        </div>
-      </div>
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-brand">
+    <div class="admin-brand-mark">HV</div>
+    <div class="admin-brand-text">
+      <strong>Học Viện</strong>
+      <small>ADMIN CENTER</small>
     </div>
+  </div>
+
+
+
     <div class="admin-identity" aria-label="Tài khoản quản trị">
       <span class="top-admin" id="topAdminName">Admin</span>
     </div>
-    <div
-      class="avatar avatar-admin"
-      aria-label="Tài khoản Admin"
-    >
-      AD
-    </div>
+    <div class="avatar avatar-admin" id="topAdminAvatar" aria-label="Tài khoản Admin">AD</div>
   </div>
 </header>
-
-<style>
-  .admin-identity {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .top-admin-campus {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-    padding: 0 9px;
-    color: var(--header-maroon, #701b19);
-    background: var(--header-cream, #f4e7d5);
-    border: 1px solid var(--header-line-strong, rgba(112, 27, 25, 0.17));
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .04em;
-    white-space: nowrap;
-  }
-
-  .top-admin-campus:empty {
-    display: none;
-  }
-</style>
