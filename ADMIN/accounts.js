@@ -109,7 +109,7 @@
        * Trang tạo tài khoản của bé có thể thay
        * bằng đường dẫn thật sau này.
        */
-      window.location.href = "./tao_email_CSandHV.html";
+      window.location.href = "./addAccount.html";
     });
   }
 
