@@ -33,8 +33,8 @@ if (window.emailjs) {
 /* =========================================================
    AI CONFIG
 ========================================================= */
-const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
+// const TITLE_AI_WEB_APP_URL =
+//   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
 /* =========================================================
    FIRESTORE COLLECTION
 ========================================================= */

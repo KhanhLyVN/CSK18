@@ -267,7 +267,9 @@
       name: data.attachmentName || data.imageName || data.fileName || "Hình ảnh học viên",
       type: data.attachmentType || data.imageType || data.fileType || "image/*",
       size: Number(data.attachmentSize || data.imageSize || data.fileSize || 0),
-      dataUrl: data.attachmentDataUrl || data.imageDataUrl || ""
+      dataUrl: data.attachmentDataUrl || data.imageDataUrl || "",
+      directUrl: data.attachmentUrl || data.imageUrl || data.downloadUrl || data.fileUrl || "",
+      path: data.storagePath || data.attachmentPath || data.filePath || ""
     };
   }
 
@@ -394,55 +396,95 @@
 
   async function resolveTicketAttachmentUrl(ticket) {
     const meta = getTicketAttachmentMeta(ticket);
-    if (meta.directUrl) return meta.directUrl;
+    if (meta.dataUrl && String(meta.dataUrl).startsWith("data:")) {
+      return String(meta.dataUrl);
+    }
+    if (meta.directUrl) return String(meta.directUrl);
     if (meta.path && typeof firebase !== "undefined" && firebase.storage) {
       try {
-        return await firebase.storage().ref(meta.path).getDownloadURL();
+        return await firebase.storage().ref().child(meta.path).getDownloadURL();
       } catch (error) {
-        console.info("Không lấy được attachmentPath", meta.path);
+        console.error("Không lấy được ảnh từ Storage path:", meta.path, error);
       }
     }
-    // Tìm URL ảnh đã lưu trong các message của ticket.
-    if (db && ticket?.id) {
+
+    const ticketId = ticket?.id || ticket?.docId || ticket?.firestoreId || "";
+    if (db && ticketId) {
       try {
         const snapshot = await db
           .collection(TICKET_COLLECTION)
-          .doc(ticket.id)
+          .doc(ticketId)
           .collection(CHAT_SUBCOLLECTION)
           .orderBy("createdAt", "asc")
           .get();
         for (const docSnap of snapshot.docs) {
           const message = docSnap.data() || {};
-          const url = message.imageUrl || message.attachmentUrl || message.downloadUrl || "";
-          if (url) return url;
+          const directUrl = String(
+            message.imageUrl || message.attachmentUrl || message.downloadUrl || message.fileUrl ||
+            message.imageDataUrl || message.attachmentDataUrl || ""
+          ).trim();
+          if (directUrl) return directUrl;
+          const messagePath = String(
+            message.storagePath || message.attachmentPath || message.imagePath || ""
+          ).trim();
+          if (messagePath && firebase.storage) {
+            try {
+              return await firebase.storage().ref().child(messagePath).getDownloadURL();
+            } catch (error) {
+              console.error("Không lấy được ảnh message từ Storage path:", messagePath, error);
+            }
+          }
         }
       } catch (error) {
-        console.info("Không đọc được ảnh từ messages", error);
+        console.error("Không đọc được messages để tìm ảnh:", error);
       }
     }
-    // Không tự đoán đường dẫn Storage. Path sai sẽ gây request lỗi/CORS lặp lại.
-    // Chỉ sử dụng attachmentPath/storagePath thật sự được lưu trong Firebase.
     return "";
   }
 
   function renderTicketAttachmentPlaceholder(ticket) {
     const meta = getTicketAttachmentMeta(ticket);
-    if (!meta.dataUrl) return "";
-    const safeUrl = String(meta.dataUrl);
-    if (!safeUrl.startsWith("data:image/")) return "";
-    return `<figure class="detail-attachment-figure">
-    <a class="detail-attachment-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener" title="Mở ảnh học viên">
-      <img class="detail-attachment-full-image" src="${escapeHtml(safeUrl)}" alt="${escapeHtml(meta.name)}" loading="lazy">
-    </a>
-    <figcaption class="detail-attachment-caption">
-      <span class="material-symbols-rounded">image</span>${escapeHtml(meta.name)}
-    </figcaption>
-  </figure>`;
+    if (!meta.name || (!meta.dataUrl && !meta.directUrl && !meta.path)) return "";
+    const sizeLabel = meta.size > 0 ? ` · ${Math.max(1, Math.round(meta.size / 1024))} KB` : "";
+    return `<div class="detail-attachment-loading" id="ticketAttachmentDetail">
+      <span class="material-symbols-rounded">attach_file</span>
+      <span>Đang tải tệp đính kèm: ${escapeHtml(meta.name)}${escapeHtml(sizeLabel)}</span>
+    </div>`;
   }
 
   async function hydrateTicketAttachment(ticket) {
-    // Ảnh Base64 đã được render trực tiếp; không gọi Firebase Storage.
-    return;
+    const holder = document.getElementById("ticketAttachmentDetail");
+    if (!holder) return;
+    const meta = getTicketAttachmentMeta(ticket);
+    const url = await resolveTicketAttachmentUrl(ticket);
+    if (!url) {
+      holder.outerHTML = `<div class="detail-attachment-unavailable">
+        <span class="material-symbols-rounded">image_not_supported</span>
+        <span>Không tìm thấy URL hoặc Storage path của tệp đính kèm.</span>
+      </div>`;
+      return;
+    }
+    const isImage = String(meta.type || "").toLowerCase().startsWith("image/") ||
+      /^data:image\//i.test(url) ||
+      /\.(jpg|jpeg|jpe|jfif|png|apng|gif|webp|avif|bmp|dib|svg|svgz|ico|cur|tif|tiff|heic|heif|jp2|j2k|jpf|jpx|jpm|mj2|jxl|raw|dng|cr2|cr3|nef|nrw|arw|orf|rw2|raf|pef|srw|psd|psb)(?:[?#]|$)/i.test(url);
+    if (!isImage) {
+      holder.outerHTML = `<a class="detail-attachment-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
+        <span class="detail-attachment-caption"><span class="material-symbols-rounded">attach_file</span>${escapeHtml(meta.name)} · Mở tệp</span>
+      </a>`;
+      return;
+    }
+    holder.outerHTML = `<figure class="detail-attachment-figure">
+      <a class="detail-attachment-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="Mở ảnh học viên">
+        <img class="detail-attachment-full-image" src="${escapeHtml(url)}" alt="${escapeHtml(meta.name)}" loading="eager">
+      </a>
+      <figcaption class="detail-attachment-caption"><span class="material-symbols-rounded">open_in_new</span>${escapeHtml(meta.name)}</figcaption>
+    </figure>`;
+    document.querySelector(".detail-attachment-figure img")?.addEventListener("error", (event) => {
+      event.currentTarget.closest(".detail-attachment-figure").outerHTML = `<div class="detail-attachment-unavailable">
+        <span class="material-symbols-rounded">broken_image</span>
+        <span>Không tải được ảnh. Hãy kiểm tra Firebase Storage Rules và URL tệp.</span>
+      </div>`;
+    }, { once: true });
   }
 
   function getStudentMessageCount(ticket) {
@@ -1928,14 +1970,52 @@
     `;
   }
 
+    // Một số trình duyệt/hệ điều hành trả về MIME rỗng hoặc application/octet-stream
+  // cho các định dạng ảnh ít phổ biến. Khi đó kiểm tra thêm phần mở rộng tệp.
+  const IMAGE_FILE_EXTENSIONS = new Set([
+    "jpg", "jpeg", "jpe", "jfif", "png", "apng", "gif", "webp", "avif", "bmp", "dib",
+    "svg", "svgz", "ico", "cur", "tif", "tiff", "heic", "heif", "heics", "heifs",
+    "jp2", "j2k", "jpf", "jpx", "jpm", "mj2", "jxl", "raw", "dng", "cr2", "cr3",
+    "nef", "nrw", "arw", "orf", "rw2", "raf", "pef", "srw", "3fr", "erf", "kdc",
+    "mos", "mrw", "rwl", "x3f", "psd", "psb"
+  ]);
+
+  function getFileExtension(fileName) {
+    const name = String(fileName || "").toLowerCase().split(/[?#]/, 1)[0];
+    const lastDot = name.lastIndexOf(".");
+    return lastDot >= 0 ? name.slice(lastDot + 1) : "";
+  }
+
+  function isImageFile(file) {
+    const mimeType = String(file?.type || "").toLowerCase();
+    return mimeType.startsWith("image/") || IMAGE_FILE_EXTENSIONS.has(getFileExtension(file?.name));
+  }
+
+  function getImageMimeType(file) {
+    const mimeType = String(file?.type || "").toLowerCase();
+    if (mimeType.startsWith("image/")) return mimeType;
+    const extensionMimeTypes = {
+      jpg: "image/jpeg", jpeg: "image/jpeg", jpe: "image/jpeg", jfif: "image/jpeg",
+      png: "image/png", apng: "image/apng", gif: "image/gif", webp: "image/webp",
+      avif: "image/avif", bmp: "image/bmp", dib: "image/bmp", svg: "image/svg+xml",
+      svgz: "image/svg+xml", ico: "image/x-icon", cur: "image/x-icon", tif: "image/tiff",
+      tiff: "image/tiff", heic: "image/heic", heif: "image/heif", heics: "image/heic",
+      heifs: "image/heif", jp2: "image/jp2", j2k: "image/jp2", jpf: "image/jpx",
+      jpx: "image/jpx", jpm: "image/jpm", mj2: "image/mj2", jxl: "image/jxl",
+      psd: "image/vnd.adobe.photoshop", psb: "image/vnd.adobe.photoshop"
+    };
+    return extensionMimeTypes[getFileExtension(file?.name)] || "image/*";
+  }
+
   function clearPendingImage() {
+
     pendingImage = null;
     if (chatImageInput) chatImageInput.value = "";
     if (chatAttachmentPreview) {
       chatAttachmentPreview.hidden = true;
       chatAttachmentPreview.innerHTML = "";
     }
-    if (chatAttachmentHint) chatAttachmentHint.textContent = "Ảnh tối đa 700 KB";
+    if (chatAttachmentHint) chatAttachmentHint.textContent = "Tệp ảnh tối đa 700 KB";
   }
 
   function renderPendingImage(file, dataUrl) {
@@ -1951,8 +2031,8 @@
   chatImageInput?.addEventListener("change", (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("Vui lòng chọn tệp hình ảnh.");
+    if (!isImageFile(file)) {
+      alert("Vui lòng chọn tệp hình ảnh hợp lệ.");
       clearPendingImage();
       return;
     }
@@ -1963,7 +2043,13 @@
     }
     const reader = new FileReader();
     reader.onload = () => {
-      pendingImage = { name: file.name, type: file.type, dataUrl: String(reader.result) };
+      pendingImage = {
+        file,
+        name: file.name,
+        type: getImageMimeType(file),
+        size: file.size,
+        dataUrl: String(reader.result)
+      };
       renderPendingImage(file, pendingImage.dataUrl);
     };
     reader.readAsDataURL(file);
@@ -2135,7 +2221,35 @@
     });
   }
 
+    async function uploadPendingImageToStorage(ticketId, messageId) {
+    if (!pendingImage?.file) return {};
+    if (typeof firebase === "undefined" || typeof firebase.storage !== "function") {
+      throw new Error("Firebase Storage chưa được khởi tạo.");
+    }
+    const safeName = String(pendingImage.name || "image").replace(/[^a-zA-Z0-9._-]/g, "_");
+    const storagePath = `tickets/${ticketId}/messages/${messageId}-${safeName}`;
+    const storageRef = firebase.storage().ref().child(storagePath);
+    await storageRef.put(pendingImage.file, {
+      contentType: pendingImage.type || "image/*",
+      customMetadata: {
+        originalName: String(pendingImage.name || ""),
+        uploadedBy: String(currentCSUser?.uid || "")
+      }
+    });
+    const imageUrl = await storageRef.getDownloadURL();
+    return {
+      imageUrl,
+      attachmentUrl: imageUrl,
+      storagePath,
+      attachmentPath: storagePath,
+      imageName: pendingImage.name || safeName,
+      imageType: pendingImage.type || "image/*",
+      imageSize: Number(pendingImage.size || pendingImage.file.size || 0)
+    };
+  }
+
   async function sendChatMessage() {
+
     if (!chatInput) {
       console.warn("⚠️ Không tìm thấy #chatInput");
       return;
@@ -2166,6 +2280,7 @@
         type: "message",
         preview: text || "Đã gửi một hình ảnh"
       });
+      const uploadedImage = await uploadPendingImageToStorage(selectedTicket.id, messageRef.id);
 
       await db.runTransaction(async (transaction) => {
         const snapshot = await transaction.get(ticketRef);
@@ -2176,9 +2291,7 @@
 
         transaction.set(messageRef, {
           text,
-          imageUrl: pendingImage?.dataUrl || "",
-          imageName: pendingImage?.name || "",
-          imageType: pendingImage?.type || "",
+          ...uploadedImage,
           senderUid: currentCSUser.uid,
           senderId: currentCSUser.uid,
           senderEmail: currentCSUser.email || "",

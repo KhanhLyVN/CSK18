@@ -88,8 +88,8 @@ function getValue(id) {
 // ======================================================
 // AI PHÂN TÍCH TIÊU ĐỀ
 // ======================================================
-const TITLE_AI_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
+// const TITLE_AI_WEB_APP_URL =
+//   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
 
 const fTitle = $("fTitle");
 const titleAiSuggestion = $("titleAiSuggestion");
@@ -621,8 +621,79 @@ function setupForm() {
   $("againBtn").addEventListener("click", resetForm);
 }
 
+const IMAGE_FILE_EXTENSIONS = new Set([
+  "jpg", "jpeg", "jpe", "jfif", "png", "apng", "gif", "webp", "avif", "bmp", "dib",
+  "svg", "svgz", "ico", "cur", "tif", "tiff", "heic", "heif", "heics", "heifs",
+  "jp2", "j2k", "jpf", "jpx", "jpm", "mj2", "jxl", "raw", "dng", "cr2", "cr3",
+  "nef", "nrw", "arw", "orf", "rw2", "raf", "pef", "srw", "3fr", "erf", "kdc",
+  "mos", "mrw", "rwl", "x3f", "psd", "psb"
+]);
+
+function getFileExtension(fileName) {
+  const name = String(fileName || "").toLowerCase().split(/[?#]/, 1)[0];
+  const lastDot = name.lastIndexOf(".");
+  return lastDot >= 0 ? name.slice(lastDot + 1) : "";
+}
+
+function isImageFile(file) {
+  const mimeType = String(file?.type || "").toLowerCase();
+  return mimeType.startsWith("image/") || IMAGE_FILE_EXTENSIONS.has(getFileExtension(file?.name));
+}
+
+function getImageContentType(file) {
+  const mimeType = String(file?.type || "").toLowerCase();
+  if (mimeType.startsWith("image/")) return mimeType;
+  const mimeByExtension = {
+    jpg: "image/jpeg", jpeg: "image/jpeg", jpe: "image/jpeg", jfif: "image/jpeg",
+    png: "image/png", apng: "image/apng", gif: "image/gif", webp: "image/webp",
+    avif: "image/avif", bmp: "image/bmp", dib: "image/bmp", svg: "image/svg+xml",
+    svgz: "image/svg+xml", ico: "image/x-icon", cur: "image/x-icon", tif: "image/tiff",
+    tiff: "image/tiff", heic: "image/heic", heif: "image/heif", heics: "image/heic",
+    heifs: "image/heif", jp2: "image/jp2", j2k: "image/jp2", jpf: "image/jpx",
+    jpx: "image/jpx", jpm: "image/jpm", mj2: "image/mj2", jxl: "image/jxl",
+    psd: "image/vnd.adobe.photoshop", psb: "image/vnd.adobe.photoshop"
+  };
+  return mimeByExtension[getFileExtension(file?.name)] || "image/*";
+}
+
+async function uploadSelectedFile(ticketId) {
+  if (!selectedFile) return {};
+  if (typeof firebase === "undefined" || typeof firebase.storage !== "function") {
+    throw new Error("Firebase Storage chưa được khởi tạo.");
+  }
+  const safeName = String(selectedFile.name || "image").replace(/[^a-zA-Z0-9._-]/g, "_");
+  const storagePath = `tickets/${ticketId}/attachments/${Date.now()}-${safeName}`;
+  const storageRef = firebase.storage().ref().child(storagePath);
+  const attachmentType = getImageContentType(selectedFile);
+
+  await storageRef.put(selectedFile, {
+    contentType: attachmentType,
+    customMetadata: {
+      originalName: String(selectedFile.name || ""),
+      uploadedBy: String(loggedInUser?.uid || "")
+    }
+  });
+  const attachmentUrl = await storageRef.getDownloadURL();
+
+  return {
+    attachmentUrl,
+    imageUrl: attachmentUrl,
+    storagePath,
+    attachmentPath: storagePath,
+    attachmentName: selectedFile.name || safeName,
+    attachmentType,
+    attachmentSize: Number(selectedFile.size || 0)
+  };
+}
+
 function setSelectedFile(file) {
+
   const maxSize = 10 * 1024 * 1024;
+  if (!isImageFile(file)) {
+    $("errorText").textContent = "Vui lòng chọn tệp hình ảnh hợp lệ.";
+    $("errorText").classList.add("show");
+    return;
+  }
   if (file.size > maxSize) {
     $("errorText").textContent = "Tệp đính kèm không được vượt quá 10 MB.";
     $("errorText").classList.add("show");
@@ -739,6 +810,8 @@ async function submitTicket() {
   };
 
   try {
+    const uploadedAttachment = await uploadSelectedFile(ticketNum);
+    Object.assign(ticketData, uploadedAttachment);
     await database.collection("tickets").doc(ticketNum).set(ticketData);
     await database
       .collection("tickets")
@@ -750,6 +823,7 @@ async function submitTicket() {
         senderName: name,
         message: description,
         text: description,
+        ...uploadedAttachment,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
