@@ -7,6 +7,7 @@
   <!-- =========================================================
        GOOGLE FONTS
   ========================================================== -->
+  <link rel="stylesheet" href="admin-bar.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -21,8 +22,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
-  <!-- SIDEBAR -->
-  <link rel="stylesheet" href="admin.css">
   <style>
     /* =========================================================
        ROOT
@@ -83,7 +82,7 @@
     ========================================================== */
     .page {
       min-height: 100vh;
-      margin-left: var(--sidebar);
+      margin-left: 0;
       padding:
         44px
         clamp(22px, 5vw, 70px)
@@ -821,23 +820,16 @@
     }
   </style>
 </head>
-<body data-page="departments">
-  <!-- =========================================================
-       SIDEBAR
-  ========================================================== -->
-  <div
-    id="sharedSidebar"
-    aria-label="Sidebar quản trị"
-  ></div>
-  <div
-    class="backdrop"
-    id="backdrop"
-    hidden
-  ></div>
-  <!-- =========================================================
-       MAIN
-  ========================================================== -->
-  <main class="page">
+<body data-admin-page="departments">
+  <div class="app-shell">
+    <div
+      id="adminBar"
+      aria-label="Thanh điều hướng quản trị dùng chung"></div>
+    <div class="main-content">
+      <!-- =========================================================
+           MAIN
+      ========================================================== -->
+      <main class="page">
     <div class="page-inner">
       <!-- =====================================================
            HEADER
@@ -1181,10 +1173,8 @@
       </div>
     </div>
   </div>
-  <!-- =========================================================
-       SHARED SIDEBAR
-  ========================================================== -->
-  <script src="shared-sidebar.js"></script>
+    </div>
+  </div>
   <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->
@@ -2734,5 +2724,7 @@
       loadManagers();
     })();
   </script>
+  <script src="admin-bar.js"></script>
+
 </body>
 </html>

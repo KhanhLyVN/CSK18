@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FAQ | Hỏi đáp hỗ trợ học viên</title>
-<link rel="stylesheet" href="faq.css">
 <link rel="stylesheet" href="/HV/navbar.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -115,10 +114,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 </head>
 <body data-nav-page="faq">
   <div class="app">
-    <main class="faq-page-content">
-      <header class="page-head"><div><span class="eyebrow">KHO KIẾN THỨC HỖ TRỢ</span><h2>Câu hỏi thường gặp</h2><p>Tìm câu trả lời nhanh hoặc hỏi trợ lý AI khi bạn cần hướng dẫn thêm.</p></div><a class="page-head-link" href="/HỌC VIÊN/Phiếu hỗ trợ/phieuhotro.html">Chưa tìm thấy câu trả lời? Gửi ticket →</a></header>
+    <main class="main faq-page-content">
+      <header class="page-head"><div><span class="eyebrow">KHO KIẾN THỨC HỖ TRỢ</span><h2>Câu hỏi thường gặp</h2><p>Tìm câu trả lời nhanh hoặc hỏi trợ lý AI khi bạn cần hướng dẫn thêm.</p></div><a class="page-head-link" href="/HV/tickets/phieuhotro.html">Chưa tìm thấy câu trả lời? Gửi ticket →</a></header>
       <section class="faq-container">
-        <div class="faq-toolbar"><div><span class="eyebrow">TRA CỨU HỖ TRỢ</span><h3 class="faq-title">Hỏi đáp học viên</h3></div><span class="faq-toolbar-note">Cập nhật realtime</span></div>
+        <div class="faq-toolbar"><div><span class="eyebrow">TRA CỨU HỖ TRỢ</span><h3 class="faq-title">Hỏi đáp học viên</h3></div></div>
         <div class="faq-controls"><input type="search" id="searchInput" class="faq-search" placeholder="Tìm theo câu hỏi hoặc nội dung trả lời..."><select id="categoryFilter" class="faq-category-filter"><option value="all">Tất cả chủ đề</option></select></div>
         <div class="faq-list" id="faqList"><div class="status-box">Đang tải danh sách câu hỏi...</div></div>
         <div id="noResults" class="status-box" style="display:none;">Không tìm thấy câu hỏi phù hợp với tìm kiếm của bạn.</div>
@@ -135,8 +134,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* =====================================================
      CONFIG
   ===================================================== */
-  const AI_WEB_APP_URL =
-    "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  // const AI_WEB_APP_URL =
+  //   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
   /* =====================================================
      FAQ VARIABLES
   ===================================================== */

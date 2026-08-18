@@ -135,6 +135,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   opacity: .78;
 }
 
+/* Trạng thái lỗi cho khung kết quả AI */
+.title-ai-suggestion.is-error {
+  border-color: rgba(162, 59, 46, .4);
+  border-left-color: var(--danger);
+}
+.title-ai-suggestion.is-error .title-ai-heading strong {
+  color: var(--danger);
+}
+.title-ai-suggestion.is-error .title-ai-badge {
+  background: var(--danger);
+}
+
 .title-ai-suggestion-head {
   display: flex;
   align-items: center;
@@ -213,4 +225,137 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .form-view { padding: 24px 18px 26px; }
   .submit-row { align-items: stretch; flex-direction: column; }
   .btn-submit { width: 100%; }
+}
+
+
+/* =========================================================
+   AI LOADING PROGRESS
+========================================================= */
+
+.title-ai-loading {
+  display: none;
+  margin-top: 12px;
+  padding: 14px 15px;
+  border: 1px solid rgba(176, 138, 78, .45);
+  border-left: 4px solid var(--gold);
+  border-radius: 9px;
+  background: linear-gradient(135deg, #fffaf1 0%, #fff 100%);
+  box-shadow: 0 6px 18px rgba(62, 4, 2, .08);
+}
+
+.title-ai-loading.is-visible {
+  display: block;
+  animation: titleAiSuggestionIn .2s ease-out;
+}
+
+.title-ai-loading-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+
+/* Dòng "AI · Đang xử lý yêu cầu" cạnh badge */
+.title-ai-loading-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--maroon);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.title-ai-loading-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: #fffaf1;
+  background: var(--maroon);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+/* % */
+.title-ai-loading-percent {
+  color: var(--maroon);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Thanh */
+.title-ai-progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(93, 7, 3, .10);
+}
+
+.title-ai-progress-bar {
+  position: relative;
+  width: 0%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--maroon-deep),
+    var(--maroon),
+    var(--gold)
+  );
+  transition: width .25s ease;
+}
+
+/* Hiệu ứng chạy trên thanh */
+.title-ai-progress-bar::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 45%;
+  height: 100%;
+  margin-left: -45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.45),
+    transparent
+  );
+  content: "";
+  animation: aiProgressShine 1.2s infinite;
+}
+
+@keyframes aiProgressShine {
+  from {
+    margin-left: -45%;
+  }
+
+  to {
+    margin-left: 110%;
+  }
+}
+
+.title-ai-loading-status {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   AI RESULT
+========================================================= */
+
+.title-ai-suggestion {
+  display: none;
+}
+
+.title-ai-suggestion.is-visible {
+  display: block;
 }

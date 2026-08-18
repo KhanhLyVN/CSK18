@@ -1099,3 +1099,621 @@ textarea:focus {
     margin-left: 0 !important;
   }
 }
+
+/* =========================================================
+   HEADER CSS CŨ ĐƯỢC GHÉP VÀO ADMIN.CSS
+   Các selector header đặt sau để giữ phong cách cũ ưu tiên hơn.
+========================================================= */
+
+:root {
+  --header-maroon: #701b19;
+  --header-maroon-dark: #4f0f0d;
+  --header-maroon-soft: #98433e;
+  --header-cream: #f4e7d5;
+  --header-cream-light: #faf3e9;
+  --header-paper: #fffdf9;
+  --header-white: #ffffff;
+  --header-ink: #2b211d;
+  --header-muted: #8d7d73;
+  --header-light-text: #aa9b91;
+  --header-line: rgba(112, 27, 25, 0.11);
+  --header-line-strong: rgba(112, 27, 25, 0.17);
+  --header-danger: #bd4137;
+  --header-shadow:
+    0 8px 30px rgba(55, 24, 18, 0.07);
+  --header-shadow-hover:
+    0 12px 28px rgba(112, 27, 25, 0.16);
+  --header-radius: 15px;
+}
+/* =========================================================
+   RESET / BASE
+========================================================= */
+.shared-header,
+.topbar,
+.topbar * {
+  box-sizing: border-box;
+}
+.topbar button {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.topbar [hidden],
+.topbar .hidden,
+.topbar .notice-badge.hidden {
+  display: none !important;
+}
+/* =========================================================
+   HEADER
+========================================================= */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  min-height: 74px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(20px, 4vw, 48px);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 253, 249, 0.97),
+      rgba(255, 253, 249, 0.93)
+    );
+  border-bottom: 1px solid var(--header-line);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8),
+    0 5px 20px rgba(70, 31, 22, 0.035);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  isolation: isolate;
+}
+/* =========================================================
+   LEFT / RIGHT
+========================================================= */
+.topbar-left,
+.top-actions {
+  display: flex;
+  align-items: center;
+}
+.topbar-left {
+  min-width: 42px;
+}
+.top-actions {
+  gap: 10px;
+}
+/* =========================================================
+   ICON BUTTON
+========================================================= */
+.icon-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--header-maroon);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(244, 231, 213, 0.72),
+      rgba(250, 243, 233, 0.88)
+    );
+  border: 1px solid var(--header-line-strong);
+  border-radius: 12px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.icon-btn:hover {
+  color: #fff;
+  background:
+    linear-gradient(
+      145deg,
+      var(--header-maroon-soft),
+      var(--header-maroon)
+    );
+  border-color: transparent;
+  box-shadow:
+    0 8px 18px rgba(112, 27, 25, 0.18);
+  transform: translateY(-1px);
+}
+.icon-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+.icon-btn:focus-visible,
+.notification-action:focus-visible {
+  outline: 3px solid rgba(189, 65, 55, 0.22);
+  outline-offset: 3px;
+}
+.icon-btn .material-symbols-rounded {
+  font-size: 21px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 520,
+    "GRAD" 0,
+    "opsz" 24;
+}
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+.mobile-only {
+  display: none;
+}
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+.notification-wrapper {
+  position: relative;
+}
+.notification-btn {
+  isolation: isolate;
+}
+/* Small inner glow */
+.notification-btn::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  z-index: -1;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.notification-btn:hover::after {
+  opacity: 0;
+}
+/* =========================================================
+   NOTIFICATION BADGE
+========================================================= */
+.notice-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  color: #fff;
+  background:
+    linear-gradient(
+      145deg,
+      #cf5549,
+      var(--header-danger)
+    );
+  border: 3px solid var(--header-paper);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow:
+    0 3px 9px rgba(189, 65, 55, 0.28);
+  animation: badge-pop 0.25s ease-out;
+}
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* =========================================================
+   ADMIN NAME
+========================================================= */
+.top-admin {
+  max-width: 190px;
+  overflow: hidden;
+  color: var(--header-ink);
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+}
+/* =========================================================
+   ADMIN AVATAR
+========================================================= */
+.avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  color: #fff;
+  background:
+    linear-gradient(
+      145deg,
+      var(--header-maroon-soft) 0%,
+      var(--header-maroon) 70%,
+      var(--header-maroon-dark) 100%
+    );
+  border-radius: 13px;
+  box-shadow:
+    0 5px 15px rgba(112, 27, 25, 0.2);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.avatar:hover {
+  box-shadow:
+    0 9px 22px rgba(112, 27, 25, 0.26);
+  transform:
+    translateY(-1px)
+    rotate(1deg);
+}
+/* =========================================================
+   NOTIFICATION PANEL
+========================================================= */
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 13px);
+  right: 0;
+  width: min(390px, calc(100vw - 28px));
+  overflow: hidden;
+  color: var(--header-ink);
+  background:
+    rgba(255, 253, 249, 0.98);
+  border: 1px solid var(--header-line-strong);
+  border-radius: var(--header-radius);
+  box-shadow: var(--header-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: header-panel-in 0.2s ease-out;
+}
+/* Top accent */
+.notification-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--header-maroon),
+      var(--header-maroon-soft)
+    );
+}
+/* =========================================================
+   NOTIFICATION HEADER
+========================================================= */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 20px 17px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(244, 231, 213, 0.22),
+      transparent
+    );
+  border-bottom: 1px solid var(--header-line);
+}
+.notification-header strong {
+  display: block;
+  color: var(--header-maroon);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.notification-header small {
+  display: block;
+  margin-top: 4px;
+  color: var(--header-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+/* =========================================================
+   MARK ALL READ
+========================================================= */
+.notification-action {
+  padding: 6px 0;
+  color: var(--header-maroon);
+  background: transparent;
+  border: 0;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+.notification-action:hover {
+  color: var(--header-maroon-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transform: translateY(-1px);
+}
+/* =========================================================
+   NOTIFICATION LIST
+========================================================= */
+.notification-list {
+  max-height: 350px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(112, 27, 25, 0.24)
+    transparent;
+}
+.notification-list::-webkit-scrollbar {
+  width: 5px;
+}
+.notification-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.notification-list::-webkit-scrollbar-thumb {
+  background: rgba(112, 27, 25, 0.22);
+  border-radius: 999px;
+}
+/* =========================================================
+   NOTIFICATION ITEM
+========================================================= */
+.notification-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 20px;
+  border-bottom:
+    1px solid rgba(112, 27, 25, 0.07);
+  transition:
+    background 0.18s ease,
+    padding-left 0.18s ease;
+}
+.notification-item:last-child {
+  border-bottom: 0;
+}
+.notification-item.unread {
+  background: rgba(244, 231, 213, 0.34);
+}
+.notification-item.unread .notification-content strong {
+  color: var(--header-maroon);
+  font-weight: 850;
+}
+.notification-item:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244, 231, 213, 0.52),
+      rgba(244, 231, 213, 0.18)
+    );
+  padding-left: 22px;
+}
+/* =========================================================
+   NOTIFICATION ICON
+========================================================= */
+.notification-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  color: var(--header-maroon);
+  background:
+    linear-gradient(
+      145deg,
+      var(--header-cream),
+      var(--header-cream-light)
+    );
+  border: 1px solid rgba(112, 27, 25, 0.08);
+  border-radius: 10px;
+}
+.notification-icon .material-symbols-rounded {
+  font-size: 19px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
+}
+/* =========================================================
+   NOTIFICATION CONTENT
+========================================================= */
+.notification-content {
+  min-width: 0;
+  flex: 1;
+}
+.notification-content strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--header-ink);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+.notification-content p {
+  margin: 0;
+  color: var(--header-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+.notification-time {
+  display: block;
+  margin-top: 5px;
+  color: var(--header-light-text);
+  font-size: 9px;
+}
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+.notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 210px;
+  padding: 35px 20px;
+  color: var(--header-muted);
+  text-align: center;
+}
+.notification-empty .material-symbols-rounded {
+  display: block;
+  margin-bottom: 11px;
+  color: #d9c6ae;
+  font-size: 38px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 350,
+    "GRAD" 0,
+    "opsz" 40;
+}
+.notification-empty p {
+  margin: 0;
+  color: var(--header-muted);
+  font-size: 11px;
+}
+/* =========================================================
+   PANEL ANIMATION
+========================================================= */
+@keyframes header-panel-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(-7px)
+      scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+/* Sidebar mobile được quản lý độc quyền bởi admin.css. */
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 520px) {
+  .topbar {
+    min-height: 62px;
+    padding:
+      0 15px 0 18px;
+  }
+  .icon-btn,
+  .avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+  .icon-btn .material-symbols-rounded {
+    font-size: 20px;
+  }
+  .avatar {
+    border-radius: 12px;
+  }
+  .notification-panel {
+    position: fixed;
+    top: 70px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height:
+      calc(100vh - 84px);
+  }
+  .notification-list {
+    max-height:
+      calc(100vh - 175px);
+  }
+}
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+@media (max-width: 380px) {
+  .topbar {
+    gap: 8px;
+    padding-inline:
+      12px 13px;
+  }
+  .top-actions {
+    gap: 7px;
+  }
+  .icon-btn,
+  .avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border-radius: 11px;
+  }
+  .notice-badge {
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+  }
+}
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .topbar *,
+  .topbar *::before,
+  .topbar *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* =========================================================
+   DARK BACKDROP SAFETY
+========================================================= */
+@media (prefers-color-scheme: dark) {
+  /*
+    Không ép dark mode.
+    Giữ nguyên giao diện Admin sáng để đồng bộ
+    với hệ thống hiện tại.
+  */
+}
+
+/* =========================================================
+   ADMIN CAMPUS BADGE
+========================================================= */
+.admin-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.top-admin-campus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  color: var(--header-maroon, #701b19);
+  background: var(--header-cream, #f4e7d5);
+  border: 1px solid var(--header-line-strong, rgba(112, 27, 25, .17));
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  box-shadow: 0 3px 9px rgba(112, 27, 25, .08);
+}
+
+.top-admin-campus:empty {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .top-admin-campus {
+    display: none;
+  }
+}
