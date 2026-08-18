@@ -1559,17 +1559,14 @@
   ========================================================= */
 
   function confirmStatusChange(ticket, newStatus) {
-    const meta = STATUS_META[normalizeStatus(newStatus)];
+    const normalizedStatus = normalizeStatus(newStatus);
+    const meta = STATUS_META[normalizedStatus];
 
-    if (normalizeStatus(newStatus) === "closed") {
-      return Promise.resolve(
-        window.confirm(
-          `Đóng ticket ${getTicketNum(ticket)}?\n\n` + `Sau khi đóng, ticket sẽ được đánh dấu là đã kết thúc.`
-        )
-      );
-    }
-
-    return Promise.resolve(window.confirm(`Chuyển ticket ${getTicketNum(ticket)} sang "${meta.label}"?`));
+    return showConfirmDialog({
+      ticketId: getTicketNum(ticket),
+      nextStatusLabel: meta.label,
+      isClosing: normalizedStatus === "closed"
+    });
   }
 
   /* =========================================================
@@ -2463,3 +2460,62 @@
   console.log("Có thể bấm bất cứ đâu trong ticket để mở Drawer");
   console.log("==========================================");
 })();
+
+
+function showConfirmDialog({ ticketId, nextStatusLabel, isClosing = false }) {
+  const modal = document.getElementById("confirmModal");
+  const message = document.getElementById("confirmDialogMessage");
+  const acceptButton = document.getElementById("confirmAcceptBtn");
+  const title = document.getElementById("confirmDialogTitle");
+
+  const fallbackMessage = isClosing
+    ? `Đóng ticket ${ticketId}?\n\nSau khi đóng, ticket sẽ được đánh dấu là đã kết thúc.`
+    : `Chuyển ticket ${ticketId} sang "${nextStatusLabel}"?`;
+
+  if (!modal || !message || !acceptButton) {
+    return Promise.resolve(window.confirm(fallbackMessage));
+  }
+
+  if (title) {
+    title.textContent = isClosing
+      ? "Đóng ticket này?"
+      : "Chuyển trạng thái ticket?";
+  }
+
+  message.textContent = isClosing
+    ? `Bạn có chắc muốn đóng ticket ${ticketId} không? Sau khi đóng, ticket sẽ được đánh dấu là đã kết thúc.`
+    : `Bạn có chắc muốn chuyển ticket ${ticketId} sang trạng thái "${nextStatusLabel}" không?`;
+
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+
+  return new Promise((resolve) => {
+    let settled = false;
+
+    const cleanup = (result) => {
+      if (settled) return;
+      settled = true;
+      modal.hidden = true;
+      document.body.classList.remove("modal-open");
+      acceptButton.removeEventListener("click", onAccept);
+      modal.querySelectorAll("[data-confirm-cancel]").forEach((button) => {
+        button.removeEventListener("click", onCancel);
+      });
+      document.removeEventListener("keydown", onKeydown);
+      resolve(result);
+    };
+
+    const onAccept = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+    const onKeydown = (event) => {
+      if (event.key === "Escape") cleanup(false);
+    };
+
+    acceptButton.addEventListener("click", onAccept);
+    modal.querySelectorAll("[data-confirm-cancel]").forEach((button) => {
+      button.addEventListener("click", onCancel);
+    });
+    document.addEventListener("keydown", onKeydown);
+    requestAnimationFrame(() => acceptButton.focus());
+  });
+}

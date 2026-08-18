@@ -141,6 +141,33 @@
     </section>
   </aside>
   <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+
+  <div class="confirm-modal" id="confirmModal" hidden>
+    <div class="confirm-backdrop" data-confirm-cancel></div>
+
+    <section class="confirm-dialog" role="dialog" aria-modal="true"
+      aria-labelledby="confirmDialogTitle" aria-describedby="confirmDialogMessage">
+      <div class="confirm-icon" aria-hidden="true">
+        <span class="material-symbols-rounded">sync_alt</span>
+      </div>
+
+      <div class="confirm-content">
+        <p class="confirm-kicker">XÁC NHẬN CẬP NHẬT</p>
+        <h2 id="confirmDialogTitle">Chuyển trạng thái ticket?</h2>
+        <p id="confirmDialogMessage">Bạn có chắc muốn chuyển ticket này sang trạng thái mới không?</p>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="confirm-button confirm-cancel" type="button" data-confirm-cancel>
+          Hủy
+        </button>
+        <button class="confirm-button confirm-accept" type="button" id="confirmAcceptBtn">
+          <span class="material-symbols-rounded">check</span>
+          Xác nhận
+        </button>
+      </div>
+    </section>
+  </div>
   <script src="/CS/navbar.js"></script>
   <script src="/CS/TicketManagement/cs.js"></script>
 </body>
