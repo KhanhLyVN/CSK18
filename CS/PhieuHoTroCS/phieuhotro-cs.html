@@ -8,11 +8,10 @@
 
   <link rel="stylesheet" href="/CS/PhieuHoTroCS/phieuhotro-cs.css">
   <link rel="stylesheet" href="/CS/navbar.css">
-  <link rel="stylesheet" href="/CS/cs-navbar-fixed.css">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200&display=swap"
     rel="stylesheet">
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -219,9 +218,79 @@
       }
     }
 
+        /* =======================================================
+       CHAT AI SUGGESTIONS
+    ======================================================== */
+    .material-symbols-rounded {
+      font-family: "Material Symbols Rounded";
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: "liga";
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "liga";
+    }
+
+    .ai-panel {
+      position: relative;
+    }
+
+    .ai-panel-head {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      padding-left: 34px;
+      font-weight: 700;
+    }
+
+    .ai-panel-close {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 1px solid rgba(93, 7, 3, 0.2);
+      border-radius: 50%;
+      color: #5d0703;
+      background: #fff;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .ai-panel-close:hover,
+    .ai-panel-close:focus-visible {
+      color: #fff;
+      background: #5d0703;
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    .ai-panel-close .material-symbols-rounded {
+      font-size: 17px;
+    }
+
+    .ai-suggest-active {
+      color: #fff;
+      background: #5d0703;
+    }
+
     /* =======================================================
        RESPONSIVE AI
     ======================================================== */
+
     @media (max-width: 600px) {
       .title-ai-loading-head {
         align-items: flex-start;

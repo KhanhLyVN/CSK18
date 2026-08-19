@@ -2344,6 +2344,12 @@ textarea:focus-visible {
   font-weight: 800
 }
 
+.ai-tool-button.ai-suggest-active {
+  color: #fff;
+  background: var(--maroon);
+  border-color: var(--maroon);
+}
+
 .chat-tool-hint {
   margin-right: auto;
   color: var(--muted);
@@ -2420,13 +2426,46 @@ textarea:focus-visible {
 }
 
 .ai-panel-head {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 7px;
+  min-height: 26px;
   margin-bottom: 7px;
+  padding-left: 32px;
   color: #795818;
   font-size: 10px;
   font-weight: 800
+}
+
+.ai-panel-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 1px solid rgba(93, 7, 3, .22);
+  border-radius: 50%;
+  color: var(--maroon);
+  background: #fff;
+  cursor: pointer;
+  transition: color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.ai-panel-close:hover,
+.ai-panel-close:focus-visible {
+  color: #fff;
+  background: var(--maroon);
+  transform: scale(1.05);
+  outline: none;
+}
+
+.ai-panel-close .material-symbols-rounded {
+  font-size: 16px;
 }
 
 .ai-panel-head .material-symbols-rounded {
