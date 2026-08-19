@@ -84,7 +84,7 @@
   let aiSuggestionsVisible = false;
   let aiSuggestionRequestId = 0;
   let aiSuggestionAbortController = null;
-  const AI_WEB_APP_URL =  "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  const AI_WEB_APP_URL =  "https://script.google.com/macros/s/AKfycbx7s9ofHRp2Lwrb_wzvq-tI_nvHTqT5Eqy-4ypH1p1S41VxNGR54nFhEMPjRIw_Lp3iUw/exec";
 
   const closeChatBtn = document.getElementById("closeChatBtn");
   const chatTicketContext = document.getElementById("chatTicketContext");

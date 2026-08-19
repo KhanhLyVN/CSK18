@@ -88,8 +88,8 @@ function getValue(id) {
 // ======================================================
 // AI PHÂN TÍCH TIÊU ĐỀ
 // ======================================================
-// const TITLE_AI_WEB_APP_URL =
-//   "https://script.google.com/macros/s/AKfycbwutpic8kIusuN9LXSsCH4L_QYv8S67YzmzasywVDQlqfsDBaLpSsWYVroWKDexj-Rg/exec";
+const TITLE_AI_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbx7s9ofHRp2Lwrb_wzvq-tI_nvHTqT5Eqy-4ypH1p1S41VxNGR54nFhEMPjRIw_Lp3iUw/exec";
 
 const fTitle = $("fTitle");
 const titleAiSuggestion = $("titleAiSuggestion");
