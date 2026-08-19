@@ -81,7 +81,7 @@
   let pendingImage = null;
   let chatConversationMessages = [];
   let aiDraftText = "";
-  const AI_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvf35Iys91we_U2Hku2Hoa8755yajrmzCgWgK6s5cKoj7UVc_Lh_kqmOK23L26GhffrQ/exec";
+  const AI_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7s9ofHRp2Lwrb_wzvq-tI_nvHTqT5Eqy-4ypH1p1S41VxNGR54nFhEMPjRIw_Lp3iUw/exec";
 
   const closeChatBtn = document.getElementById("closeChatBtn");
   const chatTicketContext = document.getElementById("chatTicketContext");
@@ -2125,7 +2125,7 @@
       }));
   }
 
-  async function createAiDraft() {
+  async function createAiDraft(signal) {
     const conversation = chatConversationMessages
       .map((message) => ({
         role:
@@ -2173,7 +2173,8 @@
         question: `${aiInstruction}\n\nCâu hỏi mới nhất của học viên:\n${latestStudentMessage}`,
         history: JSON.stringify(conversation),
         faqContext: JSON.stringify(faqContext)
-      })
+      }),
+      signal
     });
     if (!response.ok) throw new Error(`Gemini gateway HTTP ${response.status}`);
     const data = await response.json();
@@ -2181,25 +2182,73 @@
     return String(data.answer).trim();
   }
 
-  async function showAiSuggestions() {
-    if (!chatAiSuggestions || !selectedTicket) return;
-    chatAiSuggestions.hidden = false;
-    chatAiSuggestions.innerHTML = `<div class="ai-panel-head"><span class="material-symbols-rounded">auto_awesome</span>AI đang phân tích</div><p class="ai-panel-status">Đang đọc toàn bộ nội dung trao đổi của học viên...</p>`;
-    aiDraftText = await createAiDraft();
-    chatAiSuggestions.innerHTML = `<div class="ai-panel-head"><span class="material-symbols-rounded">auto_awesome</span>Gợi ý trả lời ẩn</div><p class="ai-panel-status">Bản nháp chỉ hiển thị cho CS và chưa được gửi cho học viên.</p><textarea class="ai-draft" id="aiDraftText">${escapeHtml(
-      aiDraftText
-    )}</textarea><div class="ai-panel-actions"><button class="ai-panel-action" id="refreshAiDraft" type="button"><span class="material-symbols-rounded">refresh</span>Tạo lại</button><button class="ai-panel-action primary" id="insertAiDraft" type="button"><span class="material-symbols-rounded">content_paste</span>Dùng câu trả lời</button></div>`;
-    document.getElementById("insertAiDraft")?.addEventListener("click", () => {
-      const draft = document.getElementById("aiDraftText")?.value || aiDraftText;
-      if (chatInput) {
-        chatInput.value = draft;
-        chatInput.focus();
-      }
-    });
-    document.getElementById("refreshAiDraft")?.addEventListener("click", showAiSuggestions);
+  let aiSuggestionsVisible = false;
+  let aiSuggestionRequestId = 0;
+  let aiSuggestionAbortController = null;
+
+  function updateAiSuggestButton() {
+    if (!aiSuggestBtn) return;
+    aiSuggestBtn.classList.toggle("ai-suggest-active", aiSuggestionsVisible);
+    aiSuggestBtn.setAttribute("aria-pressed", String(aiSuggestionsVisible));
+    aiSuggestBtn.setAttribute("aria-label", aiSuggestionsVisible ? "Tắt gợi ý trả lời AI" : "Bật gợi ý trả lời AI");
+    aiSuggestBtn.title = aiSuggestionsVisible ? "Tắt gợi ý trả lời AI" : "Bật gợi ý trả lời AI";
   }
 
-  aiSuggestBtn?.addEventListener("click", showAiSuggestions);
+  function hideAiSuggestions() {
+    aiSuggestionsVisible = false;
+    aiSuggestionRequestId += 1;
+    aiSuggestionAbortController?.abort();
+    aiSuggestionAbortController = null;
+    if (chatAiSuggestions) {
+      chatAiSuggestions.hidden = true;
+      chatAiSuggestions.setAttribute("aria-hidden", "true");
+      chatAiSuggestions.innerHTML = "";
+    }
+    updateAiSuggestButton();
+  }
+
+  function renderAiPanelHead(icon, title) {
+    return `<div class="ai-panel-head"><button class="ai-panel-close" id="closeAiSuggestions" type="button" aria-label="Đóng ô gợi ý AI" title="Đóng ô gợi ý AI"><span class="material-symbols-rounded">close</span></button><span class="material-symbols-rounded">${icon}</span>${title}</div>`;
+  }
+
+  async function showAiSuggestions() {
+    if (!chatAiSuggestions || !selectedTicket) return;
+    aiSuggestionsVisible = true;
+    const requestId = ++aiSuggestionRequestId;
+    aiSuggestionAbortController?.abort();
+    const controller = new AbortController();
+    aiSuggestionAbortController = controller;
+    chatAiSuggestions.hidden = false;
+    chatAiSuggestions.setAttribute("aria-hidden", "false");
+    chatAiSuggestions.innerHTML = `${renderAiPanelHead("auto_awesome", "AI đang phân tích")}<p class="ai-panel-status">Đang đọc toàn bộ nội dung trao đổi của học viên...</p>`;
+    document.getElementById("closeAiSuggestions")?.addEventListener("click", hideAiSuggestions);
+    updateAiSuggestButton();
+
+    try {
+      aiDraftText = await createAiDraft(controller.signal);
+      if (!aiSuggestionsVisible || requestId !== aiSuggestionRequestId || controller.signal.aborted) return;
+      chatAiSuggestions.innerHTML = `${renderAiPanelHead("auto_awesome", "Gợi ý trả lời AI")}<p class="ai-panel-status">Bản nháp chỉ hiển thị cho CS và chưa được gửi cho học viên.</p><textarea class="ai-draft" id="aiDraftText">${escapeHtml(aiDraftText)}</textarea><div class="ai-panel-actions"><button class="ai-panel-action" id="refreshAiDraft" type="button"><span class="material-symbols-rounded">refresh</span>Tạo lại</button><button class="ai-panel-action primary" id="insertAiDraft" type="button"><span class="material-symbols-rounded">content_paste</span>Dùng câu trả lời</button></div>`;
+      document.getElementById("closeAiSuggestions")?.addEventListener("click", hideAiSuggestions);
+      document.getElementById("insertAiDraft")?.addEventListener("click", () => {
+        const draft = document.getElementById("aiDraftText")?.value || aiDraftText;
+        if (chatInput) { chatInput.value = draft; chatInput.focus(); }
+      });
+      document.getElementById("refreshAiDraft")?.addEventListener("click", showAiSuggestions);
+    } catch (error) {
+      if (error?.name === "AbortError" || controller.signal.aborted || !aiSuggestionsVisible) return;
+      chatAiSuggestions.innerHTML = `${renderAiPanelHead("error", "Không thể tạo gợi ý")}<p class="ai-panel-status">${escapeHtml(error?.message || "Vui lòng thử lại sau.")}</p><div class="ai-panel-actions"><button class="ai-panel-action primary" id="retryAiDraft" type="button"><span class="material-symbols-rounded">refresh</span>Thử lại</button></div>`;
+      document.getElementById("closeAiSuggestions")?.addEventListener("click", hideAiSuggestions);
+      document.getElementById("retryAiDraft")?.addEventListener("click", showAiSuggestions);
+    } finally {
+      if (aiSuggestionAbortController === controller) aiSuggestionAbortController = null;
+    }
+  }
+
+  aiSuggestBtn?.addEventListener("click", () => {
+    if (aiSuggestionsVisible) hideAiSuggestions();
+    else showAiSuggestions();
+  });
+  updateAiSuggestButton();
 
   /* =========================================================
      SEND CHAT
