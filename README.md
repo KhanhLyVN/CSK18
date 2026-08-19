@@ -24,7 +24,7 @@ Project hiện đang viết bằng HTML + CSS + JavaScript thuần, không dùng
 - Có giao diện password toggle và trạng thái loading khi đăng nhập
 
 ### 2. Học viên (HV)
-- Tạo phiếu hỗ trợ với các trường: họ tên, email, số điện thoại, campus, khóa học, loại yêu cầu, tiêu đề, mô tả, tệp đính kèm
+- Tạo phiếu hỗ trợ với các trường: họ tên, email, số điện thoại, cơ sở, khóa học, loại yêu cầu, tiêu đề, mô tả, tệp đính kèm
 - Chọn nhóm vấn đề theo category và issue
 - Cấu hình ưu tiên tự động theo mức độ nghiêm trọng của câu hỏi và từ khóa nội dung
 - Gợi ý tiêu đề AI (khi người dùng nhập tiêu đề, có thể gọi AI để đề xuất cách viết rõ và hiệu quả hơn)
