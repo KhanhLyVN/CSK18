@@ -1,21 +1,70 @@
+"use strict";
+
+/* =========================================================
+   EMAILJS
+========================================================= */
+
 const EMAILJS_PUBLIC_KEY = "dmcYr1M1K9V45Q18B";
 const EMAILJS_SERVICE_ID = "service_ts3osyy";
 const EMAILJS_TEMPLATE_ID = "template_2bntc3p";
 
-if (window.emailjs) window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+if (window.emailjs) {
+  try {
+    window.emailjs.init({
+      publicKey: EMAILJS_PUBLIC_KEY,
+    });
+  } catch (error) {
+    console.warn("EmailJS init error:", error);
+  }
+}
+
+/* =========================================================
+   ICONS
+========================================================= */
 
 const ICONS = {
-  bug: '<path d="M12 8v8M8 12h8"/><path d="M9 4h6l1 3H8l1-3z"/><rect x="6" y="7" width="12" height="12" rx="4"/><path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>',
-  calendar:
-    '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
-  wallet:
-    '<path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5a2 2 0 0 0 0 4h6"/>',
-  cert: '<circle cx="12" cy="8" r="5"/><path d="M9 12.5L7 21l5-3 5 3-2-8.5"/>',
-  book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/>',
-  work: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle>',
-  other:
-    '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
+  bug: `
+    <path d="M12 8v8M8 12h8"/>
+    <path d="M9 4h6l1 3H8l1-3z"/>
+    <rect x="6" y="7" width="12" height="12" rx="4"/>
+    <path d="M4 10l2 1M20 10l-2 1M4 17l2-1M20 17l-2-1"/>
+  `,
+
+  calendar: `
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M16 3v4M8 3v4M3 10h18"/>
+  `,
+
+  wallet: `
+    <path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/>
+    <path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5a2 2 0 0 0 0 4h6"/>
+  `,
+
+  cert: `
+    <circle cx="12" cy="8" r="5"/>
+    <path d="M9 12.5L7 21l5-3 5 3-2-8.5"/>
+  `,
+
+  book: `
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/>
+    <path d="M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/>
+  `,
+
+  work: `
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+    <circle cx="12" cy="12" r="3"/>
+  `,
+
+  other: `
+    <circle cx="5" cy="12" r="1.4"/>
+    <circle cx="12" cy="12" r="1.4"/>
+    <circle cx="19" cy="12" r="1.4"/>
+  `,
 };
+
+/* =========================================================
+   TICKET CATEGORIES
+========================================================= */
 
 const TICKET_CATEGORIES = [
   {
@@ -23,885 +72,3169 @@ const TICKET_CATEGORIES = [
     label: "Hệ thống",
     icon: "bug",
     issues: [
-      { value: "system-login", label: "Đăng nhập" },
-      { value: "account", label: "Tài khoản học viên" },
-      { value: "system-web", label: "Trang web không truy cập được" },
-      { value: "system-technical", label: "Lỗi kỹ thuật" },
-      { value: "system-other", label: "Khác" },
+      {
+        value: "system-login",
+        label: "Đăng nhập",
+      },
+      {
+        value: "account",
+        label: "Tài khoản học viên",
+      },
+      {
+        value: "system-web",
+        label: "Trang web không truy cập được",
+      },
+      {
+        value: "system-technical",
+        label: "Lỗi kỹ thuật",
+      },
+      {
+        value: "system-other",
+        label: "Khác",
+      },
     ],
   },
+
   {
     id: "learning",
     label: "Khóa học",
     icon: "book",
     issues: [
-      { value: "learning-class", label: "Đăng ký khóa học" },
-      { value: "learning-cost", label: "Học phí" },
-      { value: "learning-paymentmentol", label: "Phương thức thanh toán" },
-      { value: "learning-confirm", label: "Xác nhận thanh toán" },
-      { value: "learning-other", label: "Khác" },
+      {
+        value: "learning-class",
+        label: "Đăng ký khóa học",
+      },
+      {
+        value: "learning-cost",
+        label: "Học phí",
+      },
+      {
+        value: "learning-paymentmentol",
+        label: "Phương thức thanh toán",
+      },
+      {
+        value: "learning-confirm",
+        label: "Xác nhận thanh toán",
+      },
+      {
+        value: "learning-other",
+        label: "Khác",
+      },
     ],
   },
+
   {
     id: "account",
     label: "Vận hành",
     icon: "work",
     issues: [
-      { value: "account-schedule", label: "Lịch học" },
-      { value: "account-qualities", label: "Chất lượng hình ảnh và video" },
-      { value: "account-mentor", label: "Giáo viên" },
-      { value: "account-certificate", label: "Hỗ trợ bài" },
-      { value: "account-other", label: "Khác" },
+      {
+        value: "account-schedule",
+        label: "Lịch học",
+      },
+      {
+        value: "account-qualities",
+        label: "Chất lượng hình ảnh và video",
+      },
+      {
+        value: "account-mentor",
+        label: "Giáo viên",
+      },
+      {
+        value: "account-certificate",
+        label: "Hỗ trợ bài",
+      },
+      {
+        value: "account-other",
+        label: "Khác",
+      },
     ],
   },
+
   {
     id: "other",
     label: "Khác",
     icon: "other",
     issues: [
-      { value: "other-feedback", label: "Góp ý / phản hồi" },
-      { value: "other-complaint", label: "Khiếu nại" },
-      { value: "other-request", label: "Yêu cầu hỗ trợ khác" },
+      {
+        value: "other-feedback",
+        label: "Góp ý / phản hồi",
+      },
+      {
+        value: "other-complaint",
+        label: "Khiếu nại",
+      },
+      {
+        value: "other-request",
+        label: "Yêu cầu hỗ trợ khác",
+      },
     ],
   },
 ];
 
+/* =========================================================
+   HELPERS
+========================================================= */
+
 const $ = (id) => document.getElementById(id);
-const issueField = $("issueField");
-const issueSelect = $("issueSelect");
-const chipGrid = $("chipGrid");
-const chkCourse = $("chkCourse");
-const courseBoxWrap = $("courseBoxWrap");
-const fCourse = $("fCourse");
-const fDateEl = $("fDate");
-const fFile = $("fFile");
-const fileDrop = $("fileDrop");
-const fileNameEl = $("fileName");
-const formView = $("formView");
-const successView = $("successView");
-const layoutContainer = $("layoutContainer");
+
 function getValue(id) {
   const element = $(id);
-  return element ? String(element.value || "").trim() : "";
+
+  return element
+    ? String(element.value || "").trim()
+    : "";
 }
 
-// ======================================================
-// AI PHÂN TÍCH TIÊU ĐỀ
-// ======================================================
+function getDatabase() {
+  return typeof db !== "undefined"
+    ? db
+    : null;
+}
+
+function escapeHTML(value) {
+  const element =
+    document.createElement("div");
+
+  element.textContent =
+    value ?? "";
+
+  return element.innerHTML;
+}
+
+function svgIcon(key) {
+  return `
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      ${ICONS[key] || ICONS.other}
+    </svg>
+  `;
+}
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const issueField =
+  $("issueField");
+
+const issueSelect =
+  $("issueSelect");
+
+const chipGrid =
+  $("chipGrid");
+
+const chkCourse =
+  $("chkCourse");
+
+const courseBoxWrap =
+  $("courseBoxWrap");
+
+const fCourse =
+  $("fCourse");
+
+const fDateEl =
+  $("fDate");
+
+const fFile =
+  $("fFile");
+
+const fileDrop =
+  $("fileDrop");
+
+const fileNameEl =
+  $("fileName");
+
+const formView =
+  $("formView");
+
+const successView =
+  $("successView");
+
+const layoutContainer =
+  $("layoutContainer");
+
+const fTitle =
+  $("fTitle");
+
+/* =========================================================
+   AI CONFIG
+========================================================= */
+
 const TITLE_AI_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbx7s9ofHRp2Lwrb_wzvq-tI_nvHTqT5Eqy-4ypH1p1S41VxNGR54nFhEMPjRIw_Lp3iUw/exec";
 
-const fTitle = $("fTitle");
-const titleAiSuggestion = $("titleAiSuggestion");
-const titleAiSuggestionBody = $("titleAiSuggestionBody");
-const closeTitleAiSuggestion = $("closeTitleAiSuggestion");
+const AI_TITLE_MIN_LENGTH = 15;
+const AI_TITLE_DEBOUNCE = 1800;
+const AI_QUOTA_COOLDOWN = 45000;
 
-/* ------------------------------------------------------
-   AI LOADING DOM
-   (KHAI BÁO DUY NHẤT của aiProgressTimer / aiProgress —
-   không khai báo lại ở nơi khác trong file.)
------------------------------------------------------- */
-const titleAiLoading = $("titleAiLoading");
-const titleAiProgressBar = $("titleAiProgressBar");
-const titleAiLoadingPercent = $("titleAiLoadingPercent");
-const titleAiLoadingStatus = $("titleAiLoadingStatus");
+/* =========================================================
+   AI DOM
+========================================================= */
 
-let aiProgressTimer = null;
-let aiProgress = 0;
+const titleAiSuggestion =
+  $("titleAiSuggestion");
 
-let titleAiDebounceTimer = null;
-let titleAiRequestId = 0;
-let titleAiManuallyClosed = false;
+const titleAiSuggestionBody =
+  $("titleAiSuggestionBody");
 
-/* ------------------------------------------------------
-   HIỆN / ẨN KẾT QUẢ AI
-   (chỉ gọi khi loading đã xong, hoặc khi có lỗi)
------------------------------------------------------- */
-function showTitleAiSuggestion(text, options = {}) {
-  if (!titleAiSuggestion || !titleAiSuggestionBody) return;
+const closeTitleAiSuggestion =
+  $("closeTitleAiSuggestion");
 
-  titleAiSuggestionBody.textContent = text || "";
-  titleAiSuggestion.classList.toggle("is-error", Boolean(options.error));
-  titleAiSuggestion.classList.add("is-visible");
-  titleAiSuggestion.setAttribute("aria-hidden", "false");
+const titleAiLoading =
+  $("titleAiLoading");
+
+const titleAiProgressBar =
+  $("titleAiProgressBar");
+
+const titleAiLoadingPercent =
+  $("titleAiLoadingPercent");
+
+const titleAiLoadingStatus =
+  $("titleAiLoadingStatus");
+
+/* =========================================================
+   AI STATE
+========================================================= */
+
+let aiProgressTimer =
+  null;
+
+let aiProgress =
+  0;
+
+let titleAiDebounceTimer =
+  null;
+
+let titleAiRequestId =
+  0;
+
+let titleAiManuallyClosed =
+  false;
+
+let titleAiQuotaBlockedUntil =
+  0;
+
+const titleAiCache =
+  new Map();
+
+/* =========================================================
+   AI QUOTA ERROR
+========================================================= */
+
+class TitleAIQuotaError extends Error {
+  constructor(
+    message = "AI đang hết quota."
+  ) {
+    super(message);
+
+    this.name =
+      "TitleAIQuotaError";
+
+    this.code =
+      429;
+  }
+}
+
+/* =========================================================
+   AI SHOW
+========================================================= */
+
+function showTitleAiSuggestion(
+  text,
+  options = {}
+) {
+  if (
+    !titleAiSuggestion ||
+    !titleAiSuggestionBody
+  ) {
+    return;
+  }
+
+  titleAiSuggestionBody.textContent =
+    text || "";
+
+  titleAiSuggestion.classList.toggle(
+    "is-error",
+    Boolean(options.error)
+  );
+
+  titleAiSuggestion.classList.add(
+    "is-visible"
+  );
+
+  titleAiSuggestion.setAttribute(
+    "aria-hidden",
+    "false"
+  );
 }
 
 function hideTitleAiSuggestion() {
-  if (!titleAiSuggestion || !titleAiSuggestionBody) return;
+  if (
+    !titleAiSuggestion ||
+    !titleAiSuggestionBody
+  ) {
+    return;
+  }
 
-  titleAiSuggestion.classList.remove("is-visible", "is-error");
-  titleAiSuggestion.setAttribute("aria-hidden", "true");
-  titleAiSuggestionBody.textContent = "";
+  titleAiSuggestion.classList.remove(
+    "is-visible",
+    "is-error"
+  );
+
+  titleAiSuggestion.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  titleAiSuggestionBody.textContent =
+    "";
 }
 
-function formatTitleAiAnswer(answer) {
-  const cleanAnswer = String(answer || "").trim();
+function formatTitleAiAnswer(
+  answer
+) {
+  const cleanAnswer =
+    String(answer || "").trim();
+
   if (!cleanAnswer) {
-    return "AI chưa tìm được hướng dẫn phù hợp. Bạn có thể bổ sung mô tả chi tiết ở ô bên dưới.";
+    return (
+      "AI chưa tìm được hướng dẫn phù hợp. " +
+      "Bạn có thể bổ sung mô tả chi tiết ở ô bên dưới."
+    );
   }
+
   return cleanAnswer;
 }
 
-/* ------------------------------------------------------
-   GỌI AI PHÂN TÍCH TIÊU ĐỀ
-   Chỉ TRẢ VỀ văn bản kết quả — không tự hiển thị.
-   Việc hiển thị do requestTitleAiSuggestion() quyết định,
-   sau khi thanh loading đã chạy xong 100%.
------------------------------------------------------- */
-async function analyzeTitleWithAI(title, requestId) {
-  const selectedRadio = document.querySelector(
-    'input[name="ticketMainType"]:checked',
+/* =========================================================
+   AI PROGRESS
+========================================================= */
+
+function updateAIProgress(
+  percent
+) {
+  if (
+    !titleAiProgressBar ||
+    !titleAiLoadingPercent
+  ) {
+    return;
+  }
+
+  const value =
+    Math.round(
+      Math.max(
+        0,
+        Math.min(
+          100,
+          percent
+        )
+      )
+    );
+
+  titleAiProgressBar.style.width =
+    `${value}%`;
+
+  titleAiLoadingPercent.textContent =
+    `${value}%`;
+}
+
+/* =========================================================
+   START AI LOADING
+========================================================= */
+
+function startAITitleLoading() {
+  if (!titleAiLoading) {
+    return;
+  }
+
+  clearInterval(
+    aiProgressTimer
   );
 
-  const category = selectedRadio ? getCategory(selectedRadio.value) : null;
+  aiProgress = 0;
+
+  titleAiLoading.classList.add(
+    "is-visible"
+  );
+
+  titleAiLoading.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+  updateAIProgress(0);
+
+  if (titleAiLoadingStatus) {
+    titleAiLoadingStatus.textContent =
+      "Đang chuẩn bị dữ liệu...";
+  }
+
+  aiProgressTimer =
+    setInterval(() => {
+      if (
+        aiProgress >= 95
+      ) {
+        clearInterval(
+          aiProgressTimer
+        );
+
+        return;
+      }
+
+      let step =
+        1;
+
+      if (
+        aiProgress < 20
+      ) {
+        step = 4;
+
+        if (
+          titleAiLoadingStatus
+        ) {
+          titleAiLoadingStatus.textContent =
+            "Đang chuẩn bị dữ liệu...";
+        }
+      }
+
+      else if (
+        aiProgress < 50
+      ) {
+        step = 2;
+
+        if (
+          titleAiLoadingStatus
+        ) {
+          titleAiLoadingStatus.textContent =
+            "Đang phân tích nội dung tiêu đề...";
+        }
+      }
+
+      else if (
+        aiProgress < 75
+      ) {
+        step = 1.5;
+
+        if (
+          titleAiLoadingStatus
+        ) {
+          titleAiLoadingStatus.textContent =
+            "Đang đối chiếu với các vấn đề thường gặp...";
+        }
+      }
+
+      else if (
+        aiProgress < 90
+      ) {
+        step = 1;
+
+        if (
+          titleAiLoadingStatus
+        ) {
+          titleAiLoadingStatus.textContent =
+            "Đang xây dựng hướng xử lý phù hợp...";
+        }
+      }
+
+      else {
+        step = 0.3;
+
+        if (
+          titleAiLoadingStatus
+        ) {
+          titleAiLoadingStatus.textContent =
+            "Đang chờ kết quả từ hệ thống AI...";
+        }
+      }
+
+      aiProgress =
+        Math.min(
+          95,
+          aiProgress +
+            step
+        );
+
+      updateAIProgress(
+        aiProgress
+      );
+    }, 350);
+}
+
+/* =========================================================
+   FINISH AI LOADING
+========================================================= */
+
+function finishAITitleLoading() {
+  if (!titleAiLoading) {
+    return;
+  }
+
+  clearInterval(
+    aiProgressTimer
+  );
+
+  aiProgress =
+    100;
+
+  updateAIProgress(
+    100
+  );
+
+  if (
+    titleAiLoadingStatus
+  ) {
+    titleAiLoadingStatus.textContent =
+      "Đã phân tích xong yêu cầu.";
+  }
+
+  setTimeout(() => {
+    if (!titleAiLoading) {
+      return;
+    }
+
+    titleAiLoading.classList.remove(
+      "is-visible"
+    );
+
+    titleAiLoading.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+  }, 350);
+}
+
+/* =========================================================
+   HIDE AI LOADING
+========================================================= */
+
+function hideAITitleLoading() {
+  if (!titleAiLoading) {
+    return;
+  }
+
+  clearInterval(
+    aiProgressTimer
+  );
+
+  titleAiLoading.classList.remove(
+    "is-visible"
+  );
+
+  titleAiLoading.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  updateAIProgress(
+    0
+  );
+
+  aiProgress =
+    0;
+
+  if (
+    titleAiLoadingStatus
+  ) {
+    titleAiLoadingStatus.textContent =
+      "Đang chuẩn bị phân tích...";
+  }
+}
+
+/* =========================================================
+   AI QUOTA CHECK
+========================================================= */
+
+function isAIQuotaBlocked() {
+  return (
+    Date.now() <
+    titleAiQuotaBlockedUntil
+  );
+}
+
+/* =========================================================
+   ANALYZE TITLE WITH AI
+========================================================= */
+
+async function analyzeTitleWithAI(
+  title,
+  requestId
+) {
+  const cleanTitle =
+    String(title || "").trim();
+
+  if (!cleanTitle) {
+    return null;
+  }
+
+  /* Cache */
+  if (
+    titleAiCache.has(
+      cleanTitle
+    )
+  ) {
+    return titleAiCache.get(
+      cleanTitle
+    );
+  }
+
+  /* Quota */
+  if (
+    isAIQuotaBlocked()
+  ) {
+    throw new TitleAIQuotaError();
+  }
+
+  const selectedRadio =
+    document.querySelector(
+      'input[name="ticketMainType"]:checked'
+    );
+
+  const category =
+    selectedRadio
+      ? getCategory(
+          selectedRadio.value
+        )
+      : null;
 
   const issue =
     category?.issues?.find(
-      (item) => item.value === (issueSelect?.value || ""),
+      (item) =>
+        item.value ===
+        (
+          issueSelect?.value ||
+          ""
+        )
     ) || null;
 
-  const response = await fetch(TITLE_AI_WEB_APP_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-    },
-    body: new URLSearchParams({
-      question: title,
-      history: JSON.stringify([]),
-      faqContext: JSON.stringify([
+  let response;
+
+  try {
+    response =
+      await fetch(
+        TITLE_AI_WEB_APP_URL,
         {
-          category: category?.label || "",
-          question: issue?.label || "",
-          answer:
-            "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn.",
-        },
-      ]),
-      mode: "title-suggestion",
-    }),
-  });
+          method:
+            "POST",
 
-  if (requestId !== titleAiRequestId) return null;
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+
+          body:
+            new URLSearchParams({
+              question:
+                cleanTitle,
+
+              history:
+                JSON.stringify(
+                  []
+                ),
+
+              faqContext:
+                JSON.stringify([
+                  {
+                    category:
+                      category?.label ||
+                      "",
+
+                    question:
+                      issue?.label ||
+                      "",
+
+                    answer:
+                      "Hãy phân tích tiêu đề, xác định vấn đề chính và hướng dẫn học viên các bước xử lý an toàn.",
+                  },
+                ]),
+
+              mode:
+                "title-suggestion",
+            }),
+        }
+      );
   }
 
-  const data = await response.json();
-  if (!data.success) {
-    throw new Error(data.error || "AI không thể phân tích tiêu đề.");
+  catch (error) {
+    throw new Error(
+      "Không thể kết nối tới hệ thống AI."
+    );
   }
 
-  return formatTitleAiAnswer(data.answer);
+  if (
+    requestId !==
+    titleAiRequestId
+  ) {
+    return null;
+  }
+
+  if (
+    !response.ok
+  ) {
+    if (
+      response.status ===
+      429
+    ) {
+      titleAiQuotaBlockedUntil =
+        Date.now() +
+        AI_QUOTA_COOLDOWN;
+
+      throw new TitleAIQuotaError();
+    }
+
+    throw new Error(
+      `AI HTTP ${response.status}`
+    );
+  }
+
+  let data;
+
+  try {
+    data =
+      await response.json();
+  }
+
+  catch (error) {
+    throw new Error(
+      "AI trả về dữ liệu không hợp lệ."
+    );
+  }
+
+  if (
+    !data.success
+  ) {
+    const errorText =
+      String(
+        data.error ||
+          ""
+      );
+
+    if (
+      errorText.includes(
+        "429"
+      ) ||
+      errorText
+        .toLowerCase()
+        .includes(
+          "quota"
+        ) ||
+      errorText
+        .toLowerCase()
+        .includes(
+          "resource_exhausted"
+        )
+    ) {
+      titleAiQuotaBlockedUntil =
+        Date.now() +
+        AI_QUOTA_COOLDOWN;
+
+      throw new TitleAIQuotaError();
+    }
+
+    throw new Error(
+      data.error ||
+        "AI không thể phân tích tiêu đề."
+    );
+  }
+
+  const answer =
+    formatTitleAiAnswer(
+      data.answer
+    );
+
+  titleAiCache.set(
+    cleanTitle,
+    answer
+  );
+
+  return answer;
 }
 
-/* ------------------------------------------------------
-   YÊU CẦU GỢI Ý AI (debounce 700ms)
-   Luồng: bắt đầu gõ đủ 8 ký tự
-          → chạy thanh loading (chạy tối đa 95%)
-          → có kết quả: đẩy thanh loading lên 100%
-          → ẩn loading, hiện kết quả
------------------------------------------------------- */
+/* =========================================================
+   REQUEST AI
+========================================================= */
+
 function requestTitleAiSuggestion() {
-  const title = getValue("fTitle");
-  titleAiManuallyClosed = false;
+  const title =
+    getValue(
+      "fTitle"
+    );
 
-  window.clearTimeout(titleAiDebounceTimer);
+  titleAiManuallyClosed =
+    false;
+
+  clearTimeout(
+    titleAiDebounceTimer
+  );
+
   titleAiRequestId += 1;
-  const currentRequestId = titleAiRequestId;
 
-  if (title.length < 8) {
+  const currentRequestId =
+    titleAiRequestId;
+
+  /*
+   * Tối thiểu 15 ký tự
+   */
+  if (
+    title.length <
+    AI_TITLE_MIN_LENGTH
+  ) {
     hideTitleAiSuggestion();
+
     hideAITitleLoading();
+
+    return;
+  }
+
+  /*
+   * Đang bị quota
+   */
+  if (
+    isAIQuotaBlocked()
+  ) {
+    hideAITitleLoading();
+
+    showTitleAiSuggestion(
+      "AI đang tạm hết lượt sử dụng. Bạn vẫn có thể tiếp tục gửi yêu cầu bình thường.",
+      {
+        error: true,
+      }
+    );
+
+    return;
+  }
+
+  /*
+   * Có cache
+   */
+  if (
+    titleAiCache.has(
+      title
+    )
+  ) {
+    hideTitleAiSuggestion();
+
+    startAITitleLoading();
+
+    setTimeout(() => {
+      if (
+        currentRequestId !==
+        titleAiRequestId
+      ) {
+        return;
+      }
+
+      finishAITitleLoading();
+
+      showTitleAiSuggestion(
+        titleAiCache.get(
+          title
+        )
+      );
+    }, 250);
+
     return;
   }
 
   hideTitleAiSuggestion();
+
   startAITitleLoading();
 
-  titleAiDebounceTimer = window.setTimeout(async () => {
-    try {
-      const aiAnswer = await analyzeTitleWithAI(title, currentRequestId);
+  titleAiDebounceTimer =
+    setTimeout(
+      async () => {
+        try {
+          const aiAnswer =
+            await analyzeTitleWithAI(
+              title,
+              currentRequestId
+            );
 
-      if (currentRequestId !== titleAiRequestId) return;
+          if (
+            currentRequestId !==
+            titleAiRequestId
+          ) {
+            return;
+          }
 
-      // Luôn đưa thanh loading lên 100% trước.
-      finishAITitleLoading();
+          finishAITitleLoading();
 
-      // Chỉ hiển thị đáp án sau khi đã đạt 100%.
-      if (aiAnswer) {
-        showTitleAiSuggestion(aiAnswer);
-      }
-    } catch (error) {
-      console.error("TITLE AI ERROR:", error);
+          if (aiAnswer) {
+            showTitleAiSuggestion(
+              aiAnswer
+            );
+          }
+        }
 
-      if (currentRequestId !== titleAiRequestId) return;
+        catch (error) {
+          console.error(
+            "TITLE AI ERROR:",
+            error
+          );
 
-      finishAITitleLoading();
-      showTitleAiSuggestion(
-        "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể gửi mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
-        { error: true },
-      );
-    }
-  }, 700);
+          if (
+            currentRequestId !==
+            titleAiRequestId
+          ) {
+            return;
+          }
+
+          finishAITitleLoading();
+
+          if (
+            error instanceof
+            TitleAIQuotaError
+          ) {
+            showTitleAiSuggestion(
+              "AI đang tạm hết lượt sử dụng. Bạn vẫn có thể tiếp tục gửi yêu cầu bình thường.",
+              {
+                error: true,
+              }
+            );
+          }
+
+          else {
+            showTitleAiSuggestion(
+              "Chưa thể tải gợi ý AI lúc này. Bạn vẫn có thể gửi mô tả chi tiết để bộ phận hỗ trợ kiểm tra.",
+              {
+                error: true,
+              }
+            );
+          }
+        }
+      },
+      AI_TITLE_DEBOUNCE
+    );
 }
+
+/* =========================================================
+   AI EVENTS
+========================================================= */
 
 if (fTitle) {
-  fTitle.addEventListener("input", () => {
-    updateStub();
-    requestTitleAiSuggestion();
-  });
+  fTitle.addEventListener(
+    "input",
+    () => {
+      updateStub();
 
-  // Khi chuyển sang trường khác, khung tự đóng theo yêu cầu.
-  fTitle.addEventListener("blur", () => {
-    window.setTimeout(() => {
-      if (document.activeElement !== fTitle) {
-        hideTitleAiSuggestion();
-      }
-    }, 120);
-  });
+      requestTitleAiSuggestion();
+    }
+  );
+
+  fTitle.addEventListener(
+    "blur",
+    () => {
+      setTimeout(() => {
+        if (
+          document.activeElement !==
+          fTitle
+        ) {
+          hideTitleAiSuggestion();
+        }
+      }, 120);
+    }
+  );
 }
 
-if (closeTitleAiSuggestion) {
-  closeTitleAiSuggestion.addEventListener("click", () => {
-    titleAiManuallyClosed = true;
-    titleAiRequestId += 1;
-    window.clearTimeout(titleAiDebounceTimer);
-    hideTitleAiSuggestion();
-    hideAITitleLoading();
-  });
+if (
+  closeTitleAiSuggestion
+) {
+  closeTitleAiSuggestion.addEventListener(
+    "click",
+    () => {
+      titleAiManuallyClosed =
+        true;
+
+      titleAiRequestId +=
+        1;
+
+      clearTimeout(
+        titleAiDebounceTimer
+      );
+
+      hideTitleAiSuggestion();
+
+      hideAITitleLoading();
+    }
+  );
 }
 
-// Khi người dùng chuyển sang loại yêu cầu khác, khung cũng đóng.
 if (chipGrid) {
-  chipGrid.addEventListener("click", () => {
-    hideTitleAiSuggestion();
-    hideAITitleLoading();
-  });
+  chipGrid.addEventListener(
+    "click",
+    () => {
+      hideTitleAiSuggestion();
+      hideAITitleLoading();
+    }
+  );
 }
+
 if (issueSelect) {
-  issueSelect.addEventListener("change", () => {
-    hideTitleAiSuggestion();
-    hideAITitleLoading();
-  });
-}
-
-/* ------------------------------------------------------
-   CẬP NHẬT % THANH LOADING
------------------------------------------------------- */
-function updateAIProgress(percent) {
-  if (!titleAiProgressBar || !titleAiLoadingPercent) return;
-
-  const value = Math.round(Math.max(0, Math.min(100, percent)));
-
-  titleAiProgressBar.style.width = `${value}%`;
-  titleAiLoadingPercent.textContent = `${value}%`;
-}
-
-/* ------------------------------------------------------
-   BẮT ĐẦU LOADING
------------------------------------------------------- */
-function startAITitleLoading() {
-  if (!titleAiLoading) return;
-
-  clearInterval(aiProgressTimer);
-  aiProgress = 0;
-
-  titleAiLoading.classList.add("is-visible");
-  titleAiLoading.setAttribute("aria-hidden", "false");
-
-  updateAIProgress(0);
-
-  if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
-  }
-
-  aiProgressTimer = setInterval(() => {
-    /*
-     * Không cho thanh loading tự đạt 100%.
-     * Nó chỉ chạy tối đa 95% và chờ API AI trả kết quả.
-     */
-    if (aiProgress >= 95) {
-      clearInterval(aiProgressTimer);
-      return;
+  issueSelect.addEventListener(
+    "change",
+    () => {
+      hideTitleAiSuggestion();
+      hideAITitleLoading();
     }
-
-    let step = 1;
-
-    if (aiProgress < 20) {
-      step = 4;
-      if (titleAiLoadingStatus) {
-        titleAiLoadingStatus.textContent = "Đang chuẩn bị dữ liệu...";
-      }
-    } else if (aiProgress < 50) {
-      step = 2;
-      if (titleAiLoadingStatus) {
-        titleAiLoadingStatus.textContent = "Đang phân tích nội dung tiêu đề...";
-      }
-    } else if (aiProgress < 75) {
-      step = 1.5;
-      if (titleAiLoadingStatus) {
-        titleAiLoadingStatus.textContent =
-          "Đang đối chiếu với các vấn đề thường gặp...";
-      }
-    } else if (aiProgress < 90) {
-      step = 1;
-      if (titleAiLoadingStatus) {
-        titleAiLoadingStatus.textContent =
-          "Đang xây dựng hướng xử lý phù hợp...";
-      }
-    } else {
-      step = 0.3;
-      if (titleAiLoadingStatus) {
-        titleAiLoadingStatus.textContent = "Đang chờ kết quả từ hệ thống AI...";
-      }
-    }
-
-    aiProgress = Math.min(95, aiProgress + step);
-    updateAIProgress(aiProgress);
-  }, 350);
+  );
 }
 
-/* ------------------------------------------------------
-   KẾT THÚC LOADING (đạt 100%, rồi mới ẩn)
------------------------------------------------------- */
-function finishAITitleLoading() {
-  if (!titleAiLoading) return;
+/* =========================================================
+   TICKET STATE
+========================================================= */
 
-  clearInterval(aiProgressTimer);
-  aiProgress = 100;
-  updateAIProgress(100);
+let ticketNum =
+  "HV-000000";
 
-  if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent = "Đã phân tích xong yêu cầu.";
-  }
+let selectedFile =
+  null;
 
-  setTimeout(() => {
-    titleAiLoading.classList.remove("is-visible");
-    titleAiLoading.setAttribute("aria-hidden", "true");
-  }, 350);
+let loggedInUser =
+  null;
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+function getCategory(
+  id
+) {
+  return TICKET_CATEGORIES.find(
+    (item) =>
+      item.id === id
+  );
 }
 
-/* ------------------------------------------------------
-   ẨN LOADING NGAY (huỷ / reset)
------------------------------------------------------- */
-function hideAITitleLoading() {
-  if (!titleAiLoading) return;
+function getIssue(
+  categoryId,
+  issueValue
+) {
+  const category =
+    getCategory(
+      categoryId
+    );
 
-  clearInterval(aiProgressTimer);
-  titleAiLoading.classList.remove("is-visible");
-  titleAiLoading.setAttribute("aria-hidden", "true");
-
-  updateAIProgress(0);
-  aiProgress = 0;
-
-  if (titleAiLoadingStatus) {
-    titleAiLoadingStatus.textContent = "Đang chuẩn bị phân tích...";
-  }
+  return (
+    category?.issues?.find(
+      (issue) =>
+        issue.value ===
+        issueValue
+    ) || null
+  );
 }
 
-let ticketNum = "HV-000000";
-let selectedFile = null;
-let loggedInUser = null;
-
-function getDatabase() {
-  return typeof db !== "undefined" ? db : null;
-}
-function escapeHTML(value) {
-  const el = document.createElement("div");
-  el.textContent = value ?? "";
-  return el.innerHTML;
-}
-function svgIcon(key) {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[key] || ICONS.other}</svg>`;
-}
-function getCategory(id) {
-  return TICKET_CATEGORIES.find((item) => item.id === id);
-}
-function getIssue(categoryId, issueValue) {
-  const category = getCategory(categoryId);
-  return category?.issues?.find((issue) => issue.value === issueValue) || null;
-}
 function getSelectedRadio() {
-  return document.querySelector('input[name="ticketMainType"]:checked');
+  return document.querySelector(
+    'input[name="ticketMainType"]:checked'
+  );
 }
-function getPrefixFromCategory(label) {
-  const normalized = String(label || "HV")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/gi, "d")
-    .trim()
-    .split(/\s+/);
+
+/* =========================================================
+   TICKET NUMBER
+========================================================= */
+
+function getPrefixFromCategory(
+  label
+) {
+  const normalized =
+    String(
+      label || "HV"
+    )
+      .normalize("NFD")
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
+      )
+      .replace(
+        /đ/gi,
+        "d"
+      )
+      .trim()
+      .split(/\s+/);
+
   return (
     normalized.length > 1
-      ? normalized[0][0] + normalized[1][0]
-      : normalized[0].slice(0, 2)
+      ? normalized[0][0] +
+        normalized[1][0]
+      : normalized[0].slice(
+          0,
+          2
+        )
   ).toUpperCase();
 }
-function genTicketNum(label) {
-  return `${getPrefixFromCategory(label)}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+function genTicketNum(
+  label
+) {
+  return `${getPrefixFromCategory(
+    label
+  )}-${Math.floor(
+    100000 +
+      Math.random() *
+        900000
+  )}`;
 }
+
+/* =========================================================
+   DATE
+========================================================= */
+
 function isoToday() {
-  const now = new Date();
-  return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+  const now =
+    new Date();
+
+  return new Date(
+    now.getTime() -
+      now.getTimezoneOffset() *
+        60000
+  )
     .toISOString()
     .slice(0, 10);
 }
-function formatDateVN(value) {
-  if (!value) return "—";
-  const [year, month, day] = value.split("-");
+
+function formatDateVN(
+  value
+) {
+  if (!value) {
+    return "—";
+  }
+
+  const [
+    year,
+    month,
+    day,
+  ] = value.split("-");
+
   return `${day}/${month}/${year}`;
 }
+
 function todayLabel() {
-  return new Date().toLocaleDateString("vi-VN", {
-    weekday: "long",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-function updateTicketNumber() {
-  const radio = getSelectedRadio();
-  if (!radio) return;
-  const category = getCategory(radio.value);
-  const issue = issueSelect.value;
-  const label = category?.label || radio.value;
-  ticketNum = genTicketNum(issue ? `${radio.value}-${issue}` : label);
+  return new Date()
+    .toLocaleDateString(
+      "vi-VN",
+      {
+        weekday:
+          "long",
+
+        day:
+          "2-digit",
+
+        month:
+          "2-digit",
+
+        year:
+          "numeric",
+      }
+    );
 }
 
-function renderIssueOptions(categoryId) {
-  const category = getCategory(categoryId);
-  if (!category || category.id === "other") {
-    issueSelect.innerHTML =
-      '<option value="">-- Chọn chi tiết vấn đề --</option>';
-    issueSelect.disabled = true;
-    issueField.classList.remove("show");
-    issueSelect.value = "";
+/* =========================================================
+   UPDATE TICKET NUMBER
+========================================================= */
+
+function updateTicketNumber() {
+  const radio =
+    getSelectedRadio();
+
+  if (!radio) {
     return;
   }
-  issueSelect.innerHTML = `<option value="">-- Chọn chi tiết vấn đề --</option>${category.issues.map((issue) => `<option value="${issue.value}">${issue.label}</option>`).join("")}`;
-  issueSelect.disabled = false;
-  issueField.classList.add("show");
-  issueSelect.value = "";
+
+  const category =
+    getCategory(
+      radio.value
+    );
+
+  const issue =
+    issueSelect.value;
+
+  const label =
+    category?.label ||
+    radio.value;
+
+  ticketNum =
+    genTicketNum(
+      issue
+        ? `${radio.value}-${issue}`
+        : label
+    );
 }
+
+/* =========================================================
+   ISSUE OPTIONS
+========================================================= */
+
+function renderIssueOptions(
+  categoryId
+) {
+  const category =
+    getCategory(
+      categoryId
+    );
+
+  if (
+    !category ||
+    category.id ===
+      "other"
+  ) {
+    issueSelect.innerHTML =
+      `
+        <option value="">
+          -- Chọn chi tiết vấn đề --
+        </option>
+      `;
+
+    issueSelect.disabled =
+      true;
+
+    issueField.classList.remove(
+      "show"
+    );
+
+    issueSelect.value =
+      "";
+
+    return;
+  }
+
+  issueSelect.innerHTML =
+    `
+      <option value="">
+        -- Chọn chi tiết vấn đề --
+      </option>
+
+      ${category.issues
+        .map(
+          (issue) =>
+            `
+              <option value="${escapeHTML(
+                issue.value
+              )}">
+                ${escapeHTML(
+                  issue.label
+                )}
+              </option>
+            `
+        )
+        .join("")}
+    `;
+
+  issueSelect.disabled =
+    false;
+
+  issueField.classList.add(
+    "show"
+  );
+
+  issueSelect.value =
+    "";
+}
+
+/* =========================================================
+   RENDER CATEGORIES
+========================================================= */
 
 function renderCategories() {
-  chipGrid.innerHTML = TICKET_CATEGORIES.map(
-    (category) =>
-      `<label class="chip"><input type="radio" name="ticketMainType" value="${category.id}" data-label="${category.label}" data-icon="${category.icon}">${svgIcon(category.icon)}<span>${category.label}</span><span class="mark"></span></label>`,
-  ).join("");
-  chipGrid.querySelectorAll(".chip").forEach((chip) =>
-    chip.addEventListener("click", () => {
-      chipGrid
-        .querySelectorAll(".chip")
-        .forEach((item) => item.classList.remove("active"));
-      chip.classList.add("active");
-      const radio = chip.querySelector("input");
-      radio.checked = true;
-      renderIssueOptions(radio.value);
-      updateTicketNumber();
-      updateStub();
-    }),
-  );
+  if (!chipGrid) {
+    return;
+  }
+
+  chipGrid.innerHTML =
+    TICKET_CATEGORIES.map(
+      (category) =>
+        `
+          <label class="chip">
+
+            <input
+              type="radio"
+              name="ticketMainType"
+              value="${escapeHTML(
+                category.id
+              )}"
+              data-label="${escapeHTML(
+                category.label
+              )}"
+              data-icon="${escapeHTML(
+                category.icon
+              )}"
+            >
+
+            ${svgIcon(
+              category.icon
+            )}
+
+            <span>
+              ${escapeHTML(
+                category.label
+              )}
+            </span>
+
+            <span class="mark"></span>
+
+          </label>
+        `
+    ).join("");
+
+  chipGrid
+    .querySelectorAll(
+      ".chip"
+    )
+    .forEach(
+      (chip) => {
+        chip.addEventListener(
+          "click",
+          () => {
+            chipGrid
+              .querySelectorAll(
+                ".chip"
+              )
+              .forEach(
+                (item) =>
+                  item.classList.remove(
+                    "active"
+                  )
+              );
+
+            chip.classList.add(
+              "active"
+            );
+
+            const radio =
+              chip.querySelector(
+                "input"
+              );
+
+            if (!radio) {
+              return;
+            }
+
+            radio.checked =
+              true;
+
+            renderIssueOptions(
+              radio.value
+            );
+
+            updateTicketNumber();
+
+            updateStub();
+          }
+        );
+      }
+    );
 }
+
+/* =========================================================
+   STUB
+========================================================= */
 
 function updateStub() {
-  const radio = getSelectedRadio();
-  const category = radio ? getCategory(radio.value) : null;
+  const radio =
+    getSelectedRadio();
+
+  const category =
+    radio
+      ? getCategory(
+          radio.value
+        )
+      : null;
+
   const issueLabel =
-    issueSelect.selectedOptions?.[0]?.textContent?.trim() || "";
+    issueSelect
+      ?.selectedOptions?.[0]
+      ?.textContent
+      ?.trim() || "";
+
   const displayLabel =
-    issueLabel && radio?.value !== "other"
-      ? `${category?.label || "Khác"} · ${issueLabel}`
-      : category?.label || "Chưa chọn loại";
-  $("stubNum").textContent = ticketNum;
-  $("stubName").textContent = $("fName").value.trim() || "—";
-  $("stubTitle").textContent = $("fTitle").value.trim() || "—";
-  $("stubDate").textContent = formatDateVN(fDateEl.value);
-  $("stubCourseBody").textContent = chkCourse.checked
-    ? fCourse.value.trim() || "Chưa nhập"
-    : "Không có";
-  $("stubCourse").textContent =
-    chkCourse.checked && fCourse.value.trim()
-      ? `Khóa học: ${fCourse.value.trim()}`
-      : "";
-  $("stubCat").innerHTML =
-    `${svgIcon(radio?.dataset.icon || "other")}<span>${escapeHTML(displayLabel)}</span>`;
+    issueLabel &&
+    radio?.value !==
+      "other"
+      ? `${
+          category?.label ||
+          "Khác"
+        } · ${issueLabel}`
+      : category?.label ||
+        "Chưa chọn loại";
+
+  if ($("stubNum")) {
+    $("stubNum").textContent =
+      ticketNum;
+  }
+
+  if ($("stubName")) {
+    $("stubName").textContent =
+      $("fName")
+        ?.value
+        ?.trim() ||
+      "—";
+  }
+
+  if ($("stubTitle")) {
+    $("stubTitle").textContent =
+      $("fTitle")
+        ?.value
+        ?.trim() ||
+      "—";
+  }
+
+  if ($("stubDate")) {
+    $("stubDate").textContent =
+      formatDateVN(
+        fDateEl?.value
+      );
+  }
+
+  if ($("stubCourseBody")) {
+    $("stubCourseBody").textContent =
+      chkCourse?.checked
+        ? fCourse?.value?.trim() ||
+          "Chưa nhập"
+        : "Không có";
+  }
+
+  if ($("stubCourse")) {
+    $("stubCourse").textContent =
+      chkCourse?.checked &&
+      fCourse?.value?.trim()
+        ? `Khóa học: ${fCourse.value.trim()}`
+        : "";
+  }
+
+  if ($("stubCat")) {
+    $("stubCat").innerHTML =
+      `
+        ${svgIcon(
+          radio?.dataset?.icon ||
+            "other"
+        )}
+
+        <span>
+          ${escapeHTML(
+            displayLabel
+          )}
+        </span>
+      `;
+  }
 }
 
-function setupForm() {
-  $("todayStr").textContent = todayLabel();
-  fDateEl.value = isoToday();
-  renderCategories();
-  updateStub();
+/* =========================================================
+   IMAGE VALIDATION
+========================================================= */
 
-  // If Firebase `auth` is available, listen for user state and autofill name/email
-  if (
-    typeof auth !== "undefined" &&
-    auth &&
-    typeof auth.onAuthStateChanged === "function"
-  ) {
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        loggedInUser = null;
-        // unlock fields when logged out
-        $("fName").readOnly = false;
-        $("fEmail").readOnly = false;
-        $("fCampus").readOnly = false;
-        return;
-      }
-      try {
-        const doc = await db.collection("users").doc(user.uid).get();
-        const data = doc.exists ? doc.data() : {};
-        const name = data.name || user.displayName || "";
-        const email = data.email || user.email || "";
-        const phone = data.phone || "";
-        const campus = data.campus || "";
-        const role = data.role || "";
+const IMAGE_FILE_EXTENSIONS =
+  new Set([
+    "jpg",
+    "jpeg",
+    "jpe",
+    "jfif",
+    "png",
+    "apng",
+    "gif",
+    "webp",
+    "avif",
+    "bmp",
+    "dib",
+    "svg",
+    "svgz",
+    "ico",
+    "cur",
+    "tif",
+    "tiff",
+    "heic",
+    "heif",
+    "heics",
+    "heifs",
+    "jp2",
+    "j2k",
+    "jpf",
+    "jpx",
+    "jpm",
+    "mj2",
+    "jxl",
+    "raw",
+    "dng",
+    "cr2",
+    "cr3",
+    "nef",
+    "nrw",
+    "arw",
+    "orf",
+    "rw2",
+    "raf",
+    "pef",
+    "srw",
+    "3fr",
+    "erf",
+    "kdc",
+    "mos",
+    "mrw",
+    "rwl",
+    "x3f",
+    "psd",
+    "psb",
+  ]);
 
-        loggedInUser = {
-          uid: user.uid,
-          name,
-          email,
-          phone,
-          campus,
-          role,
+function getFileExtension(
+  fileName
+) {
+  const name =
+    String(
+      fileName || ""
+    )
+      .toLowerCase()
+      .split(
+        /[?#]/,
+        1
+      )[0];
+
+  const lastDot =
+    name.lastIndexOf(
+      "."
+    );
+
+  return lastDot >=
+    0
+    ? name.slice(
+        lastDot + 1
+      )
+    : "";
+}
+
+function isImageFile(
+  file
+) {
+  const mimeType =
+    String(
+      file?.type ||
+        ""
+    ).toLowerCase();
+
+  return (
+    mimeType.startsWith(
+      "image/"
+    ) ||
+    IMAGE_FILE_EXTENSIONS.has(
+      getFileExtension(
+        file?.name
+      )
+    )
+  );
+}
+
+/* =========================================================
+   BASE64 IMAGE PROCESSING
+========================================================= */
+
+const MAX_IMAGE_WIDTH =
+  1600;
+
+const MAX_IMAGE_HEIGHT =
+  1600;
+
+const INITIAL_IMAGE_QUALITY =
+  0.75;
+
+const MAX_BASE64_LENGTH =
+  650000;
+
+/*
+ * File → Data URL
+ */
+function readFileAsDataURL(
+  file
+) {
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+      const reader =
+        new FileReader();
+
+      reader.onload =
+        () => {
+          resolve(
+            reader.result
+          );
         };
-        // set and lock the sender name (and email)
-        $("fName").value = name;
-        $("fName").readOnly = true;
-        $("fEmail").value = email;
-        $("fEmail").readOnly = true;
-        $("fCampus").value = campus;
-        $("fCampus").readOnly = true;
-        updateStub();
-      } catch (e) {
-        console.error("Không thể lấy thông tin người dùng:", e);
+
+      reader.onerror =
+        () => {
+          reject(
+            new Error(
+              "Không thể đọc tệp hình ảnh."
+            )
+          );
+        };
+
+      reader.readAsDataURL(
+        file
+      );
+    }
+  );
+}
+
+/*
+ * Data URL → Image
+ */
+function loadImage(
+  dataURL
+) {
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+      const image =
+        new Image();
+
+      image.onload =
+        () => {
+          resolve(
+            image
+          );
+        };
+
+      image.onerror =
+        () => {
+          reject(
+            new Error(
+              "Không thể đọc hình ảnh."
+            )
+          );
+        };
+
+      image.src =
+        dataURL;
+    }
+  );
+}
+
+/*
+ * Nén ảnh thành JPEG Base64
+ */
+async function compressImageToBase64(
+  file
+) {
+  const originalDataURL =
+    await readFileAsDataURL(
+      file
+    );
+
+  const image =
+    await loadImage(
+      originalDataURL
+    );
+
+  let width =
+    image.naturalWidth;
+
+  let height =
+    image.naturalHeight;
+
+  if (
+    !width ||
+    !height
+  ) {
+    throw new Error(
+      "Không xác định được kích thước hình ảnh."
+    );
+  }
+
+  /*
+   * Resize
+   */
+  const scale =
+    Math.min(
+      1,
+      MAX_IMAGE_WIDTH /
+        width,
+      MAX_IMAGE_HEIGHT /
+        height
+    );
+
+  width =
+    Math.max(
+      1,
+      Math.round(
+        width * scale
+      )
+    );
+
+  height =
+    Math.max(
+      1,
+      Math.round(
+        height * scale
+      )
+    );
+
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+  canvas.width =
+    width;
+
+  canvas.height =
+    height;
+
+  const ctx =
+    canvas.getContext(
+      "2d",
+      {
+        alpha: false,
       }
-    });
+    );
+
+  if (!ctx) {
+    throw new Error(
+      "Trình duyệt không hỗ trợ xử lý hình ảnh."
+    );
   }
 
-  issueSelect.addEventListener("change", () => {
-    updateTicketNumber();
-    updateStub();
-  });
-  chkCourse.addEventListener("change", () => {
-    courseBoxWrap.classList.toggle("show", chkCourse.checked);
-    if (!chkCourse.checked) fCourse.value = "";
-    updateStub();
-  });
-  ["fName", "fTitle", "fCourse"].forEach((id) =>
-    $(id).addEventListener("input", updateStub),
+  /*
+   * Background trắng
+   */
+  ctx.fillStyle =
+    "#ffffff";
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
   );
-  fileDrop.addEventListener("click", () => fFile.click());
-  fileDrop.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      fFile.click();
-    }
-  });
-  ["dragenter", "dragover"].forEach((type) =>
-    fileDrop.addEventListener(type, (event) => {
-      event.preventDefault();
-      fileDrop.classList.add("dragover");
-    }),
+
+  /*
+   * Chất lượng ảnh
+   */
+  ctx.imageSmoothingEnabled =
+    true;
+
+  ctx.imageSmoothingQuality =
+    "high";
+
+  ctx.drawImage(
+    image,
+    0,
+    0,
+    width,
+    height
   );
-  ["dragleave", "drop"].forEach((type) =>
-    fileDrop.addEventListener(type, (event) => {
-      event.preventDefault();
-      fileDrop.classList.remove("dragover");
-    }),
-  );
-  fileDrop.addEventListener("drop", (event) => {
-    const file = event.dataTransfer.files?.[0];
-    if (file) setSelectedFile(file);
-  });
-  fFile.addEventListener("change", () => {
-    if (fFile.files?.[0]) setSelectedFile(fFile.files[0]);
-  });
-  $("submitBtn").addEventListener("click", submitTicket);
-  $("againBtn").addEventListener("click", resetForm);
-}
 
-const IMAGE_FILE_EXTENSIONS = new Set([
-  "jpg", "jpeg", "jpe", "jfif", "png", "apng", "gif", "webp", "avif", "bmp", "dib",
-  "svg", "svgz", "ico", "cur", "tif", "tiff", "heic", "heif", "heics", "heifs",
-  "jp2", "j2k", "jpf", "jpx", "jpm", "mj2", "jxl", "raw", "dng", "cr2", "cr3",
-  "nef", "nrw", "arw", "orf", "rw2", "raf", "pef", "srw", "3fr", "erf", "kdc",
-  "mos", "mrw", "rwl", "x3f", "psd", "psb"
-]);
+  let quality =
+    INITIAL_IMAGE_QUALITY;
 
-function getFileExtension(fileName) {
-  const name = String(fileName || "").toLowerCase().split(/[?#]/, 1)[0];
-  const lastDot = name.lastIndexOf(".");
-  return lastDot >= 0 ? name.slice(lastDot + 1) : "";
-}
+  let dataURL =
+    canvas.toDataURL(
+      "image/jpeg",
+      quality
+    );
 
-function isImageFile(file) {
-  const mimeType = String(file?.type || "").toLowerCase();
-  return mimeType.startsWith("image/") || IMAGE_FILE_EXTENSIONS.has(getFileExtension(file?.name));
-}
+  /*
+   * Giảm quality nếu ảnh quá lớn
+   */
+  while (
+    dataURL.length >
+      MAX_BASE64_LENGTH &&
+    quality >
+      0.4
+  ) {
+    quality -=
+      0.05;
 
-function getImageContentType(file) {
-  const mimeType = String(file?.type || "").toLowerCase();
-  if (mimeType.startsWith("image/")) return mimeType;
-  const mimeByExtension = {
-    jpg: "image/jpeg", jpeg: "image/jpeg", jpe: "image/jpeg", jfif: "image/jpeg",
-    png: "image/png", apng: "image/apng", gif: "image/gif", webp: "image/webp",
-    avif: "image/avif", bmp: "image/bmp", dib: "image/bmp", svg: "image/svg+xml",
-    svgz: "image/svg+xml", ico: "image/x-icon", cur: "image/x-icon", tif: "image/tiff",
-    tiff: "image/tiff", heic: "image/heic", heif: "image/heif", heics: "image/heic",
-    heifs: "image/heif", jp2: "image/jp2", j2k: "image/jp2", jpf: "image/jpx",
-    jpx: "image/jpx", jpm: "image/jpm", mj2: "image/mj2", jxl: "image/jxl",
-    psd: "image/vnd.adobe.photoshop", psb: "image/vnd.adobe.photoshop"
-  };
-  return mimeByExtension[getFileExtension(file?.name)] || "image/*";
-}
-
-async function uploadSelectedFile(ticketId) {
-  if (!selectedFile) return {};
-  if (typeof firebase === "undefined" || typeof firebase.storage !== "function") {
-    throw new Error("Firebase Storage chưa được khởi tạo.");
+    dataURL =
+      canvas.toDataURL(
+        "image/jpeg",
+        quality
+      );
   }
-  const safeName = String(selectedFile.name || "image").replace(/[^a-zA-Z0-9._-]/g, "_");
-  const storagePath = `tickets/${ticketId}/attachments/${Date.now()}-${safeName}`;
-  const storageRef = firebase.storage().ref().child(storagePath);
-  const attachmentType = getImageContentType(selectedFile);
 
-  await storageRef.put(selectedFile, {
-    contentType: attachmentType,
-    customMetadata: {
-      originalName: String(selectedFile.name || ""),
-      uploadedBy: String(loggedInUser?.uid || "")
-    }
-  });
-  const attachmentUrl = await storageRef.getDownloadURL();
+  /*
+   * Nếu vẫn quá lớn
+   * → thu nhỏ canvas
+   */
+  if (
+    dataURL.length >
+    MAX_BASE64_LENGTH
+  ) {
+    const smallWidth =
+      Math.max(
+        600,
+        Math.round(
+          width * 0.75
+        )
+      );
+
+    const smallHeight =
+      Math.max(
+        600,
+        Math.round(
+          height * 0.75
+        )
+      );
+
+    const smallCanvas =
+      document.createElement(
+        "canvas"
+      );
+
+    smallCanvas.width =
+      smallWidth;
+
+    smallCanvas.height =
+      smallHeight;
+
+    const smallCtx =
+      smallCanvas.getContext(
+        "2d"
+      );
+
+    smallCtx.fillStyle =
+      "#ffffff";
+
+    smallCtx.fillRect(
+      0,
+      0,
+      smallWidth,
+      smallHeight
+    );
+
+    smallCtx.drawImage(
+      image,
+      0,
+      0,
+      smallWidth,
+      smallHeight
+    );
+
+    dataURL =
+      smallCanvas.toDataURL(
+        "image/jpeg",
+        0.62
+      );
+
+    width =
+      smallWidth;
+
+    height =
+      smallHeight;
+  }
+
+  /*
+   * Đổi Base64 length thành byte gần đúng
+   */
+  const base64Part =
+    dataURL.split(
+      ","
+    )[1] || "";
+
+  const compressedSize =
+    Math.round(
+      base64Part.length *
+        0.75
+    );
 
   return {
-    attachmentUrl,
-    imageUrl: attachmentUrl,
-    storagePath,
-    attachmentPath: storagePath,
-    attachmentName: selectedFile.name || safeName,
-    attachmentType,
-    attachmentSize: Number(selectedFile.size || 0)
+    dataURL,
+
+    contentType:
+      "image/jpeg",
+
+    width,
+
+    height,
+
+    quality,
+
+    originalSize:
+      Number(
+        file.size ||
+          0
+      ),
+
+    compressedSize,
   };
 }
 
-function setSelectedFile(file) {
+/* =========================================================
+   PREPARE ATTACHMENT
+   Không dùng Firebase Storage
+========================================================= */
 
-  const maxSize = 10 * 1024 * 1024;
-  if (!isImageFile(file)) {
-    $("errorText").textContent = "Vui lòng chọn tệp hình ảnh hợp lệ.";
-    $("errorText").classList.add("show");
-    return;
+async function uploadSelectedFile(
+  ticketId
+) {
+  /*
+   * Không có file
+   */
+  if (!selectedFile) {
+    return {};
   }
-  if (file.size > maxSize) {
-    $("errorText").textContent = "Tệp đính kèm không được vượt quá 10 MB.";
-    $("errorText").classList.add("show");
-    return;
+
+  /*
+   * Validate
+   */
+  if (
+    !isImageFile(
+      selectedFile
+    )
+  ) {
+    throw new Error(
+      "Tệp đính kèm không phải hình ảnh hợp lệ."
+    );
   }
-  selectedFile = file;
-  fileNameEl.textContent = `Đã chọn: ${file.name} (${Math.ceil(file.size / 1024)} KB)`;
-  $("errorText").classList.remove("show");
+
+  try {
+    const result =
+      await compressImageToBase64(
+        selectedFile
+      );
+
+    const base64 =
+      result.dataURL.split(
+        ","
+      )[1] || "";
+
+    return {
+      /*
+       * Data URL có thể gắn trực tiếp vào img
+       */
+      attachmentUrl:
+        result.dataURL,
+
+      imageUrl:
+        result.dataURL,
+
+      /*
+       * Không còn Firebase Storage
+       */
+      storagePath:
+        "",
+
+      attachmentPath:
+        "",
+
+      /*
+       * File info
+       */
+      attachmentName:
+        selectedFile.name ||
+        "image.jpg",
+
+      attachmentType:
+        result.contentType,
+
+      attachmentSize:
+        result.compressedSize,
+
+      attachmentOriginalSize:
+        result.originalSize,
+
+      attachmentWidth:
+        result.width,
+
+      attachmentHeight:
+        result.height,
+
+      /*
+       * Raw Base64
+       */
+      attachmentBase64:
+        base64,
+
+      /*
+       * Ticket ID để tiện truy xuất
+       */
+      attachmentTicketId:
+        ticketId,
+    };
+  }
+
+  catch (error) {
+    console.error(
+      "IMAGE BASE64 ERROR:",
+      error
+    );
+
+    throw new Error(
+      "Không thể xử lý hình ảnh. Vui lòng thử ảnh khác."
+    );
+  }
 }
 
+/* =========================================================
+   SELECT FILE
+========================================================= */
+
+function setSelectedFile(
+  file
+) {
+  const maxSize =
+    10 * 1024 * 1024;
+
+  if (
+    !isImageFile(file)
+  ) {
+    $("errorText").textContent =
+      "Vui lòng chọn tệp hình ảnh hợp lệ.";
+
+    $("errorText").classList.add(
+      "show"
+    );
+
+    return;
+  }
+
+  if (
+    file.size >
+    maxSize
+  ) {
+    $("errorText").textContent =
+      "Tệp đính kèm không được vượt quá 10 MB.";
+
+    $("errorText").classList.add(
+      "show"
+    );
+
+    return;
+  }
+
+  selectedFile =
+    file;
+
+  if (fileNameEl) {
+    fileNameEl.textContent =
+      `Đã chọn: ${file.name} (${Math.ceil(
+        file.size / 1024
+      )} KB)`;
+  }
+
+  $("errorText").classList.remove(
+    "show"
+  );
+}
+
+/* =========================================================
+   FIREBASE AUTH
+========================================================= */
+
+function getCurrentUser() {
+  try {
+    if (
+      typeof firebase ===
+        "undefined" ||
+      !firebase.auth
+    ) {
+      return null;
+    }
+
+    return (
+      firebase
+        .auth()
+        .currentUser ||
+      null
+    );
+  }
+
+  catch (error) {
+    console.warn(
+      "Không thể kiểm tra Auth:",
+      error
+    );
+
+    return null;
+  }
+}
+
+/* =========================================================
+   SETUP FORM
+========================================================= */
+
+function setupForm() {
+  if ($("todayStr")) {
+    $("todayStr").textContent =
+      todayLabel();
+  }
+
+  if (fDateEl) {
+    fDateEl.value =
+      isoToday();
+  }
+
+  renderCategories();
+
+  updateStub();
+
+  /* =======================================================
+     AUTH STATE
+  ======================================================= */
+
+  if (
+    typeof auth !==
+      "undefined" &&
+    auth &&
+    typeof auth.onAuthStateChanged ===
+      "function"
+  ) {
+    auth.onAuthStateChanged(
+      async (
+        user
+      ) => {
+        if (!user) {
+          loggedInUser =
+            null;
+
+          if ($("fName")) {
+            $("fName").readOnly =
+              false;
+          }
+
+          if ($("fEmail")) {
+            $("fEmail").readOnly =
+              false;
+          }
+
+          if ($("fCampus")) {
+            $("fCampus").readOnly =
+              false;
+          }
+
+          return;
+        }
+
+        try {
+          const database =
+            getDatabase();
+
+          if (!database) {
+            throw new Error(
+              "Firestore chưa sẵn sàng."
+            );
+          }
+
+          const doc =
+            await database
+              .collection(
+                "users"
+              )
+              .doc(
+                user.uid
+              )
+              .get();
+
+          const data =
+            doc.exists
+              ? doc.data()
+              : {};
+
+          const name =
+            data.name ||
+            user.displayName ||
+            "";
+
+          const email =
+            data.email ||
+            user.email ||
+            "";
+
+          const phone =
+            data.phone ||
+            "";
+
+          const campus =
+            data.campus ||
+            "";
+
+          const role =
+            data.role ||
+            "";
+
+          loggedInUser =
+            {
+              uid:
+                user.uid,
+
+              name,
+
+              email,
+
+              phone,
+
+              campus,
+
+              role,
+            };
+
+          if ($("fName")) {
+            $("fName").value =
+              name;
+
+            $("fName").readOnly =
+              true;
+          }
+
+          if ($("fEmail")) {
+            $("fEmail").value =
+              email;
+
+            $("fEmail").readOnly =
+              true;
+          }
+
+          if ($("fCampus")) {
+            $("fCampus").value =
+              campus;
+
+            $("fCampus").readOnly =
+              true;
+          }
+
+          updateStub();
+        }
+
+        catch (error) {
+          console.error(
+            "Không thể lấy thông tin người dùng:",
+            error
+          );
+        }
+      }
+    );
+  }
+
+  /* =======================================================
+     ISSUE
+  ======================================================= */
+
+  if (issueSelect) {
+    issueSelect.addEventListener(
+      "change",
+      () => {
+        updateTicketNumber();
+
+        updateStub();
+
+        hideTitleAiSuggestion();
+
+        hideAITitleLoading();
+      }
+    );
+  }
+
+  /* =======================================================
+     COURSE
+  ======================================================= */
+
+  if (chkCourse) {
+    chkCourse.addEventListener(
+      "change",
+      () => {
+        courseBoxWrap.classList.toggle(
+          "show",
+          chkCourse.checked
+        );
+
+        if (
+          !chkCourse.checked
+        ) {
+          fCourse.value =
+            "";
+        }
+
+        updateStub();
+      }
+    );
+  }
+
+  /* =======================================================
+     STUB
+  ======================================================= */
+
+  [
+    "fName",
+    "fTitle",
+    "fCourse",
+  ].forEach(
+    (id) => {
+      const element =
+        $(id);
+
+      if (!element) {
+        return;
+      }
+
+      element.addEventListener(
+        "input",
+        updateStub
+      );
+    }
+  );
+
+  /* =======================================================
+     FILE DROP
+  ======================================================= */
+
+  if (
+    fileDrop &&
+    fFile
+  ) {
+    fileDrop.addEventListener(
+      "click",
+      () => {
+        fFile.click();
+      }
+    );
+
+    fileDrop.addEventListener(
+      "keydown",
+      (
+        event
+      ) => {
+        if (
+          event.key ===
+            "Enter" ||
+          event.key ===
+            " "
+        ) {
+          event.preventDefault();
+
+          fFile.click();
+        }
+      }
+    );
+
+    [
+      "dragenter",
+      "dragover",
+    ].forEach(
+      (
+        type
+      ) => {
+        fileDrop.addEventListener(
+          type,
+          (
+            event
+          ) => {
+            event.preventDefault();
+
+            fileDrop.classList.add(
+              "dragover"
+            );
+          }
+        );
+      }
+    );
+
+    [
+      "dragleave",
+      "drop",
+    ].forEach(
+      (
+        type
+      ) => {
+        fileDrop.addEventListener(
+          type,
+          (
+            event
+          ) => {
+            event.preventDefault();
+
+            fileDrop.classList.remove(
+              "dragover"
+            );
+          }
+        );
+      }
+    );
+
+    fileDrop.addEventListener(
+      "drop",
+      (
+        event
+      ) => {
+        const file =
+          event
+            .dataTransfer
+            .files?.[0];
+
+        if (file) {
+          setSelectedFile(
+            file
+          );
+        }
+      }
+    );
+
+    fFile.addEventListener(
+      "change",
+      () => {
+        if (
+          fFile.files?.[0]
+        ) {
+          setSelectedFile(
+            fFile.files[0]
+          );
+        }
+      }
+    );
+  }
+
+  /* =======================================================
+     BUTTON
+  ======================================================= */
+
+  if ($("submitBtn")) {
+    $("submitBtn").addEventListener(
+      "click",
+      submitTicket
+    );
+  }
+
+  if ($("againBtn")) {
+    $("againBtn").addEventListener(
+      "click",
+      resetForm
+    );
+  }
+}
+
+/* =========================================================
+   SUBMIT TICKET
+========================================================= */
+
 async function submitTicket() {
-  const database = getDatabase();
-  const name = $("fName").value.trim();
-  const email = $("fEmail").value.trim();
-  const campus = $("fCampus").value.trim();
-  const phone = loggedInUser?.phone || "";
-  const isStudent = chkCourse.checked;
-  const course = isStudent ? fCourse.value.trim() : "Không áp dụng";
-  const title = $("fTitle").value.trim();
-  const description = $("fDesc").value.trim();
-  const selectedMainType = getSelectedRadio();
-  const selectedIssue = issueSelect.value;
-  const errorEl = $("errorText");
-  const requiresIssue = selectedMainType && selectedMainType.value !== "other";
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const database =
+    getDatabase();
+
+  const name =
+    $("fName")
+      .value
+      .trim();
+
+  const email =
+    $("fEmail")
+      .value
+      .trim();
+
+  const campus =
+    $("fCampus")
+      .value
+      .trim();
+
+  const phone =
+    loggedInUser?.phone ||
+    "";
+
+  const isStudent =
+    chkCourse.checked;
+
+  const course =
+    isStudent
+      ? fCourse.value.trim()
+      : "Không áp dụng";
+
+  const title =
+    $("fTitle")
+      .value
+      .trim();
+
+  const description =
+    $("fDesc")
+      .value
+      .trim();
+
+  const selectedMainType =
+    getSelectedRadio();
+
+  const selectedIssue =
+    issueSelect.value;
+
+  const errorEl =
+    $("errorText");
+
+  const requiresIssue =
+    selectedMainType &&
+    selectedMainType.value !==
+      "other";
+
+  const emailValid =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      email
+    );
+
+  /* =======================================================
+     VALIDATE DATABASE
+  ======================================================= */
 
   if (!database) {
     errorEl.textContent =
       "Chưa kết nối được với hệ thống. Vui lòng thử lại sau.";
-    errorEl.classList.add("show");
+
+    errorEl.classList.add(
+      "show"
+    );
+
     return;
   }
+
+  /* =======================================================
+     VALIDATE INPUT
+  ======================================================= */
+
   if (
     !name ||
     !email ||
-    (isStudent && !course) ||
+    (isStudent &&
+      !course) ||
     !selectedMainType ||
-    (requiresIssue && !selectedIssue)
+    (
+      requiresIssue &&
+      !selectedIssue
+    )
   ) {
     errorEl.textContent =
       "Vui lòng điền đầy đủ thông tin bắt buộc và chọn loại yêu cầu.";
-    errorEl.classList.add("show");
-    return;
-  }
-  $("successText").innerHTML =
-    `Phiếu <strong>${escapeHTML(ticketNum)}</strong> — "<em>${escapeHTML(title || "Không có tiêu đề")}</em>" đã được ghi nhận. Bạn có thể theo dõi phản hồi trong mục Trao đổi Ticket.`;
-  if (!emailValid) {
-    errorEl.textContent = "Email không hợp lệ.";
-    errorEl.classList.add("show");
-    return;
-  }
-  errorEl.classList.remove("show");
 
-  const category = getCategory(selectedMainType.value);
+    errorEl.classList.add(
+      "show"
+    );
+
+    return;
+  }
+
+  if (!emailValid) {
+    errorEl.textContent =
+      "Email không hợp lệ.";
+
+    errorEl.classList.add(
+      "show"
+    );
+
+    return;
+  }
+
+  errorEl.classList.remove(
+    "show"
+  );
+
+  /* =======================================================
+     CATEGORY
+  ======================================================= */
+
+  const category =
+    getCategory(
+      selectedMainType.value
+    );
+
   const issueLabel =
-    selectedMainType.value === "other"
+    selectedMainType.value ===
+      "other"
       ? "Khác"
-      : issueSelect.selectedOptions[0]?.textContent?.trim() || "Khác";
+      : (
+          issueSelect
+            .selectedOptions?.[0]
+            ?.textContent
+            ?.trim() ||
+          "Khác"
+        );
+
+  /* =======================================================
+     PRIORITY
+  ======================================================= */
+
   const automaticPriority =
-    typeof window.automaticTicketPriority === "function"
+    typeof window
+      .automaticTicketPriority ===
+    "function"
       ? window.automaticTicketPriority({
-          categoryId: selectedMainType.value,
-          issueId: selectedIssue,
+          categoryId:
+            selectedMainType.value,
+
+          issueId:
+            selectedIssue,
+
           title,
+
           description,
         })
       : {
-          level: "medium",
-          label: "Trung bình",
-          reason: "Không tải được bộ phân loại tự động.",
-          source: "fallback",
+          level:
+            "medium",
+
+          label:
+            "Trung bình",
+
+          reason:
+            "Không tải được bộ phân loại tự động.",
+
+          source:
+            "fallback",
         };
-  if (ticketNum === "HV-000000") updateTicketNumber();
-  const submitButton = $("submitBtn");
-  submitButton.disabled = true;
-  submitButton.innerHTML = "Đang gửi...";
 
-  const ticketData = {
-    ticketNum,
+  /* =======================================================
+     TICKET NUMBER
+  ======================================================= */
 
-    // Người tạo Ticket
-    studentId: loggedInUser?.uid || "",
-    name,
-    email,
-    // Cơ sở của người tạo
-    campus: loggedInUser?.campus || campus,
+  if (
+    ticketNum ===
+    "HV-000000"
+  ) {
+    updateTicketNumber();
+  }
 
-    // Vai trò người tạo
-    createdByRole: loggedInUser?.role || "student",
+  const submitButton =
+    $("submitBtn");
 
-    isStudent,
-    course,
-    date: fDateEl.value,
+  submitButton.disabled =
+    true;
 
-    ticketType: selectedIssue || selectedMainType.value,
-    ticketCategory: category?.label || "Khác",
-    ticketIssue: issueLabel,
-    priority: automaticPriority.level,
-    priorityLabel: automaticPriority.label,
-    priorityReason: automaticPriority.reason,
-    prioritySource: automaticPriority.source,
+  submitButton.innerHTML =
+    "Đang xử lý...";
 
-    title,
-    description,
+  /* =======================================================
+     BASE TICKET DATA
+  ======================================================= */
 
-    attachmentName: selectedFile?.name || "",
-    attachmentType: selectedFile?.type || "",
-    attachmentSize: selectedFile?.size || 0,
+  const ticketData =
+    {
+      ticketNum,
 
-    status: "open",
+      /*
+       * User
+       */
+      studentId:
+        loggedInUser?.uid ||
+        "",
 
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  };
+      name,
+
+      email,
+
+      campus:
+        loggedInUser?.campus ||
+        campus,
+
+      createdByRole:
+        loggedInUser?.role ||
+        "student",
+
+      /*
+       * Student
+       */
+      isStudent,
+
+      course,
+
+      date:
+        fDateEl.value,
+
+      /*
+       * Ticket
+       */
+      ticketType:
+        selectedIssue ||
+        selectedMainType.value,
+
+      ticketCategory:
+        category?.label ||
+        "Khác",
+
+      ticketIssue:
+        issueLabel,
+
+      /*
+       * Priority
+       */
+      priority:
+        automaticPriority.level,
+
+      priorityLabel:
+        automaticPriority.label,
+
+      priorityReason:
+        automaticPriority.reason,
+
+      prioritySource:
+        automaticPriority.source,
+
+      /*
+       * Content
+       */
+      title,
+
+      description,
+
+      /*
+       * Attachment info
+       * Base64 sẽ được thêm
+       * sau khi nén ảnh.
+       */
+      attachmentName:
+        selectedFile?.name ||
+        "",
+
+      attachmentType:
+        selectedFile
+          ? "image/jpeg"
+          : "",
+
+      attachmentSize:
+        selectedFile?.size ||
+        0,
+
+      /*
+       * Status
+       */
+      status:
+        "open",
+
+      /*
+       * Timestamp
+       */
+      createdAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp(),
+
+      updatedAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp(),
+    };
 
   try {
-    const uploadedAttachment = await uploadSelectedFile(ticketNum);
-    Object.assign(ticketData, uploadedAttachment);
-    await database.collection("tickets").doc(ticketNum).set(ticketData);
-    await database
-      .collection("tickets")
-      .doc(ticketNum)
-      .collection("messages")
-      .add({
-        sender: "student",
-        senderType: "student",
-        senderName: name,
-        message: description,
-        text: description,
-        ...uploadedAttachment,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+    /* =====================================================
+       PROCESS IMAGE
+    ===================================================== */
 
-    if (window.emailjs) {
-      try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          ticket_num: ticketNum,
+    submitButton.innerHTML =
+      selectedFile
+        ? "Đang xử lý ảnh..."
+        : "Đang lưu phiếu...";
+
+    const uploadedAttachment =
+      await uploadSelectedFile(
+        ticketNum
+      );
+
+    Object.assign(
+      ticketData,
+      uploadedAttachment
+    );
+
+    /* =====================================================
+       CHECK DOCUMENT SIZE
+    ===================================================== */
+
+    if (
+      ticketData.attachmentBase64
+        ?.length >
+      650000
+    ) {
+      throw new Error(
+        "Hình ảnh sau khi nén vẫn quá lớn. Vui lòng chọn ảnh nhỏ hơn."
+      );
+    }
+
+    /* =====================================================
+       SAVE TICKET
+    ===================================================== */
+
+    submitButton.innerHTML =
+      "Đang lưu phiếu...";
+
+    const ticketRef =
+      database
+        .collection(
+          "tickets"
+        )
+        .doc(
+          ticketNum
+        );
+
+    await ticketRef.set(
+      ticketData
+    );
+
+    /* =====================================================
+       FIRST MESSAGE
+    ===================================================== */
+
+    const messageData =
+      {
+        sender:
+          "student",
+
+        senderType:
+          "student",
+
+        senderName:
           name,
-          email,
-          phone: phone || "Không cung cấp",
-          course,
-          date: formatDateVN(fDateEl.value),
-          ticket_type: `${ticketData.ticketCategory} · ${ticketData.ticketIssue}`,
-          title,
-          message: description,
-        });
-      } catch (emailError) {
+
+        message:
+          description,
+
+        text:
+          description,
+
+        /*
+         * Attachment
+         */
+        attachmentName:
+          uploadedAttachment
+            .attachmentName ||
+          "",
+
+        attachmentType:
+          uploadedAttachment
+            .attachmentType ||
+          "",
+
+        attachmentSize:
+          uploadedAttachment
+            .attachmentSize ||
+          0,
+
+        attachmentOriginalSize:
+          uploadedAttachment
+            .attachmentOriginalSize ||
+          0,
+
+        attachmentWidth:
+          uploadedAttachment
+            .attachmentWidth ||
+          0,
+
+        attachmentHeight:
+          uploadedAttachment
+            .attachmentHeight ||
+          0,
+
+        attachmentBase64:
+          uploadedAttachment
+            .attachmentBase64 ||
+          "",
+
+        attachmentUrl:
+          uploadedAttachment
+            .attachmentUrl ||
+          "",
+
+        imageUrl:
+          uploadedAttachment
+            .imageUrl ||
+          "",
+
+        createdAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp(),
+      };
+
+    await ticketRef
+      .collection(
+        "messages"
+      )
+      .add(
+        messageData
+      );
+
+    /* =====================================================
+       EMAILJS
+    ===================================================== */
+
+    if (
+      window.emailjs
+    ) {
+      try {
+        await window.emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            ticket_num:
+              ticketNum,
+
+            name,
+
+            email,
+
+            phone:
+              phone ||
+              "Không cung cấp",
+
+            course,
+
+            date:
+              formatDateVN(
+                fDateEl.value
+              ),
+
+            ticket_type:
+              `${ticketData.ticketCategory} · ${ticketData.ticketIssue}`,
+
+            title,
+
+            message:
+              description,
+          }
+        );
+      }
+
+      catch (
+        emailError
+      ) {
         console.warn(
-          "Không gửi được email thông báo, ticket vẫn đã được lưu:",
-          emailError,
+          "EmailJS lỗi, nhưng ticket đã được lưu:",
+          emailError
         );
       }
     }
 
+    /* =====================================================
+       SUCCESS
+    ===================================================== */
+
     $("successText").innerHTML =
-      `Phiếu <strong>${escapeHTML(ticketNum)}</strong> — “<em>${escapeHTML(title)}</em>” đã được ghi nhận. Bạn có thể theo dõi phản hồi trong mục Trao đổi Ticket.`;
-    formView.classList.add("hide");
-    successView.classList.add("show");
-  } catch (error) {
-    console.error("Ticket error:", error);
-    errorEl.textContent =
+      `
+        Phiếu
+        <strong>
+          ${escapeHTML(
+            ticketNum
+          )}
+        </strong>
+        —
+        “<em>
+          ${escapeHTML(
+            title ||
+              "Không có tiêu đề"
+          )}
+        </em>”
+        đã được ghi nhận.
+        Bạn có thể theo dõi phản hồi
+        trong mục Trao đổi Ticket.
+      `;
+
+    formView.classList.add(
+      "hide"
+    );
+
+    successView.classList.add(
+      "show"
+    );
+  }
+
+  catch (error) {
+    console.error(
+      "Ticket error:",
+      error
+    );
+
+    let message =
       "Không thể gửi phiếu. Vui lòng kiểm tra kết nối và thử lại.";
-    errorEl.classList.add("show");
-  } finally {
-    submitButton.disabled = false;
-    submitButton.innerHTML = "Gửi yêu cầu <span>→</span>";
+
+    const rawMessage =
+      String(
+        error?.message ||
+          ""
+      );
+
+    if (
+      rawMessage
+    ) {
+      message =
+        rawMessage;
+    }
+
+    errorEl.textContent =
+      message;
+
+    errorEl.classList.add(
+      "show"
+    );
+  }
+
+  finally {
+    submitButton.disabled =
+      false;
+
+    submitButton.innerHTML =
+      "Gửi yêu cầu <span>→</span>";
   }
 }
+
+/* =========================================================
+   RESET
+========================================================= */
 
 function resetForm() {
   document
     .querySelectorAll(
-      "#formView input:not([type=checkbox]), #formView textarea",
+      "#formView input:not([type=checkbox]), #formView textarea"
     )
-    .forEach((input) => {
-      // preserve name/email if user is logged in
-      if (loggedInUser && (input.id === "fName" || input.id === "fEmail"))
-        return;
-      input.value = "";
-    });
-  fFile.value = "";
-  selectedFile = null;
-  fileNameEl.textContent = "";
-  chkCourse.checked = false;
-  courseBoxWrap.classList.remove("show");
-  chipGrid
-    .querySelectorAll(".chip")
-    .forEach((chip) => chip.classList.remove("active"));
-  chipGrid.querySelectorAll("input").forEach((input) => {
-    input.checked = false;
-  });
-  issueSelect.innerHTML =
-    '<option value="">-- Chọn chi tiết vấn đề --</option>';
-  issueSelect.disabled = true;
-  issueField.classList.remove("show");
-  fDateEl.value = isoToday();
-  ticketNum = "HV-000000";
-  $("errorText").classList.remove("show");
-  updateStub();
+    .forEach(
+      (
+        input
+      ) => {
+        /*
+         * Giữ thông tin user
+         */
+        if (
+          loggedInUser &&
+          (
+            input.id ===
+              "fName" ||
+            input.id ===
+              "fEmail" ||
+            input.id ===
+              "fCampus"
+          )
+        ) {
+          return;
+        }
 
-  // AI: huỷ mọi yêu cầu đang chờ và ẩn cả loading lẫn kết quả
-  titleAiRequestId += 1;
-  window.clearTimeout(titleAiDebounceTimer);
+        input.value =
+          "";
+      }
+    );
+
+  /* =======================================================
+     FILE
+  ======================================================= */
+
+  if (fFile) {
+    fFile.value =
+      "";
+  }
+
+  selectedFile =
+    null;
+
+  if (fileNameEl) {
+    fileNameEl.textContent =
+      "";
+  }
+
+  /* =======================================================
+     COURSE
+  ======================================================= */
+
+  chkCourse.checked =
+    false;
+
+  courseBoxWrap.classList.remove(
+    "show"
+  );
+
+  fCourse.value =
+    "";
+
+  /* =======================================================
+     CATEGORY
+  ======================================================= */
+
+  chipGrid
+    .querySelectorAll(
+      ".chip"
+    )
+    .forEach(
+      (
+        chip
+      ) =>
+        chip.classList.remove(
+          "active"
+        )
+    );
+
+  chipGrid
+    .querySelectorAll(
+      "input"
+    )
+    .forEach(
+      (
+        input
+      ) => {
+        input.checked =
+          false;
+      }
+    );
+
+  /* =======================================================
+     ISSUE
+  ======================================================= */
+
+  issueSelect.innerHTML =
+    `
+      <option value="">
+        -- Chọn chi tiết vấn đề --
+      </option>
+    `;
+
+  issueSelect.disabled =
+    true;
+
+  issueField.classList.remove(
+    "show"
+  );
+
+  /* =======================================================
+     DATE
+  ======================================================= */
+
+  fDateEl.value =
+    isoToday();
+
+  /* =======================================================
+     TICKET NUMBER
+  ======================================================= */
+
+  ticketNum =
+    "HV-000000";
+
+  /* =======================================================
+     ERROR
+  ======================================================= */
+
+  $("errorText").classList.remove(
+    "show"
+  );
+
+  /* =======================================================
+     AI
+  ======================================================= */
+
+  titleAiRequestId +=
+    1;
+
+  clearTimeout(
+    titleAiDebounceTimer
+  );
+
   hideTitleAiSuggestion();
+
   hideAITitleLoading();
 
-  successView.classList.remove("show");
-  formView.classList.remove("hide");
+  /* =======================================================
+     SUCCESS
+  ======================================================= */
+
+  successView.classList.remove(
+    "show"
+  );
+
+  formView.classList.remove(
+    "hide"
+  );
+
+  updateStub();
 }
+
+/* =========================================================
+   INIT
+========================================================= */
 
 setupForm();
