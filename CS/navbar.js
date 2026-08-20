@@ -21,6 +21,7 @@
 
   const links = [
     ["home", "/CS/homepageCS/trangchu-cs.html", "Trang chủ"],
+    ["groups", "/CS/Groups/group.html", "Groups"],
     ["tickets", "/CS/TicketManagement/cs-ticket.html", "Quản lý ticket"],
     ["create", "/CS/PhieuHoTroCS/phieuhotro-cs.html", "Tạo phiếu hỗ trợ"],
     ["email", "/CS/tao_email_HV.html", "Cấp tài khoản HV"],
