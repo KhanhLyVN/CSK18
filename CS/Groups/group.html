@@ -1,49 +1,741 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nhóm & Phân công · Customer Success</title>
   <link rel="stylesheet" href="/CS/navbar.css">
-  <link rel="stylesheet" href="/CS/Groups/group.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet" />
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
+
   <style>
-    :root{--maroon:#5d0703;--deep:#3e0402;--cream:#eedcc8;--pale:#fbf4e9;--paper:#fffaf3;--gold:#b08a4e;--ink:#2a1712;--muted:#806d61;--line:rgba(93,7,3,.14);--green:#55734c;--red:#a23b2e;--shadow:0 12px 30px rgba(62,4,2,.08)}
-    *{box-sizing:border-box}body{margin:0;background:var(--pale);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}.material-symbols-rounded{font-size:20px;line-height:1;vertical-align:middle}
-    .groups-page{width:min(1360px,100%);margin:0 auto;padding:26px clamp(16px,3vw,44px) 60px}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid var(--maroon)}.eyebrow{margin:0 0 7px;color:var(--gold);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.page-head h1{margin:0;color:var(--deep);font:700 clamp(28px,3vw,40px)/1.05 Fraunces,serif}.page-head p{max-width:650px;margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.55}.user-chip{padding:9px 12px;border:1px solid var(--line);border-radius:9px;color:var(--maroon);background:#fff;font-size:11px;font-weight:800;white-space:nowrap}
-    .layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start}.panel{border:1px solid var(--line);border-radius:14px;background:var(--paper);box-shadow:var(--shadow)}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}.panel-head h2{margin:0;color:var(--deep);font:700 21px/1.1 Fraunces,serif}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:11px}.count{padding:6px 9px;border-radius:999px;color:var(--maroon);background:var(--cream);font-size:10px;font-weight:800;white-space:nowrap}
-    .group-list{padding:10px}.group-card{width:100%;margin:0 0 8px;padding:14px;border:1px solid transparent;border-radius:11px;color:var(--ink);background:#fff;text-align:left;transition:.18s}.group-card:hover{border-color:var(--gold);transform:translateY(-1px)}.group-card.selected{border-color:var(--maroon);background:#fff8ef;box-shadow:0 0 0 3px rgba(93,7,3,.06)}.group-card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.group-card h3{margin:0;color:var(--deep);font-size:13px;font-weight:800}.group-code{display:inline-block;margin-top:5px;padding:3px 6px;border-radius:4px;color:var(--maroon);background:var(--cream);font-size:9px;font-weight:800}.group-card-meta{display:flex;gap:12px;margin-top:11px;color:var(--muted);font-size:10px}.role-badge{padding:3px 6px;border-radius:999px;color:var(--green);background:#eef4eb;font-size:9px;font-weight:800}.empty{padding:32px 18px;color:var(--muted);font-size:12px;line-height:1.6;text-align:center}.loading{text-align:center;color:var(--muted);font-size:12px;padding:28px}
-    .detail{min-height:560px}.detail-empty{display:grid;place-items:center;min-height:560px;padding:40px;color:var(--muted);text-align:center}.detail-empty .material-symbols-rounded{margin-bottom:10px;color:var(--gold);font-size:44px}.detail-body{padding:20px}.detail-title{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:18px;border-bottom:1px solid var(--line)}.detail-title h2{margin:0;color:var(--deep);font:700 27px/1.1 Fraunces,serif}.detail-title p{margin:7px 0 0;color:var(--muted);font-size:12px}.leader-box{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--maroon);background:var(--cream);font-size:11px}.avatar{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;color:#fff;background:var(--maroon);font-size:10px;font-weight:800}.leader-box strong{display:block}.leader-box small{display:block;margin-top:3px;color:var(--muted);font-size:10px}.section{margin-top:22px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.section-head h3{margin:0;color:var(--deep);font-size:14px}.section-head p{margin:0;color:var(--muted);font-size:11px}.members{display:flex;flex-wrap:wrap;gap:8px}.member{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#fff}.member .avatar{width:28px;height:28px;flex-basis:28px;font-size:9px}.member-name{font-size:11px;font-weight:800}.member-email{margin-top:2px;color:var(--muted);font-size:9px}.class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:11px}.class-card{padding:14px;border:1px solid var(--line);border-radius:11px;background:#fff}.class-card h4{margin:0;color:var(--deep);font-size:13px}.class-card p{margin:7px 0 0;color:var(--muted);font-size:10px;line-height:1.45}.class-foot{display:flex;justify-content:space-between;gap:8px;margin-top:13px;color:var(--muted);font-size:10px}.status{padding:3px 7px;border-radius:999px;color:var(--green);background:#eef4eb;font-size:9px;font-weight:800}.ticket-note{padding:14px;border:1px dashed rgba(176,138,78,.65);border-radius:10px;color:var(--muted);background:#fffdf8;font-size:11px;line-height:1.55}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:9px 12px;border:0;border-radius:8px;font-size:11px;font-weight:800}.btn-primary{color:#fff;background:var(--maroon)}.btn-primary:hover{background:var(--deep)}.btn-secondary{color:var(--maroon);background:var(--cream)}.btn:disabled{opacity:.55;cursor:not-allowed}
-    .modal{position:fixed;inset:0;z-index:2000;display:none;place-items:center;padding:18px;background:rgba(42,23,18,.45)}.modal.show{display:grid}.dialog{width:min(560px,100%);max-height:90vh;overflow:auto;padding:22px;border-radius:14px;background:var(--paper);box-shadow:0 20px 60px rgba(0,0,0,.22)}.dialog h2{margin:0;color:var(--deep);font:700 24px/1.1 Fraunces,serif}.dialog-intro{margin:7px 0 18px;color:var(--muted);font-size:11px;line-height:1.5}.form-field{margin-top:13px}.form-field label{display:block;margin-bottom:6px;font-size:11px;font-weight:800}.form-field input,.form-field textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;outline:0;background:#fff;font-size:12px}.form-field textarea{min-height:72px;resize:vertical}.checkbox-list{max-height:220px;overflow:auto;padding:7px;border:1px solid var(--line);border-radius:8px;background:#fff}.check-row{display:flex;align-items:center;gap:9px;padding:8px;border-radius:6px;font-size:11px}.check-row:hover{background:var(--pale)}.check-row input{width:auto}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
-    .member-search{margin-bottom:9px}.member-search input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;outline:0;background:#fff;font-size:12px}.member-option-meta{min-width:0}.member-option-meta strong,.member-option-meta small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.member-option-meta strong{font-size:11px}.member-option-meta small{margin-top:2px;color:var(--muted);font-size:9px}.member-option .avatar{width:28px;height:28px;flex-basis:28px;font-size:9px}.toast{position:fixed;right:20px;bottom:20px;z-index:3000;display:none;max-width:340px;padding:12px 14px;border-radius:9px;color:#fff;background:var(--deep);font-size:11px;box-shadow:var(--shadow)}.toast.show{display:block}.toast.error{background:var(--red)}
-    @media(max-width:950px){.layout{grid-template-columns:1fr}.detail{min-height:0}.detail-empty{min-height:300px}}@media(max-width:600px){.page-head,.detail-title{display:block}.user-chip{display:inline-block;margin-top:14px}.detail-title .leader-box{margin-top:14px}.groups-page{padding:18px 12px 40px}.panel-head,.detail-body{padding:15px}}
+    :root {
+      --maroon: #5d0703;
+      --deep: #3e0402;
+      --cream: #eedcc8;
+      --pale: #fbf4e9;
+      --paper: #fffaf3;
+      --gold: #b08a4e;
+      --ink: #2a1712;
+      --muted: #806d61;
+      --line: rgba(93, 7, 3, .14);
+      --green: #55734c;
+      --red: #a23b2e;
+      --shadow: 0 12px 30px rgba(62, 4, 2, .08)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--pale);
+      color: var(--ink);
+      font-family: Inter, Arial, sans-serif
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    .material-symbols-rounded {
+      font-size: 20px;
+      line-height: 1;
+      vertical-align: middle
+    }
+
+    .groups-page {
+      width: min(1360px, 100%);
+      margin: 0 auto;
+      padding: 26px clamp(16px, 3vw, 44px) 60px
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--maroon)
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase
+    }
+
+    .page-head h1 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 clamp(28px, 3vw, 40px)/1.05 Fraunces, serif
+    }
+
+    .page-head p {
+      max-width: 650px;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55
+    }
+
+    .user-chip {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--maroon);
+      background: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      box-shadow: var(--shadow)
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 21px/1.1 Fraunces, serif
+    }
+
+    .panel-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .count {
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: var(--maroon);
+      background: var(--cream);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap
+    }
+
+    .group-list {
+      padding: 10px
+    }
+
+    .group-card {
+      width: 100%;
+      margin: 0 0 8px;
+      padding: 14px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: var(--ink);
+      background: #fff;
+      text-align: left;
+      transition: .18s
+    }
+
+    .group-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-1px)
+    }
+
+    .group-card.selected {
+      border-color: var(--maroon);
+      background: #fff8ef;
+      box-shadow: 0 0 0 3px rgba(93, 7, 3, .06)
+    }
+
+    .group-card-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px
+    }
+
+    .group-card h3 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    .group-code {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: var(--maroon);
+      background: var(--cream);
+      font-size: 9px;
+      font-weight: 800
+    }
+
+    .group-card-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    .role-badge {
+      padding: 3px 6px;
+      border-radius: 999px;
+      color: var(--green);
+      background: #eef4eb;
+      font-size: 9px;
+      font-weight: 800
+    }
+
+    .empty {
+      padding: 32px 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 28px
+    }
+
+    .detail {
+      min-height: 560px
+    }
+
+    .detail-empty {
+      display: grid;
+      place-items: center;
+      min-height: 560px;
+      padding: 40px;
+      color: var(--muted);
+      text-align: center
+    }
+
+    .detail-empty .material-symbols-rounded {
+      margin-bottom: 10px;
+      color: var(--gold);
+      font-size: 44px
+    }
+
+    .detail-body {
+      padding: 20px
+    }
+
+    .detail-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .detail-title h2 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 27px/1.1 Fraunces, serif
+    }
+
+    .detail-title p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .leader-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: var(--maroon);
+      background: var(--cream);
+      font-size: 11px
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--maroon);
+      font-size: 10px;
+      font-weight: 800
+    }
+
+    .leader-box strong {
+      display: block
+    }
+
+    .leader-box small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    .section {
+      margin-top: 22px
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px
+    }
+
+    .section-head h3 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 14px
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .members {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff
+    }
+
+    .member .avatar {
+      width: 28px;
+      height: 28px;
+      flex-basis: 28px;
+      font-size: 9px
+    }
+
+    .member-name {
+      font-size: 11px;
+      font-weight: 800
+    }
+
+    .member-email {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 11px
+    }
+
+    .class-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff
+    }
+
+    .class-card h4 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 13px
+    }
+
+    .class-card p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45
+    }
+
+    .class-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    .status {
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: var(--green);
+      background: #eef4eb;
+      font-size: 9px;
+      font-weight: 800
+    }
+
+    .ticket-note {
+      padding: 14px;
+      border: 1px dashed rgba(176, 138, 78, .65);
+      border-radius: 10px;
+      color: var(--muted);
+      background: #fffdf8;
+      font-size: 11px;
+      line-height: 1.55
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 38px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--maroon)
+    }
+
+    .btn-primary:hover {
+      background: var(--deep)
+    }
+
+    .btn-secondary {
+      color: var(--maroon);
+      background: var(--cream)
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(42, 23, 18, .45)
+    }
+
+    .modal.show {
+      display: grid
+    }
+
+    .dialog {
+      width: min(560px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 22px;
+      border-radius: 14px;
+      background: var(--paper);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .22)
+    }
+
+    .dialog h2 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 24px/1.1 Fraunces, serif
+    }
+
+    .dialog-intro {
+      margin: 7px 0 18px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5
+    }
+
+    .form-field {
+      margin-top: 13px
+    }
+
+    .form-field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 800
+    }
+
+    .form-field input,
+    .form-field textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: 0;
+      background: #fff;
+      font-size: 12px
+    }
+
+    .form-field textarea {
+      min-height: 72px;
+      resize: vertical
+    }
+
+    .checkbox-list {
+      max-height: 220px;
+      overflow: auto;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 11px
+    }
+
+    .check-row:hover {
+      background: var(--pale)
+    }
+
+    .check-row input {
+      width: auto
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 20px
+    }
+
+    .member-search {
+      margin-bottom: 9px
+    }
+
+    .member-search input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: 0;
+      background: #fff;
+      font-size: 12px
+    }
+
+    .member-option-meta {
+      min-width: 0
+    }
+
+    .member-option-meta strong,
+    .member-option-meta small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .member-option-meta strong {
+      font-size: 11px
+    }
+
+    .member-option-meta small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px
+    }
+
+    .member-option .avatar {
+      width: 28px;
+      height: 28px;
+      flex-basis: 28px;
+      font-size: 9px
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 3000;
+      display: none;
+      max-width: 340px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      color: #fff;
+      background: var(--deep);
+      font-size: 11px;
+      box-shadow: var(--shadow)
+    }
+
+    .toast.show {
+      display: block
+    }
+
+    .toast.error {
+      background: var(--red)
+    }
+
+    @media(max-width:950px) {
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .detail {
+        min-height: 0
+      }
+
+      .detail-empty {
+        min-height: 300px
+      }
+    }
+
+    @media(max-width:600px) {
+
+      .page-head,
+      .detail-title {
+        display: block
+      }
+
+      .user-chip {
+        display: inline-block;
+        margin-top: 14px
+      }
+
+      .detail-title .leader-box {
+        margin-top: 14px
+      }
+
+      .groups-page {
+        padding: 18px 12px 40px
+      }
+
+      .panel-head,
+      .detail-body {
+        padding: 15px
+      }
+    }
   </style>
 </head>
-<body data-admin-page="my-groups">
-  <div id="adminBar"></div>
+
+<body data-nav-page="groups">
+  <div class="app">
   <main class="main-content">
     <div class="groups-page">
       <header class="page-head">
-        <div><p class="eyebrow">Không gian làm việc</p><h1>Nhóm của tôi</h1><p>Chọn một nhóm để xem thành viên, các lớp học và công việc mà nhóm đang phụ trách.</p></div>
+        <div>
+          <p class="eyebrow">Không gian làm việc</p>
+          <h1>Nhóm của tôi</h1>
+          <p>Chọn một nhóm để xem thành viên, các lớp học và công việc mà nhóm đang phụ trách.</p>
+        </div>
         <div class="user-chip" id="currentUserChip">Đang tải tài khoản...</div>
       </header>
       <div class="layout">
         <section class="panel">
-          <div class="panel-head"><div><h2>Các nhóm của bạn</h2><p>Nhóm bạn là leader hoặc thành viên.</p></div><span class="count" id="groupCount">0 nhóm</span></div>
-          <div class="group-list" id="groupList"><div class="loading">Đang tải nhóm...</div></div>
+          <div class="panel-head">
+            <div>
+              <h2>Các nhóm của bạn</h2>
+              <p>Nhóm bạn là leader hoặc thành viên.</p>
+            </div><span class="count" id="groupCount">0 nhóm</span>
+          </div>
+          <div class="group-list" id="groupList">
+            <div class="loading">Đang tải nhóm...</div>
+          </div>
         </section>
-        <section class="panel detail" id="detailPanel"><div class="detail-empty"><div><span class="material-symbols-rounded">folder_open</span><p>Chọn một nhóm ở bên trái để xem chi tiết.</p></div></div></section>
+        <section class="panel detail" id="detailPanel">
+          <div class="detail-empty">
+            <div><span class="material-symbols-rounded">folder_open</span>
+              <p>Chọn một nhóm ở bên trái để xem chi tiết.</p>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
-  </main>
-  <div class="modal" id="classModal" aria-hidden="true"><div class="dialog"><h2>Tạo lớp học trong nhóm</h2><p class="dialog-intro">Đặt tên lớp, sau đó chọn những thành viên trong nhóm sẽ tham gia lớp này. Chỉ leader mới có quyền tạo lớp.</p><form id="classForm"><div class="form-field"><label for="className">Tên lớp <span style="color:var(--red)">*</span></label><input id="className" required maxlength="100" placeholder="Ví dụ: Lớp hỗ trợ khối 10" /></div><div class="form-field"><label for="classDescription">Mô tả lớp</label><textarea id="classDescription" maxlength="300" placeholder="Lớp này phụ trách nhóm học viên nào?"></textarea></div><div class="form-field"><label>Chọn thành viên trong nhóm</label><div class="checkbox-list" id="classMembers"><div class="loading">Đang tải thành viên...</div></div></div><div class="dialog-actions"><button class="btn btn-secondary" type="button" id="closeClassModal">Hủy</button><button class="btn btn-primary" type="submit" id="saveClass"><span class="material-symbols-rounded">add</span>Tạo lớp</button></div></form></div></div>
-  <div class="modal" id="memberModal" aria-hidden="true"><div class="dialog"><h2>Thêm thành viên vào nhóm</h2><p class="dialog-intro">Chọn các tài khoản CS muốn tham gia nhóm. Người đã ở trong nhóm sẽ không xuất hiện lại.</p><div class="member-search"><input id="memberSearch" type="search" placeholder="Tìm theo tên hoặc email..." autocomplete="off" /></div><div class="checkbox-list" id="availableMembers"><div class="loading">Đang tải tài khoản CS...</div></div><div class="dialog-actions"><button class="btn btn-secondary" type="button" id="closeMemberModal">Hủy</button><button class="btn btn-primary" type="button" id="saveMembers"><span class="material-symbols-rounded">person_add</span>Thêm vào nhóm</button></div></div></div>
+    </main>
+  </div>
+  <div class="modal" id="classModal" aria-hidden="true">
+    <div class="dialog">
+      <h2>Tạo lớp học trong nhóm</h2>
+      <p class="dialog-intro">Đặt tên lớp, sau đó chọn những thành viên trong nhóm sẽ tham gia lớp này. Chỉ leader mới
+        có quyền tạo lớp.</p>
+      <form id="classForm">
+        <div class="form-field"><label for="className">Tên lớp <span style="color:var(--red)">*</span></label><input
+            id="className" required maxlength="100" placeholder="Ví dụ: Lớp hỗ trợ khối 10" /></div>
+        <div class="form-field"><label for="classDescription">Mô tả lớp</label><textarea id="classDescription"
+            maxlength="300" placeholder="Lớp này phụ trách nhóm học viên nào?"></textarea></div>
+        <div class="form-field"><label>Chọn thành viên trong nhóm</label>
+          <div class="checkbox-list" id="classMembers">
+            <div class="loading">Đang tải thành viên...</div>
+          </div>
+        </div>
+        <div class="dialog-actions"><button class="btn btn-secondary" type="button"
+            id="closeClassModal">Hủy</button><button class="btn btn-primary" type="submit" id="saveClass"><span
+              class="material-symbols-rounded">add</span>Tạo lớp</button></div>
+      </form>
+    </div>
+  </div>
+  <div class="modal" id="memberModal" aria-hidden="true">
+    <div class="dialog">
+      <h2>Thêm thành viên vào nhóm</h2>
+      <p class="dialog-intro">Chọn các tài khoản CS muốn tham gia nhóm. Người đã ở trong nhóm sẽ không xuất hiện lại.
+      </p>
+      <div class="member-search"><input id="memberSearch" type="search" placeholder="Tìm theo tên hoặc email..."
+          autocomplete="off" /></div>
+      <div class="checkbox-list" id="availableMembers">
+        <div class="loading">Đang tải tài khoản CS...</div>
+      </div>
+      <div class="dialog-actions"><button class="btn btn-secondary" type="button"
+          id="closeMemberModal">Hủy</button><button class="btn btn-primary" type="button" id="saveMembers"><span
+            class="material-symbols-rounded">person_add</span>Thêm vào nhóm</button></div>
+    </div>
+  </div>
   <div class="toast" id="toast"></div>
   <script src="/CS/navbar.js"></script>
   <script>
@@ -51,72 +743,73 @@
     const myGroupsAuth = firebase.auth();
     const myGroupsDb = firebase.firestore();
     const GROUPS = "groups";
-    const state = { user:null, groups:[], selected:null, members:[], allCs:[], classes:[], unsubscribeGroups:null, unsubscribeClasses:null, toastTimer:null };
+    const state = { user: null, groups: [], selected: null, members: [], allCs: [], classes: [], unsubscribeGroups: null, unsubscribeClasses: null, toastTimer: null };
     const $ = id => document.getElementById(id);
-    const esc = value => { const div=document.createElement("div"); div.textContent=value == null ? "" : String(value); return div.innerHTML; };
-    const initials = (name,email) => String(name || email || "?").trim().split(/\s+/).filter(Boolean).slice(-2).map(x=>x[0]).join("").toUpperCase() || "?";
-    const toast = (message,error=false) => { $("toast").textContent=message; $("toast").className=`toast show${error ? " error" : ""}`; clearTimeout(state.toastTimer); state.toastTimer=setTimeout(() => $("toast").className="toast",3200); };
+    const esc = value => { const div = document.createElement("div"); div.textContent = value == null ? "" : String(value); return div.innerHTML; };
+    const initials = (name, email) => String(name || email || "?").trim().split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join("").toUpperCase() || "?";
+    const toast = (message, error = false) => { $("toast").textContent = message; $("toast").className = `toast show${error ? " error" : ""}`; clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => $("toast").className = "toast", 3200); };
     const isLeader = group => Boolean(state.user && group && group.leaderUid === state.user.uid);
-    const userFromGroup = (group,uid) => { const item=(group.members || []).find(member => (member.uid || member.id) === uid); return item || (uid === group.leaderUid ? {uid,name:group.leaderName,email:group.leaderEmail} : null); };
+    const userFromGroup = (group, uid) => { const item = (group.members || []).find(member => (member.uid || member.id) === uid); return item || (uid === group.leaderUid ? { uid, name: group.leaderName, email: group.leaderEmail } : null); };
 
-    function renderGroups(){
-      $("groupCount").textContent=`${state.groups.length} nhóm`;
-      if(!state.groups.length){$("groupList").innerHTML='<div class="empty">Bạn chưa được tham gia nhóm nào.<br>Hãy liên hệ admin để được thêm vào nhóm.</div>';return;}
-      $("groupList").innerHTML=state.groups.map(group=>`<button class="group-card ${state.selected && state.selected.id===group.id ? "selected" : ""}" type="button" data-group-id="${esc(group.id)}"><div class="group-card-title"><h3>${esc(group.name || "Chưa đặt tên")}</h3>${isLeader(group)?'<span class="role-badge">LEADER</span>':''}</div>${group.code?`<span class="group-code">${esc(group.code)}</span>`:""}<div class="group-card-meta"><span><span class="material-symbols-rounded">group</span> ${(group.memberIds || group.members || []).length || (group.leaderUid ? 1 : 0)} người</span><span><span class="material-symbols-rounded">school</span> Xem lớp</span></div></button>`).join("");
+    function renderGroups() {
+      $("groupCount").textContent = `${state.groups.length} nhóm`;
+      if (!state.groups.length) { $("groupList").innerHTML = '<div class="empty">Bạn chưa được tham gia nhóm nào.<br>Hãy liên hệ admin để được thêm vào nhóm.</div>'; return; }
+      $("groupList").innerHTML = state.groups.map(group => `<button class="group-card ${state.selected && state.selected.id === group.id ? "selected" : ""}" type="button" data-group-id="${esc(group.id)}"><div class="group-card-title"><h3>${esc(group.name || "Chưa đặt tên")}</h3>${isLeader(group) ? '<span class="role-badge">LEADER</span>' : ''}</div>${group.code ? `<span class="group-code">${esc(group.code)}</span>` : ""}<div class="group-card-meta"><span><span class="material-symbols-rounded">group</span> ${(group.memberIds || group.members || []).length || (group.leaderUid ? 1 : 0)} người</span><span><span class="material-symbols-rounded">school</span> Xem lớp</span></div></button>`).join("");
     }
 
-    function renderDetail(){
-      const group=state.selected;if(!group){$("detailPanel").innerHTML='<div class="detail-empty"><div><span class="material-symbols-rounded">folder_open</span><p>Chọn một nhóm ở bên trái để xem chi tiết.</p></div></div>';return;}
-      const leader={uid:group.leaderUid,name:group.leaderName,email:group.leaderEmail};
-      const members=group.members || (group.memberIds || []).map(uid=>userFromGroup(group,uid)).filter(Boolean);
-      const canCreate=isLeader(group);
-      $("detailPanel").innerHTML=`<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name,leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member=>`<div class="member"><span class="avatar">${esc(initials(member.name,member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp và phân thành viên vào lớp.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div><div class="section"><div class="section-head"><h3>Ticket của nhóm</h3></div><div class="ticket-note"><span class="material-symbols-rounded">info</span> Khi kết nối với module ticket, ticket của học viên sẽ đi vào nhóm và leader có thể phân công cho CS con trong đúng lớp.</div></div></div>`;
-      if(canCreate) { $("openClassModal").addEventListener("click",openClassModal);$("openMemberModal").addEventListener("click",openMemberModal); }
+    function renderDetail() {
+      const group = state.selected; if (!group) { $("detailPanel").innerHTML = '<div class="detail-empty"><div><span class="material-symbols-rounded">folder_open</span><p>Chọn một nhóm ở bên trái để xem chi tiết.</p></div></div>'; return; }
+      const leader = { uid: group.leaderUid, name: group.leaderName, email: group.leaderEmail };
+      const members = group.members || (group.memberIds || []).map(uid => userFromGroup(group, uid)).filter(Boolean);
+      const canCreate = isLeader(group);
+      $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp và phân thành viên vào lớp.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div><div class="section"><div class="section-head"><h3>Ticket của nhóm</h3></div><div class="ticket-note"><span class="material-symbols-rounded">info</span> Khi kết nối với module ticket, ticket của học viên sẽ đi vào nhóm và leader có thể phân công cho CS con trong đúng lớp.</div></div></div>`;
+      if (canCreate) { $("openClassModal").addEventListener("click", openClassModal); $("openMemberModal").addEventListener("click", openMemberModal); }
       loadClasses(group);
     }
 
-    async function getMyGroups(uid){
-      const result=new Map();
-      const byLeader=await myGroupsDb.collection(GROUPS).where("leaderUid","==",uid).get();byLeader.docs.forEach(doc=>result.set(doc.id,{id:doc.id,...doc.data()}));
-      const byMember=await myGroupsDb.collection(GROUPS).where("memberIds","array-contains",uid).get();byMember.docs.forEach(doc=>result.set(doc.id,{id:doc.id,...doc.data()}));
-      return [...result.values()].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"vi"));
+    async function getMyGroups(uid) {
+      const result = new Map();
+      const byLeader = await myGroupsDb.collection(GROUPS).where("leaderUid", "==", uid).get(); byLeader.docs.forEach(doc => result.set(doc.id, { id: doc.id, ...doc.data() }));
+      const byMember = await myGroupsDb.collection(GROUPS).where("memberIds", "array-contains", uid).get(); byMember.docs.forEach(doc => result.set(doc.id, { id: doc.id, ...doc.data() }));
+      return [...result.values()].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
     }
-    function watchMyGroups(){if(state.unsubscribeGroups)state.unsubscribeGroups();getMyGroups(state.user.uid).then(groups=>{state.groups=groups;renderGroups();if(groups.length)selectGroup(groups[0].id);}).catch(error=>{console.error(error);toast("Không thể tải nhóm. Kiểm tra Firestore Rules.",true);$("groupList").innerHTML='<div class="empty">Không thể tải nhóm.</div>';});}
-    function selectGroup(id){state.selected=state.groups.find(group=>group.id===id)||null;state.classes=[];renderGroups();renderDetail();}
-    async function loadAvailableCs(){
-      const snapshot=await myGroupsDb.collection("users").where("accountType","==","customer_success").get();
-      state.allCs=snapshot.docs.map(doc=>{const data=doc.data()||{};return {uid:data.uid||doc.id,name:data.name||"",email:data.email||"",status:data.status||"active"};}).filter(user=>user.email && user.status !== "inactive");
+    function watchMyGroups() { if (state.unsubscribeGroups) state.unsubscribeGroups(); getMyGroups(state.user.uid).then(groups => { state.groups = groups; renderGroups(); if (groups.length) selectGroup(groups[0].id); }).catch(error => { console.error(error); toast("Không thể tải nhóm. Kiểm tra Firestore Rules.", true); $("groupList").innerHTML = '<div class="empty">Không thể tải nhóm.</div>'; }); }
+    function selectGroup(id) { state.selected = state.groups.find(group => group.id === id) || null; state.classes = []; renderGroups(); renderDetail(); }
+    async function loadAvailableCs() {
+      const snapshot = await myGroupsDb.collection("users").where("accountType", "==", "customer_success").get();
+      state.allCs = snapshot.docs.map(doc => { const data = doc.data() || {}; return { uid: data.uid || doc.id, name: data.name || "", email: data.email || "", status: data.status || "active" }; }).filter(user => user.email && user.status !== "inactive");
     }
-    function currentMemberIds(group){return new Set([group.leaderUid,...(group.memberIds||[]),...(group.members||[]).map(member=>member.uid||member.id)].filter(Boolean));}
-    function renderAvailableMembers(keyword=""){
-      const group=state.selected;if(!group)return;
-      const existing=currentMemberIds(group);const key=String(keyword||"").trim().toLowerCase();
-      const candidates=state.allCs.filter(user=>!existing.has(user.uid) && `${user.name} ${user.email}`.toLowerCase().includes(key));
-      $("availableMembers").innerHTML=candidates.length ? candidates.map(user=>`<label class="check-row member-option"><input type="checkbox" value="${esc(user.uid)}" /><span class="avatar">${esc(initials(user.name,user.email))}</span><span class="member-option-meta"><strong>${esc(user.name||"Chưa có tên")}</strong><small>${esc(user.email)}</small></span></label>`).join("") : '<div class="empty">Không còn tài khoản CS phù hợp để thêm.</div>';
+    function currentMemberIds(group) { return new Set([group.leaderUid, ...(group.memberIds || []), ...(group.members || []).map(member => member.uid || member.id)].filter(Boolean)); }
+    function renderAvailableMembers(keyword = "") {
+      const group = state.selected; if (!group) return;
+      const existing = currentMemberIds(group); const key = String(keyword || "").trim().toLowerCase();
+      const candidates = state.allCs.filter(user => !existing.has(user.uid) && `${user.name} ${user.email}`.toLowerCase().includes(key));
+      $("availableMembers").innerHTML = candidates.length ? candidates.map(user => `<label class="check-row member-option"><input type="checkbox" value="${esc(user.uid)}" /><span class="avatar">${esc(initials(user.name, user.email))}</span><span class="member-option-meta"><strong>${esc(user.name || "Chưa có tên")}</strong><small>${esc(user.email)}</small></span></label>`).join("") : '<div class="empty">Không còn tài khoản CS phù hợp để thêm.</div>';
     }
-    async function openMemberModal(){
-      if(!state.selected || !isLeader(state.selected))return;
-      $("memberModal").classList.add("show");$("memberModal").setAttribute("aria-hidden","false");$("memberSearch").value="";$("availableMembers").innerHTML='<div class="loading">Đang tải tài khoản CS...</div>';
-      try{await loadAvailableCs();renderAvailableMembers();$("memberSearch").focus();}catch(error){console.error(error);$("availableMembers").innerHTML='<div class="empty">Không thể tải tài khoản CS.</div>';toast("Không thể tải danh sách tài khoản CS.",true);}
+    async function openMemberModal() {
+      if (!state.selected || !isLeader(state.selected)) return;
+      $("memberModal").classList.add("show"); $("memberModal").setAttribute("aria-hidden", "false"); $("memberSearch").value = ""; $("availableMembers").innerHTML = '<div class="loading">Đang tải tài khoản CS...</div>';
+      try { await loadAvailableCs(); renderAvailableMembers(); $("memberSearch").focus(); } catch (error) { console.error(error); $("availableMembers").innerHTML = '<div class="empty">Không thể tải tài khoản CS.</div>'; toast("Không thể tải danh sách tài khoản CS.", true); }
     }
-    function closeMemberModal(){$("memberModal").classList.remove("show");$("memberModal").setAttribute("aria-hidden","true");}
-    async function saveMembersToGroup(){
-      if(!state.selected || !isLeader(state.selected))return;
-      const selectedIds=[...document.querySelectorAll("#availableMembers input:checked")].map(input=>input.value);if(!selectedIds.length){toast("Hãy chọn ít nhất một thành viên.",true);return;}
-      const existingMembers=state.selected.members ? [...state.selected.members] : (state.selected.memberIds||[]).map(uid=>userFromGroup(state.selected,uid)).filter(Boolean);
-      const additions=state.allCs.filter(user=>selectedIds.includes(user.uid)).map(user=>({uid:user.uid,name:user.name,email:user.email,role:"member"}));
-      const members=[...existingMembers,...additions];const memberIds=[...new Set([state.selected.leaderUid,...members.map(member=>member.uid||member.id)].filter(Boolean))];const button=$("saveMembers");button.disabled=true;
-      try{await myGroupsDb.collection(GROUPS).doc(state.selected.id).set({memberIds,members,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});state.selected={...state.selected,memberIds,members};state.groups=state.groups.map(group=>group.id===state.selected.id ? state.selected : group);renderGroups();renderDetail();closeMemberModal();toast(`Đã thêm ${additions.length} thành viên vào nhóm.`);}catch(error){console.error(error);toast("Không thể thêm thành viên vào nhóm.",true);}finally{button.disabled=false;}
+    function closeMemberModal() { $("memberModal").classList.remove("show"); $("memberModal").setAttribute("aria-hidden", "true"); }
+    async function saveMembersToGroup() {
+      if (!state.selected || !isLeader(state.selected)) return;
+      const selectedIds = [...document.querySelectorAll("#availableMembers input:checked")].map(input => input.value); if (!selectedIds.length) { toast("Hãy chọn ít nhất một thành viên.", true); return; }
+      const existingMembers = state.selected.members ? [...state.selected.members] : (state.selected.memberIds || []).map(uid => userFromGroup(state.selected, uid)).filter(Boolean);
+      const additions = state.allCs.filter(user => selectedIds.includes(user.uid)).map(user => ({ uid: user.uid, name: user.name, email: user.email, role: "member" }));
+      const members = [...existingMembers, ...additions]; const memberIds = [...new Set([state.selected.leaderUid, ...members.map(member => member.uid || member.id)].filter(Boolean))]; const button = $("saveMembers"); button.disabled = true;
+      try { await myGroupsDb.collection(GROUPS).doc(state.selected.id).set({ memberIds, members, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); state.selected = { ...state.selected, memberIds, members }; state.groups = state.groups.map(group => group.id === state.selected.id ? state.selected : group); renderGroups(); renderDetail(); closeMemberModal(); toast(`Đã thêm ${additions.length} thành viên vào nhóm.`); } catch (error) { console.error(error); toast("Không thể thêm thành viên vào nhóm.", true); } finally { button.disabled = false; }
     }
-    function loadClasses(group){if(state.unsubscribeClasses)state.unsubscribeClasses();state.unsubscribeClasses=myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt","desc").onSnapshot(snapshot=>{state.classes=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));const grid=$("classGrid");if(!grid)return;if(!state.classes.length){grid.innerHTML='<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>';return;}grid.innerHTML=state.classes.map(item=>`<article class="class-card"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.memberIds || []).length} thành viên</span><span class="status">Đang hoạt động</span></div></article>`).join("");},error=>{console.error(error);const grid=$("classGrid");if(grid)grid.innerHTML='<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>';});}
-    function openClassModal(){if(!state.selected || !isLeader(state.selected))return;$("classModal").classList.add("show");$("classModal").setAttribute("aria-hidden","false");$("className").focus();const members=state.selected.members || (state.selected.memberIds || []).map(uid=>userFromGroup(state.selected,uid)).filter(Boolean);$("classMembers").innerHTML=members.length ? members.map(member=>`<label class="check-row"><input type="checkbox" value="${esc(member.uid || member.id)}" checked /><span class="avatar">${esc(initials(member.name,member.email))}</span><span>${esc(member.name || member.email || "Thành viên")}</span></label>`).join("") : '<div class="empty">Nhóm hiện chưa có thành viên để thêm vào lớp.</div>';}
-    function closeClassModal(){$("classModal").classList.remove("show");$("classModal").setAttribute("aria-hidden","true");$("classForm").reset();}
-    $("groupList").addEventListener("click",event=>{const card=event.target.closest("[data-group-id]");if(card)selectGroup(card.dataset.groupId);});
-    $("closeClassModal").addEventListener("click",closeClassModal);$("classModal").addEventListener("click",event=>{if(event.target===$("classModal"))closeClassModal();});
-    $("closeMemberModal").addEventListener("click",closeMemberModal);$("memberModal").addEventListener("click",event=>{if(event.target===$("memberModal"))closeMemberModal();});$("memberSearch").addEventListener("input",event=>renderAvailableMembers(event.target.value));$("saveMembers").addEventListener("click",saveMembersToGroup);
-    $("classForm").addEventListener("submit",async event=>{event.preventDefault();if(!state.selected || !isLeader(state.selected))return;const name=$("className").value.trim();if(!name){toast("Vui lòng nhập tên lớp.",true);return;}const memberIds=[...document.querySelectorAll("#classMembers input:checked")].map(input=>input.value);const button=$("saveClass");button.disabled=true;try{await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({name,description:$("classDescription").value.trim(),groupId:state.selected.id,memberIds,createdBy:state.user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"active"});toast("Đã tạo lớp học.");closeClassModal();}catch(error){console.error(error);toast("Không thể tạo lớp học.",true);}finally{button.disabled=false;}});
-    $("currentUserChip").textContent="Đang xác thực...";
-    myGroupsAuth.onAuthStateChanged(async user=>{if(!user){$("currentUserChip").textContent="Chưa đăng nhập";toast("Bạn cần đăng nhập để xem nhóm.",true);return;}state.user=user;$("currentUserChip").textContent=user.email || "Tài khoản hiện tại";watchMyGroups();});
+    function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; return; } grid.innerHTML = state.classes.map(item => `<article class="class-card"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.memberIds || []).length} thành viên</span><span class="status">Đang hoạt động</span></div></article>`).join(""); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
+    function openClassModal() { if (!state.selected || !isLeader(state.selected)) return; $("classModal").classList.add("show"); $("classModal").setAttribute("aria-hidden", "false"); $("className").focus(); const members = state.selected.members || (state.selected.memberIds || []).map(uid => userFromGroup(state.selected, uid)).filter(Boolean); $("classMembers").innerHTML = members.length ? members.map(member => `<label class="check-row"><input type="checkbox" value="${esc(member.uid || member.id)}" checked /><span class="avatar">${esc(initials(member.name, member.email))}</span><span>${esc(member.name || member.email || "Thành viên")}</span></label>`).join("") : '<div class="empty">Nhóm hiện chưa có thành viên để thêm vào lớp.</div>'; }
+    function closeClassModal() { $("classModal").classList.remove("show"); $("classModal").setAttribute("aria-hidden", "true"); $("classForm").reset(); }
+    $("groupList").addEventListener("click", event => { const card = event.target.closest("[data-group-id]"); if (card) selectGroup(card.dataset.groupId); });
+    $("closeClassModal").addEventListener("click", closeClassModal); $("classModal").addEventListener("click", event => { if (event.target === $("classModal")) closeClassModal(); });
+    $("closeMemberModal").addEventListener("click", closeMemberModal); $("memberModal").addEventListener("click", event => { if (event.target === $("memberModal")) closeMemberModal(); }); $("memberSearch").addEventListener("input", event => renderAvailableMembers(event.target.value)); $("saveMembers").addEventListener("click", saveMembersToGroup);
+    $("classForm").addEventListener("submit", async event => { event.preventDefault(); if (!state.selected || !isLeader(state.selected)) return; const name = $("className").value.trim(); if (!name) { toast("Vui lòng nhập tên lớp.", true); return; } const memberIds = [...document.querySelectorAll("#classMembers input:checked")].map(input => input.value); const button = $("saveClass"); button.disabled = true; try { await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({ name, description: $("classDescription").value.trim(), groupId: state.selected.id, memberIds, createdBy: state.user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), status: "active" }); toast("Đã tạo lớp học."); closeClassModal(); } catch (error) { console.error(error); toast("Không thể tạo lớp học.", true); } finally { button.disabled = false; } });
+    $("currentUserChip").textContent = "Đang xác thực...";
+    myGroupsAuth.onAuthStateChanged(async user => { if (!user) { $("currentUserChip").textContent = "Chưa đăng nhập"; toast("Bạn cần đăng nhập để xem nhóm.", true); return; } state.user = user; $("currentUserChip").textContent = user.email || "Tài khoản hiện tại"; watchMyGroups(); });
   </script>
 </body>
+
 </html>
