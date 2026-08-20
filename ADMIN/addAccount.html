@@ -1160,9 +1160,25 @@
                         );
                         const user = credential.user;
                         row.uid = user.uid;
+                        const fullName = mapping.name
+                            ? String(row.raw[mapping.name] || '').trim()
+                            : '';
+                        const readableBaseId = makeReadableUserDocId(
+                            fullName,
+                            row.department || ''
+                        );
+                        let userDocumentId = readableBaseId;
+                        const readableRef = accountDb
+                            .collection('users')
+                            .doc(userDocumentId);
+                        const readableSnapshot = await readableRef.get();
+                        if (readableSnapshot.exists) {
+                            userDocumentId = `${readableBaseId} - ${row.username}`;
+                        }
+                        row.documentId = userDocumentId;
                         await accountDb
                             .collection('users')
-                            .doc(user.uid)
+                            .doc(userDocumentId)
                             .set({
                                 uid: user.uid,
                                 name: mapping.name
@@ -1177,9 +1193,10 @@
                                 phone: row.phone || '',
                                 department: row.department || '',
                                 campus: row.campus || '',
-                                // Mật khẩu dùng để xuất tài khoản
-                                password: row.password,
+                                // Password chỉ giữ tạm trong genRows để xuất file Excel.
+                                // Không lưu password rõ vào Firestore.
                                 passwordCreated: true,
+                                status: 'active',
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
                         row.created = true;
@@ -1221,6 +1238,14 @@
             const firstName = parts[parts.length - 1];
             const nameInitials = parts.slice(0, -1).map(part => part[0]).join('');
             return `${firstName}.${nameInitials || firstName}`;
+        }
+        function makeReadableUserDocId(fullName, department = '') {
+            const prefix = String(department || '').trim() || 'CS';
+            const readable = `${prefix} - ${String(fullName || '').trim()}`
+                .replace(/[\\/]/g, '-')
+                .replace(/\s+/g, ' ')
+                .trim();
+            return readable || 'CS - Chưa đặt tên';
         }
         function genPassword(len) {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
@@ -1416,9 +1441,20 @@ Vui lòng bảo mật thông tin đăng nhập.
                 btn.disabled = true;
                 btn.textContent = 'Đang lấy dữ liệu...';
                 try {
-                    // Lấy toàn bộ tài khoản CS trong Firebase
-                    const students =
-                        await getAllCsAccountsFromFirebase();
+                    // Lấy batch tài khoản vừa tạo trong phiên hiện tại.
+                    // Password nằm trong genRows và không được lưu vào Firebase.
+                    const students = genRows.map(row => ({
+                        name: mapping.name
+                            ? String(row.raw[mapping.name] || '').trim()
+                            : '',
+                        phone: row.phone || '',
+                        department: row.department || '',
+                        campus: row.campus || '',
+                        email: row.studentEmail || '',
+                        username: row.username || '',
+                        password: row.password || '',
+                        uid: row.uid || ''
+                    }));
                     if (!students.length) {
                         toast(
                             'Firebase chưa có tài khoản CS nào.'
@@ -1434,6 +1470,7 @@ Vui lòng bảo mật thông tin đăng nhập.
                         'Phòng ban',
                         'Cơ sở',
                         'Gmail',
+                        'Username',
                         'Mật khẩu',
                         'UID'
                     ];
@@ -1456,6 +1493,7 @@ Vui lòng bảo mật thông tin đăng nhập.
                             student.department,
                             student.campus,
                             student.email,
+                            student.username,
                             student.password,
                             student.uid
                         ];
@@ -1488,7 +1526,7 @@ Vui lòng bảo mật thông tin đăng nhập.
                     a.remove();
                     URL.revokeObjectURL(url);
                     toast(
-                        `Đã xuất ${students.length} tài khoản CS.`
+                        `Đã xuất ${students.length} tài khoản CS kèm password.`
                     );
                 } catch (error) {
                     console.error(error);

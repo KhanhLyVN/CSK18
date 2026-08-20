@@ -1,6 +1,10 @@
 (() => {
   "use strict";
 
+  if (window.__adminbarNamespaceLoaded) return;
+  window.__adminbarNamespaceLoaded = true;
+
+
   const getInitials = (name) =>
     (
       String(name || "Admin")
@@ -15,12 +19,15 @@
 
   const install = (markup) => {
     const host = document.getElementById("adminBar");
+    const hostAlreadyInstalled = () => Boolean(host && host.dataset.adminbarInstalled === "true");
+    if (hostAlreadyInstalled()) return;
     const main = document.querySelector(".main-content");
     if (!host) return;
 
     host.innerHTML = markup;
+    host.dataset.adminbarInstalled = "true";
 
-    const topbar = host.querySelector(".topbar");
+    const topbar = host.querySelector(".adminbar-topbar");
     if (topbar && main) main.prepend(topbar);
 
     const page = document.body.dataset.adminPage || "";
@@ -30,19 +37,19 @@
       active.setAttribute("aria-current", "page");
     }
 
-    const sidebar = host.querySelector("#adminSidebar");
-    const menuBtn = document.getElementById("menuBtn");
-    const backdrop = host.querySelector("#adminSidebarBackdrop");
+    const sidebar = host.querySelector("#adminbarSidebar");
+    const adminbarMenuBtn = document.getElementById("adminbarMenuBtn");
+    const backdrop = host.querySelector("#adminbarSidebarBackdrop");
 
     const closeSidebar = () => {
       sidebar?.classList.remove("open");
-      document.body.classList.remove("sidebar-open");
+      document.body.classList.remove("adminbar-sidebar-open");
       if (backdrop) backdrop.hidden = true;
     };
 
-    menuBtn?.addEventListener("click", () => {
+    adminbarMenuBtn?.addEventListener("click", () => {
       const open = sidebar?.classList.toggle("open");
-      document.body.classList.toggle("sidebar-open", Boolean(open));
+      document.body.classList.toggle("adminbar-sidebar-open", Boolean(open));
       if (backdrop) backdrop.hidden = !open;
     });
 
@@ -54,22 +61,22 @@
       if (window.innerWidth > 780) closeSidebar();
     });
 
-    const notificationButton = host.querySelector("#noticeBtn");
-    const notificationPanel = host.querySelector("#notificationPanel");
+    const notificationButton = host.querySelector("#adminbarNoticeBtn");
+    const adminbarNotificationPanel = host.querySelector("#adminbarNotificationPanel");
 
     notificationButton?.addEventListener("click", () => {
-      const isOpen = notificationPanel?.hidden === false;
-      if (notificationPanel) notificationPanel.hidden = isOpen;
+      const isOpen = adminbarNotificationPanel?.hidden === false;
+      if (adminbarNotificationPanel) adminbarNotificationPanel.hidden = isOpen;
       notificationButton.setAttribute("aria-expanded", String(!isOpen));
     });
 
     document.addEventListener("click", (event) => {
       if (
-        notificationPanel &&
-        !notificationPanel.hidden &&
-        !event.target.closest(".notification-wrapper")
+        adminbarNotificationPanel &&
+        !adminbarNotificationPanel.hidden &&
+        !event.target.closest(".adminbar-notification-wrapper")
       ) {
-        notificationPanel.hidden = true;
+        adminbarNotificationPanel.hidden = true;
         notificationButton?.setAttribute("aria-expanded", "false");
       }
     });
@@ -82,11 +89,11 @@
         if (node) node.textContent = value;
       };
 
-      set("#sidebarUserName", name);
-      set("#sidebarAvatar", initials);
-      set("#topAdminName", name);
-      set("#topAdminAvatar", initials);
-      set("#topAdminCampus", "");
+      set("#adminbarSidebarUserName", name);
+      set("#adminbarSidebarAvatar", initials);
+      set("#adminbarTopAdminName", name);
+      set("#adminbarTopAdminAvatar", initials);
+      set("#adminbarTopAdminCampus", "");
 
       if (!user || typeof firebase === "undefined" || !firebase.firestore)
         return;
@@ -107,7 +114,7 @@
             "",
         ).trim();
 
-        set("#topAdminCampus", campus);
+        set("#adminbarTopAdminCampus", campus);
       } catch (error) {
         console.warn("Không lấy được campus của Admin:", error);
       }
@@ -120,7 +127,7 @@
     }
 
     host
-      .querySelector("#sidebarLogoutBtn")
+      .querySelector("#adminbarSidebarLogoutBtn")
       ?.addEventListener("click", async () => {
         try {
           if (typeof firebase !== "undefined" && firebase.auth) {
@@ -132,7 +139,7 @@
       });
 
     const loadCsAccountCount = async () => {
-      const badge = host.querySelector("#sidebarAccountCount");
+      const badge = host.querySelector("#adminbarAccountCount");
       if (!badge) return;
 
       if (typeof firebase === "undefined" || !firebase.firestore) {

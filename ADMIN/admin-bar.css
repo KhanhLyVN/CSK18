@@ -26,7 +26,7 @@
   --admin-green: #6f8d62;
   --admin-red: #a23b2e;
   --sidebar-width: 250px;
-  --topbar-height: 70px;
+  --adminbar-topbar-height: 70px;
   --shadow-soft: 0 10px 30px rgba(62, 4, 2, .06);
   --shadow-card: 0 14px 35px rgba(62, 4, 2, .055);
 }
@@ -67,7 +67,7 @@ a {
 }
 
 /*GOOGLE MATERIAL SYMBOLS*/
-.material-symbols-rounded {
+.adminbar-material-symbols-rounded {
   font-family: "Material Symbols Rounded";
   font-weight: 400;
   font-style: normal;
@@ -95,7 +95,7 @@ a {
 }
 
 /*SIDEBAR*/
-.admin-sidebar {
+.adminbar-sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 1000;
@@ -120,7 +120,7 @@ a {
 }
 
 /*SIDEBAR BRAND*/
-.admin-sidebar-brand {
+.adminbar-sidebar-brand {
   height: 88px;
   flex: 0 0 88px;
   display: flex;
@@ -130,7 +130,7 @@ a {
   border-bottom: 1px solid var(--admin-line-light);
 }
 
-.admin-brand-mark {
+.adminbar-brand-mark {
   width: 44px;
   height: 44px;
   flex: 0 0 44px;
@@ -145,11 +145,11 @@ a {
   box-shadow: 0 5px 16px rgba(0, 0, 0, .13);
 }
 
-.admin-brand-text {
+.adminbar-brand-text {
   min-width: 0;
 }
 
-.admin-brand-text strong {
+.adminbar-brand-text strong {
   display: block;
   color: #fff;
   font-family: "Fraunces", Georgia, serif;
@@ -158,7 +158,7 @@ a {
   line-height: 1;
 }
 
-.admin-brand-text small {
+.adminbar-brand-text small {
   display: block;
   margin-top: 5px;
   color: rgba(238, 220, 200, .62);
@@ -168,7 +168,7 @@ a {
 }
 
 /*SIDEBAR NAV*/
-.admin-sidebar-nav {
+.adminbar-sidebar-nav {
   flex: 1;
   min-height: 0;
   padding: 19px 12px;
@@ -178,20 +178,20 @@ a {
   scrollbar-color: rgba(255, 255, 255, .14) transparent;
 }
 
-.admin-sidebar-nav::-webkit-scrollbar {
+.adminbar-sidebar-nav::-webkit-scrollbar {
   width: 5px;
 }
 
-.admin-sidebar-nav::-webkit-scrollbar-track {
+.adminbar-sidebar-nav::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.admin-sidebar-nav::-webkit-scrollbar-thumb {
+.adminbar-sidebar-nav::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, .14);
   border-radius: 999px;
 }
 
-.admin-nav-label {
+.adminbar-nav-label {
   margin: 17px 12px 8px;
   color: rgba(238, 220, 200, .45);
   font-size: 9px;
@@ -200,11 +200,11 @@ a {
   text-transform: uppercase;
 }
 
-.admin-nav-label:first-child {
+.adminbar-nav-label:first-child {
   margin-top: 0;
 }
 
-.admin-nav-item {
+.adminbar-nav-item {
   position: relative;
   min-height: 44px;
   width: 100%;
@@ -222,26 +222,26 @@ a {
     transform .18s ease;
 }
 
-.admin-nav-item:hover {
+.adminbar-nav-item:hover {
   background: rgba(255, 255, 255, .075);
   color: #fff;
 }
 
-.admin-nav-item.active {
+.adminbar-nav-item.active {
   background: rgba(255, 255, 255, .13);
   color: #fff;
   box-shadow:
     inset 2px 0 0 var(--admin-cream);
 }
 
-.admin-nav-text {
+.adminbar-nav-text {
   flex: 1;
   font-size: 12px;
   font-weight: 600;
 }
 
 /*SIDEBAR ICON*/
-.admin-nav-icon {
+.adminbar-nav-icon {
   width: 22px;
   height: 22px;
   flex: 0 0 22px;
@@ -255,21 +255,21 @@ a {
     transform .18s ease;
 }
 
-.admin-nav-icon .material-symbols-rounded {
+.adminbar-nav-icon .adminbar-material-symbols-rounded {
   font-size: 20px;
 }
 
-.admin-nav-item:hover .admin-nav-icon,
-.admin-nav-item.active .admin-nav-icon {
+.adminbar-nav-item:hover .adminbar-nav-icon,
+.adminbar-nav-item.active .adminbar-nav-icon {
   opacity: 1;
 }
 
-.admin-nav-item:hover .admin-nav-icon {}
+.adminbar-nav-item:hover .adminbar-nav-icon {}
 
 /* =========================================================
    SIDEBAR BADGE
 ========================================================= */
-.admin-nav-badge {
+.adminbar-nav-badge {
   min-width: 22px;
   height: 20px;
   display: inline-flex;
@@ -288,7 +288,7 @@ a {
 /* =========================================================
    SIDEBAR USER
 ========================================================= */
-.admin-sidebar-user {
+.adminbar-sidebar-user {
   min-height: 76px;
   flex: 0 0 76px;
   display: flex;
@@ -299,7 +299,7 @@ a {
   background: rgba(0, 0, 0, .045);
 }
 
-.admin-user-avatar {
+.adminbar-user-avatar {
   width: 40px;
   height: 40px;
   flex: 0 0 40px;
@@ -312,12 +312,12 @@ a {
   font-weight: 800;
 }
 
-.admin-user-info {
+.adminbar-user-info {
   min-width: 0;
   flex: 1;
 }
 
-.admin-user-info strong {
+.adminbar-user-info strong {
   display: block;
   overflow: hidden;
   color: #fff;
@@ -327,7 +327,7 @@ a {
   text-overflow: ellipsis;
 }
 
-.admin-user-info small {
+.adminbar-user-info small {
   display: block;
   margin-top: 3px;
   overflow: hidden;
@@ -338,7 +338,7 @@ a {
 }
 
 /* Nút logout ở SIDEBAR */
-.admin-user-menu {
+.adminbar-user-menu {
   width: 34px;
   height: 34px;
   flex: 0 0 34px;
@@ -355,19 +355,19 @@ a {
     transform .18s ease;
 }
 
-.admin-user-menu:hover {
+.adminbar-user-menu:hover {
   background: rgba(255, 255, 255, .11);
   color: #fff;
 }
 
-.admin-user-menu .material-symbols-rounded {
+.adminbar-user-menu .adminbar-material-symbols-rounded {
   font-size: 21px;
 }
 
 /* =========================================================
    MOBILE BACKDROP
 ========================================================= */
-.admin-sidebar-backdrop {
+.adminbar-sidebar-backdrop {
   position: fixed;
   inset: 0;
   z-index: 999;
@@ -387,11 +387,11 @@ a {
 /* =========================================================
    TOPBAR
 ========================================================= */
-.topbar {
+.adminbar-topbar {
   position: sticky;
   top: 0;
   z-index: 900;
-  min-height: var(--topbar-height);
+  min-height: var(--adminbar-topbar-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -401,8 +401,8 @@ a {
   backdrop-filter: blur(14px);
 }
 
-/* Firebase connection */
-.connection {
+/* Firebase adminbar-connection */
+.adminbar-connection {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -411,8 +411,8 @@ a {
   font-weight: 500;
 }
 
-.connection i,
-#connectionDot {
+.adminbar-connection i,
+#adminbarConnectionDot {
   width: 9px;
   height: 9px;
   display: inline-block;
@@ -421,8 +421,8 @@ a {
   box-shadow: 0 0 0 4px rgba(169, 160, 154, .12);
 }
 
-.connection i.live,
-#connectionDot.live {
+.adminbar-connection i.live,
+#adminbarConnectionDot.live {
   background: var(--admin-green);
   box-shadow: 0 0 0 4px rgba(111, 141, 98, .13);
 }
@@ -430,13 +430,13 @@ a {
 /* =========================================================
    TOP ACTIONS
 ========================================================= */
-.top-actions {
+.adminbar-top-actions {
   display: flex;
   align-items: center;
   gap: 13px;
 }
 
-.top-admin {
+.adminbar-top-admin {
   color: var(--admin-maroon);
   font-size: 12px;
   font-weight: 700;
@@ -445,7 +445,7 @@ a {
 /* =========================================================
    GENERIC ICON BUTTON
 ========================================================= */
-.icon-btn {
+.adminbar-icon-btn {
   width: 38px;
   height: 38px;
   display: inline-grid;
@@ -461,24 +461,24 @@ a {
     transform .18s ease;
 }
 
-.icon-btn:hover {
+.adminbar-icon-btn:hover {
   border-color: var(--admin-line);
   background: var(--admin-cream-light);
   transform: translateY(-1px);
 }
 
-.icon-btn .material-symbols-rounded {
+.adminbar-icon-btn .adminbar-material-symbols-rounded {
   font-size: 21px;
 }
 
 /* =========================================================
    TOP NOTIFICATION
 ========================================================= */
-#noticeBtn {
+#adminbarNoticeBtn {
   position: relative;
 }
 
-#noticeBtn em {
+#adminbarNoticeBtn em {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -494,19 +494,19 @@ a {
    Desktop: ẩn
    Mobile: hiện
 ========================================================= */
-#logoutBtn,
-.admin-chip {
+#adminbarLogoutBtn,
+.adminbar-chip {
   display: none !important;
 }
 
 /* =========================================================
    MOBILE MENU BUTTON
 ========================================================= */
-#menuBtn {
+#adminbarMenuBtn {
   display: none;
 }
 
-.mobile-only {
+.adminbar-mobile-only {
   display: none;
 }
 
@@ -1007,7 +1007,7 @@ textarea:focus {
   color: var(--admin-muted);
 }
 
-[hidden] {
+[adminbar-hidden] {
   display: none !important;
 }
 
@@ -1045,19 +1045,19 @@ textarea:focus {
 @media (max-width: 780px) {
   :root {
     --sidebar-width: 250px;
-    --topbar-height: 62px;
+    --adminbar-topbar-height: 62px;
   }
 
-  .admin-sidebar {
+  .adminbar-sidebar {
     transform: translateX(-105%);
   }
 
-  .admin-sidebar.open {
+  .adminbar-sidebar.open {
     transform: translateX(0);
     box-shadow: 10px 0 40px rgba(42, 23, 18, .18);
   }
 
-  body.sidebar-open {
+  body.adminbar-sidebar-open {
     overflow: hidden;
   }
 
@@ -1065,25 +1065,25 @@ textarea:focus {
     margin-left: 0;
   }
 
-  .mobile-only,
-  #menuBtn {
+  .adminbar-mobile-only,
+  #adminbarMenuBtn {
     display: inline-grid;
   }
 
-  .topbar {
+  .adminbar-topbar {
     padding: 0 16px;
   }
 
-  .top-actions {
+  .adminbar-top-actions {
     margin-left: auto;
   }
 
-  .top-admin {
+  .adminbar-top-admin {
     display: none;
   }
 
   /* Nút logout ở đầu trang chỉ hiện trên điện thoại */
-  #logoutBtn {
+  #adminbarLogoutBtn {
     display: inline-grid !important;
   }
 
@@ -1163,11 +1163,11 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
-  .topbar {
+  .adminbar-topbar {
     gap: 8px;
   }
 
-  .connection span {
+  .adminbar-connection span {
     font-size: 10px;
   }
 
@@ -1203,17 +1203,17 @@ textarea:focus {
 /* =========================================================
    SIDEBAR OWNERSHIP: ADMIN.CSS ONLY
 ========================================================= */
-.admin-sidebar,
-.admin-sidebar-brand,
-.admin-sidebar-nav,
-.admin-nav-item,
-.admin-nav-icon,
-.admin-sidebar-user,
+.adminbar-sidebar,
+.adminbar-sidebar-brand,
+.adminbar-sidebar-nav,
+.adminbar-nav-item,
+.adminbar-nav-icon,
+.adminbar-sidebar-user,
 .main-content {
   box-sizing: border-box;
 }
 
-.admin-sidebar {
+.adminbar-sidebar {
   width: 250px !important;
   min-width: 250px !important;
   max-width: 250px !important;
@@ -1224,7 +1224,7 @@ textarea:focus {
 }
 
 @media (max-width: 780px) {
-  .admin-sidebar {
+  .adminbar-sidebar {
     width: 250px !important;
     min-width: 250px !important;
     max-width: 250px !important;
@@ -1265,27 +1265,27 @@ textarea:focus {
    RESET / BASE
 ========================================================= */
 .shared-header,
-.topbar,
-.topbar * {
+.adminbar-topbar,
+.adminbar-topbar * {
   box-sizing: border-box;
 }
 
-.topbar button {
+.adminbar-topbar button {
   font: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.topbar [hidden],
-.topbar .hidden,
-.topbar .notice-badge.hidden {
+.adminbar-topbar [adminbar-hidden],
+.adminbar-topbar .adminbar-hidden,
+.adminbar-topbar .adminbar-notice-badge.adminbar-hidden {
   display: none !important;
 }
 
 /* =========================================================
    HEADER
 ========================================================= */
-.topbar {
+.adminbar-topbar {
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -1311,24 +1311,24 @@ textarea:focus {
 /* =========================================================
    LEFT / RIGHT
 ========================================================= */
-.topbar-left,
-.top-actions {
+.adminbar-topbar-left,
+.adminbar-top-actions {
   display: flex;
   align-items: center;
 }
 
-.topbar-left {
+.adminbar-topbar-left {
   min-width: 42px;
 }
 
-.top-actions {
+.adminbar-top-actions {
   gap: 10px;
 }
 
 /* =========================================================
    ICON BUTTON
 ========================================================= */
-.icon-btn {
+.adminbar-icon-btn {
   position: relative;
   width: 42px;
   height: 42px;
@@ -1352,7 +1352,7 @@ textarea:focus {
     transform 0.2s ease;
 }
 
-.icon-btn:hover {
+.adminbar-icon-btn:hover {
   color: #fff;
   background:
     linear-gradient(145deg,
@@ -1364,17 +1364,17 @@ textarea:focus {
   transform: translateY(-1px);
 }
 
-.icon-btn:active {
+.adminbar-icon-btn:active {
   transform: translateY(0) scale(0.96);
 }
 
-.icon-btn:focus-visible,
-.notification-action:focus-visible {
+.adminbar-icon-btn:focus-visible,
+.adminbar-notification-action:focus-visible {
   outline: 3px solid rgba(189, 65, 55, 0.22);
   outline-offset: 3px;
 }
 
-.icon-btn .material-symbols-rounded {
+.adminbar-icon-btn .adminbar-material-symbols-rounded {
   font-size: 21px;
   font-variation-settings:
     "FILL" 0,
@@ -1386,23 +1386,23 @@ textarea:focus {
 /* =========================================================
    MOBILE MENU
 ========================================================= */
-.mobile-only {
+.adminbar-mobile-only {
   display: none;
 }
 
 /* =========================================================
    NOTIFICATION
 ========================================================= */
-.notification-wrapper {
+.adminbar-notification-wrapper {
   position: relative;
 }
 
-.notification-btn {
+.adminbar-notification-btn {
   isolation: isolate;
 }
 
 /* Small inner glow */
-.notification-btn::after {
+.adminbar-notification-btn::after {
   content: "";
   position: absolute;
   inset: 5px;
@@ -1413,14 +1413,14 @@ textarea:focus {
   transition: opacity 0.2s ease;
 }
 
-.notification-btn:hover::after {
+.adminbar-notification-btn:hover::after {
   opacity: 0;
 }
 
 /* =========================================================
    NOTIFICATION BADGE
 ========================================================= */
-.notice-badge {
+.adminbar-notice-badge {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -1459,7 +1459,7 @@ textarea:focus {
 /* =========================================================
    ADMIN NAME
 ========================================================= */
-.top-admin {
+.adminbar-top-admin {
   max-width: 190px;
   overflow: hidden;
   color: var(--header-ink);
@@ -1474,7 +1474,7 @@ textarea:focus {
 /* =========================================================
    ADMIN AVATAR
 ========================================================= */
-.avatar {
+.adminbar-avatar {
   width: 42px;
   height: 42px;
   display: grid;
@@ -1497,7 +1497,7 @@ textarea:focus {
     box-shadow 0.2s ease;
 }
 
-.avatar:hover {
+.adminbar-avatar:hover {
   box-shadow:
     0 9px 22px rgba(112, 27, 25, 0.26);
   transform:
@@ -1507,7 +1507,7 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION PANEL
 ========================================================= */
-.notification-panel {
+.adminbar-notification-panel {
   position: absolute;
   top: calc(100% + 13px);
   right: 0;
@@ -1525,7 +1525,7 @@ textarea:focus {
 }
 
 /* Top accent */
-.notification-panel::before {
+.adminbar-notification-panel::before {
   content: "";
   position: absolute;
   top: 0;
@@ -1541,7 +1541,7 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION HEADER
 ========================================================= */
-.notification-header {
+.adminbar-notification-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1554,7 +1554,7 @@ textarea:focus {
   border-bottom: 1px solid var(--header-line);
 }
 
-.notification-header strong {
+.adminbar-notification-header strong {
   display: block;
   color: var(--header-maroon);
   font-size: 14px;
@@ -1562,7 +1562,7 @@ textarea:focus {
   letter-spacing: -0.01em;
 }
 
-.notification-header small {
+.adminbar-notification-header small {
   display: block;
   margin-top: 4px;
   color: var(--header-muted);
@@ -1573,7 +1573,7 @@ textarea:focus {
 /* =========================================================
    MARK ALL READ
 ========================================================= */
-.notification-action {
+.adminbar-notification-action {
   padding: 6px 0;
   color: var(--header-maroon);
   background: transparent;
@@ -1586,7 +1586,7 @@ textarea:focus {
     transform 0.18s ease;
 }
 
-.notification-action:hover {
+.adminbar-notification-action:hover {
   color: var(--header-maroon-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1596,7 +1596,7 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION LIST
 ========================================================= */
-.notification-list {
+.adminbar-notification-list {
   max-height: 350px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -1604,15 +1604,15 @@ textarea:focus {
     rgba(112, 27, 25, 0.24) transparent;
 }
 
-.notification-list::-webkit-scrollbar {
+.adminbar-notification-list::-webkit-scrollbar {
   width: 5px;
 }
 
-.notification-list::-webkit-scrollbar-track {
+.adminbar-notification-list::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.notification-list::-webkit-scrollbar-thumb {
+.adminbar-notification-list::-webkit-scrollbar-thumb {
   background: rgba(112, 27, 25, 0.22);
   border-radius: 999px;
 }
@@ -1620,7 +1620,7 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION ITEM
 ========================================================= */
-.notification-item {
+.adminbar-notification-item {
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -1633,20 +1633,20 @@ textarea:focus {
     padding-left 0.18s ease;
 }
 
-.notification-item:last-child {
+.adminbar-notification-item:last-child {
   border-bottom: 0;
 }
 
-.notification-item.unread {
+.adminbar-notification-item.unread {
   background: rgba(244, 231, 213, 0.34);
 }
 
-.notification-item.unread .notification-content strong {
+.adminbar-notification-item.unread .adminbar-notification-content strong {
   color: var(--header-maroon);
   font-weight: 850;
 }
 
-.notification-item:hover {
+.adminbar-notification-item:hover {
   background:
     linear-gradient(90deg,
       rgba(244, 231, 213, 0.52),
@@ -1657,7 +1657,7 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION ICON
 ========================================================= */
-.notification-icon {
+.adminbar-notification-icon {
   width: 36px;
   height: 36px;
   flex: 0 0 36px;
@@ -1672,7 +1672,7 @@ textarea:focus {
   border-radius: 10px;
 }
 
-.notification-icon .material-symbols-rounded {
+.adminbar-notification-icon .adminbar-material-symbols-rounded {
   font-size: 19px;
   font-variation-settings:
     "FILL" 0,
@@ -1684,12 +1684,12 @@ textarea:focus {
 /* =========================================================
    NOTIFICATION CONTENT
 ========================================================= */
-.notification-content {
+.adminbar-notification-content {
   min-width: 0;
   flex: 1;
 }
 
-.notification-content strong {
+.adminbar-notification-content strong {
   display: block;
   margin-bottom: 4px;
   color: var(--header-ink);
@@ -1698,14 +1698,14 @@ textarea:focus {
   line-height: 1.4;
 }
 
-.notification-content p {
+.adminbar-notification-content p {
   margin: 0;
   color: var(--header-muted);
   font-size: 10px;
   line-height: 1.55;
 }
 
-.notification-time {
+.adminbar-notification-time {
   display: block;
   margin-top: 5px;
   color: var(--header-light-text);
@@ -1715,7 +1715,7 @@ textarea:focus {
 /* =========================================================
    EMPTY STATE
 ========================================================= */
-.notification-empty {
+.adminbar-notification-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1726,7 +1726,7 @@ textarea:focus {
   text-align: center;
 }
 
-.notification-empty .material-symbols-rounded {
+.adminbar-notification-empty .adminbar-material-symbols-rounded {
   display: block;
   margin-bottom: 11px;
   color: #d9c6ae;
@@ -1738,7 +1738,7 @@ textarea:focus {
     "opsz" 40;
 }
 
-.notification-empty p {
+.adminbar-notification-empty p {
   margin: 0;
   color: var(--header-muted);
   font-size: 11px;
@@ -1766,28 +1766,28 @@ textarea:focus {
    MOBILE
 ========================================================= */
 @media (max-width: 520px) {
-  .topbar {
+  .adminbar-topbar {
     min-height: 62px;
     padding:
       0 15px 0 18px;
   }
 
-  .icon-btn,
-  .avatar {
+  .adminbar-icon-btn,
+  .adminbar-avatar {
     width: 40px;
     height: 40px;
     flex-basis: 40px;
   }
 
-  .icon-btn .material-symbols-rounded {
+  .adminbar-icon-btn .adminbar-material-symbols-rounded {
     font-size: 20px;
   }
 
-  .avatar {
+  .adminbar-avatar {
     border-radius: 12px;
   }
 
-  .notification-panel {
+  .adminbar-notification-panel {
     position: fixed;
     top: 70px;
     right: 12px;
@@ -1797,7 +1797,7 @@ textarea:focus {
       calc(100vh - 84px);
   }
 
-  .notification-list {
+  .adminbar-notification-list {
     max-height:
       calc(100vh - 175px);
   }
@@ -1807,25 +1807,25 @@ textarea:focus {
    SMALL MOBILE
 ========================================================= */
 @media (max-width: 380px) {
-  .topbar {
+  .adminbar-topbar {
     gap: 8px;
     padding-inline:
       12px 13px;
   }
 
-  .top-actions {
+  .adminbar-top-actions {
     gap: 7px;
   }
 
-  .icon-btn,
-  .avatar {
+  .adminbar-icon-btn,
+  .adminbar-avatar {
     width: 38px;
     height: 38px;
     flex-basis: 38px;
     border-radius: 11px;
   }
 
-  .notice-badge {
+  .adminbar-notice-badge {
     top: -5px;
     right: -5px;
     min-width: 18px;
@@ -1838,9 +1838,9 @@ textarea:focus {
 ========================================================= */
 @media (prefers-reduced-motion: reduce) {
 
-  .topbar *,
-  .topbar *::before,
-  .topbar *::after {
+  .adminbar-topbar *,
+  .adminbar-topbar *::before,
+  .adminbar-topbar *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -1861,14 +1861,14 @@ textarea:focus {
 /* =========================================================
    ADMIN CAMPUS BADGE
 ========================================================= */
-.admin-identity {
+.adminbar-identity {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   min-width: 0;
 }
 
-.top-admin-campus {
+.adminbar-top-admin-campus {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -1884,12 +1884,12 @@ textarea:focus {
   box-shadow: 0 3px 9px rgba(112, 27, 25, .08);
 }
 
-.top-admin-campus:empty {
+.adminbar-top-admin-campus:empty {
   display: none;
 }
 
 @media (max-width: 520px) {
-  .top-admin-campus {
+  .adminbar-top-admin-campus {
     display: none;
   }
 }
