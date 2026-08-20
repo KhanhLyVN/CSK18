@@ -11,6 +11,8 @@
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"></path></svg>',
     create:
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>',
+    groups: 
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"></circle><path d="M17 11a4 4 0 1 0-2.7-7"></path><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"></path><path d="M17 15a4 4 0 0 1 4 4v2"></path></svg>',
     reports:
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m7 16 4-5 3 3 5-7"></path></svg>',
     faq: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>',
@@ -21,8 +23,8 @@
     { page: "home", href: HOME_URL, label: "Trang chủ" },
     { page: "tickets", href: "/CS/TicketManagement/cs-ticket.html", label: "Quản lý ticket" },
     { page: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html", label: "Tạo phiếu hỗ trợ" },
-    { page: "assignment", href: "/CS/Assignment/assignment.html", label: "Phân công", leaderOnly: true },
     { page: "groups", href: "/CS/Groups/group.html", label: "Nhóm của tôi", leaderOnly: true },
+    { page: "reports", href: "/CS/Dashboard/cs-dashboard.html", label: "Báo cáo thống kê", leaderOnly: true },
     { page: "faq", href: "/FAQs/CS-FAQ.html", label: "FAQs" },
     { page: "account", href: "/CS/account-CS.html", label: "Cài đặt hệ thống" },
   ];
