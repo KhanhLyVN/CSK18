@@ -19,7 +19,7 @@
     { page: "home", href: HOME_URL, label: "Trang chủ" },
     { page: "tickets", href: "/CS/TicketManagement/cs-ticket.html", label: "Quản lý ticket" },
     { page: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html", label: "Tạo phiếu hỗ trợ" },
-    { page: "assignment", href: "/CS/Groups/group.html#phan-cong", label: "Phân công", leaderOnly: true },
+    { page: "assignment", href: "/CS/Assignment/assignment.html", label: "Phân công", leaderOnly: true },
     { page: "groups", href: "/CS/Groups/group.html", label: "Nhóm của tôi", leaderOnly: true },
     { page: "faq", href: "/FAQs/CS-FAQ.html", label: "FAQs" },
     { page: "account", href: "/CS/account-CS.html", label: "Cài đặt hệ thống" },
@@ -47,7 +47,6 @@
   }
 
   function activePage(visibleLinks) {
-    if (window.location.hash === "#phan-cong") return "assignment";
     return document.body.dataset.navPage || visibleLinks.find((link) => window.location.pathname.endsWith(link.href.split("#")[0]))?.page || "";
   }
 
