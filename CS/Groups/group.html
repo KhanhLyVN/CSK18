@@ -1,17 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nhóm của tôi</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhóm & Phân công · Customer Success</title>
   <link rel="stylesheet" href="/CS/navbar.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="/CS/Groups/group.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="/firebase-config.js"></script>
+<<<<<<< Updated upstream
   <style>
     :root{--maroon:#5d0703;--deep:#3e0402;--cream:#eedcc8;--pale:#fbf4e9;--paper:#fffaf3;--gold:#b08a4e;--ink:#2a1712;--muted:#806d61;--line:rgba(93,7,3,.14);--green:#55734c;--red:#a23b2e;--shadow:0 12px 30px rgba(62,4,2,.08)}
     *{box-sizing:border-box}body{margin:0;background:var(--pale);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}.material-symbols-rounded{font-size:20px;line-height:1;vertical-align:middle}
@@ -117,5 +119,19 @@
     $("currentUserChip").textContent="Đang xác thực...";
     myGroupsAuth.onAuthStateChanged(async user=>{if(!user){$("currentUserChip").textContent="Chưa đăng nhập";toast("Bạn cần đăng nhập để xem nhóm.",true);return;}state.user=user;$("currentUserChip").textContent=user.email || "Tài khoản hiện tại";watchMyGroups();});
   </script>
+=======
+</head>
+<body data-nav-page="groups" data-cs-leader-only="true">
+  <div class="app">
+    <main class="group-page" data-page-content>
+      <header class="group-hero"><div><p class="group-kicker">Không gian điều phối</p><h1>Nhóm & phân công</h1><p>Quản lý thành viên, theo dõi tải công việc và giao ticket cho đúng người trong nhóm. Mỗi thao tác đều có nhãn rõ ràng để bạn dễ thực hiện.</p></div><span class="group-role" id="roleStatus"><i></i>Đang kiểm tra quyền…</span></header>
+      <div class="group-grid"><aside class="group-card"><div class="group-card-head"><div><h2>Nhóm của bạn</h2><p>Chọn nhóm để điều phối công việc.</p></div><span class="group-count" id="groupCount">0 nhóm</span></div><div class="group-list" id="groupList"><div class="group-empty">Đang tải nhóm…</div></div></aside><section class="group-card"><div class="group-workspace" id="workspace"><div class="group-empty">Đang chuẩn bị không gian làm việc…</div></div></section></div>
+    </main>
+  </div>
+  <div class="modal" id="memberModal" aria-hidden="true"><div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="memberModalTitle"><h2 id="memberModalTitle">Quản lý thành viên</h2><p>Tick vào những CS thuộc nhóm này. Nhóm trưởng luôn được giữ trong danh sách để tiếp tục điều phối.</p><div class="member-picker" id="memberPicker"><div class="group-empty">Đang tải danh sách CS…</div></div><div class="modal-actions"><button type="button" class="btn btn-soft" id="closeMemberModal">Hủy</button><button type="button" class="btn btn-primary" id="saveMembers">Lưu thành viên</button></div></div></div>
+  <div class="toast" id="groupToast" role="status" aria-live="polite"></div>
+  <script src="/CS/navbar.js"></script>
+  <script src="/CS/Groups/group.js"></script>
+>>>>>>> Stashed changes
 </body>
 </html>
