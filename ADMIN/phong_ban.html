@@ -943,7 +943,7 @@
         const activity = activityStatus(group);
         return `<tr>
           <td><div class="group-name">${esc(group.name || "Chưa đặt tên")}</div>${group.code ? `<span class="group-code">${esc(group.code)}</span>` : ""}</td>
-          <td><div class="leader-cell"><span class="avatar">${esc(initials(leaderName, leaderEmail))}</span><span><span class="leader-name">${esc(leaderName)}</span><span class="leader-email">${esc(leaderEmail)}</span><span class="leader-role">Vai trò trong nhóm: leader</span></span></div></td>
+          <td><div class="leader-cell"><span class="avatar">${esc(initials(leaderName, leaderEmail))}</span><span><span class="leader-name">${esc(leaderName)}</span><span class="leader-email">${esc(leaderEmail)}</span><span class="leader-role">Vai trò trong nhóm: Leader</span></span></div></td>
           <td><div class="description">${esc(group.description || "Không có mô tả")}</div></td>
           <td><span class="activity-date">${esc(dateText(activityValue(group)))}</span></td>
           <td><span class="status ${activity.inactive ? "inactive" : ""}"><span class="status-dot"></span>${esc(activity.label)}</span></td>
