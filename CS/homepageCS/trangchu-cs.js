@@ -675,18 +675,23 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
       return ticket;
     }
     /*
-     * Nếu ticket đã có departmentId
-     * thì không assign lại.
+     * Nếu ticket đã có departmentId hoặc đã được gán cho leader
+     * thì không assign lại theo phòng ban.
      */
-    if (ticket.departmentId) {
+    if (ticket.departmentId || ticket.supportLeaderUid || ticket.assignedToUid) {
       return {
         ...ticket,
         assignmentSkipped: true,
       };
     }
     const ticketNum = getTicketNum(ticket);
-    console.log("🔄 Đang phân công ticket:", ticketNum);
     try {
+      const campus = getTicketCampus(ticket);
+      if (!campus) {
+        // Ticket của HV thường không có campus, bỏ qua repair để tránh lỗi lặp.
+        return { ...ticket, assignmentSkipped: true };
+      }
+      console.log("🔄 Đang phân công ticket:", ticketNum);
       const assignment = await findTicketAssignee(ticket);
       if (!assignment.departmentId) {
         throw new Error("Không xác định được phòng ban.");
@@ -828,19 +833,68 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     ===================================================== */
   async function loadCSProfile(uid) {
     try {
-      const docSnap = await db.collection(USER_COLLECTION).doc(uid).get();
-      if (!docSnap.exists) {
-        console.warn("⚠️ Không tìm thấy hồ sơ user cho uid:", uid);
+      let data = {};
+      let profileFound = false;
+
+      const directProfile = await db.collection(USER_COLLECTION).doc(uid).get();
+      if (directProfile.exists) {
+        data = directProfile.data() || {};
+        profileFound = true;
+      }
+
+      if (!profileFound) {
+        const profileQuery = await db.collection(USER_COLLECTION)
+          .where("uid", "==", uid)
+          .limit(1)
+          .get();
+        if (!profileQuery.empty) {
+          data = profileQuery.docs[0].data() || {};
+          profileFound = true;
+        }
+      }
+
+      const leaderRoles = ["leader", "cs_leader", "team_leader", "group_leader", "manager", "cs_manager"];
+      const roleValues = [data.role, data.accountType, data.leaderRole, data.teamRole, data.position]
+        .map(value => String(value || "").trim().toLowerCase().replace(/[\\s-]+/g, "_"));
+      let isLeader = Boolean(
+        data.isLeader || data.isCSLeader || roleValues.some(value => leaderRoles.includes(value))
+      );
+
+      if (!isLeader) {
+        const groupsSnapshot = await db.collection("groups").get();
+        for (const groupDoc of groupsSnapshot.docs) {
+          const group = groupDoc.data() || {};
+          const leader = group.leader || {};
+          const leaderUid = group.leaderUid || leader.uid || "";
+          if (leaderUid === uid) {
+            data = {
+              ...data,
+              name: data.name || leader.name || "",
+              email: data.email || leader.email || "",
+              role: data.role || leader.role || "leader",
+              campus: data.campus || group.campus || "",
+              groupId: groupDoc.id
+            };
+            isLeader = true;
+            profileFound = true;
+            break;
+          }
+        }
+      }
+
+      if (!profileFound) {
+        console.warn("⚠️ Không tìm thấy hồ sơ user/group cho uid:", uid);
         return null;
       }
-      const data = docSnap.data() || {};
+
       const profile = {
-        uid: uid,
+        uid,
+        isLeader,
         department: normalizeDepartmentCode(
           data.department || data.departmentCode || DEFAULT_DEPARTMENT_CODE,
         ),
         campus: normalizeCampus(data.campus || data.campusName || ""),
-        name: data.name || "",
+        name: data.name || data.fullName || data.displayName || "",
         email: data.email || "",
       };
       console.log("🧾 Hồ sơ CS:", profile);
@@ -892,59 +946,69 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
       return;
     }
     /*
-     * Bước 2:
-     * Repair ticket cũ.
+     * Chỉ CS thường mới chạy repair/auto-assign theo phòng ban.
+     * Leader đã nhận ticket qua supportLeaderUid nên không được
+     * chạy luồng repair này để tránh lỗi "Ticket chưa có campus".
      */
-    await repairUnassignedTickets();
-    /*
-     * Bước 3:
-     * Theo dõi ticket mới.
-     */
-    startUnassignedTicketListener();
-    /*
-     * Bước 4:
-     * Load ticket của CS.
-     */
+    if (!currentCSProfile.isLeader) {
+      await repairUnassignedTickets();
+      startUnassignedTicketListener();
+    }
+
     loadTicketsForCurrentCS(currentCSProfile);
   });
   /* =====================================================
        LOAD TICKET THEO PHÒNG BAN + CAMPUS
     ===================================================== */
+  function isTicketAssignedToLeader(ticket, profile) {
+    if (!ticket || !profile?.uid) {
+      return false;
+    }
+    const uid = String(profile.uid).trim();
+    const email = String(profile.email || "").trim().toLowerCase();
+    const uids = [
+      ticket.supportLeaderUid,
+      ticket.assignedToUid,
+      ticket.recipientUid,
+      ticket.leaderUid,
+      ticket.assigneeUid
+    ].filter(Boolean).map(value => String(value).trim());
+    const emails = [
+      ticket.supportLeaderEmail,
+      ticket.assignedToEmail,
+      ticket.recipientEmail,
+      ticket.leaderEmail,
+      ticket.assigneeEmail
+    ].filter(Boolean).map(value => String(value).trim().toLowerCase());
+    return uids.includes(uid) || (email && emails.includes(email));
+  }
+
   function loadTicketsForCurrentCS(profile) {
     if (dashboardUnsubscribe) {
       dashboardUnsubscribe();
       dashboardUnsubscribe = null;
     }
-    if (!profile || !profile.department || !profile.campus) {
-      console.warn("⚠️ CS chưa có department/campus hợp lệ:", profile);
+    if (!profile || !profile.uid) {
       showTicketLoadError();
       return;
     }
-    console.log("📥 Load ticket theo phòng ban:", {
-      department: profile.department,
-      campus: profile.campus,
-    });
-    /*
-     * Query:
-     *
-     * departmentCode == CS department
-     * campus == CS campus
-     *
-     * Firebase có thể yêu cầu composite index
-     * cho 2 điều kiện này.
-     */
-    dashboardUnsubscribe = db
-      .collection(TICKET_COLLECTION)
-      .where("departmentCode", "==", profile.department)
-      .where("campus", "==", profile.campus)
-      .onSnapshot(
+
+    // Leader xem ticket được định tuyến trực tiếp cho mình.
+    // CS thường vẫn xem ticket theo phòng ban/cơ sở.
+    const ticketQuery = profile.isLeader
+      ? db.collection(TICKET_COLLECTION)
+      : db.collection(TICKET_COLLECTION)
+          .where("departmentCode", "==", profile.department)
+          .where("campus", "==", profile.campus);
+
+    dashboardUnsubscribe = ticketQuery.onSnapshot(
         (snapshot) => {
           const tickets = [];
           snapshot.forEach((docSnap) => {
-            tickets.push({
-              id: docSnap.id,
-              ...docSnap.data(),
-            });
+            const ticket = { id: docSnap.id, ...docSnap.data() };
+            if (!profile.isLeader || isTicketAssignedToLeader(ticket, profile)) {
+              tickets.push(ticket);
+            }
           });
           /*
            * Ticket mới nhất trước.

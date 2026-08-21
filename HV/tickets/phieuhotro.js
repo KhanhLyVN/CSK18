@@ -187,9 +187,9 @@ function getValue(id) {
 }
 
 function getDatabase() {
-  return typeof db !== "undefined"
-    ? db
-    : null;
+  // firebase-config.js gán database vào window.db.
+  // Dùng window.db để module luôn lấy đúng Firestore instance.
+  return window.db || null;
 }
 
 function normalizeFaqText(value) {
@@ -202,25 +202,83 @@ function normalizeFaqText(value) {
 
 async function getStudentSupportRoute(database, uid) {
   if (!database || !uid) {
-    return {};
+    return {
+      routingStatus: "unrouted",
+      routingError: "Không xác định được tài khoản HV đang đăng nhập."
+    };
   }
+
+  let classDoc = null;
+  let groupDoc = null;
 
   try {
-    const snapshot = await database.collection("users").doc(uid).get();
-    const profile = snapshot.exists ? snapshot.data() || {} : {};
+    // PHƯƠNG ÁN 1: Dùng Collection Group Query (Yêu cầu Index).
+    const classQuery = await database
+      .collectionGroup("classes")
+      .where("studentIds", "array-contains", uid)
+      .limit(1)
+      .get();
 
-    return {
-      supportGroupId: profile.supportGroupId || "",
-      supportGroupName: profile.supportGroupName || "",
-      supportClassId: profile.supportClassId || "",
-      supportClassName: profile.supportClassName || "",
-      supportLeaderUid: profile.supportLeaderUid || "",
-      supportLeaderName: profile.supportLeaderName || ""
-    };
-  } catch (error) {
-    console.warn("Không thể lấy tuyến hỗ trợ của học viên:", error);
-    return {};
+    if (!classQuery.empty) {
+      classDoc = classQuery.docs[0];
+      const groupRef = classDoc.ref.parent.parent;
+      if (groupRef) {
+        groupDoc = await groupRef.get();
+      }
+    }
+  } catch (indexError) {
+    // PHƯƠNG ÁN 2: Fallback nếu chưa có Index.
+    // Duyệt qua các groups và tìm trong subcollection classes.
+    console.warn("Chưa có Index, đang tìm HV bằng cách duyệt groups...");
+    const groupsSnapshot = await database.collection("groups").get();
+
+    for (const gDoc of groupsSnapshot.docs) {
+      const classesSnapshot = await gDoc.ref.collection("classes")
+        .where("studentIds", "array-contains", uid)
+        .limit(1)
+        .get();
+
+      if (!classesSnapshot.empty) {
+        classDoc = classesSnapshot.docs[0];
+        groupDoc = gDoc;
+        break;
+      }
+    }
   }
+
+  if (!classDoc || !groupDoc || !groupDoc.exists) {
+    return {
+      routingStatus: "unrouted",
+      routingError: "Không tìm thấy lớp hoặc group của học viên."
+    };
+  }
+
+  const classData = classDoc.data() || {};
+  const groupData = groupDoc.data() || {};
+  const leaderMap = groupData.leader || {};
+
+  const leaderUid = groupData.leaderUid || leaderMap.uid || "";
+  const leaderEmail = groupData.leaderEmail || leaderMap.email || "";
+  const leaderName = groupData.leaderName || leaderMap.name || "";
+
+  if (!leaderUid) {
+    return {
+      routingStatus: "unrouted",
+      routingError: "Group của bạn chưa có leader để nhận ticket."
+    };
+  }
+
+  return {
+    supportGroupId: groupDoc.id,
+    supportGroupName: groupData.name || "",
+    supportClassId: classDoc.id,
+    supportClassName: classData.name || classData.class || "",
+    supportLeaderUid: leaderUid,
+    supportLeaderName: leaderName,
+    supportLeaderEmail: leaderEmail,
+    routingStatus: "assigned",
+    routingError: ""
+  };
 }
 
 function escapeHTML(value) {
@@ -2396,14 +2454,18 @@ function setupForm() {
      AUTH STATE
   ======================================================= */
 
+  const firebaseAuth =
+    window.auth ||
+    (typeof firebase !== "undefined" && firebase.apps?.length
+      ? firebase.auth()
+      : null);
+
   if (
-    typeof auth !==
-      "undefined" &&
-    auth &&
-    typeof auth.onAuthStateChanged ===
+    firebaseAuth &&
+    typeof firebaseAuth.onAuthStateChanged ===
       "function"
   ) {
-    auth.onAuthStateChanged(
+    firebaseAuth.onAuthStateChanged(
       async (
         user
       ) => {
@@ -2439,52 +2501,69 @@ function setupForm() {
             );
           }
 
-          const doc =
-            await database
-              .collection(
-                "users"
-              )
-              .doc(
-                user.uid
-              )
+          // Có hệ thống lưu UID ở document ID, có hệ thống lại lưu UID
+          // trong field uid. Hỗ trợ cả hai kiểu để không bị mất hồ sơ HV.
+          let profileSnapshot = await database
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
+          if (!profileSnapshot.exists) {
+            const profileQuery = await database
+              .collection("users")
+              .where("uid", "==", user.uid)
+              .limit(1)
               .get();
 
-          const data =
-            doc.exists
-              ? doc.data()
-              : {};
+            if (!profileQuery.empty) {
+              profileSnapshot = profileQuery.docs[0];
+            }
+          }
+
+          const data = profileSnapshot.exists
+            ? profileSnapshot.data() || {}
+            : {};
 
           const name =
-            data.name ||
-            user.displayName ||
-            "";
+            String(
+              data.name ||
+              data.fullName ||
+              data.displayName ||
+              user.displayName ||
+              ""
+            ).trim();
 
           const email =
-            data.email ||
-            user.email ||
-            "";
+            String(data.email || user.email || "").trim();
 
           const phone =
             data.phone ||
             "";
 
           const campus =
-            data.campus ||
-            "";
+            String(
+              data.campus ||
+              data.cơSở ||
+              data.coSo ||
+              data.coso ||
+              ""
+            ).trim();
 
           const role =
             data.role ||
             "";
 
           const classOrCourse =
-            data.class ||
-            data.className ||
-            data.clazz ||
-            data.grade ||
-            data.course ||
-            data.courseName ||
-            data.supportClassName ||
-            "";
+            String(
+              data.class ||
+              data.className ||
+              data.clazz ||
+              data.grade ||
+              data.course ||
+              data.courseName ||
+              data.supportClassName ||
+              ""
+            ).trim();
 
           const accountType =
             String(
@@ -2519,6 +2598,9 @@ function setupForm() {
               phone,
 
               campus,
+
+              // Hồ sơ HV của bạn dùng đúng trường class: "K12".
+              class: classOrCourse,
 
               role,
 
@@ -2879,42 +2961,33 @@ async function submitTicket() {
      VALIDATE INPUT
   ======================================================= */
 
-  if (
-    !name ||
-    !email ||
-    (isStudent &&
-      !course &&
-      !isAutoFilledStudentProfile) ||
-    !selectedMainType ||
-    (
-      requiresIssue &&
-      !selectedIssue
-    )
-  ) {
-    errorEl.textContent =
-      "Vui lòng điền đầy đủ thông tin bắt buộc và chọn loại yêu cầu.";
+  /* =======================================================
+     VALIDATE INPUT - THÔNG BÁO ĐÚNG TRƯỜNG BỊ THIẾU
+  ======================================================= */
 
-    errorEl.classList.add(
-      "show"
-    );
+  let validationMessage = "";
 
+  if (!name) {
+    validationMessage = "Bạn hãy điền họ và tên.";
+  } else if (!email) {
+    validationMessage = "Bạn hãy điền email.";
+  } else if (!emailValid) {
+    validationMessage = "Bạn hãy nhập email đúng định dạng.";
+  } else if (isStudent && !course) {
+    validationMessage = "Bạn hãy điền lớp/khóa học của mình.";
+  } else if (!selectedMainType) {
+    validationMessage = "Bạn hãy chọn loại yêu cầu cần hỗ trợ.";
+  } else if (requiresIssue && !selectedIssue) {
+    validationMessage = "Bạn hãy chọn chi tiết vấn đề cần hỗ trợ.";
+  }
+
+  if (validationMessage) {
+    errorEl.textContent = validationMessage;
+    errorEl.classList.add("show");
     return;
   }
 
-  if (!emailValid) {
-    errorEl.textContent =
-      "Email không hợp lệ.";
-
-    errorEl.classList.add(
-      "show"
-    );
-
-    return;
-  }
-
-  errorEl.classList.remove(
-    "show"
-  );
+  errorEl.classList.remove("show");
 
   /* =======================================================
      CATEGORY
@@ -2970,10 +3043,28 @@ async function submitTicket() {
             "fallback",
         };
 
-  const supportRoute = await getStudentSupportRoute(
-    database,
-    loggedInUser?.uid || ""
-  );
+  let supportRoute;
+
+  try {
+    supportRoute = await getStudentSupportRoute(
+      database,
+      loggedInUser?.uid || ""
+    );
+  } catch (routeError) {
+    console.error("Lỗi xác định tuyến xử lý ticket:", routeError);
+    errorEl.textContent =
+      "Không thể xác định nhóm và leader của bạn. Vui lòng thử lại sau.";
+    errorEl.classList.add("show");
+    return;
+  }
+
+  if (!supportRoute.supportLeaderUid && !supportRoute.supportLeaderEmail) {
+    errorEl.textContent =
+      supportRoute.routingError ||
+      "Học viên chưa được gán vào lớp hoặc group chưa có leader.";
+    errorEl.classList.add("show");
+    return;
+  }
 
   /* =======================================================
      TICKET NUMBER
@@ -3029,14 +3120,23 @@ async function submitTicket() {
 
       course,
 
-      /* Tuyến xử lý: Group → Lớp → CS Leader */
+      /* Tuyến xử lý: HV → Group → Lớp → Leader */
       groupId: supportRoute.supportGroupId || "",
       groupName: supportRoute.supportGroupName || "",
       classId: supportRoute.supportClassId || "",
       className: supportRoute.supportClassName || "",
       supportLeaderUid: supportRoute.supportLeaderUid || "",
       supportLeaderName: supportRoute.supportLeaderName || "",
-      routingStatus: supportRoute.supportLeaderUid ? "waiting_leader_assignment" : "unrouted",
+      supportLeaderEmail: supportRoute.supportLeaderEmail || "",
+
+      // Các trường này dùng để màn hình leader lọc đúng ticket của mình.
+      assignedToUid: supportRoute.supportLeaderUid || "",
+      assignedToName: supportRoute.supportLeaderName || "",
+      assignedToEmail: supportRoute.supportLeaderEmail || "",
+      recipientUid: supportRoute.supportLeaderUid || "",
+      recipientEmail: supportRoute.supportLeaderEmail || "",
+      recipientRole: "group_leader",
+      routingStatus: supportRoute.routingStatus || "assigned",
 
       date:
         fDateEl.value,
@@ -3173,13 +3273,29 @@ async function submitTicket() {
        FIRST MESSAGE
     ===================================================== */
 
-    const messageData =
+      const messageData =
       {
         sender:
           "student",
 
         senderType:
           "student",
+
+        // Người nhận trực tiếp của tin nhắn mở đầu là leader của nhóm HV.
+        recipientUid:
+          supportRoute.supportLeaderUid || "",
+
+        recipientEmail:
+          supportRoute.supportLeaderEmail || "",
+
+        recipientName:
+          supportRoute.supportLeaderName || "",
+
+        recipientRole:
+          "group_leader",
+
+        visibility:
+          "assigned_leader",
 
         senderName:
           name,

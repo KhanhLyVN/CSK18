@@ -680,22 +680,80 @@
 
   async function loadCSProfile(uid) {
     try {
-      const docSnap = await db.collection(USER_COLLECTION).doc(uid).get();
+      let data = {};
+      let profileFound = false;
 
-      if (!docSnap.exists) {
-        console.error("❌ Không tìm thấy users/" + uid);
-        return null;
+      // Trường hợp 1: users/{uid}.
+      const directProfile = await db.collection(USER_COLLECTION).doc(uid).get();
+      if (directProfile.exists) {
+        data = directProfile.data() || {};
+        profileFound = true;
       }
 
-      const data = docSnap.data() || {};
+      // Trường hợp 2: document ID khác nhưng có field uid.
+      if (!profileFound) {
+        const profileQuery = await db.collection(USER_COLLECTION)
+          .where("uid", "==", uid)
+          .limit(1)
+          .get();
 
-      const leaderRoles = ["leader", "cs_leader", "team_leader", "group_leader", "manager", "cs_manager"];
-      const roleValues = [data.role, data.accountType, data.leaderRole, data.teamRole, data.position]
-        .map(value => String(value || "").trim().toLowerCase().replace(/[\s-]+/g, "_"));
-      let isLeader = Boolean(data.isLeader || data.isCSLeader || roleValues.some(value => leaderRoles.includes(value)));
+        if (!profileQuery.empty) {
+          data = profileQuery.docs[0].data() || {};
+          profileFound = true;
+        }
+      }
+
+      const leaderRoles = [
+        "leader",
+        "cs_leader",
+        "team_leader",
+        "group_leader",
+        "manager",
+        "cs_manager"
+      ];
+
+      const roleValues = [
+        data.role,
+        data.accountType,
+        data.leaderRole,
+        data.teamRole,
+        data.position
+      ].map(value => String(value || "").trim().toLowerCase().replace(/[\s-]+/g, "_"));
+
+      let isLeader = Boolean(
+        data.isLeader ||
+        data.isCSLeader ||
+        roleValues.some(value => leaderRoles.includes(value))
+      );
+
+      // Trường hợp 3: leader chỉ được lưu trong groups/{groupId}.leader.
       if (!isLeader) {
-        const leaderGroups = await db.collection("groups").where("leaderUid", "==", uid).limit(1).get();
-        isLeader = !leaderGroups.empty;
+        const groupsSnapshot = await db.collection("groups").get();
+
+        for (const groupDoc of groupsSnapshot.docs) {
+          const group = groupDoc.data() || {};
+          const leader = group.leader || {};
+          const groupLeaderUid = group.leaderUid || leader.uid || "";
+
+          if (groupLeaderUid === uid) {
+            data = {
+              ...data,
+              name: data.name || leader.name || "",
+              email: data.email || leader.email || "",
+              role: data.role || leader.role || "leader",
+              departmentCode: data.departmentCode || group.code || DEFAULT_DEPARTMENT_CODE,
+              groupId: groupDoc.id,
+              groupName: group.name || ""
+            };
+            isLeader = true;
+            break;
+          }
+        }
+      }
+
+      if (!profileFound && !isLeader) {
+        console.error("❌ Không tìm thấy profile leader cho UID:", uid);
+        return null;
       }
 
       return {
@@ -707,15 +765,53 @@
         isLeader
       };
     } catch (error) {
-      console.error("❌ Lỗi load profile:", error);
+      console.error("❌ Lỗi load profile leader:", error);
       return null;
     }
   }
 
   /* =========================================================
+     TICKET ASSIGNMENT MATCHING
+  ========================================================= */
+
+  function isTicketAssignedToProfile(ticket, profile) {
+    if (!ticket || !profile?.uid) {
+      return false;
+    }
+
+    const uid = String(profile.uid).trim();
+    const email = String(profile.email || currentCSUser?.email || "")
+      .trim()
+      .toLowerCase();
+
+    const assignedUidValues = [
+      ticket.assignedToUid,
+      ticket.supportLeaderUid,
+      ticket.recipientUid,
+      ticket.leaderUid,
+      ticket.assigneeUid
+    ]
+      .filter(Boolean)
+      .map(value => String(value).trim());
+
+    const assignedEmailValues = [
+      ticket.assignedToEmail,
+      ticket.supportLeaderEmail,
+      ticket.recipientEmail,
+      ticket.leaderEmail,
+      ticket.assigneeEmail
+    ]
+      .filter(Boolean)
+      .map(value => String(value).trim().toLowerCase());
+
+    return assignedUidValues.includes(uid) ||
+      (email && assignedEmailValues.includes(email));
+  }
+
+  /* =========================================================
      LOAD TICKETS
-     Luồng mới: Leader nhận ticket của học viên thuộc lớp mình;
-     CS con chỉ nhận ticket đã được Leader phân công.
+     Leader xem ticket nếu UID/email của mình xuất hiện trong
+     bất kỳ trường nhận ticket nào để tương thích dữ liệu cũ/mới.
   ========================================================= */
 
   function loadTicketsForCurrentCS(profile) {
@@ -729,16 +825,20 @@
       return;
     }
 
-    const ticketQuery = profile.isLeader
-      ? db.collection(TICKET_COLLECTION).where("supportLeaderUid", "==", profile.uid)
-      : db.collection(TICKET_COLLECTION).where("assigneeUid", "==", profile.uid);
+    // Không dùng một query duy nhất theo supportLeaderUid vì ticket có thể
+    // được lưu bằng assignedToUid hoặc recipientUid. Đọc ticket rồi lọc
+    // theo UID/email giúp trang leader thấy cả ticket cũ và ticket mới.
+    const ticketQuery = db.collection(TICKET_COLLECTION);
 
     ticketUnsubscribe = ticketQuery.onSnapshot(
         (snapshot) => {
           allTickets = [];
 
           snapshot.forEach((docSnap) => {
-            allTickets.push({ id: docSnap.id, ...docSnap.data() });
+            const ticket = { id: docSnap.id, ...docSnap.data() };
+            if (isTicketAssignedToProfile(ticket, profile)) {
+              allTickets.push(ticket);
+            }
           });
 
           allTickets.sort((a, b) => getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt));
