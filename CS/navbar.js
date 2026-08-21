@@ -13,6 +13,8 @@
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>',
     groups: 
       '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"></circle><path d="M17 11a4 4 0 1 0-2.7-7"></path><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"></path><path d="M17 15a4 4 0 0 1 4 4v2"></path></svg>',
+    membergroups:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 20.5c1.4-.6 2.6-1.6 3.5-2.8V5.5A2.5 2.5 0 0 0 18 3H6A2.5 2.5 0 0 0 3.5 5.5v12A2.5 2.5 0 0 0 6 20h8.7"></path><path d="M7 8h10M7 12h6"></path><path d="M15 18h6"></path><path d="M18 15v6"></path></svg>',
     reports:
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m7 16 4-5 3 3 5-7"></path></svg>',
     faq: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>',
@@ -24,6 +26,7 @@
     { page: "tickets", href: "/CS/TicketManagement/cs-ticket.html", label: "Quản lý ticket" },
     { page: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html", label: "Tạo phiếu hỗ trợ" },
     { page: "groups", href: "/CS/Groups/group.html", label: "Nhóm của tôi", leaderOnly: true },
+    { page: "membergroups", href: "/CS/Groups/group-member.html", label: "Nhóm trao đổi", memberOnly: true },
     { page: "reports", href: "/CS/Dashboard/cs-dashboard.html", label: "Báo cáo thống kê", leaderOnly: true },
     { page: "faq", href: "/FAQs/CS-FAQ.html", label: "FAQs" },
     { page: "account", href: "/CS/account-CS.html", label: "Cài đặt hệ thống" },
@@ -55,7 +58,7 @@
   }
 
   function menuMarkup(profile) {
-    const visibleLinks = links.filter((link) => !link.leaderOnly || profile.isLeader);
+    const visibleLinks = links.filter((link) => (!link.leaderOnly || profile.isLeader) && (!link.memberOnly || (!profile.isLeader && profile.isGroupMember)));
     const page = activePage(visibleLinks);
     return visibleLinks.map((link) => {
       const active = link.page === page;
@@ -64,7 +67,7 @@
   }
 
   async function getProfile(user) {
-    const base = { uid: user.uid, email: user.email || "", name: user.displayName || user.email || "CS", isLeader: false, raw: {} };
+    const base = { uid: user.uid, email: user.email || "", name: user.displayName || user.email || "CS", isLeader: false, isGroupMember: false, raw: {} };
     if (typeof firebase === "undefined" || !firebase.firestore) return base;
     const users = firebase.firestore().collection("users");
     try {
@@ -81,6 +84,10 @@
         const groups = await firebase.firestore().collection("groups").where("leaderUid", "==", user.uid).limit(1).get();
         profile.isLeader = !groups.empty;
       }
+      if (!profile.isLeader) {
+        const memberGroups = await firebase.firestore().collection("groups").where("memberIds", "array-contains", user.uid).limit(1).get();
+        profile.isGroupMember = !memberGroups.empty;
+      }
       return profile;
     } catch (error) {
       console.warn("Không thể tải quyền Customer Success:", error);
@@ -90,6 +97,14 @@
 
   function enforceLeaderPage(profile) {
     if (document.body.dataset.csLeaderOnly === "true" && !profile.isLeader) {
+      window.location.replace(HOME_URL);
+      return true;
+    }
+    return false;
+  }
+
+  function enforceMemberPage(profile) {
+    if (document.body.dataset.csMemberOnly === "true" && (profile.isLeader || !profile.isGroupMember)) {
       window.location.replace(HOME_URL);
       return true;
     }
@@ -169,6 +184,7 @@
 
     const applyProfile = (profile) => {
       if (enforceLeaderPage(profile)) return;
+      if (enforceMemberPage(profile)) return;
       document.body.dataset.csRole = profile.isLeader ? "leader" : "member";
       document.body.dataset.csRoleReady = "true";
       window.csCurrentProfile = profile;
@@ -179,12 +195,12 @@
 
     const auth = typeof firebase !== "undefined" && firebase.auth ? firebase.auth() : null;
     if (!auth) {
-      applyProfile({ isLeader: false, name: "CS", email: "", uid: "", raw: {} });
+      applyProfile({ isLeader: false, isGroupMember: false, name: "CS", email: "", uid: "", raw: {} });
       return;
     }
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        applyProfile({ isLeader: false, name: "CS", email: "", uid: "", raw: {} });
+        applyProfile({ isLeader: false, isGroupMember: false, name: "CS", email: "", uid: "", raw: {} });
         return;
       }
       applyProfile(await getProfile(user));

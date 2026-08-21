@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhóm trao đổi · Customer Success</title>
+  <link rel="stylesheet" href="/CS/navbar.css">
+  <link rel="stylesheet" href="/CS/Groups/group-member.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="/firebase-config.js"></script>
+</head>
+<body data-nav-page="member-groups" data-cs-member-only="true">
+  <div class="app">
+    <main class="main-content">
+      <section class="member-group-page" aria-labelledby="pageTitle">
+        <header class="page-head">
+          <div>
+            <p class="eyebrow">KÊNH TRAO ĐỔI NỘI BỘ</p>
+            <h1 id="pageTitle">Nhóm của tôi</h1>
+            <p>Trao đổi nhanh với các Customer Success cùng nhóm. Trang này chỉ dành cho CS con và không có chức năng tạo lớp, thêm thành viên hoặc phân công ticket.</p>
+          </div>
+          <span class="user-chip" id="currentUserChip">Đang tải tài khoản...</span>
+        </header>
+
+        <div class="member-group-layout">
+          <aside class="group-panel" aria-label="Danh sách nhóm của tôi">
+            <div class="panel-head">
+              <div>
+                <h2>Nhóm tham gia</h2>
+                <p>Chọn nhóm để mở cuộc trò chuyện.</p>
+              </div>
+              <span class="count" id="groupCount">0 nhóm</span>
+            </div>
+            <div class="group-list" id="groupList">
+              <div class="loading">Đang tải nhóm...</div>
+            </div>
+          </aside>
+
+          <section class="chat-panel" aria-label="Trao đổi nhóm">
+            <div class="chat-empty" id="chatEmpty">
+            </div>
+
+            <div class="chat-workspace" id="chatWorkspace" hidden>
+              <header class="chat-head">
+                <div class="chat-title-wrap">
+                  <span class="chat-avatar" id="chatAvatar">N</span>
+                  <div>
+                    <p class="chat-kicker">NHÓM CS CON</p>
+                    <h2 id="chatTitle">Nhóm</h2>
+                    <p id="chatSubtitle">Đang tải thành viên...</p>
+                  </div>
+                </div>
+                <span class="online-chip"><i></i>Trao đổi nội bộ</span>
+              </header>
+
+              <div class="members-strip" id="membersStrip" aria-label="Thành viên CS trong nhóm"></div>
+
+              <div class="message-list" id="messageList" aria-live="polite">
+                <div class="loading">Đang tải tin nhắn...</div>
+              </div>
+
+              <form class="chat-composer" id="chatComposer">
+                <label class="sr-only" for="messageInput">Nội dung tin nhắn nhóm</label>
+                <textarea id="messageInput" maxlength="2000" rows="1" placeholder="Nhập tin nhắn cho các CS trong nhóm..." disabled></textarea>
+                <button type="submit" id="sendMessageBtn" disabled>Gửi</button>
+              </form>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/CS/navbar.js"></script>
+  <script src="/CS/Groups/group-member.js"></script>
+</body>
+</html>
