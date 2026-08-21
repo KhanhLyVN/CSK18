@@ -438,6 +438,25 @@
       line-height: 1.55
     }
 
+    .ticket-controls { display: grid; grid-template-columns: 1fr 1fr 1.25fr auto; gap: 9px; margin-bottom: 12px }
+    .ticket-controls select, .ticket-controls input, .ticket-agent-select { min-height: 37px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 8px; outline: 0; color: var(--ink); background: #fff; font-size: 11px }
+    .ticket-controls select:focus, .ticket-controls input:focus, .ticket-agent-select:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93, 7, 3, .08) }
+    .ticket-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 12px }
+    .ticket-summary-card { padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: #fff }
+    .ticket-summary-card span { display: block; color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase }
+    .ticket-summary-card strong { display: block; margin-top: 5px; color: var(--deep); font: 700 22px/1 Fraunces, serif }
+    .group-ticket-list { display: grid; gap: 10px }
+    .group-ticket-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, .62fr); gap: 14px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: #fff }
+    .group-ticket-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px }
+    .group-ticket-code { color: var(--maroon); font-size: 10px; font-weight: 800 }
+    .group-ticket-title { margin: 5px 0 0; color: var(--deep); font-size: 13px; font-weight: 800 }
+    .group-ticket-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; color: var(--muted); font-size: 9px }
+    .ticket-tag { padding: 4px 6px; border-radius: 999px; background: var(--pale); font-weight: 700 }
+    .ticket-tag.high { color: #8d251d; background: #fdeceb }.ticket-tag.medium { color: #8d6319; background: #fff2d9 }.ticket-tag.low { color: var(--green); background: #eef4eb }
+    .ticket-assignment { display: grid; gap: 7px; align-content: start; padding: 10px; border-radius: 8px; background: var(--pale) }
+    .ticket-assignment label { color: var(--maroon); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em }
+    .ticket-assignment-note { color: var(--green); font-size: 9px; font-weight: 700; line-height: 1.4 }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -917,11 +936,16 @@
       .detail-body {
         padding: 15px
       }
+
+      .ticket-controls,
+      .ticket-summary { grid-template-columns: 1fr }
+
+      .group-ticket-card { grid-template-columns: 1fr }
     }
   </style>
 </head>
 
-<body data-nav-page="groups">
+<body data-nav-page="groups" data-cs-leader-only="true">
   <div class="app">
   <main class="main-content">
     <div class="groups-page">
@@ -975,6 +999,10 @@
           <div class="checkbox-list" id="classStudents">
             <div class="loading">Nhập tên lớp để tìm học viên...</div>
           </div>
+        </div>
+        <div class="form-field"><label>CS con phụ trách lớp <span style="color:var(--red)">*</span></label>
+          <p class="dialog-intro">Chỉ hiển thị Customer Success đã thuộc nhóm. Ticket của học viên trong lớp chỉ được phân cho các CS này.</p>
+          <div class="checkbox-list" id="classAgents"><div class="loading">Đang tải thành viên nhóm...</div></div>
         </div>
         <div class="dialog-actions"><button class="btn btn-secondary" type="button"
             id="closeClassModal">Hủy</button><button class="btn btn-primary" type="submit" id="saveClass"><span
@@ -1030,7 +1058,7 @@
     const myGroupsAuth = firebase.auth();
     const myGroupsDb = firebase.firestore();
     const GROUPS = "groups";
-    const state = { user: null, groups: [], selected: null, members: [], allCs: [], allStudents: [], classes: [], unsubscribeGroups: null, unsubscribeClasses: null, toastTimer: null };
+    const state = { user: null, groups: [], selected: null, members: [], allCs: [], allStudents: [], classes: [], tickets: [], unsubscribeGroups: null, unsubscribeClasses: null, unsubscribeTickets: null, toastTimer: null };
         const $ = id => document.getElementById(id);
     const esc = value => { const div = document.createElement("div"); div.textContent = value == null ? "" : String(value); return div.innerHTML; };
 
@@ -1077,9 +1105,11 @@
       const leader = { uid: group.leaderUid, name: group.leaderName, email: group.leaderEmail };
       const members = group.members || (group.memberIds || []).map(uid => userFromGroup(group, uid)).filter(Boolean);
       const canCreate = isLeader(group);
-      $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp và phân thành viên vào lớp.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div><div class="section"><div class="section-head"><h3>Ticket của nhóm</h3></div><div class="ticket-note"><span class="material-symbols-rounded">info</span> Khi kết nối với module ticket, ticket của học viên sẽ đi vào nhóm và leader có thể phân công cho CS con trong đúng lớp.</div></div></div>`;
-      if (canCreate) { $("openClassModal").addEventListener("click", openClassModal); $("openMemberModal").addEventListener("click", openMemberModal); }
+      const ticketWorkspace = canCreate ? `<div class="section"><div class="section-head"><div><h3>Phân công ticket</h3><p>Ticket học viên của nhóm sẽ đến Leader trước khi giao cho CS con trong lớp.</p></div><span class="count" id="ticketCount">0 ticket</span></div><div class="ticket-controls"><select id="ticketClassFilter" aria-label="Lọc theo lớp"><option value="">Tất cả lớp</option></select><select id="ticketStatusFilter" aria-label="Lọc trạng thái"><option value="all">Tất cả trạng thái</option><option value="waiting_leader_assignment">Chờ phân công</option><option value="assigned_to_cs">Đã phân công</option><option value="in_progress">Đang xử lý</option></select><input id="ticketSearchFilter" type="search" placeholder="Tìm mã ticket, tên học viên..." autocomplete="off"><button class="btn btn-secondary" id="refreshTickets" type="button"><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="ticket-summary" id="ticketSummary"></div><div class="group-ticket-list" id="groupTicketList"><div class="loading">Đang tải ticket...</div></div></div>` : '';
+      $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp, thêm học viên và chọn CS con phụ trách.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div>${ticketWorkspace}</div>`;
+      if (canCreate) { $("openClassModal").addEventListener("click", openClassModal); $("openMemberModal").addEventListener("click", openMemberModal); $("refreshTickets").addEventListener("click", watchGroupTickets); }
       loadClasses(group);
+      if (canCreate) renderGroupTickets();
     }
 
     async function getMyGroups(uid) {
@@ -1089,7 +1119,7 @@
       return [...result.values()].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
     }
     function watchMyGroups() { if (state.unsubscribeGroups) state.unsubscribeGroups(); getMyGroups(state.user.uid).then(groups => { state.groups = groups; renderGroups(); if (groups.length) selectGroup(groups[0].id); }).catch(error => { console.error(error); toast("Không thể tải nhóm. Kiểm tra Firestore Rules.", true); $("groupList").innerHTML = '<div class="empty">Không thể tải nhóm.</div>'; }); }
-    function selectGroup(id) { state.selected = state.groups.find(group => group.id === id) || null; state.classes = []; renderGroups(); renderDetail(); }
+    function selectGroup(id) { state.selected = state.groups.find(group => group.id === id) || null; state.classes = []; state.tickets = []; renderGroups(); renderDetail(); if (state.selected && isLeader(state.selected)) watchGroupTickets(); }
     async function loadAvailableCs() {
       const snapshot = await myGroupsDb.collection("users").where("accountType", "==", "customer_success").get();
       state.allCs = snapshot.docs.map(doc => { const data = doc.data() || {}; return { uid: data.uid || doc.id, name: data.name || "", email: data.email || "", status: data.status || "active" }; }).filter(user => user.email && user.status !== "inactive");
@@ -1139,7 +1169,36 @@
       const members = [...existingMembers, ...additions]; const memberIds = [...new Set([state.selected.leaderUid, ...members.map(member => member.uid || member.id)].filter(Boolean))]; const button = $("saveMembers"); button.disabled = true;
       try { await myGroupsDb.collection(GROUPS).doc(state.selected.id).set({ memberIds, members, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); state.selected = { ...state.selected, memberIds, members }; state.groups = state.groups.map(group => group.id === state.selected.id ? state.selected : group); renderGroups(); renderDetail(); closeMemberModal(); toast(`Đã thêm ${additions.length} thành viên vào nhóm.`); } catch (error) { console.error(error); toast("Không thể thêm thành viên vào nhóm.", true); } finally { button.disabled = false; }
     }
-    function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; return; } grid.innerHTML = state.classes.map(item => `<article class="class-card" tabindex="0" role="button" data-class-id="${esc(item.id)}" aria-label="Mở chi tiết lớp ${esc(item.name)}"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.studentIds || item.memberIds || []).length} học viên</span><span class="status">Đang hoạt động</span></div></article>`).join(""); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
+    function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; renderGroupTickets(); return; } grid.innerHTML = state.classes.map(item => `<article class="class-card" tabindex="0" role="button" data-class-id="${esc(item.id)}" aria-label="Mở chi tiết lớp ${esc(item.name)}"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.studentIds || item.memberIds || []).length} học viên</span><span>${(item.csMemberIds || []).length} CS con</span><span class="status">Đang hoạt động</span></div></article>`).join(""); renderGroupTickets(); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
+
+    function ticketTime(value) { return value && value.toDate ? value.toDate().getTime() : value && value.seconds ? value.seconds * 1000 : 0; }
+    function ticketAgents(ticket) { const classItem = state.classes.find(item => item.id === ticket.classId); return classItem && Array.isArray(classItem.csMembers) ? classItem.csMembers : []; }
+    function watchGroupTickets() { if (!state.user || !state.selected || !isLeader(state.selected)) return; if (state.unsubscribeTickets) state.unsubscribeTickets(); state.unsubscribeTickets = myGroupsDb.collection("tickets").where("supportLeaderUid", "==", state.user.uid).onSnapshot(snapshot => { state.tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => ticketTime(b.createdAt) - ticketTime(a.createdAt)); renderGroupTickets(); }, error => { console.error(error); const list = $("groupTicketList"); if (list) list.innerHTML = '<div class="empty">Không thể tải ticket. Kiểm tra quyền Firestore.</div>'; toast("Không thể tải ticket của nhóm.", true); }); }
+    function renderGroupTickets() { const group = state.selected, list = $("groupTicketList"); if (!group || !list || !isLeader(group)) return; const classFilter = $("ticketClassFilter"), statusFilter = $("ticketStatusFilter"), searchFilter = $("ticketSearchFilter"); const previousClass = classFilter.value; classFilter.innerHTML = `<option value="">Tất cả lớp (${state.classes.length})</option>${state.classes.map(item => `<option value="${esc(item.id)}">${esc(item.name || "Lớp chưa đặt tên")}</option>`).join("")}`; classFilter.value = state.classes.some(item => item.id === previousClass) ? previousClass : ""; const classId = classFilter.value, status = statusFilter.value, keyword = String(searchFilter.value || "").trim().toLowerCase(); const visible = state.tickets.filter(ticket => ticket.groupId === group.id && (!classId || ticket.classId === classId) && (status === "all" || ticket.routingStatus === status || ticket.status === status) && (!keyword || `${ticket.ticketNum || ticket.id} ${ticket.name || ""} ${ticket.email || ""} ${ticket.title || ""}`.toLowerCase().includes(keyword))); const waiting = visible.filter(ticket => !ticket.assigneeUid).length, assigned = visible.filter(ticket => ticket.assigneeUid).length; $("ticketCount").textContent = `${visible.length} ticket`; $("ticketSummary").innerHTML = `<article class="ticket-summary-card"><span>Trong bộ lọc</span><strong>${visible.length}</strong></article><article class="ticket-summary-card"><span>Chờ phân công</span><strong>${waiting}</strong></article><article class="ticket-summary-card"><span>Đã giao CS con</span><strong>${assigned}</strong></article>`; if (!visible.length) { list.innerHTML = '<div class="empty">Chưa có ticket học viên phù hợp với nhóm/lớp này.</div>'; return; } list.innerHTML = visible.map(ticket => { const agents = ticketAgents(ticket), priority = String(ticket.priority || "medium").toLowerCase(), options = agents.map(agent => `<option value="${esc(agent.uid)}" ${ticket.assigneeUid === agent.uid ? "selected" : ""}>${esc(agent.name || agent.email || "CS")}</option>`).join(""); return `<article class="group-ticket-card" data-ticket-id="${esc(ticket.id)}"><div><div class="group-ticket-top"><div><div class="group-ticket-code">${esc(ticket.ticketNum || ticket.id)}</div><h4 class="group-ticket-title">${esc(ticket.title || "Không có tiêu đề")}</h4></div><span class="ticket-tag ${priority}">${esc(ticket.priorityLabel || priority)}</span></div><div class="group-ticket-meta"><span class="ticket-tag">Học viên: ${esc(ticket.name || "Chưa có tên")}</span><span class="ticket-tag">Lớp: ${esc(ticket.className || "Chưa gắn lớp")}</span><span class="ticket-tag">${esc(ticket.ticketCategory || "Khác")}</span></div></div><div class="ticket-assignment"><label>Giao CS con trong lớp</label><select class="ticket-agent-select" ${agents.length ? "" : "disabled"}><option value="">${agents.length ? "-- Chọn CS phụ trách --" : "Lớp chưa có CS con"}</option>${options}</select><button class="btn btn-primary assign-ticket-btn" type="button" ${agents.length ? "" : "disabled"}>${ticket.assigneeUid ? "Cập nhật phân công" : "Giao ticket"}</button><div class="ticket-assignment-note">${ticket.assigneeName ? `Đang giao cho: ${esc(ticket.assigneeName)}` : "Chưa giao CS con"}</div></div></article>`; }).join(""); }
+    async function assignGroupTicket(button) { const card = button.closest("[data-ticket-id]"), ticket = state.tickets.find(item => item.id === card.dataset.ticketId), agentId = card.querySelector(".ticket-agent-select").value; if (!ticket || !agentId) { toast("Hãy chọn CS con trước khi phân công.", true); return; } const agent = ticketAgents(ticket).find(item => item.uid === agentId); if (!agent) { toast("CS được chọn không thuộc lớp của ticket này.", true); return; } button.disabled = true; button.textContent = "Đang lưu..."; try { await myGroupsDb.collection("tickets").doc(ticket.id).update({ assigneeUid: agent.uid, assigneeName: agent.name || "", assigneeEmail: agent.email || "", assignedByUid: state.user.uid, assignedByName: state.user.displayName || state.user.email || "CS Leader", assignedAt: firebase.firestore.FieldValue.serverTimestamp(), routingStatus: "assigned_to_cs", status: "in_progress", updatedAt: firebase.firestore.FieldValue.serverTimestamp() }); toast(`Đã giao ${ticket.ticketNum || "ticket"} cho ${agent.name || agent.email}.`); } catch (error) { console.error(error); toast("Không thể lưu phân công ticket.", true); button.disabled = false; button.textContent = "Giao ticket"; } }
+
+    function renderClassAgents() {
+      const group = state.selected; if (!group) return;
+      const members = new Map();
+      (group.members || []).forEach(member => members.set(String(member.uid || member.id || ""), member));
+      (group.memberIds || []).forEach(uid => { if (!members.has(String(uid))) members.set(String(uid), userFromGroup(group, uid) || { uid, name: "Tài khoản CS", email: "" }); });
+      const agents = [...members.values()].filter(member => String(member.uid || member.id || "") && String(member.uid || member.id || "") !== String(group.leaderUid || ""));
+      $("classAgents").innerHTML = agents.length ? agents.map(member => `<label class="check-row"><input type="checkbox" value="${esc(member.uid || member.id)}" /><span class="avatar">${esc(initials(member.name, member.email))}</span><span><strong>${esc(member.name || "Chưa có tên")}</strong><small>${esc(member.email || "")}</small></span></label>`).join("") : '<div class="empty">Nhóm chưa có CS con. Hãy thêm thành viên vào nhóm trước.</div>';
+    }
+
+    async function syncStudentRoute(group, classId, classData, students) {
+      const batch = myGroupsDb.batch();
+      students.forEach(student => batch.set(myGroupsDb.collection("users").doc(student.uid), {
+        supportGroupId: group.id,
+        supportGroupName: group.name || "",
+        supportClassId: classId,
+        supportClassName: classData.name || "",
+        supportLeaderUid: group.leaderUid || "",
+        supportLeaderName: group.leaderName || "",
+        supportRouteUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }));
+      if (students.length) await batch.commit();
+    }
 
     let activeClassDetail = null;
 
@@ -1201,6 +1260,7 @@
           students: students.map(student => ({ uid: student.uid, name: student.name, email: student.email, class: student.className })),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
+        await syncStudentRoute(state.selected, activeClassDetail.id, activeClassDetail, students);
         activeClassDetail = { ...activeClassDetail, studentIds, students };
         $("classDetailSubtitle").textContent = `${studentIds.length} học viên đã thêm${activeClassDetail.classCode ? ` · Mã lớp: ${activeClassDetail.classCode}` : ""}`;
         renderSavedClassStudents(students);
@@ -1245,6 +1305,7 @@
       try {
         await loadAvailableStudents();
         renderAvailableStudents();
+        renderClassAgents();
         $("className").focus();
       } catch (error) {
         console.error(error);
@@ -1254,8 +1315,10 @@
     }
     function closeClassModal() { $("classModal").classList.remove("show"); $("classModal").setAttribute("aria-hidden", "true"); $("classForm").reset(); $("classStudents").innerHTML = '<div class="loading">Nhập tên lớp để tìm học viên...</div>'; }
     $("groupList").addEventListener("click", event => { const card = event.target.closest("[data-group-id]"); if (card) selectGroup(card.dataset.groupId); });
-    $("detailPanel").addEventListener("click", event => { const card = event.target.closest("[data-class-id]"); if (card) openClassDetail(card.dataset.classId); });
+    $("detailPanel").addEventListener("click", event => { const assignButton = event.target.closest(".assign-ticket-btn"); if (assignButton) { assignGroupTicket(assignButton); return; } const card = event.target.closest("[data-class-id]"); if (card) openClassDetail(card.dataset.classId); });
     $("detailPanel").addEventListener("keydown", event => { const card = event.target.closest("[data-class-id]"); if (card && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openClassDetail(card.dataset.classId); } });
+    $("detailPanel").addEventListener("input", event => { if (event.target && event.target.id === "ticketSearchFilter") renderGroupTickets(); });
+    $("detailPanel").addEventListener("change", event => { if (event.target && (event.target.id === "ticketClassFilter" || event.target.id === "ticketStatusFilter")) renderGroupTickets(); });
         $("closeClassDetail").addEventListener("click", closeClassDetail);
     $("addStudentsToClass").addEventListener("click", startAddingStudentsToClass);
     $("classDetailStudentSearch").addEventListener("input", renderClassDetailStudents);
@@ -1274,19 +1337,26 @@
       const studentIds = [...document.querySelectorAll("#classStudents input:checked")].map(input => input.value);
       if (!studentIds.length) { toast(`Chưa có học viên được chọn cho lớp ${name}.`, true); return; }
       const selectedStudents = state.allStudents.filter(student => studentIds.includes(student.uid));
+      const csMemberIds = [...document.querySelectorAll("#classAgents input:checked")].map(input => input.value);
+      if (!csMemberIds.length) { toast("Hãy chọn ít nhất một CS con cho lớp.", true); return; }
+      const groupMemberMap = new Map((state.selected.members || []).map(member => [String(member.uid || member.id), member]));
+      const csMembers = csMemberIds.map(uid => groupMemberMap.get(String(uid)) || { uid, name: "Tài khoản CS", email: "" });
       const button = $("saveClass"); button.disabled = true;
       try {
-        await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({
+        const classRef = await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({
           name,
           classCode,
           description: $("classDescription").value.trim(),
           groupId: state.selected.id,
           studentIds,
           students: selectedStudents.map(student => ({ uid: student.uid, name: student.name, email: student.email, class: student.className })),
+          csMemberIds,
+          csMembers: csMembers.map(member => ({ uid: member.uid || member.id, name: member.name || "", email: member.email || "" })),
           createdBy: state.user.uid,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           status: "active"
         });
+        await syncStudentRoute(state.selected, classRef.id, { name }, selectedStudents);
         toast(`Đã tạo lớp ${name} với ${studentIds.length} học viên.`);
         closeClassModal();
       } catch (error) {

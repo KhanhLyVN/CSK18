@@ -740,6 +740,13 @@
     const categoryFilter = document.getElementById('categoryFilter');
     const noResults = document.getElementById('noResults');
 
+    function applySearchFromUrl() {
+      const search = new URLSearchParams(window.location.search).get('q');
+      if (search && !searchInput.value.trim()) {
+        searchInput.value = search;
+      }
+    }
+
     /* =====================================================
        AI VARIABLES
     ===================================================== */
@@ -867,6 +874,7 @@
           let rawData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           rawData.sort((a, b) => getTimestampMillis(b.createdAt) - getTimestampMillis(a.createdAt));
           faqData = rawData.map((item, index) => ({ ...item, stt: index + 1 }));
+          applySearchFromUrl();
           initCategories();
           filterData();
         },

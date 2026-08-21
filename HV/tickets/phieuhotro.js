@@ -192,6 +192,37 @@ function getDatabase() {
     : null;
 }
 
+function normalizeFaqText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/gi, "d")
+    .toLowerCase();
+}
+
+async function getStudentSupportRoute(database, uid) {
+  if (!database || !uid) {
+    return {};
+  }
+
+  try {
+    const snapshot = await database.collection("users").doc(uid).get();
+    const profile = snapshot.exists ? snapshot.data() || {} : {};
+
+    return {
+      supportGroupId: profile.supportGroupId || "",
+      supportGroupName: profile.supportGroupName || "",
+      supportClassId: profile.supportClassId || "",
+      supportClassName: profile.supportClassName || "",
+      supportLeaderUid: profile.supportLeaderUid || "",
+      supportLeaderName: profile.supportLeaderName || ""
+    };
+  } catch (error) {
+    console.warn("Không thể lấy tuyến hỗ trợ của học viên:", error);
+    return {};
+  }
+}
+
 function escapeHTML(value) {
   const element =
     document.createElement("div");
@@ -258,6 +289,24 @@ const layoutContainer =
 
 const fTitle =
   $("fTitle");
+
+const relatedFaq =
+  $("relatedFaq");
+
+const relatedFaqTitle =
+  $("relatedFaqTitle");
+
+const relatedFaqIntro =
+  $("relatedFaqIntro");
+
+const relatedFaqList =
+  $("relatedFaqList");
+
+const relatedFaqLink =
+  $("relatedFaqLink");
+
+let relatedFaqData =
+  [];
 
 /* =========================================================
    AI CONFIG
@@ -1296,6 +1345,8 @@ function renderIssueOptions(
     issueSelect.value =
       "";
 
+    renderRelatedFaqs();
+
     return;
   }
 
@@ -1330,6 +1381,173 @@ function renderIssueOptions(
 
   issueSelect.value =
     "";
+
+  renderRelatedFaqs();
+}
+
+function getRelatedFaqContext() {
+  const selectedRadio =
+    getSelectedRadio();
+
+  const category = selectedRadio
+    ? getCategory(selectedRadio.value)
+    : null;
+
+  const issueLabel = issueSelect
+    ?.selectedOptions?.[0]
+    ?.textContent
+    ?.trim() || "";
+
+  return {
+    categoryLabel: category?.label || "",
+    issueLabel,
+    issueValue: issueSelect?.value || ""
+  };
+}
+
+function getRelatedFaqs(context) {
+  const stopWords = new Set(["cho", "voi", "cac", "cua", "the", "trong", "nhung", "khi", "mot", "nhu"]);
+  const query = normalizeFaqText(`${context.categoryLabel} ${context.issueLabel}`);
+  const terms = [...new Set(query.split(/\s+/).filter(word => word.length >= 3 && !stopWords.has(word)))];
+
+  return relatedFaqData
+    .map(item => {
+      const text = normalizeFaqText(`${item.category || ""} ${item.question || ""} ${item.answer || ""}`);
+      let score = 0;
+
+      if (normalizeFaqText(item.category) === normalizeFaqText(context.categoryLabel)) {
+        score += 4;
+      }
+
+      terms.forEach(term => {
+        if (text.includes(term)) {
+          score += 1;
+        }
+      });
+
+      return { item, score };
+    })
+    .filter(result => result.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(result => result.item);
+}
+
+function renderRelatedFaqs() {
+  if (!relatedFaq || !relatedFaqList || !relatedFaqLink) {
+    return;
+  }
+
+  const context = getRelatedFaqContext();
+
+  if (!context.issueValue) {
+    relatedFaq.hidden = true;
+    relatedFaqList.innerHTML = "";
+    return;
+  }
+
+  const search = `${context.categoryLabel} ${context.issueLabel}`.trim();
+  const matches = getRelatedFaqs(context);
+
+  relatedFaq.hidden = false;
+  relatedFaqLink.href = `/FAQs/faq.html?q=${encodeURIComponent(search)}`;
+
+  if (relatedFaqTitle) {
+    relatedFaqTitle.textContent = `FAQ cho: ${context.issueLabel}`;
+  }
+
+  if (relatedFaqIntro) {
+    relatedFaqIntro.textContent = matches.length
+      ? "Bạn có thể mở các câu hỏi dưới đây để xem hướng dẫn trước khi gửi phiếu."
+      : "Chưa có câu hỏi trùng khớp trực tiếp. Bạn vẫn có thể tìm trong kho FAQ hoặc tiếp tục gửi phiếu.";
+  }
+
+  relatedFaqList.innerHTML = matches.length
+    ? matches.map((item, index) => `<article class="related-faq-item"><button type="button" class="related-faq-question" data-related-faq="${index}" aria-expanded="false"><span>${escapeHTML(item.question || "Câu hỏi thường gặp")}</span><span aria-hidden="true">+</span></button><div class="related-faq-answer">${escapeHTML(item.answer || "")}</div></article>`).join("")
+    : '<div class="related-faq-empty">Không tìm thấy FAQ phù hợp trong dữ liệu hiện có.</div>';
+}
+
+function watchRelatedFaqs() {
+  const database = getDatabase();
+
+  if (!database || !relatedFaqList) {
+    return;
+  }
+
+  database.collection("faqs").onSnapshot(
+    snapshot => {
+      relatedFaqData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderRelatedFaqs();
+    },
+    error => {
+      console.warn("Không thể tải FAQ liên quan:", error);
+      relatedFaqData = [];
+      renderRelatedFaqs();
+    }
+  );
+}
+
+function bindRelatedFaqAccordion() {
+  if (!relatedFaqList) {
+    return;
+  }
+
+  relatedFaqList.addEventListener(
+    "click",
+    event => {
+      const button = event.target.closest(
+        ".related-faq-question"
+      );
+
+      if (!button) {
+        return;
+      }
+
+      const item = button.closest(
+        ".related-faq-item"
+      );
+
+      if (!item) {
+        return;
+      }
+
+      const willOpen = !item.classList.contains(
+        "is-open"
+      );
+
+      relatedFaqList
+        .querySelectorAll(
+          ".related-faq-item"
+        )
+        .forEach(
+          faqItem => {
+            faqItem.classList.remove(
+              "is-open"
+            );
+
+            faqItem
+              .querySelector(
+                ".related-faq-question"
+              )
+              ?.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+          }
+        );
+
+      if (willOpen) {
+        item.classList.add(
+          "is-open"
+        );
+
+        button.setAttribute(
+          "aria-expanded",
+          "true"
+        );
+      }
+    }
+  );
 }
 
 /* =========================================================
@@ -2168,6 +2386,10 @@ function setupForm() {
 
   renderCategories();
 
+  watchRelatedFaqs();
+
+  bindRelatedFaqAccordion();
+
   updateStub();
 
   /* =======================================================
@@ -2254,6 +2476,37 @@ function setupForm() {
             data.role ||
             "";
 
+          const classOrCourse =
+            data.class ||
+            data.className ||
+            data.clazz ||
+            data.grade ||
+            data.course ||
+            data.courseName ||
+            data.supportClassName ||
+            "";
+
+          const accountType =
+            String(
+              data.accountType ||
+              role ||
+              ""
+            )
+              .trim()
+              .toLowerCase();
+
+          const isStudentAccount =
+            [
+              "student",
+              "student_account",
+              "hocvien",
+              "học viên",
+              "learner",
+              "hv"
+            ].includes(accountType) ||
+            Boolean(classOrCourse) ||
+            !accountType;
+
           loggedInUser =
             {
               uid:
@@ -2268,6 +2521,8 @@ function setupForm() {
               campus,
 
               role,
+
+              classOrCourse,
             };
 
           if ($("fName")) {
@@ -2292,6 +2547,29 @@ function setupForm() {
 
             $("fCampus").readOnly =
               true;
+          }
+
+          if (chkCourse && isStudentAccount) {
+            chkCourse.checked =
+              true;
+
+            courseBoxWrap.classList.add(
+              "show"
+            );
+          }
+
+          if (fCourse && isStudentAccount) {
+            fCourse.value =
+              classOrCourse;
+
+            fCourse.dataset.profileCourse =
+              classOrCourse;
+
+            fCourse.dataset.profileAutofill =
+              "true";
+
+            fCourse.readOnly =
+              Boolean(classOrCourse);
           }
 
           updateStub();
@@ -2322,6 +2600,8 @@ function setupForm() {
         hideTitleAiSuggestion();
 
         hideAITitleLoading();
+
+        renderRelatedFaqs();
       }
     );
   }
@@ -2344,6 +2624,15 @@ function setupForm() {
         ) {
           fCourse.value =
             "";
+        }
+
+        if (
+          chkCourse.checked &&
+          !fCourse.value &&
+          fCourse.dataset.profileCourse
+        ) {
+          fCourse.value =
+            fCourse.dataset.profileCourse;
         }
 
         updateStub();
@@ -2538,6 +2827,10 @@ async function submitTicket() {
       ? fCourse.value.trim()
       : "Không áp dụng";
 
+  const isAutoFilledStudentProfile =
+    fCourse?.dataset?.profileAutofill ===
+    "true";
+
   const title =
     $("fTitle")
       .value
@@ -2590,7 +2883,8 @@ async function submitTicket() {
     !name ||
     !email ||
     (isStudent &&
-      !course) ||
+      !course &&
+      !isAutoFilledStudentProfile) ||
     !selectedMainType ||
     (
       requiresIssue &&
@@ -2676,6 +2970,11 @@ async function submitTicket() {
             "fallback",
         };
 
+  const supportRoute = await getStudentSupportRoute(
+    database,
+    loggedInUser?.uid || ""
+  );
+
   /* =======================================================
      TICKET NUMBER
   ======================================================= */
@@ -2729,6 +3028,15 @@ async function submitTicket() {
       isStudent,
 
       course,
+
+      /* Tuyến xử lý: Group → Lớp → CS Leader */
+      groupId: supportRoute.supportGroupId || "",
+      groupName: supportRoute.supportGroupName || "",
+      classId: supportRoute.supportClassId || "",
+      className: supportRoute.supportClassName || "",
+      supportLeaderUid: supportRoute.supportLeaderUid || "",
+      supportLeaderName: supportRoute.supportLeaderName || "",
+      routingStatus: supportRoute.supportLeaderUid ? "waiting_leader_assignment" : "unrouted",
 
       date:
         fDateEl.value,
@@ -2936,13 +3244,26 @@ async function submitTicket() {
             .serverTimestamp(),
       };
 
-    await ticketRef
-      .collection(
-        "messages"
-      )
-      .add(
-        messageData
+    try {
+      await ticketRef
+        .collection(
+          "messages"
+        )
+        .add(
+          messageData
+        );
+    }
+
+    catch (messageError) {
+      /*
+       * Ticket đã được lưu thành công. Không để lỗi quyền
+       * của subcollection messages làm cả thao tác gửi thất bại.
+       */
+      console.warn(
+        "Không thể tạo tin nhắn mở đầu, nhưng ticket đã được lưu:",
+        messageError
       );
+    }
 
     /* =====================================================
        EMAILJS
@@ -3124,14 +3445,20 @@ function resetForm() {
   ======================================================= */
 
   chkCourse.checked =
-    false;
+    Boolean(
+      fCourse?.dataset?.profileAutofill ===
+      "true"
+    );
 
-  courseBoxWrap.classList.remove(
-    "show"
+  courseBoxWrap.classList.toggle(
+    "show",
+    chkCourse.checked
   );
 
   fCourse.value =
-    "";
+    chkCourse.checked
+      ? fCourse.dataset.profileCourse || ""
+      : "";
 
   /* =======================================================
      CATEGORY
@@ -3180,6 +3507,8 @@ function resetForm() {
   issueField.classList.remove(
     "show"
   );
+
+  renderRelatedFaqs();
 
   /* =======================================================
      DATE

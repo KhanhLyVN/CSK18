@@ -689,12 +689,22 @@
 
       const data = docSnap.data() || {};
 
+      const leaderRoles = ["leader", "cs_leader", "team_leader", "group_leader", "manager", "cs_manager"];
+      const roleValues = [data.role, data.accountType, data.leaderRole, data.teamRole, data.position]
+        .map(value => String(value || "").trim().toLowerCase().replace(/[\s-]+/g, "_"));
+      let isLeader = Boolean(data.isLeader || data.isCSLeader || roleValues.some(value => leaderRoles.includes(value)));
+      if (!isLeader) {
+        const leaderGroups = await db.collection("groups").where("leaderUid", "==", uid).limit(1).get();
+        isLeader = !leaderGroups.empty;
+      }
+
       return {
         uid,
         department: normalizeDepartmentCode(data.departmentCode || data.department || DEFAULT_DEPARTMENT_CODE),
         campus: normalizeCampus(data.campus || data.campusName || data.campusId || ""),
         name: data.name || data.fullName || data.displayName || "",
-        email: data.email || ""
+        email: data.email || "",
+        isLeader
       };
     } catch (error) {
       console.error("❌ Lỗi load profile:", error);
@@ -704,7 +714,8 @@
 
   /* =========================================================
      LOAD TICKETS
-     CS chỉ nhận: campus của CS + department của CS
+     Luồng mới: Leader nhận ticket của học viên thuộc lớp mình;
+     CS con chỉ nhận ticket đã được Leader phân công.
   ========================================================= */
 
   function loadTicketsForCurrentCS(profile) {
@@ -713,16 +724,16 @@
       ticketUnsubscribe = null;
     }
 
-    if (!profile || !profile.department || !profile.campus) {
+    if (!profile || !profile.uid) {
       renderEmptyProfileError();
       return;
     }
 
-    ticketUnsubscribe = db
-      .collection(TICKET_COLLECTION)
-      .where("departmentCode", "==", profile.department)
-      .where("campus", "==", profile.campus)
-      .onSnapshot(
+    const ticketQuery = profile.isLeader
+      ? db.collection(TICKET_COLLECTION).where("supportLeaderUid", "==", profile.uid)
+      : db.collection(TICKET_COLLECTION).where("assigneeUid", "==", profile.uid);
+
+    ticketUnsubscribe = ticketQuery.onSnapshot(
         (snapshot) => {
           allTickets = [];
 
@@ -737,7 +748,7 @@
           applyFilters();
         },
         (error) => {
-          console.error("❌ Lỗi lấy ticket:", error);
+          console.error("❌ Lỗi lấy ticket theo phân công:", error);
           showFirestoreError(error);
         }
       );

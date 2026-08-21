@@ -63,11 +63,11 @@
             <div class="field">
               <label class="checkbox-field">
                 <input type="checkbox" id="chkCourse">
-                <span>Tôi là Học viên (hỗ trợ liên quan đến Khóa học)</span>
+                <span>Tôi là Học viên (hỗ trợ liên quan đến Lớp/Khóa học)</span>
               </label>
               <div class="course-box-wrap" id="courseBoxWrap">
-                <label>Tên Khóa học <span class="req">*</span></label>
-                <input type="text" id="fCourse" placeholder="VD: Lập trình Python - Lớp K15">
+                <label>Tên Lớp/Khóa học <span class="req">*</span></label>
+                <input type="text" id="fCourse" placeholder="VD: Lớp K15 · Lập trình Python">
               </div>
             </div>
 
@@ -87,6 +87,14 @@
                 <option value="">-- Chọn chi tiết --</option>
               </select>
             </div>
+            <section class="related-faq" id="relatedFaq" hidden aria-live="polite" aria-label="Câu hỏi thường gặp phù hợp">
+              <div class="related-faq-head">
+                <div><span class="related-faq-kicker">GỢI Ý TỪ FAQ</span><h3 id="relatedFaqTitle">Câu hỏi thường gặp phù hợp</h3></div>
+                <a id="relatedFaqLink" href="/FAQs/faq.html">Xem toàn bộ FAQ →</a>
+              </div>
+              <p id="relatedFaqIntro">Các câu trả lời dưới đây có thể giúp bạn xử lý nhanh trước khi gửi phiếu.</p>
+              <div class="related-faq-list" id="relatedFaqList"></div>
+            </section>
 
             <hr class="divider">
 
