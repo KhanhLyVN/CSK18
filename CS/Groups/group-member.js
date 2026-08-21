@@ -44,17 +44,19 @@
     }
   
     function renderGroups() {
-      $("groupCount").textContent = `${state.groups.length} nhóm`;
+      const selector = $("groupSelector");
+      const switcher = $("groupSwitch");
+  
       if (!state.groups.length) {
-        $("groupList").innerHTML = '<div class="empty-state">Bạn chưa được thêm vào nhóm CS nào. Hãy liên hệ CS Leader hoặc Admin.</div>';
+        switcher.hidden = true;
+        $("chatEmpty").hidden = false;
+        $("chatEmpty").innerHTML = '<div class="empty-mark">CS</div><h2>Bạn chưa thuộc nhóm CS nào</h2><p>Hãy liên hệ CS Leader hoặc Admin để được thêm vào Group trước khi trao đổi.</p>';
         return;
       }
   
-      $("groupList").innerHTML = state.groups.map((group) => {
-        const active = state.selected?.id === group.id ? " is-active" : "";
-        const count = memberList(group).length;
-        return `<button class="group-card${active}" type="button" data-group-id="${escapeHTML(group.id)}"><strong>${escapeHTML(group.name || "Nhóm chưa đặt tên")}</strong>${group.code ? `<span class="group-code">${escapeHTML(group.code)}</span>` : ""}<span class="group-meta">${count} CS con · Mở chat nhóm</span></button>`;
-      }).join("");
+      selector.innerHTML = state.groups.map((group) => `<option value="${escapeHTML(group.id)}">${escapeHTML(group.name || "Nhóm chưa đặt tên")}</option>`).join("");
+      selector.value = state.selected?.id || state.groups[0].id;
+      switcher.hidden = state.groups.length < 2;
     }
   
     function renderMembers(group) {
@@ -155,9 +157,14 @@
       button.textContent = "Đang gửi...";
   
       try {
-        await firebase.firestore().collection(GROUPS).doc(state.selected.id).collection(MESSAGE_COLLECTION).add({
+        const database = firebase.firestore();
+        const senderName = state.profile?.name || state.user.displayName || state.user.email || "CS thành viên";
+        const messageRef = database.collection(GROUPS).doc(state.selected.id).collection(MESSAGE_COLLECTION).doc();
+        const recipients = memberList(state.selected).filter((member) => String(member.uid) !== String(state.user.uid));
+        const batch = database.batch();
+        batch.set(messageRef, {
           senderUid: state.user.uid,
-          senderName: state.profile?.name || state.user.displayName || state.user.email || "CS thành viên",
+          senderName,
           senderEmail: state.user.email || "",
           senderType: "cs_member",
           text,
@@ -165,6 +172,22 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+        recipients.forEach((member) => {
+          const notificationRef = database.collection("csNotifications").doc(member.uid).collection("items").doc();
+          batch.set(notificationRef, {
+            type: "group_message",
+            recipientUid: member.uid,
+            groupId: state.selected.id,
+            groupName: state.selected.name || "Nhóm CS",
+            messageId: messageRef.id,
+            title: `Tin nhắn mới trong ${state.selected.name || "nhóm CS"}`,
+            preview: `${senderName}: ${text.slice(0, 140)}`,
+            link: "/CS/Groups/group-member.html",
+            read: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+        await batch.commit();
         $("messageInput").value = "";
         $("messageInput").focus();
       } catch (error) {
@@ -186,7 +209,8 @@
       $("currentUserChip").textContent = state.profile.name || state.user.email || "CS thành viên";
       loadMemberGroups().catch((error) => {
         console.error("Không thể tải nhóm CS con:", error);
-        $("groupList").innerHTML = '<div class="empty-state">Không thể tải nhóm. Vui lòng kiểm tra kết nối hoặc quyền Firebase.</div>';
+        $("chatEmpty").hidden = false;
+        $("chatEmpty").innerHTML = '<div class="empty-mark">CS</div><h2>Không thể tải nhóm</h2><p>Vui lòng kiểm tra kết nối hoặc quyền truy cập Firebase rồi thử lại.</p>';
         toast("Không thể tải danh sách nhóm.", true);
       });
     }
@@ -200,9 +224,8 @@
       state.profile = window.csCurrentProfile;
     }
   
-    $("groupList").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-group-id]");
-      if (button) selectGroup(button.dataset.groupId);
+    $("groupSelector").addEventListener("change", (event) => {
+      selectGroup(event.target.value);
     });
     $("chatComposer").addEventListener("submit", sendMessage);
     $("messageInput").addEventListener("keydown", (event) => {

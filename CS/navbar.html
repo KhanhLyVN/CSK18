@@ -37,3 +37,47 @@
 </body>
 
 </html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/CS/navbar.css">
+</head>
+
+<body>
+  <template id="csNavbarTemplate">
+    <header class="cs-navbar-topbar">
+      <button class="cs-navbar-toggle" type="button" aria-label="Mở điều hướng" aria-expanded="false"
+        aria-controls="csNavbarSidebar">☰</button>
+      <a class="cs-navbar-brand" href="/CS/homepageCS/trangchu-cs.html" aria-label="Trang chủ Customer Success">
+        <span class="cs-navbar-mark">CS</span>
+        <span class="cs-navbar-brand-copy"><strong>Hệ thống Quản lý Hỗ trợ</strong><small>Trung tâm Customer
+            Success</small></span>
+      </a>
+      <div class="cs-navbar-actions">
+        <button class="cs-navbar-notification-button" type="button" aria-label="Mở thông báo">
+          <span aria-hidden="true">♢</span><span class="cs-navbar-notification-count" hidden>0</span>
+        </button>
+      </div>
+    </header>
+    <aside class="cs-navbar-sidebar" id="csNavbarSidebar" aria-label="Điều hướng Customer Success">
+      <nav class="cs-navbar-menu">
+        <a data-nav-page="home" href="/CS/homepageCS/trangchu-cs.html">Trang chủ</a>
+        <a data-nav-page="tickets" href="/CS/TicketManagement/cs-ticket.html">Quản lý ticket</a>
+        <a data-nav-page="create" href="/CS/PhieuHoTroCS/phieuhotro-cs.html">Tạo phiếu hỗ trợ</a>
+        <a data-nav-page="groups" href="/CS/Groups/group.html">Nhóm của tôi</a>
+        <a data-nav-page="membergroups" href="/CS/Groups/group-member.html" data-member-only="true">Nhóm trao đổi</a>
+        <a data-nav-page="reports" href="/CS/Dashboard/cs-dashboard.html" data-leader-only="true">Báo cáo thống kê</a>
+        <a data-nav-page="faq" href="/FAQs/CS-FAQ.html">FAQs</a>
+        <a data-nav-page="account" href="/CS/account-CS.html">Cài đặt hệ thống</a>
+      </nav>
+      <div class="cs-navbar-note"><i></i><span>Customer Success online</span></div>
+    </aside>
+  </template>
+  <script type="module" src="/CS/navbar.js"></script>
+</body>
+
+</html>

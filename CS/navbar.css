@@ -361,3 +361,35 @@
     margin-left: 0;
   }
 }
+
+/* Trung tâm thông báo Customer Success */
+.cs-navbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.cs-navbar-notification-button { position: relative; width: 36px; height: 36px; display: inline-grid; place-items: center; border: 1px solid rgba(255,255,255,.2); border-radius: 9px; color: #fff; background: rgba(255,255,255,.08); cursor: pointer; transition: background .16s ease, transform .16s ease; }
+.cs-navbar-notification-button:hover { background: rgba(255,255,255,.16); }
+.cs-navbar-notification-button:active { transform: scale(.96); }
+.cs-navbar-notification-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+.cs-navbar-notification-count { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; display: grid; place-items: center; border: 2px solid var(--maroon, #5d0703); border-radius: 999px; color: #fff; background: #bd3b30; font: 800 9px/1 "Inter", sans-serif; }
+.cs-notification-backdrop { position: fixed; inset: 0; z-index: 150; border: 0; background: rgba(42,23,18,.28); opacity: 0; transition: opacity .18s ease; }
+.cs-notification-backdrop.show { opacity: 1; }
+.cs-notification-panel { position: fixed; z-index: 160; top: 0; right: 0; width: min(390px, 100vw); height: 100dvh; display: flex; flex-direction: column; border-left: 1px solid var(--line, rgba(93,7,3,.15)); color: var(--ink, #2a1712); background: var(--paper, #fffbf5); box-shadow: -18px 0 45px rgba(62,4,2,.17); transform: translateX(104%); transition: transform .24s cubic-bezier(.23,1,.32,1); }
+.cs-notification-panel.open { transform: translateX(0); }
+.cs-notification-head { display: flex; justify-content: space-between; gap: 14px; padding: 22px 20px 17px; border-bottom: 1px solid var(--line, rgba(93,7,3,.15)); }
+.cs-notification-head span { color: #b08a4e; font: 800 9px/1 "Inter", sans-serif; letter-spacing: .12em; }
+.cs-notification-head h2 { margin: 7px 0 0; color: var(--maroon-deep, #3e0402); font: 700 25px/1 "Fraunces", serif; }
+.cs-notification-head p { margin: 6px 0 0; color: var(--ink-soft, #6b5348); font: 11px/1.45 "Inter", sans-serif; }
+.cs-notification-head button { width: 34px; height: 34px; border: 1px solid var(--line, rgba(93,7,3,.15)); border-radius: 8px; color: var(--maroon, #5d0703); background: #fff; cursor: pointer; font-size: 20px; }
+.cs-notification-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 20px; border-bottom: 1px solid var(--line, rgba(93,7,3,.12)); color: var(--ink-soft, #6b5348); font: 800 10px/1 "Inter", sans-serif; }
+.cs-notification-toolbar button { border: 0; color: var(--maroon, #5d0703); background: transparent; cursor: pointer; font: 800 10px/1 "Inter", sans-serif; }
+.cs-notification-toolbar button:disabled { cursor: not-allowed; opacity: .42; }
+.cs-notification-list { min-height: 0; flex: 1; overflow-y: auto; padding: 11px; }
+.cs-notification-item { width: 100%; display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 9px; margin-bottom: 8px; padding: 12px; border: 1px solid rgba(93,7,3,.1); border-radius: 10px; color: var(--ink, #2a1712); background: #fff; text-align: left; cursor: pointer; }
+.cs-notification-item:not(.is-read) { border-color: rgba(93,7,3,.26); background: #fff8ef; }
+.cs-notification-item:hover { border-color: #b08a4e; }
+.cs-notification-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--maroon, #5d0703); background: var(--cream, #eedcc8); font: 800 13px/1 "Inter", sans-serif; }
+.cs-notification-copy { min-width: 0; display: grid; gap: 4px; }
+.cs-notification-copy strong { color: var(--maroon-deep, #3e0402); font: 800 11px/1.3 "Inter", sans-serif; }
+.cs-notification-copy b { overflow: hidden; color: var(--ink-soft, #6b5348); font: 500 11px/1.4 "Inter", sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+.cs-notification-copy small { color: #9a8477; font: 9px/1.2 "Inter", sans-serif; }
+.cs-notification-empty { display: none; padding: 38px 24px; color: var(--ink-soft, #6b5348); font: 12px/1.6 "Inter", sans-serif; text-align: center; }
+.cs-notification-empty.show { display: block; }
+@media (max-width: 860px) { .cs-navbar-topbar { padding-inline: 14px; } .cs-notification-panel { width: min(390px, 92vw); } }

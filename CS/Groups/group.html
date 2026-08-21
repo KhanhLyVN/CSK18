@@ -1044,10 +1044,14 @@
       </div>
       <div class="dialog-actions" style="justify-content:flex-start;margin:0 0 12px">
         <button class="class-detail-add-btn" id="addStudentsToClass" type="button"><span class="material-symbols-rounded">person_add</span>Thêm học viên</button>
+        <button class="class-detail-add-btn" id="editClassAgents" type="button"><span class="material-symbols-rounded">groups</span>Cập nhật CS con</button>
       </div>
       <div class="member-search" id="classDetailStudentSearchWrap" hidden><input id="classDetailStudentSearch" type="search" placeholder="Tìm tên hoặc email học viên..." autocomplete="off" /></div>
       <div class="checkbox-list" id="classDetailStudents"><div class="empty">Bấm “Thêm học viên” để tải danh sách học viên phù hợp với lớp.</div></div>
       <div class="dialog-actions" id="saveClassStudentsActions" hidden><button class="btn btn-primary" id="saveClassStudents" type="button"><span class="material-symbols-rounded">save</span>Lưu học viên</button></div>
+      <div class="member-search" id="classDetailAgentSearchWrap" hidden><input id="classDetailAgentSearch" type="search" placeholder="Tìm CS con theo tên hoặc email..." autocomplete="off" /></div>
+      <div class="checkbox-list" id="classDetailAgents" hidden><div class="empty">Bấm “Cập nhật CS con” để chọn CS phụ trách lớp.</div></div>
+      <div class="dialog-actions" id="saveClassAgentsActions" hidden><button class="btn btn-primary" id="saveClassAgents" type="button"><span class="material-symbols-rounded">save</span>Lưu CS con</button></div>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -1172,10 +1176,119 @@
     function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; renderGroupTickets(); return; } grid.innerHTML = state.classes.map(item => `<article class="class-card" tabindex="0" role="button" data-class-id="${esc(item.id)}" aria-label="Mở chi tiết lớp ${esc(item.name)}"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.studentIds || item.memberIds || []).length} học viên</span><span>${(item.csMemberIds || []).length} CS con</span><span class="status">Đang hoạt động</span></div></article>`).join(""); renderGroupTickets(); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
 
     function ticketTime(value) { return value && value.toDate ? value.toDate().getTime() : value && value.seconds ? value.seconds * 1000 : 0; }
-    function ticketAgents(ticket) { const classItem = state.classes.find(item => item.id === ticket.classId); return classItem && Array.isArray(classItem.csMembers) ? classItem.csMembers : []; }
     function watchGroupTickets() { if (!state.user || !state.selected || !isLeader(state.selected)) return; if (state.unsubscribeTickets) state.unsubscribeTickets(); state.unsubscribeTickets = myGroupsDb.collection("tickets").where("supportLeaderUid", "==", state.user.uid).onSnapshot(snapshot => { state.tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => ticketTime(b.createdAt) - ticketTime(a.createdAt)); renderGroupTickets(); }, error => { console.error(error); const list = $("groupTicketList"); if (list) list.innerHTML = '<div class="empty">Không thể tải ticket. Kiểm tra quyền Firestore.</div>'; toast("Không thể tải ticket của nhóm.", true); }); }
     function renderGroupTickets() { const group = state.selected, list = $("groupTicketList"); if (!group || !list || !isLeader(group)) return; const classFilter = $("ticketClassFilter"), statusFilter = $("ticketStatusFilter"), searchFilter = $("ticketSearchFilter"); const previousClass = classFilter.value; classFilter.innerHTML = `<option value="">Tất cả lớp (${state.classes.length})</option>${state.classes.map(item => `<option value="${esc(item.id)}">${esc(item.name || "Lớp chưa đặt tên")}</option>`).join("")}`; classFilter.value = state.classes.some(item => item.id === previousClass) ? previousClass : ""; const classId = classFilter.value, status = statusFilter.value, keyword = String(searchFilter.value || "").trim().toLowerCase(); const visible = state.tickets.filter(ticket => ticket.groupId === group.id && (!classId || ticket.classId === classId) && (status === "all" || ticket.routingStatus === status || ticket.status === status) && (!keyword || `${ticket.ticketNum || ticket.id} ${ticket.name || ""} ${ticket.email || ""} ${ticket.title || ""}`.toLowerCase().includes(keyword))); const waiting = visible.filter(ticket => !ticket.assigneeUid).length, assigned = visible.filter(ticket => ticket.assigneeUid).length; $("ticketCount").textContent = `${visible.length} ticket`; $("ticketSummary").innerHTML = `<article class="ticket-summary-card"><span>Trong bộ lọc</span><strong>${visible.length}</strong></article><article class="ticket-summary-card"><span>Chờ phân công</span><strong>${waiting}</strong></article><article class="ticket-summary-card"><span>Đã giao CS con</span><strong>${assigned}</strong></article>`; if (!visible.length) { list.innerHTML = '<div class="empty">Chưa có ticket học viên phù hợp với nhóm/lớp này.</div>'; return; } list.innerHTML = visible.map(ticket => { const agents = ticketAgents(ticket), priority = String(ticket.priority || "medium").toLowerCase(), options = agents.map(agent => `<option value="${esc(agent.uid)}" ${ticket.assigneeUid === agent.uid ? "selected" : ""}>${esc(agent.name || agent.email || "CS")}</option>`).join(""); return `<article class="group-ticket-card" data-ticket-id="${esc(ticket.id)}"><div><div class="group-ticket-top"><div><div class="group-ticket-code">${esc(ticket.ticketNum || ticket.id)}</div><h4 class="group-ticket-title">${esc(ticket.title || "Không có tiêu đề")}</h4></div><span class="ticket-tag ${priority}">${esc(ticket.priorityLabel || priority)}</span></div><div class="group-ticket-meta"><span class="ticket-tag">Học viên: ${esc(ticket.name || "Chưa có tên")}</span><span class="ticket-tag">Lớp: ${esc(ticket.className || "Chưa gắn lớp")}</span><span class="ticket-tag">${esc(ticket.ticketCategory || "Khác")}</span></div></div><div class="ticket-assignment"><label>Giao CS con trong lớp</label><select class="ticket-agent-select" ${agents.length ? "" : "disabled"}><option value="">${agents.length ? "-- Chọn CS phụ trách --" : "Lớp chưa có CS con"}</option>${options}</select><button class="btn btn-primary assign-ticket-btn" type="button" ${agents.length ? "" : "disabled"}>${ticket.assigneeUid ? "Cập nhật phân công" : "Giao ticket"}</button><div class="ticket-assignment-note">${ticket.assigneeName ? `Đang giao cho: ${esc(ticket.assigneeName)}` : "Chưa giao CS con"}</div></div></article>`; }).join(""); }
-    async function assignGroupTicket(button) { const card = button.closest("[data-ticket-id]"), ticket = state.tickets.find(item => item.id === card.dataset.ticketId), agentId = card.querySelector(".ticket-agent-select").value; if (!ticket || !agentId) { toast("Hãy chọn CS con trước khi phân công.", true); return; } const agent = ticketAgents(ticket).find(item => item.uid === agentId); if (!agent) { toast("CS được chọn không thuộc lớp của ticket này.", true); return; } button.disabled = true; button.textContent = "Đang lưu..."; try { await myGroupsDb.collection("tickets").doc(ticket.id).update({ assigneeUid: agent.uid, assigneeName: agent.name || "", assigneeEmail: agent.email || "", assignedByUid: state.user.uid, assignedByName: state.user.displayName || state.user.email || "CS Leader", assignedAt: firebase.firestore.FieldValue.serverTimestamp(), routingStatus: "assigned_to_cs", status: "in_progress", updatedAt: firebase.firestore.FieldValue.serverTimestamp() }); toast(`Đã giao ${ticket.ticketNum || "ticket"} cho ${agent.name || agent.email}.`); } catch (error) { console.error(error); toast("Không thể lưu phân công ticket.", true); button.disabled = false; button.textContent = "Giao ticket"; } }
+
+    /*
+      Phân công luôn dựa trên lớp thật của học viên. Ticket cũ có thể thiếu
+      classId, nên lần lượt đối chiếu mã lớp, studentId và tên lớp trước khi
+      hiện danh sách CS con.
+    */
+    function resolveTicketClass(ticket) {
+      const directId = String(ticket?.classId || ticket?.supportClassId || "");
+      let found = state.classes.find(item => String(item.id) === directId);
+      if (found) return found;
+
+      const studentUid = String(ticket?.studentId || ticket?.studentUid || ticket?.userId || "");
+      if (studentUid) {
+        found = state.classes.find(item => (item.studentIds || item.memberIds || []).some(uid => String(uid) === studentUid) || (item.students || []).some(student => String(student.uid || student.id || "") === studentUid));
+        if (found) return found;
+      }
+
+      const ticketClassName = normalizeClassName(ticket?.className || ticket?.supportClassName || ticket?.course || "");
+      if (!ticketClassName) return null;
+      return state.classes.find(item => [item.name, item.classCode].some(value => normalizeClassName(value) === ticketClassName)) || null;
+    }
+
+    function ticketAgents(ticket) {
+      const classItem = resolveTicketClass(ticket);
+      if (!classItem || !state.selected) return [];
+      const allowedIds = new Set([...(classItem.csMemberIds || []), ...(classItem.csMembers || []).map(member => member.uid || member.id)].map(value => String(value)).filter(Boolean));
+      const agents = new Map();
+
+      (classItem.csMembers || []).forEach(member => {
+        const uid = String(member.uid || member.id || "");
+        if (allowedIds.has(uid) && uid !== String(state.selected.leaderUid || "")) agents.set(uid, { uid, name: member.name || "CS con", email: member.email || "" });
+      });
+
+      allowedIds.forEach(uid => {
+        if (uid === String(state.selected.leaderUid || "") || agents.has(uid)) return;
+        const member = userFromGroup(state.selected, uid);
+        if (member) agents.set(uid, { uid, name: member.name || member.displayName || "CS con", email: member.email || "" });
+      });
+
+      return [...agents.values()];
+    }
+
+    async function assignGroupTicket(button) {
+      const card = button.closest("[data-ticket-id]");
+      const ticket = state.tickets.find(item => item.id === card?.dataset.ticketId);
+      const agentId = card?.querySelector(".ticket-agent-select")?.value;
+      const classItem = ticket ? resolveTicketClass(ticket) : null;
+
+      if (!ticket || !classItem) {
+        toast("Không xác định được lớp của học viên. Hãy kiểm tra học viên đã được thêm vào lớp.", true);
+        return;
+      }
+
+      if (!agentId) {
+        toast("Hãy chọn CS con thuộc lớp của học viên trước khi phân công.", true);
+        return;
+      }
+
+      const agent = ticketAgents(ticket).find(item => String(item.uid) === String(agentId));
+      if (!agent) {
+        toast("CS được chọn không thuộc lớp của học viên này.", true);
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Đang lưu...";
+
+      try {
+        const ticketRef = myGroupsDb.collection("tickets").doc(ticket.id);
+        const notificationRef = myGroupsDb.collection("csNotifications").doc(agent.uid).collection("items").doc();
+        const assignmentData = {
+          groupId: state.selected.id,
+          groupName: state.selected.name || "",
+          classId: classItem.id,
+          className: classItem.name || "",
+          supportLeaderUid: state.selected.leaderUid || state.user.uid,
+          supportLeaderName: state.selected.leaderName || state.user.displayName || state.user.email || "CS Leader",
+          assigneeUid: agent.uid,
+          assigneeName: agent.name || "",
+          assigneeEmail: agent.email || "",
+          assignedByUid: state.user.uid,
+          assignedByName: state.user.displayName || state.user.email || "CS Leader",
+          assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          routingStatus: "assigned_to_cs",
+          status: "in_progress",
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        const batch = myGroupsDb.batch();
+        batch.update(ticketRef, assignmentData);
+        batch.set(notificationRef, {
+          type: "ticket_assignment",
+          recipientUid: agent.uid,
+          ticketId: ticket.id,
+          ticketNum: ticket.ticketNum || ticket.id,
+          groupId: state.selected.id,
+          classId: classItem.id,
+          title: "Bạn vừa được phân công ticket",
+          preview: `${ticket.ticketNum || "Ticket"} · ${ticket.title || "Yêu cầu hỗ trợ"} · Lớp ${classItem.name || "chưa đặt tên"}`,
+          link: `/CS/TicketManagement/cs-ticket.html?ticket=${encodeURIComponent(ticket.id)}`,
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await batch.commit();
+        toast(`Đã giao ${ticket.ticketNum || "ticket"} cho ${agent.name || agent.email}.`);
+      } catch (error) {
+        console.error(error);
+        toast("Không thể lưu phân công ticket.", true);
+        button.disabled = false;
+        button.textContent = "Giao ticket";
+      }
+    }
 
     function renderClassAgents() {
       const group = state.selected; if (!group) return;
@@ -1184,6 +1297,31 @@
       (group.memberIds || []).forEach(uid => { if (!members.has(String(uid))) members.set(String(uid), userFromGroup(group, uid) || { uid, name: "Tài khoản CS", email: "" }); });
       const agents = [...members.values()].filter(member => String(member.uid || member.id || "") && String(member.uid || member.id || "") !== String(group.leaderUid || ""));
       $("classAgents").innerHTML = agents.length ? agents.map(member => `<label class="check-row"><input type="checkbox" value="${esc(member.uid || member.id)}" /><span class="avatar">${esc(initials(member.name, member.email))}</span><span><strong>${esc(member.name || "Chưa có tên")}</strong><small>${esc(member.email || "")}</small></span></label>`).join("") : '<div class="empty">Nhóm chưa có CS con. Hãy thêm thành viên vào nhóm trước.</div>';
+    }
+
+    function groupCsMembersForClass() {
+      if (!state.selected) return [];
+      const members = new Map();
+      (state.selected.members || []).forEach(member => {
+        const uid = String(member.uid || member.id || "");
+        if (uid) members.set(uid, { uid, name: member.name || member.displayName || "CS con", email: member.email || "" });
+      });
+      (state.selected.memberIds || []).forEach(uid => {
+        const id = String(uid || "");
+        if (!id || members.has(id)) return;
+        const member = userFromGroup(state.selected, id);
+        if (member) members.set(id, { uid: id, name: member.name || member.displayName || "CS con", email: member.email || "" });
+      });
+      return [...members.values()].filter(member => String(member.uid) !== String(state.selected.leaderUid || ""));
+    }
+
+    function renderClassDetailAgents() {
+      if (!activeClassDetail) return;
+      const selected = new Set([...(activeClassDetail.csMemberIds || []), ...(activeClassDetail.csMembers || []).map(member => member.uid || member.id)].map(id => String(id)).filter(Boolean));
+      const keyword = String($("classDetailAgentSearch").value || "").trim().toLowerCase();
+      const agents = groupCsMembersForClass().filter(agent => !keyword || `${agent.name} ${agent.email}`.toLowerCase().includes(keyword));
+      const container = $("classDetailAgents");
+      container.innerHTML = agents.length ? agents.map(agent => `<label class="check-row"><input type="checkbox" value="${esc(agent.uid)}" ${selected.has(String(agent.uid)) ? "checked" : ""} /><span class="avatar">${esc(initials(agent.name, agent.email))}</span><span><strong>${esc(agent.name || "CS con")}</strong><small>${esc(agent.email || "")}</small></span></label>`).join("") : '<div class="empty">Nhóm chưa có CS con để chọn. Hãy thêm CS con vào nhóm trước.</div>';
     }
 
     async function syncStudentRoute(group, classId, classData, students) {
@@ -1219,6 +1357,10 @@
       $("classDetailStudentSearchWrap").hidden = true;
       $("saveClassStudentsActions").hidden = true;
       $("addStudentsToClass").hidden = false;
+      $("classDetailAgentSearchWrap").hidden = true;
+      $("classDetailAgents").hidden = true;
+      $("saveClassAgentsActions").hidden = true;
+      $("editClassAgents").hidden = false;
       $("classDetailModal").classList.add("show");
       $("classDetailModal").setAttribute("aria-hidden", "false");
     }
@@ -1238,6 +1380,16 @@
         $("classDetailStudents").innerHTML = '<div class="empty">Không thể tải danh sách học viên.</div>';
         toast("Không thể tải danh sách học viên.", true);
       } finally { $("addStudentsToClass").disabled = false; }
+    }
+
+    function startEditingClassAgents() {
+      if (!activeClassDetail || !state.selected || !isLeader(state.selected)) return;
+      $("classDetailAgentSearch").value = "";
+      $("classDetailAgentSearchWrap").hidden = false;
+      $("classDetailAgents").hidden = false;
+      $("saveClassAgentsActions").hidden = false;
+      renderClassDetailAgents();
+      $("classDetailAgentSearch").focus();
     }
 
     function renderClassDetailStudents() {
@@ -1273,9 +1425,45 @@
       } finally { button.disabled = false; }
     }
 
+    async function saveClassAgents() {
+      if (!activeClassDetail || !state.selected || !isLeader(state.selected)) return;
+      const selectedIds = [...document.querySelectorAll("#classDetailAgents input:checked")].map(input => String(input.value));
+      if (!selectedIds.length) { toast("Hãy chọn ít nhất một CS con cho lớp.", true); return; }
+
+      const agentMap = new Map(groupCsMembersForClass().map(agent => [String(agent.uid), agent]));
+      const csMembers = selectedIds.map(uid => agentMap.get(uid)).filter(Boolean);
+      if (csMembers.length !== selectedIds.length) { toast("Có CS con không còn thuộc nhóm. Hãy tải lại và chọn lại.", true); return; }
+
+      const button = $("saveClassAgents");
+      button.disabled = true;
+      button.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span>Đang lưu...';
+      try {
+        await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").doc(activeClassDetail.id).set({
+          csMemberIds: selectedIds,
+          csMembers: csMembers.map(agent => ({ uid: agent.uid, name: agent.name || "", email: agent.email || "" })),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        activeClassDetail = { ...activeClassDetail, csMemberIds: selectedIds, csMembers };
+        state.classes = state.classes.map(item => item.id === activeClassDetail.id ? activeClassDetail : item);
+        $("classDetailAgentSearchWrap").hidden = true;
+        $("classDetailAgents").hidden = true;
+        $("saveClassAgentsActions").hidden = true;
+        toast(`Đã cập nhật ${csMembers.length} CS con phụ trách lớp.`);
+      } catch (error) {
+        console.error(error);
+        toast("Không thể cập nhật CS con cho lớp.", true);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<span class="material-symbols-rounded">save</span>Lưu CS con';
+      }
+    }
+
     function closeClassDetail() {
       $("classDetailModal").classList.remove("show");
       $("classDetailModal").setAttribute("aria-hidden", "true");
+      $("classDetailAgentSearchWrap").hidden = true;
+      $("classDetailAgents").hidden = true;
+      $("saveClassAgentsActions").hidden = true;
       activeClassDetail = null;
     }
     function renderAvailableStudents(keyword = "") {
@@ -1319,10 +1507,13 @@
     $("detailPanel").addEventListener("keydown", event => { const card = event.target.closest("[data-class-id]"); if (card && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openClassDetail(card.dataset.classId); } });
     $("detailPanel").addEventListener("input", event => { if (event.target && event.target.id === "ticketSearchFilter") renderGroupTickets(); });
     $("detailPanel").addEventListener("change", event => { if (event.target && (event.target.id === "ticketClassFilter" || event.target.id === "ticketStatusFilter")) renderGroupTickets(); });
-        $("closeClassDetail").addEventListener("click", closeClassDetail);
+    $("closeClassDetail").addEventListener("click", closeClassDetail);
     $("addStudentsToClass").addEventListener("click", startAddingStudentsToClass);
+    $("editClassAgents").addEventListener("click", startEditingClassAgents);
     $("classDetailStudentSearch").addEventListener("input", renderClassDetailStudents);
+    $("classDetailAgentSearch").addEventListener("input", renderClassDetailAgents);
     $("saveClassStudents").addEventListener("click", saveClassStudents);
+    $("saveClassAgents").addEventListener("click", saveClassAgents);
     $("classDetailModal").addEventListener("click", event => { if (event.target === $("classDetailModal")) closeClassDetail(); });
     $("closeClassModal").addEventListener("click", closeClassModal); $("classModal").addEventListener("click", event => { if (event.target === $("classModal")) closeClassModal(); });
     $("className").addEventListener("input", event => renderAvailableStudents(event.target.value));
