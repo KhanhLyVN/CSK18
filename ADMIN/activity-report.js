@@ -463,7 +463,6 @@ function renderActivityTable() {
         <tr>
           <td>
             <div class="account-cell">
-              <div class="avatar">${escapeHTML(initials)}</div>
               <div>
                 <strong>${escapeHTML(name)}</strong>
                 <small>${escapeHTML(email)}</small>

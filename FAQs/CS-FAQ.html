@@ -492,7 +492,106 @@
         /* =========================================================
    MOBILE
    ========================================================= */
+                /* =========================================================
+           MODAL XÁC NHẬN XÓA FAQ
+           ========================================================= */
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(42, 23, 18, .48);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
+        }
+
+        .confirm-modal.is-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .confirm-dialog {
+            width: min(430px, 100%);
+            padding: 26px;
+            border: 1px solid rgba(93, 7, 3, .16);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 24px 70px rgba(42, 23, 18, .24);
+            transform: translateY(12px) scale(.97);
+            transition: transform .2s ease;
+        }
+
+        .confirm-modal.is-open .confirm-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        .confirm-icon {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 16px;
+            border-radius: 50%;
+            color: var(--danger);
+            background: #fde9e5;
+            font-size: 21px;
+        }
+
+        .confirm-dialog h3 {
+            margin: 0 0 8px;
+            color: var(--maroon-deep);
+            font: 700 24px/1.15 "Fraunces", serif;
+        }
+
+        .confirm-dialog p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .confirm-actions button {
+            min-height: 40px;
+            padding: 9px 16px;
+            border: 0;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .confirm-cancel {
+            color: var(--ink-soft);
+            background: #eee8e1;
+        }
+
+        .confirm-cancel:hover {
+            background: #e2d9d0;
+        }
+
+        .confirm-delete {
+            color: #fff;
+            background: var(--danger);
+            box-shadow: 0 6px 15px rgba(162, 59, 46, .2);
+        }
+
+        .confirm-delete:hover {
+            background: #8d2e25;
+        }
+
         @media (max-width: 860px) {
+
             :root {
                 --topbar-height: 56px;
             }
@@ -761,9 +860,24 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
+
+    <!-- Hộp thoại xác nhận tùy biến, thay cho confirm() mặc định của trình duyệt -->
+    <div class="confirm-modal" id="deleteConfirmModal" aria-hidden="true">
+        <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+            <div class="confirm-icon"><i class="fa-solid fa-trash-can"></i></div>
+            <h3 id="deleteConfirmTitle">Xóa câu hỏi này?</h3>
+            <p>FAQ sẽ bị xóa khỏi hệ thống và không thể khôi phục. Bạn có chắc chắn muốn tiếp tục không?</p>
+            <div class="confirm-actions">
+                <button class="confirm-cancel" id="cancelDeleteBtn" type="button">Hủy bỏ</button>
+                <button class="confirm-delete" id="confirmDeleteBtn" type="button"><i class="fa-solid fa-trash-can"></i> Xóa FAQ</button>
+            </div>
+        </div>
     </div>
+
     <script>
+
         const FAQ_COLLECTION = "faqs";
         let editingId = null;
         async function renderAdminTable() {
@@ -928,10 +1042,41 @@
             document.getElementById("cancelBtn").style.display =
                 "none";
         }
+                function showDeleteConfirm() {
+            const modal = document.getElementById("deleteConfirmModal");
+            const cancelButton = document.getElementById("cancelDeleteBtn");
+            const confirmButton = document.getElementById("confirmDeleteBtn");
+
+            return new Promise(resolve => {
+                const close = result => {
+                    modal.classList.remove("is-open");
+                    modal.setAttribute("aria-hidden", "true");
+                    document.removeEventListener("keydown", handleKeydown);
+                    resolve(result);
+                };
+
+                const handleKeydown = event => {
+                    if (event.key === "Escape") close(false);
+                };
+
+                modal.classList.add("is-open");
+                modal.setAttribute("aria-hidden", "false");
+                document.addEventListener("keydown", handleKeydown);
+
+                cancelButton.onclick = () => close(false);
+                confirmButton.onclick = () => close(true);
+                modal.onclick = event => {
+                    if (event.target === modal) close(false);
+                };
+
+                requestAnimationFrame(() => cancelButton.focus());
+            });
+        }
+
         async function deleteFaq(id) {
-            if (!confirm("Bạn muốn xóa câu hỏi này?")) {
-                return;
-            }
+            const shouldDelete = await showDeleteConfirm();
+            if (!shouldDelete) return;
+
             try {
                 await db
                     .collection(FAQ_COLLECTION)
@@ -950,6 +1095,7 @@
                 );
             }
         }
+
         function escapeHTML(text) {
             const div = document.createElement("div");
             div.textContent = text;

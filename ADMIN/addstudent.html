@@ -3,9 +3,10 @@
 
 <head>
     <link rel="stylesheet" href="admin-bar.css">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm học viên</title>
+    <title>Cấp tài khoản học viên</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
@@ -18,6 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
         rel="stylesheet">
     <script src="/firebase-config.js"></script>
+    <!-- <link rel="stylesheet" href="/CS/navbar.css"> -->
     <style>
         :root {
             --maroon: #5D0703;
@@ -574,9 +576,205 @@
                 translateX(-50%) translateY(0);
         }
 
+                /* ==============================
+   DANH SÁCH TÀI KHOẢN HỌC VIÊN
+================================ */
+        .student-list-card {
+            margin-top: 22px;
+        }
+
+        .student-list-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .student-list-head .step-head {
+            margin-bottom: 0;
+        }
+
+        .student-list-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-count {
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: var(--maroon);
+            background: var(--cream);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .student-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            color: var(--maroon);
+            background: var(--white);
+            font-size: 11px;
+                        font-weight: 800;
+        }
+
+        .student-refresh:hover {
+            border-color: var(--maroon);
+            background: var(--cream);
+        }
+
+        .student-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--white);
+        }
+
+        .student-table {
+            min-width: 930px;
+        }
+
+        .student-table .student-name {
+            color: var(--maroon-deep);
+            font-weight: 800;
+        }
+
+        .student-table .student-email,
+        .student-table .student-uid {
+            color: var(--text-soft);
+            font-size: 11px;
+        }
+
+        .student-table .student-uid {
+            color: var(--maroon);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .delete-student-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            border: 1px solid rgba(153, 27, 27, .22);
+            border-radius: 7px;
+            color: var(--danger);
+            background: #fff3f1;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .delete-student-btn:hover {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        .student-empty {
+            padding: 28px 16px;
+            color: var(--text-soft);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .student-confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(42, 23, 18, .5);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
+        }
+
+        .student-confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .student-confirm-dialog {
+            width: min(420px, 100%);
+            padding: 25px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--paper);
+            box-shadow: 0 24px 70px rgba(42, 23, 18, .25);
+            transform: translateY(10px) scale(.97);
+            transition: transform .2s ease;
+        }
+
+        .student-confirm-modal.show .student-confirm-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        .student-confirm-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            color: var(--danger);
+            background: #fde8e5;
+        }
+
+        .student-confirm-dialog h3 {
+            margin: 0 0 8px;
+            color: var(--maroon-deep);
+            font-family: 'Fraunces', serif;
+            font-size: 23px;
+        }
+
+        .student-confirm-dialog p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .student-confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            margin-top: 22px;
+        }
+
+        .student-confirm-actions button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .student-confirm-cancel {
+            border-color: var(--line);
+            color: var(--text-soft);
+            background: #eee8e1;
+        }
+
+        .student-confirm-delete {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        .student-confirm-delete:hover {
+            background: #7f1717;
+        }
+
         /* ==============================
    MOBILE
 ================================ */
+
         @media (max-width: 700px) {
             .wrap {
                 width: min(100% - 24px, 1100px);
@@ -701,99 +899,6 @@
                 width: 100%;
             }
         }
-
-        /* =========================================================
-   ADMIN SIDEBAR LAYOUT OVERRIDES
-========================================================= */
-        body {
-            min-width: 320px;
-            padding: 0;
-            overflow-x: hidden;
-        }
-
-        .app-shell {
-            min-height: 100vh;
-            display: flex;
-            width: 100%;
-            background: var(--cream-pale);
-        }
-
-        .main-content {
-            min-width: 0;
-            flex: 1 1 auto;
-        }
-
-        .wrap {
-            width: min(1120px, calc(100% - 64px));
-            padding: 44px 0 70px;
-        }
-
-        header.page {
-            padding-top: 4px;
-        }
-
-        .template-btn,
-        .btn-primary,
-        .btn-ghost {
-            min-height: 42px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 10px;
-            box-shadow: 0 5px 12px rgba(93, 7, 3, .12);
-            transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
-        }
-
-        .template-btn:hover,
-        .btn-primary:hover,
-        .btn-ghost:hover {
-            box-shadow: 0 8px 18px rgba(93, 7, 3, .18);
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 900px) {
-            .wrap {
-                width: min(100% - 40px, 760px);
-                padding-top: 32px;
-            }
-        }
-
-        @media (max-width: 780px) {
-            .wrap {
-                width: calc(100% - 32px);
-                padding-top: 26px;
-            }
-
-            header.page {
-                align-items: flex-start;
-                gap: 18px;
-            }
-
-            header.page .tagline,
-            .template-hint {
-                text-align: left;
-            }
-        }
-
-        @media (max-width: 560px) {
-            .wrap {
-                width: calc(100% - 24px);
-                padding-bottom: 40px;
-            }
-
-            header.page h1 {
-                font-size: 29px;
-            }
-
-            .step {
-                padding: 18px;
-            }
-
-            .step-desc {
-                margin-left: 0;
-            }
-        }
     </style>
 </head>
 
@@ -802,114 +907,168 @@
         <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
         <main class="main-content">
             <div class="wrap">
-                <header class="page">
-                    <h1>Thêm học viên</h1>
+
+        <header class="page">
+            <h1>Cấp tài khoản học viên</h1>
+            <div>
+                <button class="template-btn" id="downloadTemplateBtn" type="button">
+                    <span class="material-symbols-outlined">download</span>
+                    Tải file mẫu Excel
+                </button>
+                <div class="template-hint">Tải file mẫu Excel để điền thông tin học viên.</div>
+            </div>
+        </header>
+        <!-- STEP 1: UPLOAD -->
+        <div class="step">
+            <div class="step-head">
+                <div class="step-num">1</div>
+                <h2>Tải file danh sách</h2>
+            </div>
+            <div class="step-desc">Chấp nhận .xlsx, .xls hoặc .csv. Dòng đầu tiên phải là tiêu đề cột (Họ tên, Lớp, Ngày
+                học, ...).</div>
+            <div class="dropzone" id="dropzone">
+                <div>Kéo thả file vào đây, hoặc <strong>bấm để chọn file</strong></div>
+                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+                <div id="fileBadge"></div>
+            </div>
+        </div>
+        <!-- STEP 2: MAPPING -->
+        <div class="step" id="mapStep" style="display:none;">
+            <div class="step-head">
+                <div class="step-num">2</div>
+                <h2>Gán cột dữ liệu</h2>
+            </div>
+            <div class="step-desc">Cho hệ thống biết cột nào chứa thông tin gì. Có thể để trống các mục không dùng đến.
+            </div>
+            <div class="grid-map" id="mapGrid"></div>
+            <div style="margin-top:20px;">
+                <label class="field-label">Quy tắc sinh username</label>
+
+                <div class="row-inline">
                     <div>
-                        <button class="template-btn" id="downloadTemplateBtn" type="button">
-                            <span class="material-symbols-outlined">download</span>
-                            Tải file mẫu Excel
-                        </button>
-                        <div class="template-hint">Tải file mẫu Excel để nhập danh sách học viên.</div>
+                        <input type="text" value="Họ tên đầy đủ không dấu" readonly>
                     </div>
-                </header>
-                <!-- STEP 1: UPLOAD -->
-                <div class="step">
-                    <div class="step-head">
-                        <div class="step-num">1</div>
-                        <h2>Tải danh sách học viên</h2>
-                    </div>
-                    <div class="step-desc">Chấp nhận .xlsx, .xls hoặc .csv. File mẫu gồm các cột: Họ và tên, Email, Số điện thoại, Khóa học, Cơ sở.</div>
-                    <div class="dropzone" id="dropzone">
-                        <div>Kéo thả file vào đây, hoặc <strong>bấm để chọn file</strong></div>
-                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
-                        <div id="fileBadge"></div>
-                    </div>
-                </div>
-                <!-- STEP 2: MAPPING -->
-                <div class="step" id="mapStep" style="display:none;">
-                    <div class="step-head">
-                        <div class="step-num">2</div>
-                        <h2>Gán thông tin học viên</h2>
-                    </div>
-                    <div class="step-desc">Cho hệ thống biết cột nào chứa thông tin gì. Có thể để trống các mục không
-                        dùng đến.</div>
-                    <div class="grid-map" id="mapGrid"></div>
-                    <div style="margin-top:20px;">
-                        <label class="field-label">Quy tắc sinh tài khoản học viên</label>
-                        <div class="row-inline">
-                            <div>
-                                <input type="text" value="[Tên].[Họ và đệm viết tắt]" readonly>
-                            </div>
-                            <div>
-                                <input type="text" value="@gmail.com" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="margin-top:14px;">
-                        <label class="field-label">Độ dài mật khẩu</label>
-                        <input type="number" id="pwLength" value="8" min="6" max="20" style="max-width:120px;">
-                    </div>
-                    <div class="actions-row">
-                        <button class="btn-primary" id="generateBtn">Tạo dữ liệu xem trước</button>
-                    </div>
-                </div>
-                <!-- STEP 3: PREVIEW / EDIT -->
-                <div class="step" id="reviewStep" style="display:none;">
-                    <div class="step-head">
-                        <div class="step-num">3</div>
-                        <h2>Xem trước tài khoản học viên</h2>
-                    </div>
-                    <div class="step-desc">Email, username và mật khẩu có thể sửa trực tiếp trong bảng trước khi tạo tài khoản.
-                        Bấm biểu tượng ↻ để tạo lại mật khẩu ngẫu nhiên cho một dòng.</div>
-                    <div style="overflow-x:auto;">
-                        <table id="previewTable">
-                            <thead>
-                                <tr id="tableHead"></tr>
-                            </thead>
-                            <tbody id="tableBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
-                    <div class="actions-row">
-                        <button class="btn-primary" id="confirmAccountsBtn">
-                            Xác nhận & tiếp tục
-                        </button>
-                    </div>
-                </div>
-                <!-- STEP 4: SEND / EXPORT -->
-                <div class="step" id="sendStep" style="display:none;">
-                    <div class="step-head">
-                        <div class="step-num">4</div>
-                        <h2>Hoàn tất tài khoản học viên</h2>
-                    </div>
-                    <div class="step-desc">Chỉ xuất hiện sau khi bạn bấm “Xác nhận & tạo tài khoản Firebase”. Tại đây có
-                        thể sao chép thông tin hoặc xuất toàn bộ tài khoản học viên đang có trong Firebase.</div>
-                    <div style="overflow-x:auto;">
-                        <table id="sendTable">
-                            <thead>
-                                <tr>
-                                    <th>Họ và tên</th>
-                                    <th>Số điện thoại</th>
-                                    <th>Khóa học</th>
-                                    <th>Cơ sở</th>
-                                    <th>Email</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sendBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="actions-row">
-                        <button class="btn-ghost" id="exportCsvBtn">
-                            <span class="material-symbols-outlined">download</span>
-                            Xuất CSV (kèm username/mật khẩu)
-                        </button>
+
+                    <div>
+                        <input type="text" value="@student.edu.vn" readonly>
                     </div>
                 </div>
             </div>
+            <div style="margin-top:14px;">
+                <label class="field-label">Độ dài mật khẩu</label>
+                <input type="number" id="pwLength" value="8" min="6" max="20" style="max-width:120px;">
+            </div>
+            <div class="actions-row">
+                <button class="btn-primary" id="generateBtn">Tạo dữ liệu xem trước</button>
+            </div>
+        </div>
+        <!-- STEP 3: PREVIEW / EDIT -->
+        <div class="step" id="reviewStep" style="display:none;">
+            <div class="step-head">
+                <div class="step-num">3</div>
+                <h2>Xem trước &amp; chỉnh sửa</h2>
+            </div>
+            <div class="step-desc">Username / mật khẩu có thể sửa trực tiếp trong bảng. Bấm biểu tượng ↻ để tạo lại mật
+                khẩu ngẫu nhiên cho một dòng.</div>
+            <div style="overflow-x:auto;">
+                <table id="previewTable">
+                    <thead>
+                        <tr id="tableHead"></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div class="count-badge" id="rowCount" style="margin-top:10px;"></div>
+            <div class="actions-row">
+                <button class="btn-primary" id="confirmAccountsBtn">
+                    Xác nhận & tiếp tục
+                </button>
+            </div>
+        </div>
+                <!-- STEP 4: SEND / EXPORT -->
+        <div class="step" id="sendStep" style="display:none;">
+
+            <div class="step-head">
+                <div class="step-num">4</div>
+                <h2>Gửi &amp; xuất dữ liệu</h2>
+            </div>
+            <div class="step-desc">Chỉ xuất hiện sau khi bạn bấm “Xác nhận & tạo tài khoản Firebase”. Tại đây có thể sao
+                chép thông tin hoặc xuất toàn bộ học viên đang có trong Firebase.</div>
+            <div style="overflow-x:auto;">
+                <table id="sendTable">
+                    <thead>
+                        <tr>
+                            <th>Họ tên</th>
+                            <th>Lớp</th>
+                            <th>Cơ sở</th>
+                            <th>Email</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sendBody"></tbody>
+                </table>
+            </div>
+            <div class="actions-row">
+                <button class="btn-ghost" id="exportCsvBtn">
+                    <span class="material-symbols-outlined">download</span>
+                    Xuất CSV (kèm username/mật khẩu)
+                </button>
+            </div>
+                </div>
+
+        <!-- DANH SÁCH TẤT CẢ TÀI KHOẢN HỌC VIÊN -->
+        <section class="step student-list-card" id="studentListStep">
+            <div class="student-list-head">
+                <div class="step-head">
+                    <div class="step-num"><span class="material-symbols-outlined">groups</span></div>
+                    <div>
+                        <h2>Tất cả tài khoản học viên</h2>
+                        <p class="step-desc" style="margin:4px 0 0;">Danh sách được đọc từ collection <strong>users</strong> với role <strong>student</strong>.</p>
+                    </div>
+                </div>
+                <div class="student-list-actions">
+                    <span class="student-count" id="studentCount">0 tài khoản</span>
+                    <button class="student-refresh" id="refreshStudentsBtn" type="button"><span class="material-symbols-outlined">refresh</span>Làm mới</button>
+                </div>
+            </div>
+            <div class="student-table-wrap">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Lớp</th>
+                            <th>Cơ sở</th>
+                            
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentListBody">
+                        <tr><td colspan="6" class="student-empty">Đang tải danh sách học viên...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+                </div>
         </main>
     </div>
+
+    <div class="student-confirm-modal" id="studentConfirmModal" aria-hidden="true">
+        <div class="student-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="studentConfirmTitle">
+            <div class="student-confirm-icon"><span class="material-symbols-outlined">delete_forever</span></div>
+            <h3 id="studentConfirmTitle">Xóa tài khoản học viên?</h3>
+            <p id="studentConfirmText">Hồ sơ học viên sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.</p>
+            <div class="student-confirm-actions">
+                <button class="student-confirm-cancel" id="cancelStudentDeleteBtn" type="button">Hủy bỏ</button>
+                <button class="student-confirm-delete" id="confirmStudentDeleteBtn" type="button"><span class="material-symbols-outlined">delete</span> Xóa hồ sơ</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast"></div>
+
     <script>
         const VN_MAP = {
             'à': 'a', 'á': 'a', 'ạ': 'a', 'ả': 'a', 'ã': 'a', 'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ậ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ặ': 'a', 'ẳ': 'a', 'ẵ': 'a',
@@ -935,9 +1094,10 @@
             try {
                 const templateHeaders = [
                     'Họ và tên',
-                    'Email',
                     'Số điện thoại',
+                    'Lớp',
                     'Khóa học',
+                    'Ngày học',
                     'Cơ sở'
                 ];
                 const ws = XLSX.utils.aoa_to_sheet([templateHeaders]);
@@ -955,9 +1115,8 @@
         let genRows = [];   // generated: {raw, username, password}
         let mapping = {
             name: '',
-            email: '',
-            phone: '',
-            course: '',
+            clazz: '',
+            date: '',
             campus: ''
         };
         // ---- STEP 1: upload ----
@@ -1003,10 +1162,9 @@
         function buildMappingUI() {
             const grid = document.getElementById('mapGrid');
             const fields = [
-                { key: 'name', label: 'Họ và tên', required: true },
-                { key: 'email', label: 'Email', required: true },
-                { key: 'phone', label: 'Số điện thoại', required: false },
-                { key: 'course', label: 'Khóa học', required: false },
+                { key: 'name', label: 'Họ tên', required: true },
+                { key: 'clazz', label: 'Lớp', required: false },
+                { key: 'date', label: 'Ngày học', required: false },
                 { key: 'campus', label: 'Cơ sở', required: false }
             ];
             grid.innerHTML = '';
@@ -1023,10 +1181,9 @@
             });
             // auto-guess
             const guesses = {
-                name: ['họ tên', 'họ và tên', 'ho ten', 'tên', 'ten', 'name', 'học viên'],
-                email: ['email', 'gmail', 'e-mail', 'địa chỉ email'],
-                phone: ['số điện thoại', 'so dien thoai', 'điện thoại', 'phone', 'mobile'],
-                course: ['khóa học', 'khoa hoc', 'course', 'lớp', 'class'],
+                name: ['họ tên', 'ho ten', 'tên', 'ten', 'name', 'học viên'],
+                clazz: ['lớp', 'lop', 'class'],
+                date: ['ngày học', 'ngay hoc', 'ngày', 'date'],
                 campus: ['cơ sở', 'co so', 'cơsở', 'campus', 'branch']
             };
             grid.querySelectorAll('select').forEach(sel => {
@@ -1040,17 +1197,18 @@
         }
         // ---- STEP 2: generate preview data ONLY ----
         const accountDb = firebase.firestore();
-        // Dùng Firebase App thứ 2 để tạo tài khoản CS.
+        // Dùng Firebase App thứ 2 để tạo tài khoản học viên.
         // Như vậy tài khoản Admin/CS đang đăng nhập ở App chính không bị đăng xuất.
         const creatorApp = firebase.apps.some(app => app.name === 'studentAccountCreator')
             ? firebase.app('studentAccountCreator')
             : firebase.initializeApp(firebase.app().options, 'studentAccountCreator');
         const creatorAuth = creatorApp.auth();
         document.getElementById('generateBtn').addEventListener('click', () => {
-            if (!mapping.name || !mapping.email) {
-                toast('Vui lòng chọn cột Họ tên và Email trước.');
+            if (!mapping.name) {
+                toast('Vui lòng chọn cột Họ tên trước.');
                 return;
             }
+
             const pwLen = Math.max(
                 6,
                 Math.min(
@@ -1064,18 +1222,12 @@
             const used = new Set();
             genRows = [];
             try {
-                const emailDomain = '@gmail.com';
+                const emailDomain = '@student.edu.vn';
                 for (const r of rawRows) {
                     const fullName = String(r[mapping.name] || '').trim();
                     if (!fullName) continue;
-                    const phone = mapping.phone
-                        ? String(r[mapping.phone] || '').trim()
-                        : '';
-                    const email = mapping.email
-                        ? String(r[mapping.email] || '').trim().toLowerCase()
-                        : '';
-                    const course = mapping.course
-                        ? String(r[mapping.course] || '').trim()
+                    const clazz = mapping.clazz
+                        ? String(r[mapping.clazz] || '').trim()
                         : '';
                     const campus = mapping.campus
                         ? String(r[mapping.campus] || '').trim()
@@ -1093,10 +1245,8 @@
                         username: uname,
                         password: genPassword(pwLen),
                         uid: '',
-                        studentEmail: email,
+                        studentEmail: `${uname}${emailDomain}`,
                         emailDomain: emailDomain,
-                        phone: phone,
-                        course: course,
                         campus: campus,
                         created: false
                     });
@@ -1131,16 +1281,16 @@
             const usernameSet = new Set();
             for (const row of genRows) {
                 row.username = String(row.username || '').trim().toLowerCase();
-                row.studentEmail = String(row.studentEmail || '').trim().toLowerCase();
-                if (!row.username || !row.studentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.studentEmail)) {
-                    toast(`Email hoặc username của ${row.raw[mapping.name] || 'học viên'} không hợp lệ.`);
+                if (!row.username) {
+                    toast('Có học viên chưa có Username.');
                     return;
                 }
-                if (usernameSet.has(row.studentEmail)) {
-                    toast(`Email bị trùng: ${row.studentEmail}`);
+                if (usernameSet.has(row.username)) {
+                    toast(`Username bị trùng: ${row.username}`);
                     return;
                 }
-                usernameSet.add(row.studentEmail);
+                usernameSet.add(row.username);
+                row.studentEmail = `${row.username}${row.emailDomain || '@student.edu.vn'}`;
                 if (!row.password) {
                     toast(`Học viên ${row.raw[mapping.name] || ''} chưa có mật khẩu.`);
                     return;
@@ -1164,46 +1314,46 @@
                             row.studentEmail,
                             row.password
                         );
-                        const user = credential.user;
+                                                const user = credential.user;
                         row.uid = user.uid;
+
                         const fullName = mapping.name
-                            ? String(row.raw[mapping.name] || '').trim()
+                            ? String(row.raw[mapping.name] || '').trim().replace(/\s+/g, ' ')
                             : '';
-                        const readableBaseId = makeReadableUserDocId(
-                            fullName,
-                            row.course || ''
-                        );
-                        let userDocumentId = readableBaseId;
-                        const readableRef = accountDb
-                            .collection('users')
-                            .doc(userDocumentId);
-                        const readableSnapshot = await readableRef.get();
-                        if (readableSnapshot.exists) {
-                            userDocumentId = `${readableBaseId} - ${row.username}`;
+                        const baseDocumentId = `HV - ${fullName || row.username || 'Học viên'}`;
+                        let studentDocumentId = baseDocumentId;
+                        let duplicateIndex = 2;
+
+                        // Hiển thị document ID theo dạng: HV - Họ tên.
+                        // Nếu trùng tên, thêm username và số thứ tự để không ghi đè.
+                        while ((await accountDb.collection('users').doc(studentDocumentId).get()).exists) {
+                            studentDocumentId = `${baseDocumentId} - ${row.username || duplicateIndex}`;
+                            if (duplicateIndex > 2) {
+                                studentDocumentId += `-${duplicateIndex}`;
+                            }
+                            duplicateIndex++;
                         }
-                        row.documentId = userDocumentId;
+
+                        row.documentId = studentDocumentId;
                         await accountDb
                             .collection('users')
-                            .doc(userDocumentId)
+                            .doc(studentDocumentId)
                             .set({
                                 uid: user.uid,
-                                name: mapping.name
-                                    ? String(row.raw[mapping.name] || '').trim()
-                                    : '',
+                                name: fullName,
                                 email: row.studentEmail,
-                                username: row.username,
-                                // Loại tài khoản
-                                accountType: 'student',
+
+                                                                username: row.username,
+                                // Không lưu password vào Firestore.
+                                // Mật khẩu chỉ tồn tại tạm thời trong genRows để xuất Excel.
                                 role: 'student',
+
                                 provider: 'e-mail',
-                                // Thông tin nhân sự
-                                phone: row.phone || '',
-                                course: row.course || '',
+                                class: mapping.clazz
+                                    ? String(row.raw[mapping.clazz] || '').trim()
+                                    : '',
                                 campus: row.campus || '',
-                                // Password chỉ giữ tạm trong genRows để xuất file Excel.
-                                // Không lưu password rõ vào Firestore.
                                 passwordCreated: true,
-                                status: 'active',
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
                         row.created = true;
@@ -1221,9 +1371,9 @@
                 document.getElementById('sendStep').style.display = 'block';
                 if (errors.length) {
                     console.warn('Các dòng chưa tạo được:', errors);
-                    toast(`Đã tạo ${createdCount} tài khoản học viên. Bỏ qua ${skippedCount} email đã tồn tại.`);
+                    toast(`Đã tạo ${createdCount} tài khoản. Bỏ qua ${skippedCount} email đã tồn tại.`);
                 } else {
-                    toast(`Đã tạo thành công ${createdCount} tài khoản học viên.`);
+                    toast(`Đã tạo thành công ${createdCount} tài khoản Firebase.`);
                 }
                 document.getElementById('sendStep').scrollIntoView({
                     behavior: 'smooth',
@@ -1239,20 +1389,16 @@
         });
         function buildUsernameBase(fullName) {
             const clean = stripAccents(fullName);
-            const parts = clean.split(/\s+/).filter(Boolean);
-            if (!parts.length) return 'hv';
-            // Nguyễn Văn Anh -> anh.nv
-            const firstName = parts[parts.length - 1];
-            const nameInitials = parts.slice(0, -1).map(part => part[0]).join('');
-            return `${firstName}.${nameInitials || firstName}`;
-        }
-        function makeReadableUserDocId(fullName, course = '') {
-            const prefix = String(course || '').trim() || 'HV';
-            const readable = `${prefix} - ${String(fullName || '').trim()}`
-                .replace(/[\\/]/g, '-')
-                .replace(/\s+/g, ' ')
-                .trim();
-            return readable || 'HV - Chưa đặt tên';
+
+            const parts = clean
+                .split(/\s+/)
+                .filter(Boolean);
+
+            if (!parts.length) {
+                return 'hocvien';
+            }
+
+            return parts.join('');
         }
         function genPassword(len) {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
@@ -1268,9 +1414,8 @@
             const cols = [
                 '#',
                 ...(mapping.name ? ['Họ tên'] : []),
-                ...(mapping.phone ? ['Số điện thoại'] : []),
-                ...(mapping.email ? ['Email'] : []),
-                ...(mapping.course ? ['Khóa học'] : []),
+                ...(mapping.clazz ? ['Lớp'] : []),
+                ...(mapping.date ? ['Ngày học'] : []),
                 ...(mapping.campus ? ['Cơ sở'] : []),
                 'Username',
                 'Mật khẩu',
@@ -1285,14 +1430,11 @@
                 if (mapping.name) {
                     cells += `<td data-label="Họ tên">${row.raw[mapping.name] || ''}</td>`;
                 }
-                if (mapping.phone) {
-                    cells += `<td data-label="Số điện thoại">${row.phone || ''}</td>`;
+                if (mapping.clazz) {
+                    cells += `<td data-label="Lớp">${row.raw[mapping.clazz] || ''}</td>`;
                 }
-                if (mapping.email) {
-                    cells += `<td data-label="Email"><input class="cred" data-idx="${idx}" data-field="studentEmail" value="${escapeHtml(row.studentEmail)}"></td>`;
-                }
-                if (mapping.course) {
-                    cells += `<td data-label="Khóa học">${row.course || ''}</td>`;
+                if (mapping.date) {
+                    cells += `<td data-label="Ngày học">${row.raw[mapping.date] || ''}</td>`;
                 }
                 if (mapping.campus) {
                     cells += `<td data-label="Cơ sở">${row.campus || ''}</td>`;
@@ -1326,14 +1468,17 @@
                 body.appendChild(tr);
             });
             document.getElementById('rowCount').textContent =
-                `${genRows.length} học viên đang chờ xác nhận.`;
+                `${genRows.length} tài khoản đang chờ xác nhận.`;
             body.querySelectorAll('input.cred').forEach(inp => {
                 inp.addEventListener('input', () => {
                     const idx = Number(inp.dataset.idx);
                     const field = inp.dataset.field;
                     genRows[idx][field] = inp.value;
-                    if (field === 'studentEmail') {
-                        genRows[idx].studentEmail = String(inp.value || '').trim().toLowerCase();
+                    // Nếu sửa Username thì email Firebase cũng phải đổi theo.
+                    if (field === 'username') {
+                        const username = String(inp.value || '').trim().toLowerCase();
+                        genRows[idx].studentEmail =
+                            `${username}${genRows[idx].emailDomain || '@student.edu.vn'}`;
                     }
                 });
             });
@@ -1367,20 +1512,24 @@
             const body = document.getElementById('sendBody');
             body.innerHTML = '';
             genRows.forEach((row, idx) => {
-                const name = mapping.name ? (row.raw[mapping.name] || '') : '';
-                const phone = row.phone || '';
-                const course = row.course || '';
+                const name = mapping.name
+                    ? (row.raw[mapping.name] || '')
+                    : '';
+                const clazz = mapping.clazz
+                    ? (row.raw[mapping.clazz] || '')
+                    : '';
                 const campus = row.campus || '';
                 const emailAddr = row.studentEmail || '';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
             <td data-label="Họ tên">${escapeHtml(name)}</td>
-            <td data-label="Số điện thoại">${escapeHtml(phone)}</td>
-            <td data-label="Khóa học">${escapeHtml(course)}</td>
+            <td data-label="Lớp">${escapeHtml(clazz)}</td>
             <td data-label="Cơ sở">${escapeHtml(campus)}</td>
             <td data-label="Email">${escapeHtml(emailAddr)}</td>
             <td data-label="Thao tác" class="cell-actions">
-                <button class="link-btn btn-small" data-copy="${idx}">
+                <button
+                    class="link-btn btn-small"
+                    data-copy="${idx}">
                     <span class="material-symbols-outlined">content_copy</span>
                     Sao chép tài khoản
                 </button>
@@ -1390,13 +1539,18 @@
             });
             body.querySelectorAll('[data-copy]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const row = genRows[Number(btn.dataset.copy)];
-                    const name = mapping.name ? (row.raw[mapping.name] || '') : '';
+                    const idx = Number(btn.dataset.copy);
+                    const row = genRows[idx];
+                    const name = mapping.name
+                        ? (row.raw[mapping.name] || '')
+                        : '';
+                    const clazz = mapping.clazz
+                        ? (row.raw[mapping.clazz] || '')
+                        : '';
                     const text = `
-Thông tin tài khoản học viên
-Họ và tên: ${name}
-Số điện thoại: ${row.phone || ''}
-Khóa học: ${row.course || ''}
+Thông tin tài khoản học tập
+Họ tên: ${name}
+Lớp: ${clazz}
 Cơ sở: ${row.campus || ''}
 Email: ${row.studentEmail}
 Username: ${row.username}
@@ -1404,44 +1558,143 @@ Mật khẩu: ${row.password}
 Vui lòng bảo mật thông tin đăng nhập.
             `.trim();
                     navigator.clipboard.writeText(text)
-                        .then(() => toast('Đã sao chép thông tin tài khoản học viên.'))
+                        .then(() => toast('Đã sao chép thông tin tài khoản.'))
                         .catch(() => toast('Không thể sao chép.'));
                 });
             });
         }
-        async function getAllStudentAccountsFromFirebase() {
+        /*
+         * Bảo mật:
+         * - Firestore chỉ lưu hồ sơ và UID.
+         * - Firebase Authentication quản lý mật khẩu.
+         * - Mật khẩu tạm thời nằm trong genRows của phiên hiện tại,
+         *   nên vẫn có thể xuất Excel ngay sau khi tạo tài khoản.
+         */
+        async function getAllStudentsFromFirebase() {
+
             try {
                 const snapshot = await accountDb
                     .collection('users')
-                    .where('accountType', '==', 'student')
+                    .where('role', '==', 'student')
                     .get();
-                const accounts = [];
+                const students = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    accounts.push({
+                    students.push({
                         name: data.name || '',
                         email: data.email || '',
                         username: data.username || '',
                         password: data.password || '',
-                        phone: data.phone || '',
-                        course: data.course || '',
+                        class: data.class || '',
                         campus: data.campus || '',
                         uid: data.uid || ''
                     });
                 });
-                return accounts;
+                return students;
             } catch (error) {
                 console.error(
-                    'Lỗi lấy danh sách tài khoản học viên:',
+                    'Lỗi lấy danh sách học viên:',
                     error
                 );
                 toast(
-                    'Không thể lấy danh sách tài khoản học viên từ Firebase.'
+                    'Không thể lấy danh sách học viên từ Firebase.'
                 );
                 return [];
             }
         }
+                let studentDeleteResolver = null;
+
+        function showStudentDeleteConfirm(student) {
+            const modal = document.getElementById('studentConfirmModal');
+            const text = document.getElementById('studentConfirmText');
+            const cancelBtn = document.getElementById('cancelStudentDeleteBtn');
+            const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
+            text.textContent = `Hồ sơ của ${student.name || student.email || 'học viên này'} sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.`;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            return new Promise(resolve => {
+                studentDeleteResolver = resolve;
+                cancelBtn.focus();
+            });
+        }
+
+        function closeStudentDeleteConfirm(result) {
+            const modal = document.getElementById('studentConfirmModal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            if (studentDeleteResolver) {
+                const resolve = studentDeleteResolver;
+                studentDeleteResolver = null;
+                resolve(result);
+            }
+        }
+
+        document.getElementById('cancelStudentDeleteBtn').addEventListener('click', () => closeStudentDeleteConfirm(false));
+        document.getElementById('confirmStudentDeleteBtn').addEventListener('click', () => closeStudentDeleteConfirm(true));
+        document.getElementById('studentConfirmModal').addEventListener('click', event => {
+            if (event.target.id === 'studentConfirmModal') closeStudentDeleteConfirm(false);
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('studentConfirmModal').classList.contains('show')) {
+                closeStudentDeleteConfirm(false);
+            }
+        });
+
+        async function loadStudentList() {
+            const body = document.getElementById('studentListBody');
+            const count = document.getElementById('studentCount');
+            body.innerHTML = '<tr><td colspan="6" class="student-empty">Đang tải danh sách học viên...</td></tr>';
+            try {
+                const snapshot = await accountDb.collection('users').where('role', '==', 'student').get();
+                const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'vi'));
+                count.textContent = `${students.length} tài khoản`;
+                if (!students.length) {
+                    body.innerHTML = '<tr><td colspan="6" class="student-empty">Chưa có tài khoản học viên nào.</td></tr>';
+                    return;
+                }
+                body.innerHTML = students.map((student, index) => {
+                                        return `<tr>
+
+                        <td data-label="Họ tên"><div class="student-name">${escapeHtml(student.name || 'Chưa cập nhật')}</div><div class="student-email">${escapeHtml(student.phone || '')}</div></td>
+                        <td data-label="Email"><span class="student-email">${escapeHtml(student.email || 'Chưa cập nhật')}</span></td>
+                        <td data-label="Username"><span class="mono">${escapeHtml(student.username || 'Chưa cập nhật')}</span></td>
+                        <td data-label="Lớp">${escapeHtml(student.class || 'Chưa cập nhật')}</td>
+                        <td data-label="Cơ sở">${escapeHtml(student.campus || 'Chưa cập nhật')}</td>
+                        
+                        <td data-label="Thao tác"><button class="delete-student-btn" type="button" data-delete-student="${escapeHtml(student.id)}"><span class="material-symbols-outlined">delete</span>Xóa</button></td>
+                    </tr>`;
+                }).join('');
+                body.querySelectorAll('[data-delete-student]').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const student = students.find(item => item.id === button.dataset.deleteStudent);
+                        if (!student) return;
+                        const confirmed = await showStudentDeleteConfirm(student);
+                        if (!confirmed) return;
+                        button.disabled = true;
+                        try {
+                            await accountDb.collection('users').doc(student.id).delete();
+                            toast('Đã xóa hồ sơ học viên.');
+                            await loadStudentList();
+                        } catch (error) {
+                            console.error('Lỗi xóa hồ sơ học viên:', error);
+                            toast('Không thể xóa hồ sơ. Kiểm tra Firestore Rules.');
+                            button.disabled = false;
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Lỗi tải danh sách học viên:', error);
+                count.textContent = 'Lỗi tải dữ liệu';
+                body.innerHTML = '<tr><td colspan="6" class="student-empty">Không thể tải danh sách. Kiểm tra Firestore Rules.</td></tr>';
+            }
+        }
+
+        document.getElementById('refreshStudentsBtn').addEventListener('click', loadStudentList);
+        loadStudentList();
+
         // ---- Export CSV ----
+
         document.getElementById('exportCsvBtn').addEventListener(
             'click',
             async () => {
@@ -1450,39 +1703,45 @@ Vui lòng bảo mật thông tin đăng nhập.
                 btn.disabled = true;
                 btn.textContent = 'Đang lấy dữ liệu...';
                 try {
-                    // Lấy batch tài khoản vừa tạo trong phiên hiện tại.
-                    // Password nằm trong genRows và không được lưu vào Firebase.
-                    const students = genRows.map(row => ({
-                        name: mapping.name
-                            ? String(row.raw[mapping.name] || '').trim()
-                            : '',
-                        phone: row.phone || '',
-                        course: row.course || '',
-                        campus: row.campus || '',
-                        email: row.studentEmail || '',
-                        username: row.username || '',
-                        password: row.password || '',
-                        uid: row.uid || ''
-                    }));
+                                        /*
+                     * Không đọc password từ Firestore vì Firestore không lưu password.
+                     * Lấy các dòng đã tạo thành công trong phiên hiện tại.
+                     */
+                    const students = genRows
+                        .filter(row => row.created && row.uid)
+                        .map(row => ({
+                            name: mapping.name
+                                ? String(row.raw[mapping.name] || '').trim()
+                                : '',
+                            email: row.studentEmail || '',
+                            username: row.username || '',
+                            password: row.password || '',
+                            class: mapping.clazz
+                                ? String(row.raw[mapping.clazz] || '').trim()
+                                : '',
+                            campus: row.campus || '',
+                            uid: row.uid || ''
+                        }));
+
                     if (!students.length) {
                         toast(
-                            'Firebase chưa có tài khoản học viên nào.'
+                            'Chưa có tài khoản nào được tạo thành công trong phiên này.'
                         );
                         return;
                     }
+
                     /*
                      * Các cột xuất ra
                      */
                     const cols = [
-                        'Họ và tên',
-                        'Số điện thoại',
-                        'Khóa học',
-                        'Cơ sở',
+                        'Họ tên',
                         'Email',
                         'Username',
-                        'Mật khẩu',
-                        'UID'
-                    ];
+                        'Password',
+                        'Lớp',
+                        'Cơ sở',
+                                            ];
+
                     const escape = value =>
                         `"${String(value ?? '')
                             .replace(/"/g, '""')}"`;
@@ -1498,13 +1757,12 @@ Vui lòng bảo mật thông tin đăng nhập.
                     students.forEach(student => {
                         const row = [
                             student.name,
-                            student.phone,
-                            student.course,
-                            student.campus,
                             student.email,
                             student.username,
                             student.password,
-                            student.uid
+                                                        student.class,
+                            student.campus
+
                         ];
                         lines.push(
                             row.map(escape).join(',')
@@ -1535,7 +1793,7 @@ Vui lòng bảo mật thông tin đăng nhập.
                     a.remove();
                     URL.revokeObjectURL(url);
                     toast(
-                        `Đã xuất ${students.length} tài khoản học viên kèm password.`
+                        `Đã xuất ${students.length} học viên.`
                     );
                 } catch (error) {
                     console.error(error);
@@ -1544,20 +1802,72 @@ Vui lòng bảo mật thông tin đăng nhập.
                     );
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = `
+                                    btn.innerHTML = `
                 <span class="material-symbols-outlined">
                     download
                 </span>
-                Xuất tất cả tài khoản học viên
+                Xuất tài khoản vừa tạo
             `;
+
                 }
             }
         );
     </script>
     <script src="/ADMIN/admin-bar.js"></script>
 
-    
+    <style id="activity-header-match">
+        .topbar .top-actions {
+            display: flex !important;
+            align-items: center;
+            gap: 13px;
+        }
 
+        .topbar .admin-identity {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 10px;
+            order: 2;
+            white-space: nowrap;
+        }
+
+        .topbar .top-admin {
+            order: 1;
+            color: #2a2421 !important;
+            font-size: 16px !important;
+            font-weight: 800 !important;
+        }
+
+        .topbar .top-admin-campus {
+            order: 2;
+            display: inline-flex !important;
+            align-items: center;
+            min-height: 30px;
+            padding: 0 12px;
+            border: 1px solid rgba(112, 27, 25, .16);
+            border-radius: 999px;
+            color: #701b19 !important;
+            background: #f4e7d5 !important;
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            letter-spacing: .04em;
+            white-space: nowrap;
+        }
+
+        .topbar .avatar-admin {
+            order: 3;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 14px !important;
+            background: #7f201e !important;
+            color: #fff !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+        }
+
+        .topbar .notification-wrapper {
+            order: 1;
+        }
+    </style>
 </body>
 
 </html>

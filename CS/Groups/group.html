@@ -24,7 +24,7 @@
       --paper: #fffaf3;
       --gold: #b08a4e;
       --ink: #2a1712;
-      --muted: #806d61;
+      --muted: #806d61; 
       --line: rgba(93, 7, 3, .14);
       --green: #55734c;
       --red: #a23b2e;
@@ -384,7 +384,17 @@
       padding: 14px;
       border: 1px solid var(--line);
       border-radius: 11px;
-      background: #fff
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .18s, box-shadow .18s, transform .18s
+    }
+
+    .class-card:hover,
+    .class-card:focus {
+      border-color: var(--gold);
+      box-shadow: 0 6px 16px rgba(62, 4, 2, .1);
+      outline: 0;
+      transform: translateY(-1px)
     }
 
     .class-card h4 {
@@ -460,7 +470,97 @@
       cursor: not-allowed
     }
 
+        .student-account-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      border: 1px solid var(--maroon);
+      border-radius: 10px;
+      color: #fff;
+      background: var(--maroon);
+      box-shadow: 0 8px 18px rgba(93, 7, 3, .14);
+      font-size: 12px;
+      font-weight: 800;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .student-account-action:hover {
+      background: var(--deep);
+      box-shadow: 0 10px 22px rgba(93, 7, 3, .2);
+      transform: translateY(-1px);
+    }
+
+    .student-account-action .material-symbols-rounded {
+      font-size: 19px;
+    }
+
+    .student-account-modal {
+      z-index: 2500;
+      padding: 12px;
+      background: rgba(42, 23, 18, .62);
+      backdrop-filter: blur(4px);
+    }
+
+    .student-account-dialog {
+      position: relative;
+      width: min(1120px, 100%);
+      height: min(92vh, 900px);
+      max-height: none;
+      overflow: hidden;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, .35);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 28px 90px rgba(42, 23, 18, .36);
+    }
+
+    .student-account-dialog iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--pale);
+    }
+
+    .student-account-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(93, 7, 3, .15);
+      border-radius: 50%;
+      color: var(--maroon);
+      background: rgba(255, 250, 243, .94);
+      box-shadow: 0 5px 16px rgba(42, 23, 18, .15);
+      font-size: 20px;
+    }
+
+    .student-account-close:hover {
+      color: #fff;
+      background: var(--maroon);
+    }
+
+    @media(max-width:600px) {
+      .student-account-action {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+
+      .student-account-dialog {
+        height: 94vh;
+        border-radius: 13px;
+      }
+    }
+
     .modal {
+
       position: fixed;
       inset: 0;
       z-index: 2000;
@@ -475,13 +575,169 @@
     }
 
     .dialog {
-      width: min(560px, 100%);
+      width: min(1200px, 100%);
       max-height: 90vh;
       overflow: auto;
-      padding: 22px;
+      padding: 20px;
       border-radius: 14px;
       background: var(--paper);
       box-shadow: 0 20px 60px rgba(0, 0, 0, .22)
+    }
+
+    .class-detail-dialog {
+      width: min(680px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 28px));
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--maroon);
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dialog-head h2 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 24px/1.1 Fraunces, serif;
+    }
+
+    .dialog-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .class-detail-students {
+      display: grid;
+      gap: 8px;
+      max-height: 390px;
+      overflow: auto;
+      padding: 4px;
+    }
+
+    .class-detail-student {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .class-detail-student strong,
+    .class-detail-student small {
+      display: block;
+    }
+
+    .class-detail-student strong {
+      color: var(--deep);
+      font-size: 12px;
+    }
+
+    .class-detail-student small {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    #classDetailStudentSearchWrap {
+      margin-bottom: 10px;
+    }
+
+    #classDetailStudentSearchWrap[hidden],
+    #saveClassStudentsActions[hidden] {
+      display: none;
+    }
+
+    .class-detail-dialog .dialog-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+
+    .class-detail-add-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      min-width: 158px !important;
+      min-height: 46px !important;
+      padding: 0 18px !important;
+      border: 1px solid var(--deep) !important;
+      border-radius: 10px !important;
+      color: #fff !important;
+      background: var(--maroon) !important;
+      box-shadow: 0 7px 16px rgba(93, 7, 3, .18) !important;
+      font-size: 12px !important;
+      font-weight: 800 !important;
+      line-height: 1 !important;
+      transition: background .18s ease, box-shadow .18s ease, transform .18s ease !important;
+    }
+
+    .class-detail-add-btn:hover,
+    .class-detail-add-btn:focus-visible {
+      color: #fff !important;
+      background: var(--deep) !important;
+      box-shadow: 0 10px 22px rgba(93, 7, 3, .25) !important;
+      outline: 3px solid rgba(176, 138, 78, .3) !important;
+      outline-offset: 2px !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .class-detail-add-btn:disabled {
+      opacity: .6 !important;
+      cursor: wait !important;
+      transform: none !important;
+    }
+
+    .class-detail-add-btn .material-symbols-rounded {
+      font-size: 20px !important;
+    }
+
+    .class-detail-close-btn {
+      display: grid !important;
+      place-items: center !important;
+      width: 40px !important;
+      height: 40px !important;
+      flex: 0 0 40px !important;
+      padding: 0 !important;
+      border: 1px solid var(--line) !important;
+      border-radius: 9px !important;
+      color: var(--maroon) !important;
+      background: #fff !important;
+      font-size: 20px !important;
+      line-height: 1 !important;
+      transition: color .18s ease, background .18s ease, border-color .18s ease !important;
+    }
+
+    .class-detail-close-btn:hover,
+    .class-detail-close-btn:focus-visible {
+      color: #fff !important;
+      background: var(--maroon) !important;
+      border-color: var(--maroon) !important;
+      outline: 3px solid rgba(176, 138, 78, .3) !important;
+      outline-offset: 2px !important;
+    }
+
+    @media (max-width: 600px) {
+      .class-detail-dialog {
+        width: calc(100vw - 20px);
+        padding: 16px;
+      }
+
+      .class-detail-add-btn {
+        width: 100%;
+      }
     }
 
     .dialog h2 {
@@ -669,8 +925,13 @@
   <div class="app">
   <main class="main-content">
     <div class="groups-page">
-      <header class="page-head">
+            <header class="page-head">
         <div>
+          <button class="student-account-action" id="openStudentAccountModal" type="button">
+            <span class="material-symbols-rounded">person_add</span>
+            Thêm tài khoản học viên
+          </button>
+
           <p class="eyebrow">Không gian làm việc</p>
           <h1>Nhóm của tôi</h1>
           <p>Chọn một nhóm để xem thành viên, các lớp học và công việc mà nhóm đang phụ trách.</p>
@@ -703,16 +964,16 @@
   <div class="modal" id="classModal" aria-hidden="true">
     <div class="dialog">
       <h2>Tạo lớp học trong nhóm</h2>
-      <p class="dialog-intro">Đặt tên lớp, sau đó chọn những thành viên trong nhóm sẽ tham gia lớp này. Chỉ leader mới
-        có quyền tạo lớp.</p>
+      <p class="dialog-intro">Nhập tên lớp, ví dụ <strong>K12</strong>. Hệ thống sẽ tìm các học viên có trường <code>class = K12</code> để Leader chọn thêm vào lớp.</p>
       <form id="classForm">
         <div class="form-field"><label for="className">Tên lớp <span style="color:var(--red)">*</span></label><input
             id="className" required maxlength="100" placeholder="Ví dụ: Lớp hỗ trợ khối 10" /></div>
         <div class="form-field"><label for="classDescription">Mô tả lớp</label><textarea id="classDescription"
             maxlength="300" placeholder="Lớp này phụ trách nhóm học viên nào?"></textarea></div>
-        <div class="form-field"><label>Chọn thành viên trong nhóm</label>
-          <div class="checkbox-list" id="classMembers">
-            <div class="loading">Đang tải thành viên...</div>
+        <div class="form-field"><label for="classStudentSearch">Học viên thuộc lớp</label>
+          <div class="member-search"><input id="classStudentSearch" type="search" placeholder="Nhập K12 hoặc tìm tên/email học viên..." autocomplete="off" /></div>
+          <div class="checkbox-list" id="classStudents">
+            <div class="loading">Nhập tên lớp để tìm học viên...</div>
           </div>
         </div>
         <div class="dialog-actions"><button class="btn btn-secondary" type="button"
@@ -736,16 +997,70 @@
             class="material-symbols-rounded">person_add</span>Thêm vào nhóm</button></div>
     </div>
   </div>
+    <div class="modal student-account-modal" id="studentAccountModal" aria-hidden="true">
+    <div class="dialog student-account-dialog" role="dialog" aria-modal="true" aria-labelledby="studentAccountTitle">
+      <button class="student-account-close" id="closeStudentAccountModal" type="button" aria-label="Đóng cửa sổ">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <iframe
+        src="/CS/tao_email_HV.html"
+        title="Tạo tài khoản học viên"
+        loading="lazy"></iframe>
+    </div>
+  </div>
+  <div class="modal" id="classDetailModal" aria-hidden="true">
+    <div class="dialog class-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="classDetailTitle">
+      <div class="dialog-head">
+        <div><h2 id="classDetailTitle">Chi tiết lớp</h2><p id="classDetailSubtitle"></p></div>
+        <button class="class-detail-close-btn" id="closeClassDetail" type="button" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="dialog-actions" style="justify-content:flex-start;margin:0 0 12px">
+        <button class="class-detail-add-btn" id="addStudentsToClass" type="button"><span class="material-symbols-rounded">person_add</span>Thêm học viên</button>
+      </div>
+      <div class="member-search" id="classDetailStudentSearchWrap" hidden><input id="classDetailStudentSearch" type="search" placeholder="Tìm tên hoặc email học viên..." autocomplete="off" /></div>
+      <div class="checkbox-list" id="classDetailStudents"><div class="empty">Bấm “Thêm học viên” để tải danh sách học viên phù hợp với lớp.</div></div>
+      <div class="dialog-actions" id="saveClassStudentsActions" hidden><button class="btn btn-primary" id="saveClassStudents" type="button"><span class="material-symbols-rounded">save</span>Lưu học viên</button></div>
+    </div>
+  </div>
   <div class="toast" id="toast"></div>
   <script src="/CS/navbar.js"></script>
+
   <script>
     "use strict";
     const myGroupsAuth = firebase.auth();
     const myGroupsDb = firebase.firestore();
     const GROUPS = "groups";
-    const state = { user: null, groups: [], selected: null, members: [], allCs: [], classes: [], unsubscribeGroups: null, unsubscribeClasses: null, toastTimer: null };
-    const $ = id => document.getElementById(id);
+    const state = { user: null, groups: [], selected: null, members: [], allCs: [], allStudents: [], classes: [], unsubscribeGroups: null, unsubscribeClasses: null, toastTimer: null };
+        const $ = id => document.getElementById(id);
     const esc = value => { const div = document.createElement("div"); div.textContent = value == null ? "" : String(value); return div.innerHTML; };
+
+    const studentAccountModal = $("studentAccountModal");
+    const openStudentAccountModal = $("openStudentAccountModal");
+    const closeStudentAccountModal = $("closeStudentAccountModal");
+
+    function openStudentAccountPopup() {
+      studentAccountModal.classList.add("show");
+      studentAccountModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeStudentAccountPopup() {
+      studentAccountModal.classList.remove("show");
+      studentAccountModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    openStudentAccountModal.addEventListener("click", openStudentAccountPopup);
+    closeStudentAccountModal.addEventListener("click", closeStudentAccountPopup);
+    studentAccountModal.addEventListener("click", event => {
+      if (event.target === studentAccountModal) closeStudentAccountPopup();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && studentAccountModal.classList.contains("show")) {
+        closeStudentAccountPopup();
+      }
+    });
+
     const initials = (name, email) => String(name || email || "?").trim().split(/\s+/).filter(Boolean).slice(-2).map(x => x[0]).join("").toUpperCase() || "?";
     const toast = (message, error = false) => { $("toast").textContent = message; $("toast").className = `toast show${error ? " error" : ""}`; clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => $("toast").className = "toast", 3200); };
     const isLeader = group => Boolean(state.user && group && group.leaderUid === state.user.uid);
@@ -779,6 +1094,30 @@
       const snapshot = await myGroupsDb.collection("users").where("accountType", "==", "customer_success").get();
       state.allCs = snapshot.docs.map(doc => { const data = doc.data() || {}; return { uid: data.uid || doc.id, name: data.name || "", email: data.email || "", status: data.status || "active" }; }).filter(user => user.email && user.status !== "inactive");
     }
+
+    function normalizeClassName(value) {
+      return String(value || "").trim().toLowerCase().replace(/^lớp\s*/i, "").replace(/\s+/g, " ");
+    }
+
+    function isStudentAccount(data) {
+      const type = String(data.accountType || data.role || "").trim().toLowerCase();
+      return ["student", "student_account", "hocvien", "học viên", "learner", "hv"].includes(type);
+    }
+
+    async function loadAvailableStudents() {
+      const snapshot = await myGroupsDb.collection("users").get();
+      state.allStudents = snapshot.docs.map(doc => {
+        const data = doc.data() || {};
+        return {
+          uid: data.uid || doc.id,
+          name: data.name || data.displayName || "",
+          email: data.email || "",
+          className: data.class || data.className || data.grade || "",
+          status: data.status || "active",
+          accountType: data.accountType || data.role || ""
+        };
+      }).filter(student => isStudentAccount(student) && student.status !== "inactive");
+    }
     function currentMemberIds(group) { return new Set([group.leaderUid, ...(group.memberIds || []), ...(group.members || []).map(member => member.uid || member.id)].filter(Boolean)); }
     function renderAvailableMembers(keyword = "") {
       const group = state.selected; if (!group) return;
@@ -800,13 +1139,162 @@
       const members = [...existingMembers, ...additions]; const memberIds = [...new Set([state.selected.leaderUid, ...members.map(member => member.uid || member.id)].filter(Boolean))]; const button = $("saveMembers"); button.disabled = true;
       try { await myGroupsDb.collection(GROUPS).doc(state.selected.id).set({ memberIds, members, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); state.selected = { ...state.selected, memberIds, members }; state.groups = state.groups.map(group => group.id === state.selected.id ? state.selected : group); renderGroups(); renderDetail(); closeMemberModal(); toast(`Đã thêm ${additions.length} thành viên vào nhóm.`); } catch (error) { console.error(error); toast("Không thể thêm thành viên vào nhóm.", true); } finally { button.disabled = false; }
     }
-    function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; return; } grid.innerHTML = state.classes.map(item => `<article class="class-card"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.memberIds || []).length} thành viên</span><span class="status">Đang hoạt động</span></div></article>`).join(""); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
-    function openClassModal() { if (!state.selected || !isLeader(state.selected)) return; $("classModal").classList.add("show"); $("classModal").setAttribute("aria-hidden", "false"); $("className").focus(); const members = state.selected.members || (state.selected.memberIds || []).map(uid => userFromGroup(state.selected, uid)).filter(Boolean); $("classMembers").innerHTML = members.length ? members.map(member => `<label class="check-row"><input type="checkbox" value="${esc(member.uid || member.id)}" checked /><span class="avatar">${esc(initials(member.name, member.email))}</span><span>${esc(member.name || member.email || "Thành viên")}</span></label>`).join("") : '<div class="empty">Nhóm hiện chưa có thành viên để thêm vào lớp.</div>'; }
-    function closeClassModal() { $("classModal").classList.remove("show"); $("classModal").setAttribute("aria-hidden", "true"); $("classForm").reset(); }
+    function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; return; } grid.innerHTML = state.classes.map(item => `<article class="class-card" tabindex="0" role="button" data-class-id="${esc(item.id)}" aria-label="Mở chi tiết lớp ${esc(item.name)}"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.studentIds || item.memberIds || []).length} học viên</span><span class="status">Đang hoạt động</span></div></article>`).join(""); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
+
+    let activeClassDetail = null;
+
+    function renderSavedClassStudents(students) {
+      $("classDetailStudents").className = "class-detail-students";
+      $("classDetailStudents").innerHTML = students.length ? students.map(student => `<div class="class-detail-student"><span class="avatar">${esc(initials(student.name, student.email))}</span><span><strong>${esc(student.name || "Chưa có tên")}</strong><small>${esc(student.email || "")} · Lớp ${esc(student.class || student.className || activeClassDetail?.classCode || "Chưa xác định")}</small></span></div>`).join("") : '<div class="empty">Chưa có học viên trong lớp. Bấm “Thêm học viên” để bắt đầu.</div>';
+    }
+
+    function openClassDetail(classId) {
+      const item = state.classes.find(classItem => classItem.id === classId);
+      if (!item) return;
+      activeClassDetail = item;
+      const currentIds = item.studentIds || item.memberIds || [];
+      const savedStudents = Array.isArray(item.students) && item.students.length ? item.students : currentIds.map(uid => state.allStudents.find(student => student.uid === uid) || { uid, name: "Chưa có tên", email: "" });
+      $("classDetailTitle").textContent = item.name || "Chi tiết lớp";
+      $("classDetailSubtitle").textContent = `${currentIds.length} học viên đã thêm${item.classCode ? ` · Mã lớp: ${item.classCode}` : ""}`;
+      renderSavedClassStudents(savedStudents);
+      $("classDetailStudentSearchWrap").hidden = true;
+      $("saveClassStudentsActions").hidden = true;
+      $("addStudentsToClass").hidden = false;
+      $("classDetailModal").classList.add("show");
+      $("classDetailModal").setAttribute("aria-hidden", "false");
+    }
+
+    async function startAddingStudentsToClass() {
+      if (!activeClassDetail) return;
+      $("addStudentsToClass").disabled = true;
+      $("classDetailStudents").innerHTML = '<div class="loading">Đang tải học viên...</div>';
+      try {
+        await loadAvailableStudents();
+        $("classDetailStudentSearch").value = "";
+        $("classDetailStudentSearchWrap").hidden = false;
+        $("saveClassStudentsActions").hidden = false;
+        renderClassDetailStudents();
+      } catch (error) {
+        console.error(error);
+        $("classDetailStudents").innerHTML = '<div class="empty">Không thể tải danh sách học viên.</div>';
+        toast("Không thể tải danh sách học viên.", true);
+      } finally { $("addStudentsToClass").disabled = false; }
+    }
+
+    function renderClassDetailStudents() {
+      if (!activeClassDetail) return;
+      const classCode = normalizeClassName(activeClassDetail.classCode || activeClassDetail.name);
+      const search = String($("classDetailStudentSearch").value || "").trim().toLowerCase();
+      const currentIds = new Set(activeClassDetail.studentIds || activeClassDetail.memberIds || []);
+      const candidates = state.allStudents.filter(student => normalizeClassName(student.className) === classCode && (!search || `${student.name} ${student.email}`.toLowerCase().includes(search)));
+      $("classDetailStudents").innerHTML = candidates.length ? candidates.map(student => `<label class="check-row"><input type="checkbox" value="${esc(student.uid)}" ${currentIds.has(student.uid) ? "checked" : ""} /><span class="avatar">${esc(initials(student.name, student.email))}</span><span><strong>${esc(student.name || "Chưa có tên")}</strong><small>${esc(student.email)} · Lớp ${esc(student.className)}</small></span></label>`).join("") : '<div class="empty">Không tìm thấy học viên thuộc lớp này.</div>';
+    }
+
+    async function saveClassStudents() {
+      if (!activeClassDetail || !state.selected || !isLeader(state.selected)) return;
+      const studentIds = [...document.querySelectorAll("#classDetailStudents input:checked")].map(input => input.value);
+      const students = state.allStudents.filter(student => studentIds.includes(student.uid));
+      const button = $("saveClassStudents"); button.disabled = true;
+      try {
+        await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").doc(activeClassDetail.id).set({
+          studentIds,
+          students: students.map(student => ({ uid: student.uid, name: student.name, email: student.email, class: student.className })),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        activeClassDetail = { ...activeClassDetail, studentIds, students };
+        $("classDetailSubtitle").textContent = `${studentIds.length} học viên đã thêm${activeClassDetail.classCode ? ` · Mã lớp: ${activeClassDetail.classCode}` : ""}`;
+        renderSavedClassStudents(students);
+        $("classDetailStudentSearchWrap").hidden = true;
+        $("saveClassStudentsActions").hidden = true;
+        toast("Đã cập nhật học viên trong lớp.");
+      } catch (error) {
+        console.error(error);
+        toast("Không thể cập nhật học viên trong lớp.", true);
+      } finally { button.disabled = false; }
+    }
+
+    function closeClassDetail() {
+      $("classDetailModal").classList.remove("show");
+      $("classDetailModal").setAttribute("aria-hidden", "true");
+      activeClassDetail = null;
+    }
+    function renderAvailableStudents(keyword = "") {
+      const classCode = normalizeClassName(keyword || $("className").value);
+      const searchText = String($("classStudentSearch").value || "").trim().toLowerCase();
+      const selected = new Set([...document.querySelectorAll("#classStudents input:checked")].map(input => input.value));
+      if (!classCode) {
+        $("classStudents").innerHTML = '<div class="empty">Hãy nhập tên lớp, ví dụ K12, để tìm học viên.</div>';
+        return;
+      }
+      const candidates = state.allStudents.filter(student => {
+        const sameClass = normalizeClassName(student.className) === classCode;
+        const matchesText = !searchText || `${student.name} ${student.email}`.toLowerCase().includes(searchText);
+        return sameClass && matchesText;
+      });
+      $("classStudents").innerHTML = candidates.length ? candidates.map(student => `<label class="check-row"><input type="checkbox" value="${esc(student.uid)}" ${selected.has(student.uid) ? "checked" : ""} /><span class="avatar">${esc(initials(student.name, student.email))}</span><span><strong>${esc(student.name || "Chưa có tên")}</strong><small>${esc(student.email)} · Lớp ${esc(student.className)}</small></span></label>`).join("") : '<div class="empty">Không tìm thấy học viên có lớp phù hợp.</div>';
+    }
+
+    async function openClassModal() {
+      if (!state.selected || !isLeader(state.selected)) return;
+      $("classModal").classList.add("show");
+      $("classModal").setAttribute("aria-hidden", "false");
+      $("className").value = "";
+      $("classDescription").value = "";
+      $("classStudentSearch").value = "";
+      $("classStudents").innerHTML = '<div class="loading">Đang tải danh sách học viên...</div>';
+      try {
+        await loadAvailableStudents();
+        renderAvailableStudents();
+        $("className").focus();
+      } catch (error) {
+        console.error(error);
+        $("classStudents").innerHTML = '<div class="empty">Không thể tải danh sách học viên.</div>';
+        toast("Không thể tải danh sách học viên.", true);
+      }
+    }
+    function closeClassModal() { $("classModal").classList.remove("show"); $("classModal").setAttribute("aria-hidden", "true"); $("classForm").reset(); $("classStudents").innerHTML = '<div class="loading">Nhập tên lớp để tìm học viên...</div>'; }
     $("groupList").addEventListener("click", event => { const card = event.target.closest("[data-group-id]"); if (card) selectGroup(card.dataset.groupId); });
+    $("detailPanel").addEventListener("click", event => { const card = event.target.closest("[data-class-id]"); if (card) openClassDetail(card.dataset.classId); });
+    $("detailPanel").addEventListener("keydown", event => { const card = event.target.closest("[data-class-id]"); if (card && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openClassDetail(card.dataset.classId); } });
+        $("closeClassDetail").addEventListener("click", closeClassDetail);
+    $("addStudentsToClass").addEventListener("click", startAddingStudentsToClass);
+    $("classDetailStudentSearch").addEventListener("input", renderClassDetailStudents);
+    $("saveClassStudents").addEventListener("click", saveClassStudents);
+    $("classDetailModal").addEventListener("click", event => { if (event.target === $("classDetailModal")) closeClassDetail(); });
     $("closeClassModal").addEventListener("click", closeClassModal); $("classModal").addEventListener("click", event => { if (event.target === $("classModal")) closeClassModal(); });
+    $("className").addEventListener("input", event => renderAvailableStudents(event.target.value));
+    $("classStudentSearch").addEventListener("input", () => renderAvailableStudents());
     $("closeMemberModal").addEventListener("click", closeMemberModal); $("memberModal").addEventListener("click", event => { if (event.target === $("memberModal")) closeMemberModal(); }); $("memberSearch").addEventListener("input", event => renderAvailableMembers(event.target.value)); $("saveMembers").addEventListener("click", saveMembersToGroup);
-    $("classForm").addEventListener("submit", async event => { event.preventDefault(); if (!state.selected || !isLeader(state.selected)) return; const name = $("className").value.trim(); if (!name) { toast("Vui lòng nhập tên lớp.", true); return; } const memberIds = [...document.querySelectorAll("#classMembers input:checked")].map(input => input.value); const button = $("saveClass"); button.disabled = true; try { await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({ name, description: $("classDescription").value.trim(), groupId: state.selected.id, memberIds, createdBy: state.user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), status: "active" }); toast("Đã tạo lớp học."); closeClassModal(); } catch (error) { console.error(error); toast("Không thể tạo lớp học.", true); } finally { button.disabled = false; } });
+    $("classForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!state.selected || !isLeader(state.selected)) return;
+      const name = $("className").value.trim();
+      const classCode = normalizeClassName(name);
+      if (!name) { toast("Vui lòng nhập tên lớp.", true); return; }
+      const studentIds = [...document.querySelectorAll("#classStudents input:checked")].map(input => input.value);
+      if (!studentIds.length) { toast(`Chưa có học viên được chọn cho lớp ${name}.`, true); return; }
+      const selectedStudents = state.allStudents.filter(student => studentIds.includes(student.uid));
+      const button = $("saveClass"); button.disabled = true;
+      try {
+        await myGroupsDb.collection(GROUPS).doc(state.selected.id).collection("classes").add({
+          name,
+          classCode,
+          description: $("classDescription").value.trim(),
+          groupId: state.selected.id,
+          studentIds,
+          students: selectedStudents.map(student => ({ uid: student.uid, name: student.name, email: student.email, class: student.className })),
+          createdBy: state.user.uid,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          status: "active"
+        });
+        toast(`Đã tạo lớp ${name} với ${studentIds.length} học viên.`);
+        closeClassModal();
+      } catch (error) {
+        console.error(error);
+        toast("Không thể tạo lớp học.", true);
+      } finally { button.disabled = false; }
+    });
+    document.addEventListener("keydown", event => { if (event.key === "Escape" && $("classDetailModal").classList.contains("show")) closeClassDetail(); });
     $("currentUserChip").textContent = "Đang xác thực...";
     myGroupsAuth.onAuthStateChanged(async user => { if (!user) { $("currentUserChip").textContent = "Chưa đăng nhập"; toast("Bạn cần đăng nhập để xem nhóm.", true); return; } state.user = user; $("currentUserChip").textContent = user.email || "Tài khoản hiện tại"; watchMyGroups(); });
   </script>

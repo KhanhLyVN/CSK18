@@ -759,7 +759,188 @@
             }
         }
 
+                .cs-account-list-card {
+            margin-top: 22px;
+        }
+
+        .cs-account-list-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .cs-account-list-head .step-head {
+            margin-bottom: 0;
+        }
+
+        .cs-account-list-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cs-account-count {
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: var(--maroon);
+            background: var(--cream);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .cs-refresh-btn,
+        .cs-delete-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .cs-refresh-btn {
+            border: 1px solid var(--line);
+            color: var(--maroon);
+            background: var(--white);
+        }
+
+        .cs-refresh-btn:hover {
+            border-color: var(--maroon);
+            background: var(--cream);
+        }
+
+        .cs-account-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--white);
+        }
+
+        .cs-account-table {
+            min-width: 930px;
+        }
+
+        .cs-account-table .doc-id {
+            color: var(--maroon);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .cs-account-table .account-name {
+            color: var(--maroon-deep);
+            font-weight: 800;
+        }
+
+        .cs-account-table .account-sub {
+            color: var(--text-soft);
+            font-size: 11px;
+        }
+
+        .cs-delete-btn {
+            border: 1px solid rgba(153, 27, 27, .22);
+            color: var(--danger);
+            background: #fff3f1;
+        }
+
+        .cs-delete-btn:hover {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        .cs-account-empty {
+            padding: 28px 16px;
+            color: var(--text-soft);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .cs-delete-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(42, 23, 18, .52);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
+        }
+
+        .cs-delete-modal.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .cs-delete-dialog {
+            width: min(420px, 100%);
+            padding: 25px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--paper);
+            box-shadow: 0 24px 70px rgba(42, 23, 18, .25);
+        }
+
+        .cs-delete-dialog h3 {
+            margin: 0 0 8px;
+            color: var(--maroon-deep);
+            font-family: 'Fraunces', serif;
+            font-size: 23px;
+        }
+
+        .cs-delete-dialog p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .cs-delete-dialog .modal-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            color: var(--danger);
+            background: #fde8e5;
+        }
+
+        .cs-delete-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            margin-top: 22px;
+        }
+
+        .cs-delete-modal-actions button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .cs-modal-cancel {
+            border-color: var(--line);
+            color: var(--text-soft);
+            background: #eee8e1;
+        }
+
+        .cs-modal-confirm {
+            color: #fff;
+            background: var(--danger);
+        }
+
         @media (max-width: 780px) {
+
             .wrap {
                 width: calc(100% - 32px);
                 padding-top: 26px;
@@ -906,11 +1087,61 @@
                             Xuất CSV (kèm username/mật khẩu)
                         </button>
                     </div>
-                </div>
+                                </div>
+
+                <!-- DANH SÁCH TÀI KHOẢN CS -->
+                <section class="step cs-account-list-card" id="csAccountListStep">
+                    <div class="cs-account-list-head">
+                        <div class="step-head">
+                            <div class="step-num"><span class="material-symbols-outlined">manage_accounts</span></div>
+                            <div>
+                                <h2>Tất cả tài khoản CS</h2>
+                                <p class="step-desc" style="margin:4px 0 0;">Danh sách đọc từ collection <strong>users</strong> với accountType <strong>customer_success</strong>.</p>
+                            </div>
+                        </div>
+                        <div class="cs-account-list-actions">
+                            <span class="cs-account-count" id="csAccountCount">0 tài khoản</span>
+                            <button class="cs-refresh-btn" id="refreshCsAccountsBtn" type="button"><span class="material-symbols-outlined">refresh</span>Làm mới</button>
+                        </div>
+                    </div>
+                    <div class="cs-account-table-wrap">
+                        <table class="cs-account-table">
+                            <thead>
+                                <tr>
+                                    
+                                    <th>Họ và tên</th>
+                                    <th>Gmail</th>
+                                    <th>Username</th>
+                                    <th>Phòng ban</th>
+                                    <th>Cơ sở</th>
+                                    
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csAccountListBody">
+                                <tr><td colspan="6" class="cs-account-empty">Đang tải danh sách tài khoản CS...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
         </main>
+
     </div>
-    <div id="toast"></div>
+        <div id="toast"></div>
+
+    <div class="cs-delete-modal" id="csDeleteModal" aria-hidden="true">
+        <div class="cs-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="csDeleteTitle">
+            <div class="modal-icon"><span class="material-symbols-outlined">delete_forever</span></div>
+            <h3 id="csDeleteTitle">Xóa tài khoản CS?</h3>
+            <p id="csDeleteText">Hồ sơ tài khoản sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.</p>
+            <div class="cs-delete-modal-actions">
+                <button class="cs-modal-cancel" id="cancelCsDeleteBtn" type="button">Hủy bỏ</button>
+                <button class="cs-modal-confirm" id="confirmCsDeleteBtn" type="button"><span class="material-symbols-outlined">delete</span> Xóa hồ sơ</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const VN_MAP = {
             'à': 'a', 'á': 'a', 'ạ': 'a', 'ả': 'a', 'ã': 'a', 'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ậ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ặ': 'a', 'ẳ': 'a', 'ẵ': 'a',
@@ -1417,7 +1648,6 @@ Vui lòng bảo mật thông tin đăng nhập.
                         phone: data.phone || '',
                         department: data.department || '',
                         campus: data.campus || '',
-                        uid: data.uid || ''
                     });
                 });
                 return accounts;
@@ -1432,7 +1662,92 @@ Vui lòng bảo mật thông tin đăng nhập.
                 return [];
             }
         }
+                let csDeleteResolver = null;
+
+        function showCsDeleteConfirm(account) {
+            const modal = document.getElementById('csDeleteModal');
+            document.getElementById('csDeleteText').textContent = `Hồ sơ ${account.name || account.email || 'tài khoản này'} sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.`;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            return new Promise(resolve => {
+                csDeleteResolver = resolve;
+                document.getElementById('cancelCsDeleteBtn').focus();
+            });
+        }
+
+        function closeCsDeleteConfirm(result) {
+            const modal = document.getElementById('csDeleteModal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            if (csDeleteResolver) {
+                const resolve = csDeleteResolver;
+                csDeleteResolver = null;
+                resolve(result);
+            }
+        }
+
+        document.getElementById('cancelCsDeleteBtn').addEventListener('click', () => closeCsDeleteConfirm(false));
+        document.getElementById('confirmCsDeleteBtn').addEventListener('click', () => closeCsDeleteConfirm(true));
+        document.getElementById('csDeleteModal').addEventListener('click', event => {
+            if (event.target.id === 'csDeleteModal') closeCsDeleteConfirm(false);
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('csDeleteModal').classList.contains('show')) {
+                closeCsDeleteConfirm(false);
+            }
+        });
+
+        async function loadCsAccountList() {
+            const body = document.getElementById('csAccountListBody');
+            const count = document.getElementById('csAccountCount');
+            body.innerHTML = '<tr><td colspan="6" class="cs-account-empty">Đang tải danh sách tài khoản CS...</td></tr>';
+            try {
+                const snapshot = await accountDb.collection('users').where('accountType', '==', 'customer_success').get();
+                const accounts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'vi'));
+                count.textContent = `${accounts.length} tài khoản`;
+                if (!accounts.length) {
+                    body.innerHTML = '<tr><td colspan="6" class="cs-account-empty">Chưa có tài khoản CS nào.</td></tr>';
+                    return;
+                }
+                body.innerHTML = accounts.map(account => `<tr>
+                    
+                    <td data-label="Họ và tên"><div class="account-name">${escapeHtml(account.name || 'Chưa cập nhật')}</div><div class="account-sub">${escapeHtml(account.phone || '')}</div></td>
+                    <td data-label="Gmail"><span class="account-sub">${escapeHtml(account.email || 'Chưa cập nhật')}</span></td>
+                    <td data-label="Username">${escapeHtml(account.username || 'Chưa cập nhật')}</td>
+                    <td data-label="Phòng ban">${escapeHtml(account.department || 'Chưa cập nhật')}</td>
+                    <td data-label="Cơ sở">${escapeHtml(account.campus || 'Chưa cập nhật')}</td>
+                    <td data-label="Thao tác"><button class="cs-delete-btn" type="button" data-delete-cs="${escapeHtml(account.id)}"><span class="material-symbols-outlined">delete</span>Xóa</button></td>
+                </tr>`).join('');
+                body.querySelectorAll('[data-delete-cs]').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const account = accounts.find(item => item.id === button.dataset.deleteCs);
+                        if (!account) return;
+                        if (!await showCsDeleteConfirm(account)) return;
+                        button.disabled = true;
+                        try {
+                            await accountDb.collection('users').doc(account.id).delete();
+                            toast('Đã xóa hồ sơ tài khoản CS.');
+                            await loadCsAccountList();
+                        } catch (error) {
+                            console.error('Lỗi xóa tài khoản CS:', error);
+                            toast('Không thể xóa hồ sơ. Kiểm tra Firestore Rules.');
+                            button.disabled = false;
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Lỗi tải danh sách tài khoản CS:', error);
+                count.textContent = 'Lỗi tải dữ liệu';
+                body.innerHTML = '<tr><td colspan="6" class="cs-account-empty">Không thể tải danh sách. Kiểm tra Firestore Rules.</td></tr>';
+            }
+        }
+
+        document.getElementById('refreshCsAccountsBtn').addEventListener('click', loadCsAccountList);
+        loadCsAccountList();
+
         // ---- Export CSV ----
+
         document.getElementById('exportCsvBtn').addEventListener(
             'click',
             async () => {
@@ -1453,7 +1768,6 @@ Vui lòng bảo mật thông tin đăng nhập.
                         email: row.studentEmail || '',
                         username: row.username || '',
                         password: row.password || '',
-                        uid: row.uid || ''
                     }));
                     if (!students.length) {
                         toast(
@@ -1472,7 +1786,6 @@ Vui lòng bảo mật thông tin đăng nhập.
                         'Gmail',
                         'Username',
                         'Mật khẩu',
-                        'UID'
                     ];
                     const escape = value =>
                         `"${String(value ?? '')
@@ -1494,8 +1807,8 @@ Vui lòng bảo mật thông tin đăng nhập.
                             student.campus,
                             student.email,
                             student.username,
-                            student.password,
-                            student.uid
+                                                        student.password
+
                         ];
                         lines.push(
                             row.map(escape).join(',')

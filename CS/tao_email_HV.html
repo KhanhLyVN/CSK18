@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
         rel="stylesheet">
     <script src="/firebase-config.js"></script>
-    <link rel="stylesheet" href="/CS/navbar.css">
+    <!-- <link rel="stylesheet" href="/CS/navbar.css"> -->
     <style>
         :root {
             --maroon: #5D0703;
@@ -574,9 +574,206 @@
                 translateX(-50%) translateY(0);
         }
 
+                /* ==============================
+   DANH SÁCH TÀI KHOẢN HỌC VIÊN
+================================ */
+        .student-list-card {
+            margin-top: 22px;
+        }
+
+        .student-list-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .student-list-head .step-head {
+            margin-bottom: 0;
+        }
+
+        .student-list-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-count {
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: var(--maroon);
+            background: var(--cream);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .student-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            color: var(--maroon);
+            background: var(--white);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .student-refresh:hover {
+            border-color: var(--maroon);
+            background: var(--cream);
+        }
+
+        .student-table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--white);
+        }
+
+        .student-table {
+            min-width: 850px;
+        }
+
+        .student-table .student-name {
+            color: var(--maroon-deep);
+            font-weight: 800;
+        }
+
+        .student-table .student-email,
+        .student-table .student-uid {
+            color: var(--text-soft);
+            font-size: 11px;
+        }
+
+        .student-table .student-uid {
+            color: var(--maroon);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .delete-student-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            border: 1px solid rgba(153, 27, 27, .22);
+            border-radius: 7px;
+            color: var(--danger);
+            background: #fff3f1;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .delete-student-btn:hover {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        .student-empty {
+            padding: 28px 16px;
+            color: var(--text-soft);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .student-confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(42, 23, 18, .5);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
+        }
+
+        .student-confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .student-confirm-dialog {
+            width: min(420px, 100%);
+            padding: 25px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--paper);
+            box-shadow: 0 24px 70px rgba(42, 23, 18, .25);
+            transform: translateY(10px) scale(.97);
+            transition: transform .2s ease;
+        }
+
+        .student-confirm-modal.show .student-confirm-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        .student-confirm-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            color: var(--danger);
+            background: #fde8e5;
+        }
+
+        .student-confirm-dialog h3 {
+            margin: 0 0 8px;
+            color: var(--maroon-deep);
+            font-family: 'Fraunces', serif;
+            font-size: 23px;
+        }
+
+        .student-confirm-dialog p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .student-confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            margin-top: 22px;
+        }
+
+        .student-confirm-actions button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .student-confirm-cancel {
+            border-color: var(--line);
+            color: var(--text-soft);
+            background: #eee8e1;
+        }
+
+        .student-confirm-delete {
+            color: #fff;
+            background: var(--danger);
+        }
+
+        .student-confirm-delete:hover {
+            background: #7f1717;
+        }
+
         /* ==============================
    MOBILE
 ================================ */
+
         @media (max-width: 700px) {
             .wrap {
                 width: min(100% - 24px, 1100px);
@@ -783,8 +980,9 @@
                 </button>
             </div>
         </div>
-        <!-- STEP 4: SEND / EXPORT -->
+                <!-- STEP 4: SEND / EXPORT -->
         <div class="step" id="sendStep" style="display:none;">
+
             <div class="step-head">
                 <div class="step-num">4</div>
                 <h2>Gửi &amp; xuất dữ liệu</h2>
@@ -811,9 +1009,59 @@
                     Xuất CSV (kèm username/mật khẩu)
                 </button>
             </div>
+                </div>
+
+        <!-- DANH SÁCH TẤT CẢ TÀI KHOẢN HỌC VIÊN -->
+        <section class="step student-list-card" id="studentListStep">
+            <div class="student-list-head">
+                <div class="step-head">
+                    <div class="step-num"><span class="material-symbols-outlined">groups</span></div>
+                    <div>
+                        <h2> tất cả tài khoản học viên</h2>
+                        <p class="step-desc" style="margin:4px 0 0;">Danh sách được đọc từ collection <strong>users</strong> với role <strong>student</strong>.</p>
+                    </div>
+                </div>
+                <div class="student-list-actions">
+                    <span class="student-count" id="studentCount">0 tài khoản</span>
+                    <button class="student-refresh" id="refreshStudentsBtn" type="button"><span class="material-symbols-outlined">refresh</span>Làm mới</button>
+                </div>
+            </div>
+            <div class="student-table-wrap">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Lớp</th>
+                            <th>Cơ sở</th>
+                            
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentListBody">
+                        <tr><td colspan="7" class="student-empty">Đang tải danh sách học viên...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="student-confirm-modal" id="studentConfirmModal" aria-hidden="true">
+        <div class="student-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="studentConfirmTitle">
+            <div class="student-confirm-icon"><span class="material-symbols-outlined">delete_forever</span></div>
+            <h3 id="studentConfirmTitle">Xóa tài khoản học viên?</h3>
+            <p id="studentConfirmText">Hồ sơ học viên sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.</p>
+            <div class="student-confirm-actions">
+                <button class="student-confirm-cancel" id="cancelStudentDeleteBtn" type="button">Hủy bỏ</button>
+                <button class="student-confirm-delete" id="confirmStudentDeleteBtn" type="button"><span class="material-symbols-outlined">delete</span> Xóa hồ sơ</button>
+            </div>
         </div>
     </div>
+
     <div id="toast"></div>
+
     <script>
         const VN_MAP = {
             'à': 'a', 'á': 'a', 'ạ': 'a', 'ả': 'a', 'ã': 'a', 'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ậ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ặ': 'a', 'ẳ': 'a', 'ẵ': 'a',
@@ -1059,20 +1307,40 @@
                             row.studentEmail,
                             row.password
                         );
-                        const user = credential.user;
+                                                const user = credential.user;
                         row.uid = user.uid;
+
+                        const fullName = mapping.name
+                            ? String(row.raw[mapping.name] || '').trim().replace(/\s+/g, ' ')
+                            : '';
+                        const baseDocumentId = `HV - ${fullName || row.username || 'Học viên'}`;
+                        let studentDocumentId = baseDocumentId;
+                        let duplicateIndex = 2;
+
+                        // Hiển thị document ID theo dạng: HV - Họ tên.
+                        // Nếu trùng tên, thêm username và số thứ tự để không ghi đè.
+                        while ((await accountDb.collection('users').doc(studentDocumentId).get()).exists) {
+                            studentDocumentId = `${baseDocumentId} - ${row.username || duplicateIndex}`;
+                            if (duplicateIndex > 2) {
+                                studentDocumentId += `-${duplicateIndex}`;
+                            }
+                            duplicateIndex++;
+                        }
+
+                        row.documentId = studentDocumentId;
                         await accountDb
                             .collection('users')
-                            .doc(user.uid)
+                            .doc(studentDocumentId)
                             .set({
                                 uid: user.uid,
-                                name: mapping.name
-                                    ? String(row.raw[mapping.name] || '').trim()
-                                    : '',
+                                name: fullName,
                                 email: row.studentEmail,
-                                username: row.username,
-                                password: row.password,
+
+                                                                username: row.username,
+                                // Không lưu password vào Firestore.
+                                // Mật khẩu chỉ tồn tại tạm thời trong genRows để xuất Excel.
                                 role: 'student',
+
                                 provider: 'e-mail',
                                 class: mapping.clazz
                                     ? String(row.raw[mapping.clazz] || '').trim()
@@ -1288,7 +1556,15 @@ Vui lòng bảo mật thông tin đăng nhập.
                 });
             });
         }
+        /*
+         * Bảo mật:
+         * - Firestore chỉ lưu hồ sơ và UID.
+         * - Firebase Authentication quản lý mật khẩu.
+         * - Mật khẩu tạm thời nằm trong genRows của phiên hiện tại,
+         *   nên vẫn có thể xuất Excel ngay sau khi tạo tài khoản.
+         */
         async function getAllStudentsFromFirebase() {
+
             try {
                 const snapshot = await accountDb
                     .collection('users')
@@ -1319,7 +1595,100 @@ Vui lòng bảo mật thông tin đăng nhập.
                 return [];
             }
         }
+                let studentDeleteResolver = null;
+
+        function showStudentDeleteConfirm(student) {
+            const modal = document.getElementById('studentConfirmModal');
+            const text = document.getElementById('studentConfirmText');
+            const cancelBtn = document.getElementById('cancelStudentDeleteBtn');
+            const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
+            text.textContent = `Hồ sơ của ${student.name || student.email || 'học viên này'} sẽ bị xóa khỏi Firestore. Hành động này không thể hoàn tác.`;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            return new Promise(resolve => {
+                studentDeleteResolver = resolve;
+                cancelBtn.focus();
+            });
+        }
+
+        function closeStudentDeleteConfirm(result) {
+            const modal = document.getElementById('studentConfirmModal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            if (studentDeleteResolver) {
+                const resolve = studentDeleteResolver;
+                studentDeleteResolver = null;
+                resolve(result);
+            }
+        }
+
+        document.getElementById('cancelStudentDeleteBtn').addEventListener('click', () => closeStudentDeleteConfirm(false));
+        document.getElementById('confirmStudentDeleteBtn').addEventListener('click', () => closeStudentDeleteConfirm(true));
+        document.getElementById('studentConfirmModal').addEventListener('click', event => {
+            if (event.target.id === 'studentConfirmModal') closeStudentDeleteConfirm(false);
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('studentConfirmModal').classList.contains('show')) {
+                closeStudentDeleteConfirm(false);
+            }
+        });
+
+        async function loadStudentList() {
+            const body = document.getElementById('studentListBody');
+            const count = document.getElementById('studentCount');
+            body.innerHTML = '<tr><td colspan="7" class="student-empty">Đang tải danh sách học viên...</td></tr>';
+            try {
+                const snapshot = await accountDb.collection('users').where('role', '==', 'student').get();
+                const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'vi'));
+                count.textContent = `${students.length} tài khoản`;
+                if (!students.length) {
+                    body.innerHTML = '<tr><td colspan="7" class="student-empty">Chưa có tài khoản học viên nào.</td></tr>';
+                    return;
+                }
+                body.innerHTML = students.map((student, index) => {
+                    const uid = student.uid || student.id;
+                    return `<tr>
+                        <td data-label="#">${index + 1}</td>
+                        <td data-label="Họ tên"><div class="student-name">${escapeHtml(student.name || 'Chưa cập nhật')}</div><div class="student-email">${escapeHtml(student.phone || '')}</div></td>
+                        <td data-label="Email"><span class="student-email">${escapeHtml(student.email || 'Chưa cập nhật')}</span></td>
+                        <td data-label="Username"><span class="mono">${escapeHtml(student.username || 'Chưa cập nhật')}</span></td>
+                        <td data-label="Lớp">${escapeHtml(student.class || 'Chưa cập nhật')}</td>
+                        <td data-label="Cơ sở">${escapeHtml(student.campus || 'Chưa cập nhật')}</td>
+                        
+                        <td data-label="Thao tác"><button class="delete-student-btn" type="button" data-delete-student="${escapeHtml(student.id)}"><span class="material-symbols-outlined">delete</span>Xóa</button></td>
+                    </tr>`;
+                }).join('');
+                body.querySelectorAll('[data-delete-student]').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const student = students.find(item => item.id === button.dataset.deleteStudent);
+                        if (!student) return;
+                        const confirmed = await showStudentDeleteConfirm(student);
+                        if (!confirmed) return;
+                        button.disabled = true;
+                        try {
+                            await accountDb.collection('users').doc(student.id).delete();
+                            toast('Đã xóa hồ sơ học viên.');
+                            await loadStudentList();
+                        } catch (error) {
+                            console.error('Lỗi xóa hồ sơ học viên:', error);
+                            toast('Không thể xóa hồ sơ. Kiểm tra Firestore Rules.');
+                            button.disabled = false;
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Lỗi tải danh sách học viên:', error);
+                count.textContent = 'Lỗi tải dữ liệu';
+                body.innerHTML = '<tr><td colspan="7" class="student-empty">Không thể tải danh sách. Kiểm tra Firestore Rules.</td></tr>';
+            }
+        }
+
+        document.getElementById('refreshStudentsBtn').addEventListener('click', loadStudentList);
+        loadStudentList();
+
         // ---- Export CSV ----
+
         document.getElementById('exportCsvBtn').addEventListener(
             'click',
             async () => {
@@ -1328,15 +1697,33 @@ Vui lòng bảo mật thông tin đăng nhập.
                 btn.disabled = true;
                 btn.textContent = 'Đang lấy dữ liệu...';
                 try {
-                    // Lấy toàn bộ học viên trong Firebase
-                    const students =
-                        await getAllStudentsFromFirebase();
+                                        /*
+                     * Không đọc password từ Firestore vì Firestore không lưu password.
+                     * Lấy các dòng đã tạo thành công trong phiên hiện tại.
+                     */
+                    const students = genRows
+                        .filter(row => row.created && row.uid)
+                        .map(row => ({
+                            name: mapping.name
+                                ? String(row.raw[mapping.name] || '').trim()
+                                : '',
+                            email: row.studentEmail || '',
+                            username: row.username || '',
+                            password: row.password || '',
+                            class: mapping.clazz
+                                ? String(row.raw[mapping.clazz] || '').trim()
+                                : '',
+                            campus: row.campus || '',
+                            uid: row.uid || ''
+                        }));
+
                     if (!students.length) {
                         toast(
-                            'Firebase chưa có học viên nào.'
+                            'Chưa có tài khoản nào được tạo thành công trong phiên này.'
                         );
                         return;
                     }
+
                     /*
                      * Các cột xuất ra
                      */
@@ -1347,8 +1734,8 @@ Vui lòng bảo mật thông tin đăng nhập.
                         'Password',
                         'Lớp',
                         'Cơ sở',
-                        'UID'
-                    ];
+                                            ];
+
                     const escape = value =>
                         `"${String(value ?? '')
                             .replace(/"/g, '""')}"`;
@@ -1367,9 +1754,9 @@ Vui lòng bảo mật thông tin đăng nhập.
                             student.email,
                             student.username,
                             student.password,
-                            student.class,
-                            student.campus,
-                            student.uid
+                                                        student.class,
+                            student.campus
+
                         ];
                         lines.push(
                             row.map(escape).join(',')
@@ -1409,18 +1796,18 @@ Vui lòng bảo mật thông tin đăng nhập.
                     );
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = `
+                                    btn.innerHTML = `
                 <span class="material-symbols-outlined">
                     download
                 </span>
-                Xuất tất cả học viên
+                Xuất tài khoản vừa tạo
             `;
+
                 }
             }
         );
     </script>
-    <script src="/CS/navbar.js"></script>
+    <!-- <script src="/CS/navbar.js"></script> -->
 </body>
 
 </html>
-x

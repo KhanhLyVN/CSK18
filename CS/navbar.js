@@ -21,6 +21,7 @@
 
   const links = [
     { page: "home", href: HOME_URL, label: "Trang chủ" },
+    { page: "groups", href: "/CS/Groups/group.html", label: "Nhóm của tôi" },
     { page: "tickets", href: "/CS/TicketManagement/cs-ticket.html", label: "Quản lý ticket" },
     { page: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html", label: "Tạo phiếu hỗ trợ" },
     { page: "groups", href: "/CS/Groups/group.html", label: "Nhóm của tôi", leaderOnly: true },

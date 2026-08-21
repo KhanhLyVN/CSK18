@@ -335,9 +335,6 @@
       <tr data-account-id="${escapeAttribute(account.id)}">
         <td>
           <div class="account-cell">
-            <div class="avatar">
-              ${escapeHTML(initials)}
-            </div>
             <div>
               <strong>
                 ${name}

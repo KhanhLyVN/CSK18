@@ -472,6 +472,20 @@
                 0 0 0 3px rgba(93, 7, 3, .08);
         }
 
+        /* Ẩn biểu tượng hiển thị mật khẩu mặc định của trình duyệt.
+           Nút .toggle-password là nút mắt duy nhất của trang. */
+        .password-form input::-ms-reveal,
+        .password-form input::-ms-clear {
+            display: none;
+        }
+
+        .password-form input::-webkit-credentials-auto-fill-button,
+        .password-form input::-webkit-textfield-decoration-container {
+            visibility: hidden;
+            display: none !important;
+            pointer-events: none;
+        }
+
         .toggle-password {
             position: absolute;
             top: 50%;
@@ -1046,130 +1060,517 @@
     <div id="toast"></div>
     <script>
         "use strict";
+
         /* =====================================================
-           ELEMENT HELPER
+           ACCOUNT PAGE
+           FIX:
+           - Firebase Auth UID KHÔNG nhất thiết là document ID.
+           - Tìm user theo thứ tự:
+             1. users/{auth.uid}
+             2. users where uid == auth.uid
+             3. users where email == auth.email
+           - Điều này phù hợp với dữ liệu hiện tại của hệ thống:
+             document ID có thể là tên/ID riêng, còn field "uid"
+             mới chứa Firebase Authentication UID.
         ===================================================== */
+
         const $ = id => document.getElementById(id);
-        /* =====================================================
-           ACCOUNT ELEMENTS
-        ===================================================== */
-        const profileCard =
-            $("profileCard");
-        const loginEmpty =
-            $("loginEmpty");
-        const accountContent =
-            $("accountContent");
-        const roleBadge =
-            $("roleBadge");
+
+        const profileCard = $("profileCard");
+        const loginEmpty = $("loginEmpty");
+        const accountContent = $("accountContent");
+        const roleBadge = $("roleBadge");
+
+        let currentFirebaseUser = null;
+        let currentFirestoreUser = null;
+
         /* =====================================================
            TOAST
         ===================================================== */
         function toast(message) {
-            const element =
-                $("toast");
-            if (!element) {
-                return;
-            }
-            element.textContent =
-                message;
+            const element = $("toast");
+            if (!element) return;
+
+            element.textContent = message;
             element.classList.add("show");
-            clearTimeout(
-                window.toastTimer
-            );
-            window.toastTimer =
-                setTimeout(() => {
-                    element.classList.remove("show");
-                }, 2500);
+
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                element.classList.remove("show");
+            }, 2500);
         }
+
         /* =====================================================
-           SHOW LOGGED OUT
+           UI STATE
         ===================================================== */
         function showLoggedOutState() {
             if (profileCard) {
                 profileCard.style.display = "none";
             }
+
             if (loginEmpty) {
                 loginEmpty.hidden = false;
             }
+
             if (accountContent) {
                 accountContent.classList.add("account-content-hidden");
             }
         }
-        /* =====================================================
-           SHOW LOGGED IN
-        ===================================================== */
+
         function showLoggedInState() {
             if (profileCard) {
                 profileCard.style.display = "flex";
             }
+
             if (loginEmpty) {
                 loginEmpty.hidden = true;
             }
+
             if (accountContent) {
                 accountContent.classList.remove("account-content-hidden");
             }
         }
+
+        function showAccountError(title, message) {
+            showLoggedOutState();
+
+            const titleEl = loginEmpty?.querySelector("h2");
+            const messageEl = loginEmpty?.querySelector("p");
+
+            if (titleEl) titleEl.textContent = title;
+            if (messageEl) messageEl.textContent = message;
+        }
+
         /* =====================================================
-           ROLE FORMAT
+           ROLE
         ===================================================== */
         function formatRole(role) {
-            if (!role) {
-                return "Chưa xác định";
-            }
+            if (!role) return "Chưa xác định";
+
             const roles = {
-                admin:
-                    "Admin",
-                administrator:
-                    "Admin",
-                cs:
-                    "CS",
-                customer_success:
-                    "Customer Success",
-                "customer success":
-                    "Customer Success",
-                manager:
-                    "Manager",
-                staff:
-                    "Staff",
-                teacher:
-                    "Teacher",
-                gv:
-                    "Giảng viên",
-                student:
-                    "Học viên",
-                hocvien:
-                    "Học viên"
+                admin: "Admin",
+                administrator: "Admin",
+                cs: "CS",
+                customer_success: "Customer Success",
+                "customer success": "Customer Success",
+                manager: "Manager",
+                staff: "Staff",
+                teacher: "Teacher",
+                gv: "Giảng viên",
+                student: "Học viên",
+                hocvien: "Học viên"
             };
-            const key =
-                String(role)
-                    .trim()
-                    .toLowerCase();
-            return roles[key] ||
-                role;
+
+            const key = String(role).trim().toLowerCase();
+
+            return roles[key] || String(role);
         }
+
         /* =====================================================
-           AVATAR INITIALS
+           AVATAR
         ===================================================== */
         function getInitials(name) {
-            if (!name) {
-                return "CS";
-            }
-            const parts =
-                String(name)
-                    .trim()
-                    .split(/\s+/)
-                    .filter(Boolean);
+            if (!name) return "CS";
+
+            const parts = String(name)
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean);
+
             if (parts.length >= 2) {
                 return (
                     parts[0][0] +
                     parts[parts.length - 1][0]
                 ).toUpperCase();
             }
-            return parts[0][0]
-                .toUpperCase();
+
+            return parts[0][0].toUpperCase();
         }
+
         /* =====================================================
-           SHOW PASSWORD
+           FIREBASE
+        ===================================================== */
+        function getFirebaseServices() {
+            if (typeof firebase === "undefined") {
+                throw new Error("Firebase SDK chưa được tải.");
+            }
+
+            if (!firebase.apps || !firebase.apps.length) {
+                throw new Error(
+                    "Firebase chưa được khởi tạo. Kiểm tra firebase-config.js."
+                );
+            }
+
+            return {
+                auth: firebase.auth(),
+                db: firebase.firestore()
+            };
+        }
+
+        /* =====================================================
+           FIND USER DOCUMENT
+           QUAN TRỌNG NHẤT
+        ===================================================== */
+        async function findUserDocument(firebaseUser, db) {
+            const usersRef = db.collection("users");
+
+            console.log("========================================");
+            console.log("TÌM FIRESTORE USER");
+            console.log("Auth UID:", firebaseUser.uid);
+            console.log("Auth Email:", firebaseUser.email);
+            console.log("========================================");
+
+            /*
+             * STEP 1
+             * Trường hợp chuẩn:
+             * users/{Firebase Auth UID}
+             */
+            try {
+                const directRef = usersRef.doc(firebaseUser.uid);
+                const directSnap = await directRef.get();
+
+                if (directSnap.exists) {
+                    console.log(
+                        "FOUND BY DOCUMENT ID:",
+                        directSnap.id
+                    );
+
+                    return {
+                        id: directSnap.id,
+                        ref: directRef,
+                        snap: directSnap,
+                        data: directSnap.data(),
+                        method: "document-id"
+                    };
+                }
+
+                console.log(
+                    "Không có document users/" + firebaseUser.uid
+                );
+            } catch (error) {
+                console.warn(
+                    "Không thể đọc users/{uid}:",
+                    error
+                );
+            }
+
+            /*
+             * STEP 2
+             * Dữ liệu hiện tại của bé đang có dạng:
+             *
+             * document ID: có thể là "CS - Bùi Phương Khánh"
+             * uid: "z7nK8jfbMGeIhP98RDW1L8s7Qul1"
+             *
+             * Vì vậy phải query field uid.
+             */
+            try {
+                const uidQuery = await usersRef
+                    .where("uid", "==", firebaseUser.uid)
+                    .limit(1)
+                    .get();
+
+                if (!uidQuery.empty) {
+                    const found = uidQuery.docs[0];
+
+                    console.log(
+                        "FOUND BY FIELD UID:",
+                        found.id,
+                        found.data()
+                    );
+
+                    return {
+                        id: found.id,
+                        ref: found.ref,
+                        snap: found,
+                        data: found.data(),
+                        method: "uid-field"
+                    };
+                }
+
+                console.log(
+                    "Không tìm thấy user theo field uid."
+                );
+            } catch (error) {
+                console.error(
+                    "QUERY UID ERROR:",
+                    error
+                );
+
+                /*
+                 * Không return ngay.
+                 * Thử email ở STEP 3.
+                 */
+            }
+
+            /*
+             * STEP 3
+             * Fallback theo email.
+             */
+            if (firebaseUser.email) {
+                try {
+                    const emailQuery = await usersRef
+                        .where(
+                            "email",
+                            "==",
+                            firebaseUser.email
+                        )
+                        .limit(1)
+                        .get();
+
+                    if (!emailQuery.empty) {
+                        const found = emailQuery.docs[0];
+
+                        console.log(
+                            "FOUND BY EMAIL:",
+                            found.id,
+                            found.data()
+                        );
+
+                        return {
+                            id: found.id,
+                            ref: found.ref,
+                            snap: found,
+                            data: found.data(),
+                            method: "email"
+                        };
+                    }
+
+                    console.log(
+                        "Không tìm thấy user theo email."
+                    );
+                } catch (error) {
+                    console.error(
+                        "QUERY EMAIL ERROR:",
+                        error
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        /* =====================================================
+           RENDER ACCOUNT
+        ===================================================== */
+        function renderAccount(firebaseUser, userRecord) {
+            const data = userRecord.data || {};
+
+            currentFirebaseUser = firebaseUser;
+            currentFirestoreUser = userRecord;
+
+            console.log("Firestore document ID:", userRecord.id);
+            console.log("Firestore user data:", data);
+            console.log("Found method:", userRecord.method);
+
+            const name =
+                data.name ||
+                data.fullName ||
+                data.displayName ||
+                firebaseUser.displayName ||
+                "Người dùng";
+
+            const email =
+                data.email ||
+                firebaseUser.email ||
+                "Chưa cập nhật";
+
+            const username =
+                data.username ||
+                "Chưa cập nhật";
+
+            const phone =
+                data.phone ||
+                data.phoneNumber ||
+                "Chưa cập nhật";
+
+            const campus =
+                data.campus ||
+                data.campusName ||
+                data.campusId ||
+                "Chưa cập nhật";
+
+            /*
+             * Dữ liệu Firebase hiện tại của bé có:
+             * department: "CS"
+             *
+             * Một số tài khoản có thể dùng:
+             * role / accountType / department
+             */
+            const rawRole =
+                data.role ||
+                data.accountType ||
+                data.department ||
+                "Chưa cập nhật";
+
+            const displayRole = formatRole(rawRole);
+
+            showLoggedInState();
+
+            /* PROFILE */
+            const profileNameEl = $("profileName");
+            if (profileNameEl) {
+                profileNameEl.textContent = name;
+            }
+
+            const profileEmailEl = $("profileEmail");
+            if (profileEmailEl) {
+                profileEmailEl.textContent = email;
+            }
+
+            const roleBadgeEl = $("roleBadge");
+            if (roleBadgeEl) {
+                roleBadgeEl.textContent = displayRole;
+            }
+
+            const avatarEl = $("avatar");
+            if (avatarEl) {
+                avatarEl.textContent = getInitials(name);
+            }
+
+            /* PERSONAL */
+            const nameEl = $("name");
+            if (nameEl) {
+                nameEl.textContent = name;
+            }
+
+            const campusEl = $("campus");
+            if (campusEl) {
+                campusEl.textContent = campus;
+            }
+
+            const departmentEl = $("department");
+            if (departmentEl) {
+                departmentEl.textContent = displayRole;
+            }
+
+            /* ACCOUNT */
+            const usernameEl = $("username");
+            if (usernameEl) {
+                usernameEl.textContent = username;
+            }
+
+            const emailEl = $("email");
+            if (emailEl) {
+                emailEl.textContent = email;
+            }
+
+            const phoneEl = $("phone");
+            if (phoneEl) {
+                phoneEl.textContent = phone;
+            }
+        }
+
+        /* =====================================================
+           LOAD ACCOUNT
+        ===================================================== */
+        async function loadAccount(firebaseUser) {
+            try {
+                const { db } = getFirebaseServices();
+
+                const userRecord = await findUserDocument(
+                    firebaseUser,
+                    db
+                );
+
+                if (!userRecord) {
+                    console.error(
+                        "KHÔNG TÌM THẤY FIRESTORE USER",
+                        {
+                            authUid: firebaseUser.uid,
+                            email: firebaseUser.email
+                        }
+                    );
+
+                    showAccountError(
+                        "Chưa có thông tin tài khoản",
+                        "Firebase Authentication đã đăng nhập thành công nhưng chưa tìm thấy hồ sơ trong collection users. Hãy kiểm tra field uid của tài khoản trong Firestore."
+                    );
+
+                    toast(
+                        "Không tìm thấy hồ sơ CS trong Firestore."
+                    );
+
+                    return;
+                }
+
+                renderAccount(
+                    firebaseUser,
+                    userRecord
+                );
+            } catch (error) {
+                console.error(
+                    "LOAD ACCOUNT ERROR:",
+                    error
+                );
+
+                showAccountError(
+                    "Không thể tải tài khoản",
+                    "Không thể đọc dữ liệu tài khoản từ Firebase. Kiểm tra firebase-config.js và Firestore Rules."
+                );
+
+                toast(
+                    "Không thể tải thông tin tài khoản."
+                );
+            }
+        }
+
+        /* =====================================================
+           AUTH STATE
+        ===================================================== */
+        let firebaseAuth = null;
+
+        try {
+            const services = getFirebaseServices();
+
+            firebaseAuth = services.auth;
+
+            firebaseAuth.onAuthStateChanged(
+                async user => {
+                    console.log(
+                        "AUTH STATE CHANGED:",
+                        user
+                    );
+
+                    if (!user) {
+                        currentFirebaseUser = null;
+                        currentFirestoreUser = null;
+
+                        console.log(
+                            "Không có tài khoản Firebase đăng nhập."
+                        );
+
+                        showLoggedOutState();
+                        return;
+                    }
+
+                    console.log(
+                        "Đã đăng nhập:",
+                        {
+                            uid: user.uid,
+                            email: user.email,
+                            displayName: user.displayName,
+                            provider:
+                                user.providerData?.[0]?.providerId
+                        }
+                    );
+
+                    await loadAccount(user);
+                }
+            );
+        } catch (error) {
+            console.error(
+                "FIREBASE INIT ERROR:",
+                error
+            );
+
+            showAccountError(
+                "Không thể kết nối Firebase",
+                "Firebase chưa được khởi tạo. Vui lòng kiểm tra file firebase-config.js và thứ tự các script Firebase."
+            );
+        }
+
+        /* =====================================================
+           SHOW / HIDE PASSWORD
         ===================================================== */
         document
             .querySelectorAll(".toggle-password")
@@ -1179,33 +1580,39 @@
                     () => {
                         const input =
                             $(button.dataset.target);
-                        if (!input) {
-                            return;
-                        }
+
+                        if (!input) return;
+
                         const icon =
                             button.querySelector("i");
+
                         const isHidden =
                             input.type === "password";
+
                         input.type =
                             isHidden
                                 ? "text"
                                 : "password";
+
                         if (icon) {
                             icon.classList.toggle(
                                 "fa-eye",
                                 !isHidden
                             );
+
                             icon.classList.toggle(
                                 "fa-eye-slash",
                                 isHidden
                             );
                         }
+
                         button.setAttribute(
                             "aria-label",
                             isHidden
                                 ? "Ẩn mật khẩu"
                                 : "Hiện mật khẩu"
                         );
+
                         button.setAttribute(
                             "title",
                             isHidden
@@ -1215,255 +1622,55 @@
                     }
                 );
             });
-        /* =====================================================
-           CHECK FIREBASE
-        ===================================================== */
-        if (
-            typeof firebase === "undefined" ||
-            typeof auth === "undefined" ||
-            typeof db === "undefined"
-        ) {
-            console.error(
-                "Firebase/Auth/Firestore chưa được tải."
-            );
-            showLoggedOutState();
-            const loginTitle = loginEmpty.querySelector("h2");
-            const loginMessage = loginEmpty.querySelector("p");
-            if (loginTitle) {
-                loginTitle.textContent = "Không thể kết nối Firebase";
-            }
-            if (loginMessage) {
-                loginMessage.textContent =
-                    "Firebase, Authentication hoặc Firestore chưa được tải. Vui lòng kiểm tra firebase-config.js và thứ tự các script.";
-            }
-        } else {
-            /* =================================================
-               AUTH STATE
-            ================================================= */
-            auth.onAuthStateChanged(
-                async user => {
-                    console.log(
-                        "Firebase Auth:",
-                        user
-                    );
-                    /* =========================================
-                       CHƯA ĐĂNG NHẬP
-                    ========================================== */
-                    if (!user) {
-                        console.log(
-                            "Không có tài khoản đăng nhập."
-                        );
-                        showLoggedOutState();
-                        return;
-                    }
-                    /* =========================================
-                       ĐÃ ĐĂNG NHẬP
-                    ========================================== */
-                    console.log(
-                        "User UID:",
-                        user.uid
-                    );
-                    console.log(
-                        "User Email:",
-                        user.email
-                    );
-                    try {
-                        /* =====================================
-                           GET USER DOCUMENT
-                        ====================================== */
-                        const userRef =
-                            db
-                                .collection("users")
-                                .doc(user.uid);
-                        const doc =
-                            await userRef.get();
-                        /* =====================================
-                           DOCUMENT NOT FOUND
-                        ====================================== */
-                        if (!doc.exists) {
-                            console.error(
-                                "Không tìm thấy:",
-                                `users/${user.uid}`
-                            );
-                            showLoggedOutState();
-                            loginEmpty.querySelector("h2")
-                                .textContent =
-                                "Chưa có thông tin tài khoản";
-                            loginEmpty.querySelector("p")
-                                .textContent =
-                                "Tài khoản Firebase đã đăng nhập nhưng chưa có dữ liệu trong hệ thống. Vui lòng liên hệ quản trị viên.";
-                            return;
-                        }
-                        /* =====================================
-                           DATA
-                        ====================================== */
-                        const data =
-                            doc.data();
-                        console.log(
-                            "Firestore user:",
-                            data
-                        );
-                        /* =====================================
-                           BASIC INFORMATION
-                        ====================================== */
-                        const name =
-                            data.name ||
-                            data.fullName ||
-                            user.displayName ||
-                            "Người dùng";
-                        const email =
-                            data.email ||
-                            user.email ||
-                            "Chưa cập nhật";
-                        const username =
-                            data.username ||
-                            "Chưa cập nhật";
-                        const phone =
-                            data.phone ||
-                            data.phoneNumber ||
-                            "Chưa cập nhật";
-                        const campus =
-                            data.campus ||
-                            data.campusName ||
-                            "Chưa cập nhật";
-                        /* =====================================
-                           ROLE
-                        ====================================== */
-                        const rawRole =
-                            data.role ||
-                            data.department ||
-                            "Chưa cập nhật";
-                        const displayRole =
-                            formatRole(
-                                rawRole
-                            );
-                        /* =====================================
-                           SHOW ACCOUNT
-                        ====================================== */
-                        showLoggedInState();
-                        /* =====================================
-                           PROFILE
-                        ====================================== */
-                        const profileNameEl = $("profileName");
-                        if (profileNameEl) {
-                            profileNameEl.textContent = name;
-                        }
-                        const profileEmailEl = $("profileEmail");
-                        if (profileEmailEl) {
-                            profileEmailEl.textContent = email;
-                        }
-                        const roleBadgeEl = $("roleBadge");
-                        if (roleBadgeEl) {
-                            roleBadgeEl.textContent = displayRole;
-                        }
-                        const avatarEl = $("avatar");
-                        if (avatarEl) {
-                            avatarEl.textContent = getInitials(name);
-                        }
-                        /* =====================================
-                           PERSONAL INFORMATION
-                        ====================================== */
-                        const nameEl = $("name");
-                        if (nameEl) {
-                            nameEl.textContent = name;
-                        }
-                        const campusEl = $("campus");
-                        if (campusEl) {
-                            campusEl.textContent = campus;
-                        }
-                        /*
-                         * QUAN TRỌNG:
-                         *
-                         * HTML dùng:
-                         *
-                         * id="department"
-                         *
-                         * nên phải cập nhật department.
-                         *
-                         * Không dùng $("role")
-                         */
-                        const departmentEl = $("department");
-                        if (departmentEl) {
-                            departmentEl.textContent = displayRole;
-                        }
-                        /* =====================================
-                           ACCOUNT INFORMATION
-                        ====================================== */
-                        const usernameEl = $("username");
-                        if (usernameEl) {
-                            usernameEl.textContent = username;
-                        }
-                        const emailEl = $("email");
-                        if (emailEl) {
-                            emailEl.textContent = email;
-                        }
-                        const phoneEl = $("phone");
-                        if (phoneEl) {
-                            phoneEl.textContent = phone;
-                        }
-                    } catch (error) {
-                        console.error(
-                            "LOAD ACCOUNT ERROR:",
-                            error
-                        );
-                        showLoggedOutState();
-                        loginEmpty.hidden =
-                            false;
-                        loginEmpty.querySelector("h2")
-                            .textContent =
-                            "Không thể tải tài khoản";
-                        loginEmpty.querySelector("p")
-                            .textContent =
-                            "Đã xảy ra lỗi khi tải thông tin tài khoản. Vui lòng kiểm tra Firebase và thử lại.";
-                        toast(
-                            "Không thể tải thông tin tài khoản."
-                        );
-                    }
-                }
-            );
-        }
+
         /* =====================================================
            CHANGE PASSWORD
         ===================================================== */
-        const changePasswordForm = $("changePasswordForm");
+        const changePasswordForm =
+            $("changePasswordForm");
+
         if (changePasswordForm) {
             changePasswordForm.addEventListener(
                 "submit",
                 async event => {
                     event.preventDefault();
-                    const user =
-                        auth.currentUser;
-                    /* =========================================
-                       CHECK USER
-                    ========================================== */
+
+                    let user = null;
+
+                    try {
+                        const services =
+                            getFirebaseServices();
+
+                        user =
+                            services.auth.currentUser;
+                    } catch (error) {
+                        console.error(error);
+                    }
+
                     if (!user) {
                         toast(
                             "Bạn chưa đăng nhập."
                         );
                         return;
                     }
-                    /* =========================================
-                       GET PASSWORD
-                    ========================================== */
+
                     const newPassword =
                         $("newPassword")
-                            .value
-                            .trim();
+                            ?.value
+                            .trim() || "";
+
                     const confirmPassword =
                         $("confirmPassword")
-                            .value
-                            .trim();
-                    /* =========================================
-                       VALIDATE
-                    ========================================== */
-                    if (
-                        newPassword.length < 6
-                    ) {
+                            ?.value
+                            .trim() || "";
+
+                    if (newPassword.length < 6) {
                         toast(
                             "Mật khẩu phải có ít nhất 6 ký tự."
                         );
                         return;
                     }
+
                     if (
                         newPassword !==
                         confirmPassword
@@ -1473,16 +1680,14 @@
                         );
                         return;
                     }
-                    /* =========================================
-                       CHANGE PASSWORD
-                    ========================================== */
+
                     try {
                         await user.updatePassword(
                             newPassword
                         );
-                        $("changePasswordForm")
-                            .reset();
-                        /* Reset icon */
+
+                        changePasswordForm.reset();
+
                         document
                             .querySelectorAll(
                                 ".toggle-password"
@@ -1490,21 +1695,36 @@
                             .forEach(button => {
                                 const target =
                                     $(button.dataset.target);
+
                                 const icon =
                                     button.querySelector("i");
+
                                 if (target) {
                                     target.type =
                                         "password";
                                 }
+
                                 if (icon) {
                                     icon.classList.remove(
                                         "fa-eye-slash"
                                     );
+
                                     icon.classList.add(
                                         "fa-eye"
                                     );
                                 }
+
+                                button.setAttribute(
+                                    "aria-label",
+                                    "Hiện mật khẩu"
+                                );
+
+                                button.setAttribute(
+                                    "title",
+                                    "Hiện mật khẩu"
+                                );
                             });
+
                         toast(
                             "Đổi mật khẩu thành công."
                         );
@@ -1513,9 +1733,7 @@
                             "CHANGE PASSWORD ERROR:",
                             error
                         );
-                        /* =====================================
-                           RE-AUTH REQUIRED
-                        ====================================== */
+
                         if (
                             error.code ===
                             "auth/requires-recent-login"
@@ -1525,9 +1743,7 @@
                             );
                             return;
                         }
-                        /* =====================================
-                           WEAK PASSWORD
-                        ====================================== */
+
                         if (
                             error.code ===
                             "auth/weak-password"
@@ -1537,9 +1753,17 @@
                             );
                             return;
                         }
-                        /* =====================================
-                           DEFAULT
-                        ====================================== */
+
+                        if (
+                            error.code ===
+                            "auth/network-request-failed"
+                        ) {
+                            toast(
+                                "Lỗi mạng. Vui lòng thử lại."
+                            );
+                            return;
+                        }
+
                         toast(
                             "Không thể đổi mật khẩu. Vui lòng thử lại."
                         );
@@ -1547,16 +1771,22 @@
                 }
             );
         }
+
         /* =====================================================
            LOGOUT
         ===================================================== */
         const logoutBtn = $("logoutBtn");
+
         if (logoutBtn) {
             logoutBtn.addEventListener(
                 "click",
                 async () => {
                     try {
-                        await auth.signOut();
+                        const services =
+                            getFirebaseServices();
+
+                        await services.auth.signOut();
+
                         window.location.href =
                             "/CS/login/login.html";
                     } catch (error) {
@@ -1564,6 +1794,7 @@
                             "LOGOUT ERROR:",
                             error
                         );
+
                         toast(
                             "Đăng xuất thất bại."
                         );
@@ -1571,10 +1802,13 @@
                 }
             );
         }
+
         /* =====================================================
            LOGIN NOW
         ===================================================== */
-        const loginNowBtn = $("loginNowBtn");
+        const loginNowBtn =
+            $("loginNowBtn");
+
         if (loginNowBtn) {
             loginNowBtn.addEventListener(
                 "click",
@@ -1585,6 +1819,7 @@
             );
         }
     </script>
+
     <!-- =====================================================
      NAVBAR JS
 ====================================================== -->

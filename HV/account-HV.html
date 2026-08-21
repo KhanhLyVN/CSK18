@@ -773,19 +773,36 @@
                 user.email
             );
             try {
-                const doc = await db
-                    .collection("users")
-                    .doc(user.uid)
-                    .get();
-                if (!doc.exists) {
-                    console.error(
-                        "Không tìm thấy users/" + user.uid
-                    );
+                const usersRef = db.collection("users");
+                let userDoc = await usersRef.doc(user.uid).get();
+
+                // Một số tài khoản được lưu bằng document ID tự sinh và chỉ có uid bên trong.
+                // Vì vậy không được giả định users/{Firebase Auth UID} luôn tồn tại.
+                if (!userDoc.exists) {
+                    const byUid = await usersRef
+                        .where("uid", "==", user.uid)
+                        .limit(1)
+                        .get();
+                    if (!byUid.empty) userDoc = byUid.docs[0];
+                }
+
+                // Fallback cuối cùng cho dữ liệu cũ chỉ đồng bộ email.
+                if (!userDoc.exists && user.email) {
+                    const byEmail = await usersRef
+                        .where("email", "==", user.email)
+                        .limit(1)
+                        .get();
+                    if (!byEmail.empty) userDoc = byEmail.docs[0];
+                }
+
+                if (!userDoc.exists) {
+                    console.error("Không tìm thấy hồ sơ users cho UID:", user.uid);
                     showLoggedOutState();
                     toast("Không tìm thấy thông tin tài khoản.");
                     return;
                 }
-                const data = doc.data();
+
+                const data = userDoc.data() || {};
                 console.log(
                     "Thông tin user:",
                     data
