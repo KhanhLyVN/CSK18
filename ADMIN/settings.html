@@ -23,6 +23,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="../firebase-config.js"></script>
+  <link rel="stylesheet" href="admin-theme.css">
 </head>
 
 <body data-admin-page="settings">
@@ -40,18 +41,27 @@
         <section class="hero">
           <div>
             <p class="eyebrow">
-              SYSTEM CONFIGURATION
+              TRUNG TÂM QUẢN TRỊ
             </p>
             <h1>
               Cài đặt
-              <span>hệ thống.</span>
+              <span>dễ dùng.</span>
             </h1>
             <p class="hero-copy">
-              Quản lý thông tin quản trị viên,
-              thông báo, giao diện và các cấu hình
-              hoạt động của hệ thống Customer Success.
+              Điều chỉnh thông tin cá nhân, cách hiển thị và an toàn phiên đăng nhập.
+              Mỗi thay đổi đều có mô tả ngắn; bạn chỉ cần nhấn <strong>Lưu cài đặt</strong>
+              ở cuối trang để áp dụng.
             </p>
           </div>
+          <aside class="settings-start-card" aria-label="Hướng dẫn nhanh">
+            <span class="settings-start-kicker">BẮT ĐẦU NHANH</span>
+            <strong>3 bước để cập nhật cài đặt</strong>
+            <ol>
+              <li><b>1</b><span>Chọn mục cần thay đổi.</span></li>
+              <li><b>2</b><span>Bật/tắt hoặc chọn giá trị phù hợp.</span></li>
+              <li><b>3</b><span>Nhấn <em>Lưu cài đặt</em> ở cuối trang.</span></li>
+            </ol>
+          </aside>
           <!-- <div class="hero-art">
           <div class="orbit orbit-one"></div>
           <div class="orbit orbit-two"></div>
@@ -71,7 +81,12 @@
         <!-- =================================================
            SETTINGS GRID
       ================================================== -->
-        <section class="settings-grid">
+        <section class="settings-overview" aria-label="Tóm tắt các nhóm cài đặt">
+          <div><span class="material-symbols-rounded">person</span><div><strong>Thông tin cá nhân</strong><small>Cập nhật tên hiển thị của Admin.</small></div></div>
+          <div><span class="material-symbols-rounded">palette</span><div><strong>Hiển thị & an toàn</strong><small>Chọn cỡ chữ và tránh đăng xuất nhầm.</small></div></div>
+          <div><span class="material-symbols-rounded">verified_user</span><div><strong>Phiên làm việc</strong><small>Xem phiên hiện tại hoặc đăng xuất an toàn.</small></div></div>
+        </section>
+        <section class="settings-grid" aria-label="Các nhóm cài đặt">
           <!-- ===============================================
              ADMIN PROFILE
         ================================================ -->
@@ -121,154 +136,13 @@
                   Email
                 </label>
                 <input type="email" id="adminEmail" placeholder="admin@example.com" disabled>
+                <small class="field-hint">Email đăng nhập được bảo vệ và không thể thay đổi tại đây.</small>
               </div>
             </div>
             <div class="card-actions">
               <button class="primary-btn" id="saveProfileBtn">
                 Lưu thông tin
               </button>
-            </div>
-          </div>
-          <!-- ===============================================
-             NOTIFICATION
-        ================================================ -->
-          <div class="settings-card">
-            <div class="card-head">
-              <div>
-                <p class="eyebrow">
-                  NOTIFICATIONS
-                </p>
-                <h2>
-                  Thông báo
-                </h2>
-                <p>
-                  Kiểm soát các thông báo của Admin.
-                </p>
-              </div>
-              <span class="card-icon">
-                ♢
-              </span>
-            </div>
-            <div class="setting-list">
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Thông báo tài khoản mới
-                  </strong>
-                  <small>
-                    Nhận thông báo khi có tài khoản CS mới.
-                  </small>
-                </div>
-                <input type="checkbox" id="notifyNewAccount">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Tài khoản chưa kích hoạt
-                  </strong>
-                  <small>
-                    Cảnh báo khi tài khoản chưa tạo mật khẩu.
-                  </small>
-                </div>
-                <input type="checkbox" id="notifyPending">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Hoạt động hệ thống
-                  </strong>
-                  <small>
-                    Thông báo các hoạt động quan trọng.
-                  </small>
-                </div>
-                <input type="checkbox" id="notifySystem">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Âm thanh thông báo
-                  </strong>
-                  <small>
-                    Phát âm thanh khi nhận thông báo.
-                  </small>
-                </div>
-                <input type="checkbox" id="notificationSound">
-                <span class="switch"></span>
-              </label>
-            </div>
-          </div>
-          <!-- ===============================================
-             SYSTEM
-        ================================================ -->
-          <div class="settings-card">
-            <div class="card-head">
-              <div>
-                <p class="eyebrow">
-                  SYSTEM
-                </p>
-                <h2>
-                  Cài đặt hệ thống
-                </h2>
-                <p>
-                  Điều chỉnh cách hệ thống hoạt động.
-                </p>
-              </div>
-              <span class="card-icon">
-                ⚙
-              </span>
-            </div>
-            <div class="setting-list">
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Cập nhật realtime
-                  </strong>
-                  <small>
-                    Tự động cập nhật dữ liệu từ Firestore.
-                  </small>
-                </div>
-                <input type="checkbox" id="realtimeEnabled">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Tự động tải dữ liệu
-                  </strong>
-                  <small>
-                    Tải dữ liệu khi mở trang Admin.
-                  </small>
-                </div>
-                <input type="checkbox" id="autoLoad">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Ghi nhật ký hoạt động
-                  </strong>
-                  <small>
-                    Lưu lại hoạt động quản trị.
-                  </small>
-                </div>
-                <input type="checkbox" id="activityLogging">
-                <span class="switch"></span>
-              </label>
-              <label class="setting-row">
-                <div>
-                  <strong>
-                    Xác nhận trước khi đăng xuất
-                  </strong>
-                  <small>
-                    Hiển thị xác nhận khi Admin đăng xuất.
-                  </small>
-                </div>
-                <input type="checkbox" id="confirmLogout">
-                <span class="switch"></span>
-              </label>
             </div>
           </div>
           <!-- ===============================================
@@ -284,7 +158,7 @@
                   Giao diện
                 </h2>
                 <p>
-                  Tùy chỉnh giao diện quản trị.
+                  Chỉ giữ các tùy chọn có hiệu lực ngay trên trình duyệt này.
                 </p>
               </div>
               <span class="card-icon">
@@ -297,36 +171,33 @@
               </label>
               <select id="interfaceSize">
                 <option value="compact">
-                  Compact
+                  Gọn (ít khoảng trống)
                 </option>
                 <option value="normal" selected>
-                  Normal
+                  Tiêu chuẩn
                 </option>
                 <option value="large">
-                  Large
+                  Dễ đọc (chữ lớn)
                 </option>
               </select>
             </div>
-            <div class="form-group">
-              <label>
-                Ngôn ngữ
-              </label>
-              <select id="language">
-                <option value="vi">
-                  Tiếng Việt
-                </option>
-                <option value="en">
-                  English
-                </option>
-              </select>
-            </div>
-            <div class="setting-row static-row">
-              <div>
-                <strong>
-                  Chế độ giao diện
+            <div class="setting-list">
+                <label class="setting-row">
+                  <div>
+                    <strong>Xác nhận trước khi đăng xuất</strong>
+                    <small>Giúp tránh đăng xuất nhầm khỏi tài khoản quản trị.</small>
+                  </div>
+                  <input type="checkbox" id="confirmLogout">
+                  <span class="switch"></span>
+                </label>
+              </div>
+              <div class="setting-row static-row">
+                <div>
+                  <strong>
+                  Chế độ giao diện hiện tại
                 </strong>
                 <small>
-                  Hệ thống hiện sử dụng giao diện sáng.
+                  Giao diện sáng giúp nội dung và bảng dữ liệu dễ đọc.
                 </small>
               </div>
               <span class="mode-badge">
@@ -421,10 +292,10 @@
         <section class="save-bar">
           <div>
             <strong>
-              Cài đặt đã thay đổi?
+              Kiểm tra trước khi lưu
             </strong>
-            <span>
-              Nhấn lưu để áp dụng các thay đổi.
+            <span id="settingsSaveStatus" aria-live="polite">
+              Bạn chưa có thay đổi nào. Mọi tùy chọn hiện đang dùng trạng thái đã lưu.
             </span>
           </div>
           <div>

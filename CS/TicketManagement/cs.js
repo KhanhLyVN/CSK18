@@ -89,6 +89,13 @@
   let statusResizeCleanup = null;
   let chatResizeCleanup = null;
 
+  function canOperateTicket(ticket) {
+    if (!currentCSUser || !currentCSProfile || currentCSProfile.isLeader) {
+      return false;
+    }
+    return !ticket || isTicketAssignedToProfile(ticket, currentCSProfile);
+  }
+
   /* =========================================================
      STATUS
   ========================================================= */
@@ -1022,6 +1029,22 @@
   function renderInlineStatusEditor(ticket) {
     const currentStatus = normalizeStatus(ticket.status);
 
+    if (!canOperateTicket(ticket)) {
+      return `
+        <section class="status-inline status-inline-readonly" aria-labelledby="statusInlineTitle">
+          <div class="status-inline-head">
+            <div>
+              <span class="status-inline-kicker">TRẠNG THÁI HIỆN TẠI</span>
+              <h4 id="statusInlineTitle">Trạng thái ticket</h4>
+            </div>
+            <div class="status-inline-current" aria-label="Trạng thái hiện tại">
+              ${statusPill(currentStatus)}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
     return `
       <section class="status-inline" id="statusInlineEditor" aria-labelledby="statusInlineTitle">
         <div class="status-inline-head">
@@ -1345,6 +1368,7 @@
     const email = getStudentEmail(ticket);
     const campus = getTicketCampus(ticket) || "—";
     const department = getTicketDepartment(ticket) || "—";
+    const canOperate = canOperateTicket(ticket);
 
     drawerBody.innerHTML = `
       <div class="ticket-detail">
@@ -1373,11 +1397,6 @@
           </div>
 
           <div class="detail-item">
-            <span>PHÒNG BAN</span>
-            <strong>${escapeHtml(department)}</strong>
-          </div>
-
-          <div class="detail-item">
             <span>LOẠI YÊU CẦU</span>
             <strong>${escapeHtml(getTicketType(ticket))}</strong>
           </div>
@@ -1402,10 +1421,12 @@
 
         ${renderInlineStatusEditor(ticket)}
 
-        <div class="detail-actions">
-          <button type="button" class="drawer-action-btn" id="openChatFromDrawer">Trao đổi với học viên</button>
-          <button type="button" class="drawer-action-btn" id="focusStatusBtn">Đến khu vực trạng thái</button>
-        </div>
+        ${canOperate ? `
+          <div class="detail-actions">
+            <button type="button" class="drawer-action-btn" id="openChatFromDrawer">Trao đổi với học viên</button>
+            <button type="button" class="drawer-action-btn" id="focusStatusBtn">Đến khu vực trạng thái</button>
+          </div>
+        ` : `<p class="ticket-readonly-note">Bạn đang xem ticket với quyền CS Leader. Trạng thái và trao đổi với học viên do CS phụ trách xử lý.</p>`}
       </div>
     `;
 
@@ -1423,8 +1444,10 @@
       focusStatusButton.addEventListener("click", () => showStatusEditor(ticket));
     }
 
-    bindStatusEditor(ticket);
-    bindStatusResize();
+    if (canOperate) {
+      bindStatusEditor(ticket);
+      bindStatusResize();
+    }
   }
 
   /* =========================================================
@@ -1471,6 +1494,10 @@
   ========================================================= */
 
   function showStatusEditor(ticket) {
+    if (!canOperateTicket(ticket)) {
+      return;
+    }
+
     const editor = document.getElementById("statusInlineEditor");
 
     if (!editor) {
@@ -1739,8 +1766,8 @@
   }
 
   async function updateTicketStatus(ticket, newStatus) {
-    if (!ticket?.id) {
-      return;
+    if (!ticket?.id || !canOperateTicket(ticket)) {
+      return false;
     }
 
     const normalizedStatus = normalizeStatus(newStatus);
@@ -1839,7 +1866,7 @@
   ========================================================= */
 
   function openChat(ticket) {
-    if (!ticket) {
+    if (!ticket || !canOperateTicket(ticket)) {
       return;
     }
 
@@ -2406,6 +2433,10 @@
   }
 
   async function sendChatMessage() {
+
+    if (!canOperateTicket(selectedTicket)) {
+      return;
+    }
 
     if (!chatInput) {
       console.warn("⚠️ Không tìm thấy #chatInput");

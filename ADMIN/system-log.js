@@ -50,6 +50,13 @@
   const $ = (id) => {
     return document.getElementById(id);
   };
+
+  const firstElement = (...ids) => ids.map((id) => $(id)).find(Boolean) || null;
+
+  function setText(ids, value) {
+    const node = firstElement(...ids);
+    if (node) node.textContent = value;
+  }
   /* =======================================================
      FIREBASE
   ======================================================= */
@@ -392,7 +399,7 @@
       delete: "Xóa dữ liệu",
       error: "Lỗi",
     };
-    return labels[type] || type || "Cập nhật";
+    return CS_LOG_LABELS[type] || labels[type] || type || "Cập nhật";
   }
   /* =======================================================
      SEVERITY
@@ -777,35 +784,6 @@
       })
       .join("");
     /*
-     * Row click
-     */
-    body.querySelectorAll("tr[data-log-id]").forEach((row) => {
-      row.addEventListener("click", () => {
-        const item = findLog(row.dataset.logId);
-        openDrawer(item);
-      });
-      /*
-       * Keyboard
-       */
-      row.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          const item = findLog(row.dataset.logId);
-          openDrawer(item);
-        }
-      });
-    });
-    /*
-     * Detail buttons
-     */
-    body.querySelectorAll("[data-log-detail]").forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const item = findLog(button.dataset.logDetail);
-        openDrawer(item);
-      });
-    });
-    /*
      * Footer
      */
     if ($("entriesNote")) {
@@ -821,6 +799,40 @@
       return null;
     }
     return state.logs.find((item) => String(item.id) === String(id)) || null;
+  }
+  /* =======================================================
+     TABLE DETAIL INTERACTIONS
+  ======================================================= */
+  function openLogDetailById(id) {
+    const item = findLog(id);
+    if (!item) {
+      toast("Không tìm thấy dữ liệu chi tiết của log này.");
+      return;
+    }
+    openDrawer(item);
+  }
+
+  function bindTableDetailInteractions() {
+    const body = $("logBody");
+    if (!body || body.dataset.detailBound === "true") return;
+    body.dataset.detailBound = "true";
+
+    body.addEventListener("click", (event) => {
+      const detailButton = event.target.closest("[data-log-detail]");
+      const row = event.target.closest("tr[data-log-id]");
+      if (!detailButton && !row) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openLogDetailById(detailButton?.dataset.logDetail || row?.dataset.logId);
+    });
+
+    body.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const row = event.target.closest("tr[data-log-id]");
+      if (!row) return;
+      event.preventDefault();
+      openLogDetailById(row.dataset.logId);
+    });
   }
   /* =======================================================
      SEARCH TEXT
@@ -958,6 +970,7 @@
     }
     if (backdrop) {
       backdrop.hidden = false;
+      requestAnimationFrame(() => backdrop.classList.add("show"));
     }
     /*
      * Prevent body scroll
@@ -1018,6 +1031,7 @@
       drawer.setAttribute("aria-hidden", "true");
     }
     if (backdrop) {
+      backdrop.classList.remove("show");
       backdrop.hidden = true;
     }
     state.selected = null;
@@ -1224,21 +1238,13 @@
       /*
        * Topbar
        */
-      if ($("topAdminName")) {
-        $("topAdminName").textContent = name;
-      }
+      setText(["topAdminName", "adminbarSidebarUserName"], name);
       /*
        * Shared sidebar
        */
-      if ($("sidebarUserName")) {
-        $("sidebarUserName").textContent = name;
-      }
-      if ($("sidebarUserRole")) {
-        $("sidebarUserRole").textContent = role;
-      }
-      if ($("sidebarAvatar")) {
-        $("sidebarAvatar").textContent = initials(name);
-      }
+      setText(["sidebarUserName", "adminbarSidebarUserName"], name);
+      setText(["sidebarUserRole", "adminbarSidebarUserRole"], role);
+      setText(["sidebarAvatar", "adminbarSidebarAvatar", "adminbarTopAdminAvatar"], initials(name));
     };
     /*
      * Nếu user đã login
@@ -1295,8 +1301,8 @@
   ======================================================= */
   function setupMobileMenu() {
     const menuBtn = $("menuBtn");
-    const sidebar = $("adminSidebar");
-    const backdrop = $("adminSidebarBackdrop");
+    const sidebar = firstElement("adminSidebar", "adminbarSidebar");
+    const backdrop = firstElement("adminSidebarBackdrop", "adminbarSidebarBackdrop");
     if (!menuBtn || !sidebar) {
       return;
     }
@@ -1325,7 +1331,7 @@
   ======================================================= */
   function setupSidebar() {
     const currentPath = window.location.pathname.toLowerCase();
-    document.querySelectorAll(".admin-nav-item[data-page]").forEach((item) => {
+    document.querySelectorAll(".admin-nav-item[data-page], .adminbar-nav-item[data-page]").forEach((item) => {
       const page = String(item.dataset.page || "").toLowerCase();
       let active = false;
       /*
@@ -1370,6 +1376,7 @@
      EVENTS
   ======================================================= */
   function setupEvents() {
+    bindTableDetailInteractions();
     /*
      * Search
      */
@@ -1496,6 +1503,27 @@
     state.unsubscribe = null;
   }
   window.addEventListener("beforeunload", cleanup);
+
+  function bindFirebaseAfterAuth() {
+    const firebaseAuth = getAuth();
+    if (!firebaseAuth) {
+      setupFirebase();
+      return;
+    }
+
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (!user) {
+        cleanup();
+        state.logs = [];
+        state.filtered = [];
+        state.firebaseReady = false;
+        setConnection(false, "Chưa đăng nhập Admin");
+        renderEmpty("Hãy đăng nhập bằng tài khoản Admin để xem nhật ký hệ thống.");
+        return;
+      }
+      setupFirebase();
+    });
+  }
   /* =======================================================
      INIT
   ======================================================= */
@@ -1522,7 +1550,11 @@
     /*
      * Firebase
      */
-    setupFirebase();
+    bindFirebaseAfterAuth();
+    document.addEventListener("adminbar:ready", () => {
+      loadCurrentAdmin();
+      setupSidebar();
+    }, { once: true });
   }
   /* =======================================================
      START
@@ -1535,3 +1567,4 @@
     init();
   }
 })();
+    bindTableDetailInteractions();

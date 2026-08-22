@@ -3473,3 +3473,414 @@
   #csNavbarMessengerPanel,
   #csChatPanel { position: fixed; top: 64px; right: 10px; left: 10px; width: auto; height: calc(100vh - 76px); min-height: 0; }
 }
+
+/* =========================================================
+   KHÔI PHỤC GIAO DIỆN NAVBAR CS ĐẦY ĐỦ
+   ========================================================= */
+.cs-navbar-topbar {
+  justify-content: space-between;
+  gap: 18px;
+  padding: 8px 22px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, .14), transparent 31%),
+    linear-gradient(110deg, #4a0502 0%, #6f120d 52%, #57100b 100%);
+  box-shadow: 0 2px 14px rgba(62, 4, 2, .16);
+}
+
+.cs-navbar-top-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.cs-navbar-toggle,
+.cs-navbar-icon-btn {
+  outline-color: rgba(255, 255, 255, .88);
+}
+
+.cs-navbar-icon-btn .cs-inline-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.cs-navbar-account-link {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 6px 4px 4px;
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  transition: background .18s ease, transform .18s ease;
+}
+
+.cs-navbar-account-link:hover,
+.cs-navbar-account-link:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, .12);
+  transform: translateY(-1px);
+}
+
+.cs-navbar-top-avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 11px;
+  color: #4f0f0d;
+  background: linear-gradient(145deg, #fff9ee, #eedcc8);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .8);
+  font: 800 10px/1 Inter, sans-serif;
+}
+
+.cs-navbar-account-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.cs-navbar-account-copy strong,
+.cs-navbar-account-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-navbar-account-copy strong { font: 700 10px/1.25 Inter, sans-serif; }
+.cs-navbar-account-copy small { color: rgba(255, 255, 255, .7); font: 500 9px/1.25 Inter, sans-serif; }
+
+.cs-navbar-sidebar-head {
+  display: grid;
+  gap: 5px;
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid rgba(93, 7, 3, .1);
+  background: linear-gradient(180deg, #fffdf9, #fff8ef);
+}
+
+.cs-navbar-sidebar-head span {
+  color: #b08a4e;
+  font: 800 8.5px/1 Inter, sans-serif;
+  letter-spacing: .14em;
+}
+
+.cs-navbar-sidebar-head strong {
+  color: #3e0402;
+  font: 700 18px/1.1 Fraunces, serif;
+}
+
+.cs-navbar-menu { gap: 4px; padding: 13px 12px; }
+
+.cs-navbar-menu a {
+  gap: 10px;
+  border-left-width: 0;
+  border-radius: 10px;
+  color: #6b5348;
+}
+
+.cs-navbar-menu a .cs-navbar-menu-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-right: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.cs-navbar-menu a:hover { color: #5d0703; background: #fbf4e9; }
+
+.cs-navbar-menu a.active {
+  border-left-color: transparent;
+  color: #4f0f0d;
+  background: linear-gradient(90deg, #f0dcc7, #fff7ed);
+  box-shadow: inset 3px 0 #701b19;
+}
+
+.cs-navbar-menu-dot {
+  width: 8px;
+  height: 8px;
+  display: block;
+  flex: 0 0 8px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: .72;
+}
+
+.cs-navbar-menu a.active .cs-navbar-menu-dot {
+  border-color: #701b19;
+  background: #701b19;
+  box-shadow: 0 0 0 3px rgba(112, 27, 25, .1);
+}
+
+/* Quyền được kiểm tra sau khi đăng nhập. Không để rule display:flex của menu
+   ghi đè thuộc tính hidden làm lộ mục Leader/Member khi không có quyền. */
+.cs-navbar-menu [data-leader-only],
+.cs-navbar-menu [data-leaderonly],
+.cs-navbar-menu [data-member-only],
+.cs-navbar-menu [data-memberonly] {
+  display: none !important;
+}
+
+.cs-navbar-menu [data-leader-only].is-role-visible,
+.cs-navbar-menu [data-leaderonly].is-role-visible,
+.cs-navbar-menu [data-member-only].is-role-visible,
+.cs-navbar-menu [data-memberonly].is-role-visible {
+  display: flex !important;
+}
+
+#csNavbarMessengerPanel {
+  width: min(390px, calc(100vw - 24px));
+  height: min(610px, calc(100vh - 88px));
+  min-height: 470px;
+  border-color: rgba(112, 27, 25, .16);
+}
+
+#csNavbarMessengerPanel #csSingleChatContainer {
+  min-height: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-list,
+#csNavbarMessengerPanel .cs-single-chat-conversation {
+  min-height: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-header {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 17px;
+  border-bottom: 1px solid rgba(112, 27, 25, .12);
+  background: linear-gradient(180deg, rgba(244, 231, 213, .55), rgba(255, 253, 249, .7));
+}
+
+#csNavbarMessengerPanel .cs-single-chat-header > div { min-width: 0; }
+
+#csNavbarMessengerPanel .cs-single-chat-header strong {
+  overflow: hidden;
+  color: #701b19;
+  font: 800 15px/1.2 Inter, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-header small {
+  display: block;
+  margin-top: 3px;
+  color: #8d7d73;
+  font: 500 10px/1.35 Inter, sans-serif;
+}
+
+#csNavbarMessengerPanel #csSingleChatClose,
+#csNavbarMessengerPanel #csSingleChatBack {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  padding: 0;
+  border: 1px solid rgba(112, 27, 25, .16);
+  border-radius: 9px;
+  color: #701b19;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+#csNavbarMessengerPanel #csSingleChatClose { margin-left: auto; }
+#csNavbarMessengerPanel #csSingleChatClose:hover,
+#csNavbarMessengerPanel #csSingleChatBack:hover { color: #fff; background: #701b19; transform: translateY(-1px); }
+
+#csNavbarMessengerPanel .cs-single-chat-search { padding: 12px 12px 9px; }
+
+#csNavbarMessengerPanel .cs-single-chat-search input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(112, 27, 25, .14);
+  border-radius: 10px;
+  outline: none;
+  color: #2b211d;
+  background: #fff;
+  font: 500 11px/1 Inter, sans-serif;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-search input:focus { border-color: #98433e; box-shadow: 0 0 0 3px rgba(112, 27, 25, .08); }
+
+#csNavbarMessengerPanel .cs-single-chat-users,
+#csNavbarMessengerPanel .cs-single-chat-messages {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-users { padding: 0 12px 12px; }
+
+#csNavbarMessengerPanel .cs-single-chat-user {
+  width: 100%;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 7px;
+  border: 0;
+  border-bottom: 1px solid rgba(112, 27, 25, .08);
+  border-radius: 9px;
+  color: #2b211d;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background .16s ease, box-shadow .16s ease;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-user:hover,
+#csNavbarMessengerPanel .cs-single-chat-user:focus-visible { outline: none; background: #fbf4e9; box-shadow: inset 3px 0 #701b19; }
+
+#csNavbarMessengerPanel .cs-single-chat-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #98433e, #701b19);
+  font: 800 10px/1 Inter, sans-serif;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-user-info { min-width: 0; flex: 1; }
+#csNavbarMessengerPanel .cs-single-chat-user-info strong,
+#csNavbarMessengerPanel .cs-single-chat-user-info small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#csNavbarMessengerPanel .cs-single-chat-user-info strong { color: #2b211d; font: 700 12px/1.35 Inter, sans-serif; }
+#csNavbarMessengerPanel .cs-single-chat-user-info small { margin-top: 3px; color: #8d7d73; font: 500 10px/1.3 Inter, sans-serif; }
+
+#csNavbarMessengerPanel .cs-single-chat-loading,
+#csNavbarMessengerPanel .cs-single-chat-empty,
+#csNavbarMessengerPanel .cs-single-chat-error {
+  padding: 34px 18px;
+  color: #8d7d73;
+  font: 500 11px/1.6 Inter, sans-serif;
+  text-align: center;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: linear-gradient(180deg, #fffdf9, #fff8ef);
+}
+
+#csNavbarMessengerPanel .cs-single-chat-message {
+  max-width: 78%;
+  align-self: flex-start;
+  overflow-wrap: anywhere;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-message.mine {
+  align-self: flex-end;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-bubble {
+  padding: 9px 11px 7px;
+  border-radius: 12px 12px 12px 3px;
+  color: #2b211d;
+  background: #f4e7d5;
+  font: 500 11px/1.5 Inter, sans-serif;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-message.mine .cs-single-chat-bubble {
+  border-radius: 12px 12px 3px 12px;
+  color: #fff;
+  background: #701b19;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-time {
+  display: block;
+  margin-top: 4px;
+  color: #8d7d73;
+  font: 600 8.5px/1 Inter, sans-serif;
+  text-align: right;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-message.mine .cs-single-chat-time { color: rgba(255, 255, 255, .72); }
+
+#csNavbarMessengerPanel .cs-single-chat-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 11px 12px;
+  border-top: 1px solid rgba(112, 27, 25, .12);
+  background: #fff;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-form textarea {
+  min-height: 40px;
+  max-height: 108px;
+  flex: 1;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid rgba(112, 27, 25, .14);
+  border-radius: 10px;
+  outline: none;
+  font: 500 11px/1.4 Inter, sans-serif;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-form button {
+  min-width: 54px;
+  height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: #701b19;
+  font: 800 10px/1 Inter, sans-serif;
+  cursor: pointer;
+}
+
+#csNavbarMessengerPanel .cs-single-chat-form button:hover { background: #4f0f0d; }
+
+@media (max-width: 680px) {
+  .cs-navbar-topbar { gap: 8px; padding-inline: 12px; }
+  .cs-navbar-account-copy { display: none; }
+  .cs-navbar-icon-btn { width: 38px; height: 38px; border-radius: 10px; }
+  .cs-navbar-top-avatar { width: 32px; height: 32px; border-radius: 10px; }
+}
+
+@media (max-width: 440px) {
+  .cs-navbar-brand-copy strong { max-width: 146px; }
+  .cs-navbar-mark { width: 30px; height: 30px; font-size: 13px; }
+  .cs-navbar-account-link { padding-right: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-navbar-account-link,
+  #csNavbarMessengerPanel #csSingleChatClose,
+  #csNavbarMessengerPanel #csSingleChatBack,
+  #csNavbarMessengerPanel .cs-single-chat-user { transition: none; }
+}

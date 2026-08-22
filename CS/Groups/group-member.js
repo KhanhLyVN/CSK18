@@ -28,41 +28,80 @@
       const members = Array.isArray(group.members) ? group.members : [];
       return memberIds.includes(uid) || members.some((member) => String(member.uid || member.id || "") === String(uid));
     }
+
+    function isLeaderOfGroup(group, uid) {
+      const leader = group?.leader || {};
+      const leaderUid = group?.leaderUid || leader.uid || leader.id || "";
+      return String(leaderUid) === String(uid || "");
+    }
   
     function memberList(group) {
-      const leaderUid = String(group.leaderUid || "");
+      const participants = new Map();
+      const leader = group.leader || {};
+      const leaderUid = String(group.leaderUid || leader.uid || leader.id || "");
       const members = Array.isArray(group.members) ? group.members : [];
-      const result = members
-        .filter((member) => String(member.uid || member.id || "") && String(member.uid || member.id || "") !== leaderUid)
-        .map((member) => ({ uid: member.uid || member.id, name: member.name || member.displayName || "CS thành viên", email: member.email || "" }));
-  
+      if (leaderUid) {
+        participants.set(leaderUid, {
+          uid: leaderUid,
+          name: group.leaderName || leader.name || leader.displayName || "CS Leader",
+          email: group.leaderEmail || leader.email || "",
+          role: "leader"
+        });
+      }
+
+      members.forEach((member) => {
+        const uid = String(member.uid || member.id || "");
+        if (!uid) return;
+        participants.set(uid, {
+          uid,
+          name: member.name || member.displayName || "CS thành viên",
+          email: member.email || "",
+          role: String(uid) === leaderUid ? "leader" : "member"
+        });
+      });
+
+      (Array.isArray(group.memberIds) ? group.memberIds : []).forEach((memberUid) => {
+        const uid = String(memberUid || "");
+        if (!uid || participants.has(uid)) return;
+        participants.set(uid, {
+          uid,
+          name: uid === leaderUid ? "CS Leader" : "CS thành viên",
+          email: "",
+          role: uid === leaderUid ? "leader" : "member"
+        });
+      });
+
+      const result = [...participants.values()];
+
       if (!result.some((member) => String(member.uid) === String(state.user?.uid)) && state.user) {
-        result.push({ uid: state.user.uid, name: state.profile?.name || state.user.displayName || state.user.email || "Tôi", email: state.user.email || "" });
+        result.push({ uid: state.user.uid, name: state.profile?.name || state.user.displayName || state.user.email || "Tôi", email: state.user.email || "", role: isLeaderOfGroup(group, state.user.uid) ? "leader" : "member" });
       }
   
       return result;
     }
   
     function renderGroups() {
-      const selector = $("groupSelector");
-      const switcher = $("groupSwitch");
+      const groupList = $("groupList");
+      const groupCount = $("groupCount");
   
       if (!state.groups.length) {
-        switcher.hidden = true;
+        if (groupCount) groupCount.textContent = "0 nhóm";
+        if (groupList) groupList.innerHTML = '<div class="loading">Bạn chưa thuộc nhóm CS nào.</div>';
         $("chatEmpty").hidden = false;
         $("chatEmpty").innerHTML = '<div class="empty-mark">CS</div><h2>Bạn chưa thuộc nhóm CS nào</h2><p>Hãy liên hệ CS Leader hoặc Admin để được thêm vào Group trước khi trao đổi.</p>';
         return;
       }
   
-      selector.innerHTML = state.groups.map((group) => `<option value="${escapeHTML(group.id)}">${escapeHTML(group.name || "Nhóm chưa đặt tên")}</option>`).join("");
-      selector.value = state.selected?.id || state.groups[0].id;
-      switcher.hidden = state.groups.length < 2;
+      if (groupCount) groupCount.textContent = `${state.groups.length} nhóm`;
+      if (groupList) {
+        groupList.innerHTML = state.groups.map((group) => `<button class="group-item${group.id === state.selected?.id ? " is-active" : ""}" type="button" data-group-id="${escapeHTML(group.id)}"><span class="group-item-mark">${escapeHTML(initials(group.name, group.code))}</span><span><strong>${escapeHTML(group.name || "Nhóm chưa đặt tên")}</strong><small>${memberList(group).length} thành viên CS</small></span></button>`).join("");
+      }
     }
   
     function renderMembers(group) {
       const members = memberList(group);
       $("membersStrip").innerHTML = members.length
-        ? members.map((member) => `<span class="member-pill${String(member.uid) === String(state.user?.uid) ? " is-me" : ""}"><span class="mini-avatar">${escapeHTML(initials(member.name, member.email))}</span>${escapeHTML(member.name)}</span>`).join("")
+        ? members.map((member) => `<span class="member-pill${String(member.uid) === String(state.user?.uid) ? " is-me" : ""}${member.role === "leader" ? " is-leader" : ""}"><span class="mini-avatar">${escapeHTML(initials(member.name, member.email))}</span>${escapeHTML(member.name)}${member.role === "leader" ? " · Leader" : ""}</span>`).join("")
         : '<span class="member-pill">Chưa có CS con trong nhóm</span>';
     }
   
@@ -77,7 +116,7 @@
       $("sendMessageBtn").disabled = true;
       renderMembers(group);
       const count = memberList(group).length;
-      $("chatSubtitle").textContent = `${count} CS con trong nhóm · Chỉ thành viên mới xem được trao đổi này`;
+      $("chatSubtitle").textContent = `${count} thành viên CS · Leader và CS con cùng trao đổi trong nhóm`;
     }
   
     function formatTime(value) {
@@ -97,7 +136,8 @@
         const isMine = String(message.senderUid || "") === String(state.user?.uid || "");
         const senderName = message.senderName || message.name || "CS thành viên";
         const text = message.text || message.message || "";
-        return `<article class="message-row${isMine ? " is-me" : ""}">${isMine ? "" : `<span class="message-avatar">${escapeHTML(initials(senderName, message.senderEmail))}</span>`}<div class="message-bubble"><div class="message-name">${escapeHTML(isMine ? "Bạn" : senderName)}</div><div class="message-text">${escapeHTML(text)}</div><div class="message-time">${escapeHTML(formatTime(message.createdAt))}</div></div></article>`;
+        const attachment = message.attachmentUrl ? `<a class="message-attachment" href="${escapeHTML(message.attachmentUrl)}" target="_blank" rel="noopener">Tệp đính kèm · ${escapeHTML(message.attachmentName || "Mở tệp")}</a>` : "";
+        return `<article class="message-row${isMine ? " is-me" : ""}">${isMine ? "" : `<span class="message-avatar">${escapeHTML(initials(senderName, message.senderEmail))}</span>`}<div class="message-bubble"><div class="message-name">${escapeHTML(isMine ? "Bạn" : senderName)}${message.senderType === "cs_leader" ? " · Leader" : ""}</div>${text ? `<div class="message-text">${escapeHTML(text)}</div>` : ""}${attachment}<div class="message-time">${escapeHTML(formatTime(message.createdAt))}</div></div></article>`;
       }).join("")}`;
       list.scrollTop = list.scrollHeight;
     }
@@ -128,23 +168,28 @@
   
     async function loadMemberGroups() {
       const database = firebase.firestore();
-      let groups = [];
+      const groupsById = new Map();
       try {
-        const snapshot = await database.collection(GROUPS).where("memberIds", "array-contains", state.user.uid).get();
-        groups = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const [memberSnapshot, leaderSnapshot] = await Promise.all([
+          database.collection(GROUPS).where("memberIds", "array-contains", state.user.uid).get(),
+          database.collection(GROUPS).where("leaderUid", "==", state.user.uid).get()
+        ]);
+        [...memberSnapshot.docs, ...leaderSnapshot.docs].forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
       } catch (error) {
-        console.warn("Không thể lọc nhóm bằng memberIds, thử tải danh sách nhóm:", error);
+        console.warn("Không thể lọc nhóm bằng truy vấn chỉ mục, thử tải danh sách nhóm:", error);
         const snapshot = await database.collection(GROUPS).get();
-        groups = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        snapshot.docs.forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
       }
   
-      state.groups = groups
-        .filter((group) => String(group.leaderUid || "") !== String(state.user.uid) && isMemberOfGroup(group, state.user.uid))
+      state.groups = [...groupsById.values()]
+        .filter((group) => isLeaderOfGroup(group, state.user.uid) || isMemberOfGroup(group, state.user.uid))
         .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
       renderGroups();
   
       if (state.groups.length) {
-        selectGroup(state.groups[0].id);
+        const requestedGroupId = new URLSearchParams(window.location.search).get("group");
+        const firstGroup = state.groups.find((group) => String(group.id) === String(requestedGroupId)) || state.groups[0];
+        selectGroup(firstGroup.id);
       }
     }
   
@@ -158,7 +203,7 @@
   
       try {
         const database = firebase.firestore();
-        const senderName = state.profile?.name || state.user.displayName || state.user.email || "CS thành viên";
+        const senderName = state.profile?.name || state.user.displayName || state.user.email || (isLeaderOfGroup(state.selected, state.user.uid) ? "CS Leader" : "CS thành viên");
         const messageRef = database.collection(GROUPS).doc(state.selected.id).collection(MESSAGE_COLLECTION).doc();
         const recipients = memberList(state.selected).filter((member) => String(member.uid) !== String(state.user.uid));
         const batch = database.batch();
@@ -166,7 +211,7 @@
           senderUid: state.user.uid,
           senderName,
           senderEmail: state.user.email || "",
-          senderType: "cs_member",
+          senderType: isLeaderOfGroup(state.selected, state.user.uid) ? "cs_leader" : "cs_member",
           text,
           message: text,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -182,7 +227,7 @@
             messageId: messageRef.id,
             title: `Tin nhắn mới trong ${state.selected.name || "nhóm CS"}`,
             preview: `${senderName}: ${text.slice(0, 140)}`,
-            link: "/CS/Groups/group-member.html",
+            link: isLeaderOfGroup(state.selected, member.uid) ? `/CS/Groups/group.html?group=${encodeURIComponent(state.selected.id)}` : `/CS/Groups/group-member.html?group=${encodeURIComponent(state.selected.id)}`,
             read: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
@@ -201,12 +246,8 @@
   
     function bootIfReady() {
       if (state.isBooted || !state.user || !state.profile) return;
-      if (state.profile.isLeader) {
-        window.location.replace(HOME_URL);
-        return;
-      }
       state.isBooted = true;
-      $("currentUserChip").textContent = state.profile.name || state.user.email || "CS thành viên";
+      $("currentUserChip").textContent = state.profile.name || state.user.email || (state.profile.isLeader ? "CS Leader" : "CS thành viên");
       loadMemberGroups().catch((error) => {
         console.error("Không thể tải nhóm CS con:", error);
         $("chatEmpty").hidden = false;
@@ -224,8 +265,9 @@
       state.profile = window.csCurrentProfile;
     }
   
-    $("groupSelector").addEventListener("change", (event) => {
-      selectGroup(event.target.value);
+    $("groupList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-group-id]");
+      if (button) selectGroup(button.dataset.groupId);
     });
     $("chatComposer").addEventListener("submit", sendMessage);
     $("messageInput").addEventListener("keydown", (event) => {

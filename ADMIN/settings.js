@@ -20,23 +20,15 @@
   ======================================================= */
 
   const DEFAULT_SETTINGS = {
-    notifyNewAccount: true,
-    notifyPending: true,
-    notifySystem: true,
-    notificationSound: false,
-
-    realtimeEnabled: true,
-    autoLoad: true,
-    activityLogging: true,
     confirmLogout: true,
-
     interfaceSize: "normal",
-    language: "vi",
   };
 
   let settings = {
     ...DEFAULT_SETTINGS,
   };
+
+  let hasUnsavedChanges = false;
 
   /* =======================================================
      DOM HELPER
@@ -146,7 +138,10 @@
 
         settings = {
           ...DEFAULT_SETTINGS,
-          ...parsed,
+          confirmLogout: parsed.confirmLogout !== false,
+          interfaceSize: ["compact", "normal", "large"].includes(parsed.interfaceSize)
+            ? parsed.interfaceSize
+            : DEFAULT_SETTINGS.interfaceSize,
         };
       }
     } catch (error) {
@@ -193,6 +188,18 @@
     }
 
     applyInterfaceSize();
+    setSaveStatus("Bạn chưa có thay đổi nào. Mọi tùy chọn hiện đang dùng trạng thái đã lưu.", false);
+  }
+
+  function setSaveStatus(message, dirty) {
+    const status = $("settingsSaveStatus");
+    if (status) status.textContent = message;
+    document.querySelector(".save-bar")?.classList.toggle("is-dirty", Boolean(dirty));
+    hasUnsavedChanges = Boolean(dirty);
+  }
+
+  function markSettingsChanged() {
+    setSaveStatus("Bạn có thay đổi chưa lưu. Nhấn “Lưu cài đặt” để áp dụng.", true);
   }
 
   /* =======================================================
@@ -241,6 +248,7 @@
       applyInterfaceSize();
 
       toast("Đã lưu cài đặt");
+      setSaveStatus("Đã lưu cài đặt. Các thay đổi đang được áp dụng cho trình duyệt này.", false);
     } catch (error) {
       console.error(error);
 
@@ -266,6 +274,7 @@
     renderSettings();
 
     toast("Đã khôi phục mặc định");
+    setSaveStatus("Đã khôi phục các tùy chọn mặc định và lưu lại trên trình duyệt này.", false);
   }
 
   /* =======================================================
@@ -671,20 +680,6 @@
   }
 
   /* =======================================================
-     NOTIFICATION
-  ======================================================= */
-
-  function showNotification() {
-    if (!settings.notifySystem) {
-      toast("Thông báo hệ thống đang tắt");
-
-      return;
-    }
-
-    toast("Không có thông báo mới");
-  }
-
-  /* =======================================================
      MOBILE MENU
   ======================================================= */
 
@@ -747,6 +742,7 @@
       renderSettings();
 
       toast("Đã hủy thay đổi");
+      setSaveStatus("Đã hủy các thay đổi chưa lưu.", false);
     });
 
     $("saveProfileBtn")?.addEventListener("click", saveProfile);
@@ -755,12 +751,17 @@
 
     $("logoutSessionBtn")?.addEventListener("click", logout);
 
-    $("noticeBtn")?.addEventListener("click", showNotification);
-
     $("interfaceSize")?.addEventListener("change", () => {
       settings.interfaceSize = $("interfaceSize").value;
 
       applyInterfaceSize();
+      markSettingsChanged();
+    });
+
+    document.querySelectorAll(".settings-grid input, .settings-grid select").forEach((node) => {
+      node.addEventListener("change", () => {
+        if (node.id !== "adminName") markSettingsChanged();
+      });
     });
 
     setupMobileMenu();

@@ -138,11 +138,49 @@
       typeof value.toDate === "function"
     ) {
       date = value.toDate();
+    } else if (
+      typeof value === "object" &&
+      typeof value.seconds === "number"
+    ) {
+      date = new Date(value.seconds * 1000);
+    } else if (
+      typeof value === "number" &&
+      value > 0 &&
+      value < 100000000000
+    ) {
+      date = new Date(value * 1000);
     } else {
       date = new Date(value);
     }
 
     return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function isCompletedTicket(status) {
+    return ["closed", "resolved", "completed", "done"].includes(
+      String(status || "").trim().toLowerCase()
+    );
+  }
+
+  function getTicketCreatedDate(ticket) {
+    return toValidDate(
+      ticket?.createdAt ||
+      ticket?.submittedAt ||
+      ticket?.createdTime ||
+      ticket?.timestamp
+    );
+  }
+
+  function getTicketCompletionDate(ticket) {
+    return toValidDate(
+      ticket?.closedAt ||
+      ticket?.statusClosedAt ||
+      ticket?.resolvedAt ||
+      ticket?.completedAt ||
+      ticket?.finishedAt ||
+      ticket?.statusUpdatedAt ||
+      ticket?.updatedAt
+    );
   }
 
 
@@ -1235,8 +1273,8 @@
 
 
         const createdAt =
-          toValidDate(
-            ticket.createdAt
+          getTicketCreatedDate(
+            ticket
           );
 
 
@@ -1305,13 +1343,11 @@
         /* THỜI GIAN XỬ LÝ */
 
         if (
-          status === "closed"
+          isCompletedTicket(status)
         ) {
           const closedAt =
-            toValidDate(
-              ticket.closedAt ||
-                ticket.statusClosedAt ||
-                ticket.updatedAt
+            getTicketCompletionDate(
+              ticket
             );
 
 
@@ -1325,9 +1361,12 @@
 
 
             totalTimeMinutes +=
-              Math.floor(
-                diffMs /
-                  (1000 * 60)
+              Math.max(
+                1,
+                Math.round(
+                  diffMs /
+                    (1000 * 60)
+                )
               );
 
 
@@ -1641,7 +1680,7 @@
 
         avgTimeText,
 
-        `Từ lúc tạo đến khi đóng · ${resolvedCount} ticket`
+        `Từ lúc tạo đến khi hoàn tất · ${resolvedCount} ticket`
       );
     } else {
       setStat(

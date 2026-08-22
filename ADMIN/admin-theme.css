@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --maroon: #701b19;
+  --maroon-dark: #571412;
+  --maroon-deep: #571412;
+  --deep: #571412;
+  --maroon-soft: #8f3d38;
+  --cream: #f4e7d5;
+  --cream-pale: #fbf5ec;
+  --pale: #fbf5ec;
+  --paper: #fffdf9;
+  --canvas: #FBF4E9;
+  --ink: #2b211d;
+  --ink-soft: #6f625a;
+  --text: #2b211d;
+  --text-soft: #6f625a;
+  --white: #fff;
+  --soft: #6f625a;
+  --muted: #9a8d82;
+  --line: #e8ded3;
+  --line-soft: rgba(112, 27, 25, .08);
+  --gold: #b88a43;
+  --green: #5d8557;
+  --ok: #5d8557;
+  --danger: #a23b2e;
+  --shadow-sm: 0 2px 10px rgba(67, 31, 22, .05);
+  --shadow-md: 0 12px 30px rgba(67, 31, 22, .08);
+}
+
+html { font-size: 16px; }
+body {
+  min-width: 320px;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(184, 138, 67, .34);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, .hero h1, .panel-head h2, .card-head h2 {
+  font-family: Fraunces, Georgia, serif;
+}
+
+.hero h1 {
+  font-size: clamp(2.25rem, 4.5vw, 3.85rem);
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+.hero-copy { font-size: clamp(.84rem, 1.25vw, .95rem); line-height: 1.75; }
+.eyebrow { color: var(--maroon-soft); font-size: .62rem; letter-spacing: .16em; }
+
+.stat-card, .settings-card, .account-panel, .report-card, .card, .panel, .table-card {
+  border-color: var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+
+.primary-btn, .btn-primary, .save-btn {
+  color: #fff;
+  background: linear-gradient(135deg, var(--maroon), var(--maroon-soft));
+}
+.secondary-btn, .btn-secondary {
+  border-color: var(--line);
+  color: var(--maroon);
+  background: var(--cream-pale);
+}
+
+table { font-size: .82rem; }
+th { color: var(--soft); font-size: .63rem; letter-spacing: .08em; }
+td { color: var(--ink-soft); }
+small, .field-hint { font-size: .76rem; }
+
+@media (max-width: 760px) {
+  html { font-size: 15px; }
+  body { font-size: 14px; }
+  .hero h1 { font-size: clamp(2.05rem, 10vw, 2.65rem); }
+  .hero-copy { font-size: .87rem; line-height: 1.68; }
+  table { font-size: .8rem; }
+  th { font-size: .6rem; }
+  button, input, select, textarea { font-size: .9rem; }
+}
+
+@media (max-width: 430px) {
+  .hero h1 { font-size: 2.05rem; }
+  .eyebrow { font-size: .58rem; }
+}

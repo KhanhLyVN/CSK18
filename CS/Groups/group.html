@@ -489,6 +489,177 @@
       cursor: not-allowed
     }
 
+    .group-chat-btn {
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .group-panel-footer {
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffaf3, #fff5e8);
+    }
+
+    .group-panel-footer .student-account-action {
+      width: 100%;
+      justify-content: center;
+      margin: 0;
+      box-shadow: none;
+    }
+
+    .detail-body { position: relative; }
+
+    .group-chat-upper-host {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      right: 0;
+      left: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .group-chat-upper-host.is-open { pointer-events: auto; }
+
+    .group-chat-sheet {
+      position: absolute;
+      z-index: 20;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      border-top: 1px solid rgba(93, 7, 3, .22);
+      border-radius: 16px 16px 0 0;
+      background: #fffaf3;
+      box-shadow: 0 -18px 38px rgba(62, 4, 2, .22);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(104%);
+      transition: transform .28s cubic-bezier(.23, 1, .32, 1), opacity .2s ease;
+    }
+
+    .group-chat-sheet.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .group-chat-sheet-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px 14px;
+      color: #fffaf3;
+      background: radial-gradient(circle at 100% 0%, rgba(176, 138, 78, .42), transparent 35%), linear-gradient(135deg, var(--deep), var(--maroon));
+    }
+
+    .chat-sheet-kicker { display: block; color: var(--cream); font-size: 9px; font-weight: 800; letter-spacing: .12em; }
+    .group-chat-sheet-head h3 { margin: 5px 0 0; font: 700 23px/1.1 Fraunces, serif; }
+    .group-chat-sheet-head p { margin: 6px 0 0; color: rgba(255,250,243,.78); font-size: 10px; }
+
+    .group-chat-close {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      flex: 0 0 38px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(255,255,255,.1);
+    }
+
+    .group-chat-close:hover { color: var(--maroon); background: var(--cream); }
+
+    .group-chat-members {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fffdf9;
+    }
+
+    .group-chat-member {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .group-chat-member i,
+    .group-chat-message-avatar {
+      display: grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--maroon);
+      font-size: 8px;
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    .group-chat-member.is-leader { border-color: rgba(176, 138, 78, .7); color: var(--maroon); background: #fff4e5; }
+    .group-chat-member.is-leader i { color: var(--maroon); background: var(--cream); }
+
+    .group-chat-message-list {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 18px 22px;
+      background: radial-gradient(circle at 100% 0%, rgba(238,220,200,.58), transparent 35%), #fff9f1;
+    }
+
+    .group-chat-day,
+    .group-chat-empty { margin: 0 auto 14px; color: var(--muted); font-size: 10px; text-align: center; }
+    .group-chat-day { width: fit-content; padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.85); }
+    .group-chat-message { display: flex; align-items: flex-end; gap: 8px; margin: 0 0 13px; }
+    .group-chat-message.is-me { justify-content: flex-end; }
+    .group-chat-bubble { max-width: min(74%, 620px); padding: 9px 11px; border: 1px solid rgba(93,7,3,.1); border-radius: 6px 13px 13px; background: #fff; box-shadow: 0 4px 10px rgba(62,4,2,.05); }
+    .group-chat-message.is-me .group-chat-bubble { border-color: var(--maroon); border-radius: 13px 6px 13px 13px; color: #fff; background: linear-gradient(145deg, var(--maroon), var(--deep)); }
+    .group-chat-bubble strong { display: block; font-size: 9px; }
+    .group-chat-bubble p { margin: 5px 0 0; font-size: 11px; line-height: 1.55; white-space: pre-wrap; }
+    .group-chat-bubble time { display: block; margin-top: 5px; opacity: .68; font-size: 8px; }
+    .group-chat-attachment { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; margin-top: 7px; padding: 6px 7px; overflow: hidden; border: 1px solid rgba(93,7,3,.12); border-radius: 7px; color: var(--maroon); background: #fff7ec; font-size: 9px; font-weight: 800; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+    .group-chat-message.is-me .group-chat-attachment { border-color: rgba(255,255,255,.34); color: #fff; background: rgba(255,255,255,.12); }
+
+    .group-chat-composer { display: grid; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--line); background: #fffdf9; }
+    .group-chat-dropzone { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 11px; border: 1px dashed rgba(93,7,3,.36); border-radius: 9px; color: var(--muted); background: #fff9f1; text-align: left; }
+    .group-chat-dropzone:hover, .group-chat-dropzone.is-dragging { border-color: var(--maroon); color: var(--maroon); background: #fff1df; }
+    .group-chat-dropzone strong, .group-chat-dropzone small { display: block; }
+    .group-chat-dropzone strong { font-size: 10px; }.group-chat-dropzone small { margin-top: 2px; font-size: 9px; }
+    .group-chat-file-preview { display: flex; align-items: center; gap: 7px; padding: 7px 9px; border-radius: 8px; color: var(--green); background: #eef4eb; font-size: 9px; font-weight: 700; }
+    .group-chat-file-preview > span:nth-child(2) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .group-chat-file-preview button { display: grid; width: 24px; height: 24px; flex: 0 0 24px; place-items: center; margin-left: auto; border: 0; border-radius: 50%; color: var(--green); background: transparent; }
+    .group-chat-input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+    .group-chat-input-row textarea { min-height: 42px; max-height: 110px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; outline: 0; resize: vertical; font-size: 11px; }
+    .group-chat-input-row textarea:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,7,3,.08); }
+
+    @media (min-width: 951px) {
+      .group-ticket-list { height: clamp(280px, 44vh, 460px); max-height: none; overflow-y: auto; padding-right: 3px; overscroll-behavior: contain; }
+    }
+
+    @media (max-width: 600px) {
+      .group-ticket-list { height: min(64vh, 480px); overflow-y: auto; }
+      .group-chat-btn { width: 100%; margin-top: 10px; }
+      .group-chat-sheet { height: calc(100% - 66px); border-radius: 13px 13px 0 0; }
+      .group-chat-sheet-head { padding: 15px; }.group-chat-sheet-head h3 { font-size: 20px; }
+      .group-chat-members { padding: 9px 12px; }.group-chat-message-list { padding: 14px 12px; }
+      .group-chat-bubble { max-width: 84%; }.group-chat-composer { padding: 10px 12px; }
+      .group-chat-input-row .btn { min-width: 58px; padding-inline: 8px; font-size: 0; }.group-chat-input-row .btn .material-symbols-rounded { font-size: 19px; }
+    }
+
         .student-account-action {
       display: inline-flex;
       align-items: center;
@@ -973,6 +1144,7 @@
           <div class="group-list" id="groupList">
             <div class="loading">Đang tải nhóm...</div>
           </div>
+          <div class="group-panel-footer" id="studentAccountActionSlot"></div>
         </section>
         <section class="panel detail" id="detailPanel">
           <div class="detail-empty">
@@ -1062,13 +1234,14 @@
     const myGroupsAuth = firebase.auth();
     const myGroupsDb = firebase.firestore();
     const GROUPS = "groups";
-    const state = { user: null, groups: [], selected: null, members: [], allCs: [], allStudents: [], classes: [], tickets: [], unsubscribeGroups: null, unsubscribeClasses: null, unsubscribeTickets: null, toastTimer: null };
+    const state = { user: null, groups: [], selected: null, members: [], allCs: [], allStudents: [], classes: [], tickets: [], unsubscribeGroups: null, unsubscribeClasses: null, unsubscribeTickets: null, unsubscribeChat: null, pendingChatFile: null, toastTimer: null };
         const $ = id => document.getElementById(id);
     const esc = value => { const div = document.createElement("div"); div.textContent = value == null ? "" : String(value); return div.innerHTML; };
 
     const studentAccountModal = $("studentAccountModal");
     const openStudentAccountModal = $("openStudentAccountModal");
     const closeStudentAccountModal = $("closeStudentAccountModal");
+    $("studentAccountActionSlot").appendChild(openStudentAccountModal);
 
     function openStudentAccountPopup() {
       studentAccountModal.classList.add("show");
@@ -1111,9 +1284,161 @@
       const canCreate = isLeader(group);
       const ticketWorkspace = canCreate ? `<div class="section"><div class="section-head"><div><h3>Phân công ticket</h3><p>Ticket học viên của nhóm sẽ đến Leader trước khi giao cho CS con trong lớp.</p></div><span class="count" id="ticketCount">0 ticket</span></div><div class="ticket-controls"><select id="ticketClassFilter" aria-label="Lọc theo lớp"><option value="">Tất cả lớp</option></select><select id="ticketStatusFilter" aria-label="Lọc trạng thái"><option value="all">Tất cả trạng thái</option><option value="waiting_leader_assignment">Chờ phân công</option><option value="assigned_to_cs">Đã phân công</option><option value="in_progress">Đang xử lý</option></select><input id="ticketSearchFilter" type="search" placeholder="Tìm mã ticket, tên học viên..." autocomplete="off"><button class="btn btn-secondary" id="refreshTickets" type="button"><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="ticket-summary" id="ticketSummary"></div><div class="group-ticket-list" id="groupTicketList"><div class="loading">Đang tải ticket...</div></div></div>` : '';
       $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp, thêm học viên và chọn CS con phụ trách.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div>${ticketWorkspace}</div>`;
-      if (canCreate) { $("openClassModal").addEventListener("click", openClassModal); $("openMemberModal").addEventListener("click", openMemberModal); $("refreshTickets").addEventListener("click", watchGroupTickets); }
+      if (canCreate) {
+        const leaderBox = $("detailPanel").querySelector(".detail-title .leader-box");
+        const leaderCaption = leaderBox?.querySelector("small");
+        if (leaderCaption) leaderCaption.textContent = "Chăm sóc khách hàng · Leader";
+        leaderBox?.insertAdjacentHTML("afterend", '<button class="btn btn-primary group-chat-btn" id="openGroupChat" type="button"><span class="material-symbols-rounded">forum</span>Nhóm chat</button>');
+        mountGroupChatPanel(group);
+        $("openGroupChat")?.addEventListener("click", () => openGroupChatPanel(group));
+        $("closeGroupChat")?.addEventListener("click", closeGroupChatPanel);
+        bindGroupChatPanel(group);
+        $("openClassModal").addEventListener("click", openClassModal);
+        $("openMemberModal").addEventListener("click", openMemberModal);
+        $("refreshTickets").addEventListener("click", watchGroupTickets);
+      }
       loadClasses(group);
       if (canCreate) renderGroupTickets();
+    }
+
+    function groupChatParticipants(group) {
+      const participants = new Map();
+      const leader = group?.leader || {};
+      const leaderUid = String(group?.leaderUid || leader.uid || leader.id || "");
+      if (leaderUid) participants.set(leaderUid, { uid: leaderUid, name: group.leaderName || leader.name || "CS Leader", email: group.leaderEmail || leader.email || "", role: "leader" });
+      (group?.members || []).forEach(member => {
+        const uid = String(member.uid || member.id || "");
+        if (!uid) return;
+        participants.set(uid, { uid, name: member.name || member.displayName || "CS con", email: member.email || "", role: uid === leaderUid ? "leader" : "member" });
+      });
+      (group?.memberIds || []).forEach(memberUid => {
+        const uid = String(memberUid || "");
+        if (!uid || participants.has(uid)) return;
+        participants.set(uid, { uid, name: uid === leaderUid ? "CS Leader" : "CS con", email: "", role: uid === leaderUid ? "leader" : "member" });
+      });
+      return [...participants.values()];
+    }
+
+    function renderGroupChatPanel(group) {
+      const participants = groupChatParticipants(group);
+      return `<section class="group-chat-sheet" id="groupChatPanel" aria-labelledby="groupChatTitle" aria-hidden="true"><header class="group-chat-sheet-head"><div><span class="chat-sheet-kicker">KÊNH TRAO ĐỔI NỘI BỘ</span><h3 id="groupChatTitle">Nhóm chat · ${esc(group.name || "Nhóm CS")}</h3><p>${participants.length} thành viên · Leader và CS con cùng trao đổi</p></div><button class="group-chat-close" id="closeGroupChat" type="button" aria-label="Đóng Nhóm chat"><span class="material-symbols-rounded">close</span></button></header><div class="group-chat-members">${participants.map(member => `<span class="group-chat-member${member.role === "leader" ? " is-leader" : ""}"><i>${esc(initials(member.name, member.email))}</i>${esc(member.name)}${member.role === "leader" ? " · Leader" : ""}</span>`).join("")}</div><div class="group-chat-message-list" id="groupChatMessageList" aria-live="polite"><div class="loading">Đang tải tin nhắn...</div></div><form class="group-chat-composer" id="groupChatComposer"><input id="groupChatFileInput" type="file" hidden><button class="group-chat-dropzone" id="groupChatDropzone" type="button"><span class="material-symbols-rounded">upload_file</span><span><strong>Kéo tệp vào đây</strong><small>hoặc bấm để đính kèm · tối đa 8 MB</small></span></button><div class="group-chat-file-preview" id="groupChatFilePreview" hidden></div><div class="group-chat-input-row"><textarea id="groupChatInput" rows="1" maxlength="2000" placeholder="Nhập tin nhắn cho các CS trong Group..."></textarea><button class="btn btn-primary" id="sendGroupChatBtn" type="submit"><span class="material-symbols-rounded">send</span>Gửi</button></div></form></section>`;
+    }
+
+    function mountGroupChatPanel(group) {
+      const detailBody = $("detailPanel")?.querySelector(".detail-body");
+      const ticketControls = $("ticketClassFilter")?.closest(".ticket-controls");
+      if (!detailBody || !ticketControls) return;
+      let host = $("groupChatUpperHost");
+      if (!host) {
+        host = document.createElement("div");
+        host.className = "group-chat-upper-host";
+        host.id = "groupChatUpperHost";
+        detailBody.appendChild(host);
+      }
+      if (!$("groupChatPanel")) host.insertAdjacentHTML("beforeend", renderGroupChatPanel(group));
+      const resizeHost = () => {
+        const bodyTop = detailBody.getBoundingClientRect().top;
+        const controlsTop = ticketControls.getBoundingClientRect().top;
+        host.style.height = `${Math.max(180, Math.round(controlsTop - bodyTop))}px`;
+      };
+      requestAnimationFrame(resizeHost);
+      window.addEventListener("resize", resizeHost, { once: true });
+    }
+
+    function formatGroupChatTime(value) {
+      const date = value?.toDate ? value.toDate() : value?.seconds ? new Date(value.seconds * 1000) : null;
+      return date ? date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : "Đang gửi...";
+    }
+
+    function renderGroupChatMessages(messages) {
+      const list = $("groupChatMessageList");
+      if (!list) return;
+      if (!messages.length) { list.innerHTML = '<div class="group-chat-empty">Chưa có tin nhắn. Hãy bắt đầu trao đổi cùng các CS trong Group.</div>'; return; }
+      list.innerHTML = `<div class="group-chat-day">Trao đổi trong Group</div>${messages.map(message => {
+        const mine = String(message.senderUid || "") === String(state.user?.uid || "");
+        const sender = message.senderName || "CS thành viên";
+        const attachment = message.attachmentUrl ? `<a class="group-chat-attachment" href="${esc(message.attachmentUrl)}" target="_blank" rel="noopener"><span class="material-symbols-rounded">attach_file</span>${esc(message.attachmentName || "Tệp đính kèm")}</a>` : "";
+        return `<article class="group-chat-message${mine ? " is-me" : ""}">${mine ? "" : `<span class="group-chat-message-avatar">${esc(initials(sender, message.senderEmail))}</span>`}<div class="group-chat-bubble"><strong>${esc(mine ? "Bạn" : sender)}${message.senderType === "cs_leader" ? " · Leader" : ""}</strong>${message.text ? `<p>${esc(message.text)}</p>` : ""}${attachment}<time>${esc(formatGroupChatTime(message.createdAt))}</time></div></article>`;
+      }).join("")}`;
+      list.scrollTop = list.scrollHeight;
+    }
+
+    function clearGroupChatFile() {
+      state.pendingChatFile = null;
+      const preview = $("groupChatFilePreview"), input = $("groupChatFileInput");
+      if (preview) { preview.hidden = true; preview.innerHTML = ""; }
+      if (input) input.value = "";
+    }
+
+    function setGroupChatFile(file) {
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) { toast("Tệp đính kèm tối đa 8 MB.", true); return; }
+      state.pendingChatFile = file;
+      const preview = $("groupChatFilePreview");
+      if (preview) { preview.hidden = false; preview.innerHTML = `<span class="material-symbols-rounded">attach_file</span><span>${esc(file.name)} · ${Math.max(1, Math.ceil(file.size / 1024))} KB</span><button type="button" id="removeGroupChatFile" aria-label="Bỏ tệp"><span class="material-symbols-rounded">close</span></button>`; $("removeGroupChatFile")?.addEventListener("click", clearGroupChatFile); }
+    }
+
+    async function uploadGroupChatFile(group, messageId, file) {
+      if (!file) return null;
+      const safeName = String(file.name || "tep-dinh-kem").replace(/[^\w.\-() ]+/g, "_");
+      const path = `group-chat/${group.id}/${messageId}-${Date.now()}-${safeName}`;
+      const ref = firebase.storage().ref().child(path);
+      await ref.put(file, { contentType: file.type || "application/octet-stream" });
+      return { url: await ref.getDownloadURL(), name: file.name || safeName, type: file.type || "", size: Number(file.size || 0), path };
+    }
+
+    function openGroupChatPanel(group) {
+      const panel = $("groupChatPanel");
+      if (!panel) return;
+      $("groupChatUpperHost")?.classList.add("is-open");
+      panel.classList.add("is-open");
+      panel.setAttribute("aria-hidden", "false");
+      $("groupChatInput")?.focus();
+      watchLeaderGroupChat(group);
+    }
+
+    function closeGroupChatPanel() {
+      const panel = $("groupChatPanel");
+      if (!panel) return;
+      panel.classList.remove("is-open");
+      $("groupChatUpperHost")?.classList.remove("is-open");
+      panel.setAttribute("aria-hidden", "true");
+    }
+
+    function watchLeaderGroupChat(group) {
+      if (state.unsubscribeChat) state.unsubscribeChat();
+      state.unsubscribeChat = myGroupsDb.collection(GROUPS).doc(group.id).collection("memberMessages").orderBy("createdAt", "asc").onSnapshot(snapshot => renderGroupChatMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))), error => { console.error(error); const list = $("groupChatMessageList"); if (list) list.innerHTML = '<div class="group-chat-empty">Không thể tải tin nhắn. Vui lòng kiểm tra quyền Firebase.</div>'; });
+    }
+
+    async function sendLeaderGroupChat(event, group) {
+      event.preventDefault();
+      const input = $("groupChatInput"), button = $("sendGroupChatBtn"), text = String(input?.value || "").trim(), file = state.pendingChatFile;
+      if (!text && !file) return;
+      button.disabled = true; button.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span>Đang gửi';
+      try {
+        const messageRef = myGroupsDb.collection(GROUPS).doc(group.id).collection("memberMessages").doc();
+        const attachment = await uploadGroupChatFile(group, messageRef.id, file);
+        const senderName = state.user?.displayName || state.user?.email || group.leaderName || "CS Leader";
+        const batch = myGroupsDb.batch();
+        batch.set(messageRef, { senderUid: state.user.uid, senderName, senderEmail: state.user.email || "", senderType: "cs_leader", text, message: text, attachmentUrl: attachment?.url || "", attachmentName: attachment?.name || "", attachmentType: attachment?.type || "", attachmentSize: attachment?.size || 0, attachmentPath: attachment?.path || "", createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        groupChatParticipants(group).filter(member => String(member.uid) !== String(state.user.uid)).forEach(member => {
+          const notice = myGroupsDb.collection("csNotifications").doc(member.uid).collection("items").doc();
+          batch.set(notice, { type: "group_message", recipientUid: member.uid, groupId: group.id, groupName: group.name || "Nhóm CS", messageId: messageRef.id, title: `Tin nhắn mới trong ${group.name || "nhóm CS"}`, preview: `${senderName}: ${text || attachment?.name || "Đã gửi tệp đính kèm"}`.slice(0, 180), link: `/CS/Groups/group-member.html?group=${encodeURIComponent(group.id)}`, read: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        });
+        await batch.commit(); input.value = ""; clearGroupChatFile(); input.focus();
+      } catch (error) { console.error(error); toast("Không thể gửi tin nhắn nhóm.", true); }
+      finally { button.disabled = false; button.innerHTML = '<span class="material-symbols-rounded">send</span>Gửi'; }
+    }
+
+    function bindGroupChatPanel(group) {
+      const form = $("groupChatComposer"), input = $("groupChatInput"), dropzone = $("groupChatDropzone"), fileInput = $("groupChatFileInput");
+      form?.addEventListener("submit", event => sendLeaderGroupChat(event, group));
+      input?.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); form.requestSubmit(); } });
+      dropzone?.addEventListener("click", () => fileInput?.click());
+      fileInput?.addEventListener("change", () => setGroupChatFile(fileInput.files?.[0]));
+      ["dragenter", "dragover"].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.add("is-dragging"); }));
+      ["dragleave", "drop"].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.remove("is-dragging"); }));
+      dropzone?.addEventListener("drop", event => setGroupChatFile(event.dataTransfer?.files?.[0]));
     }
 
     async function getMyGroups(uid) {
@@ -1122,8 +1447,8 @@
       const byMember = await myGroupsDb.collection(GROUPS).where("memberIds", "array-contains", uid).get(); byMember.docs.forEach(doc => result.set(doc.id, { id: doc.id, ...doc.data() }));
       return [...result.values()].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
     }
-    function watchMyGroups() { if (state.unsubscribeGroups) state.unsubscribeGroups(); getMyGroups(state.user.uid).then(groups => { state.groups = groups; renderGroups(); if (groups.length) selectGroup(groups[0].id); }).catch(error => { console.error(error); toast("Không thể tải nhóm. Kiểm tra Firestore Rules.", true); $("groupList").innerHTML = '<div class="empty">Không thể tải nhóm.</div>'; }); }
-    function selectGroup(id) { state.selected = state.groups.find(group => group.id === id) || null; state.classes = []; state.tickets = []; renderGroups(); renderDetail(); if (state.selected && isLeader(state.selected)) watchGroupTickets(); }
+    function watchMyGroups() { if (state.unsubscribeGroups) state.unsubscribeGroups(); getMyGroups(state.user.uid).then(groups => { state.groups = groups; renderGroups(); const requestedGroupId = new URLSearchParams(window.location.search).get("group"); const firstGroup = groups.find(group => String(group.id) === String(requestedGroupId)) || groups[0]; if (firstGroup) selectGroup(firstGroup.id); }).catch(error => { console.error(error); toast("Không thể tải nhóm. Kiểm tra Firestore Rules.", true); $("groupList").innerHTML = '<div class="empty">Không thể tải nhóm.</div>'; }); }
+    function selectGroup(id) { if (state.unsubscribeChat) { state.unsubscribeChat(); state.unsubscribeChat = null; } clearGroupChatFile(); state.selected = state.groups.find(group => group.id === id) || null; state.classes = []; state.tickets = []; renderGroups(); renderDetail(); if (state.selected && isLeader(state.selected)) watchGroupTickets(); }
     async function loadAvailableCs() {
       const snapshot = await myGroupsDb.collection("users").where("accountType", "==", "customer_success").get();
       state.allCs = snapshot.docs.map(doc => { const data = doc.data() || {}; return { uid: data.uid || doc.id, name: data.name || "", email: data.email || "", status: data.status || "active" }; }).filter(user => user.email && user.status !== "inactive");
