@@ -555,14 +555,6 @@ function openSelectedTicket(ticketRecord) {
             </div>
             <div class="stub-field">
               <div class="k">
-                Điện thoại
-              </div>
-              <div class="v">
-                ${escapeHTMLValue(phone)}
-              </div>
-            </div>
-            <div class="stub-field">
-              <div class="k">
                 Khóa học
               </div>
               <div class="v">
@@ -575,22 +567,6 @@ function openSelectedTicket(ticketRecord) {
               </div>
               <div class="v">
                 ${escapeHTMLValue(createdDate)}
-              </div>
-            </div>
-            <div class="stub-field stub-field-wide">
-              <div class="k">
-                Loại yêu cầu học viên cần hỗ trợ
-              </div>
-              <div class="v">
-                ${escapeHTMLValue(ticketType(ticketRecord))}
-              </div>
-            </div>
-            <div class="stub-field stub-field-wide">
-              <div class="k">
-                Mô tả yêu cầu
-              </div>
-              <div class="v">
-                ${escapeHTMLValue(ticketDescription(ticketRecord))}
               </div>
             </div>
           </div>

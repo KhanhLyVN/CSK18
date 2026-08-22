@@ -551,6 +551,17 @@
   color: var(--muted, #8a7a6d);
 }
 
+.student-notification-read-status {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #607c50;
+  background: #eaf2e6;
+  font: 700 9px/1 "Inter", sans-serif;
+}
+
 .student-notification-link {
   display: block;
   color: inherit;

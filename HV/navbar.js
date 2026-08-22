@@ -282,8 +282,8 @@
         const snapshot = await ref.get();
         const saved = snapshot.exists ? snapshot.data() : {};
         notificationState = {
-          read: saved.read || {},
-          deleted: saved.deleted || {},
+          read: { ...(saved.read || {}), ...(notificationState.read || {}) },
+          deleted: { ...(saved.deleted || {}), ...(notificationState.deleted || {}) },
         };
       } catch (error) {
         console.warn(
@@ -296,7 +296,7 @@
 
     const saveState = () => {
       const ref = stateRef();
-      if (!ref) return;
+      if (!ref) return Promise.resolve(false);
       const payload = {
         read: notificationState.read,
         deleted: notificationState.deleted,
@@ -304,12 +304,15 @@
       };
       stateWriteQueue = stateWriteQueue
         .then(() => ref.set(payload, { merge: true }))
-        .catch((error) =>
+        .then(() => true)
+        .catch((error) => {
           console.warn(
             "[Student Notifications] Không thể lưu trạng thái Firestore",
             error,
-          ),
-        );
+          );
+          return false;
+        });
+      return stateWriteQueue;
     };
 
     const isRead = (item) =>
@@ -365,6 +368,7 @@
                   </div>
                   <b>${esc(item.title || "Ticket hỗ trợ")}</b>
                   <p>${esc(item.preview || "Customer Success đã cập nhật ticket.")}</p>
+                  ${isRead(item) ? '<span class="student-notification-read-status">Đã đọc</span>' : ''}
                 </a>
                 <button class="student-notification-delete" type="button" data-notification-delete="${esc(item.notificationKey)}" aria-label="Xóa thông báo">×</button>
               </div>
@@ -398,7 +402,14 @@
     close?.addEventListener("click", closePanel);
     backdrop.addEventListener("click", closePanel);
 
-    list?.addEventListener("click", (event) => {
+    const markNotificationRead = async (notificationKey) => {
+      if (!notificationKey || notificationState.read[notificationKey]) return true;
+      notificationState.read[notificationKey] = true;
+      render();
+      return saveState();
+    };
+
+    list?.addEventListener("click", async (event) => {
       const deleteButton = event.target.closest("[data-notification-delete]");
       if (deleteButton) {
         event.preventDefault();
@@ -420,12 +431,8 @@
       if (!item) return;
 
       event.preventDefault();
-      notificationState.read[item.dataset.notificationKey] = true;
-      saveState();
-      render();
-      window.setTimeout(() => {
-        window.location.href = link.href;
-      }, 0);
+      await markNotificationRead(item.dataset.notificationKey);
+      window.location.href = link.href;
     });
 
     clearAll?.addEventListener("click", (event) => {
