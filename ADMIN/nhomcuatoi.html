@@ -1268,6 +1268,143 @@
       overflow: auto;
     }
 
+    .activity-report-card {
+      overflow: hidden;
+    }
+
+    .activity-report-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .activity-summary-item {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid rgba(176, 138, 78, .25);
+      border-radius: 8px;
+      background: var(--pale);
+    }
+
+    .activity-summary-item strong,
+    .activity-summary-item span {
+      display: block;
+    }
+
+    .activity-summary-item strong {
+      overflow: hidden;
+      color: var(--maroon);
+      font-size: 15px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .activity-summary-item span {
+      margin-top: 3px;
+      color: var(--soft);
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .activity-report-list {
+      display: grid;
+      gap: 8px;
+      max-height: 510px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .activity-report-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px;
+      border: 1px solid rgba(93, 7, 3, .09);
+      border-radius: 9px;
+      background: #fffaf5;
+    }
+
+    .activity-report-item:hover {
+      border-color: rgba(176, 138, 78, .45);
+      background: #fff;
+    }
+
+    .activity-report-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: var(--maroon);
+      background: var(--cream);
+      font-size: 17px;
+    }
+
+    .activity-report-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .activity-report-topline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .activity-report-topline strong {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--deep);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .activity-report-time {
+      flex: 0 0 auto;
+      color: var(--soft);
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .activity-report-action {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 6px;
+      border-radius: 5px;
+      color: var(--maroon);
+      background: var(--cream);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .activity-report-main p {
+      margin: 6px 0 5px;
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .activity-report-object {
+      display: block;
+      color: var(--soft);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .activity-report-note {
+      margin: 11px 0 0;
+      color: var(--soft);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
     .admin-data-row {
       display: flex;
       align-items: center;
@@ -1336,7 +1473,8 @@
       }
       .admin-summary-hero,
       .admin-control-grid,
-      .admin-edit-grid {
+      .admin-edit-grid,
+      .activity-report-summary {
         grid-template-columns: 1fr;
       }
       .admin-hero-card.main,
@@ -1353,6 +1491,14 @@
       }
       .admin-member-actions button {
         flex: 1;
+      }
+      .activity-report-topline {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .activity-report-time {
+        white-space: normal;
       }
     }
 
@@ -1498,6 +1644,9 @@
         <button class="admin-tab" type="button" data-tab="tasks">
           <span class="material-symbols-rounded">task_alt</span>Công việc
         </button>
+        <button class="admin-tab" type="button" data-tab="activity">
+          <span class="material-symbols-rounded">history</span>Báo cáo hoạt động
+        </button>
       </div>
 
       <div id="overviewContent" class="overview-loading">Đang tải toàn bộ thông tin nhóm...</div>
@@ -1516,8 +1665,8 @@
       <div class="field">
         <label for="memberActionRole">Vai trò trong nhóm</label>
         <select id="memberActionRole">
-          <option value="member">CS con / Thành viên</option>
-          <option value="leader">CS Leader / Nhóm trưởng</option>
+          <option value="member">Thành viên</option>
+          <option value="leader">Nhóm trưởng</option>
         </select>
       </div>
       <div class="member-danger-zone">
@@ -1546,7 +1695,10 @@
     const GROUPS_COLLECTION = "groups";
     const USERS_COLLECTION = "users";
     const INACTIVE_AFTER_MS = 3 * 24 * 60 * 60 * 1000;
-        const state = { groups: [], users: [], selectedLeaderId: "", unsubscribe: null, deleteId: null, overviewId: null, overviewRelated: null, memberActionId: null, toastTimer: null };
+    const ACTIVITY_COLLECTION = "systemLogs";
+    const GROUP_ACTIVITY_SUBCOLLECTION = "activities";
+    const ACTIVITY_LIMIT = 500;
+    const state = { groups: [], users: [], selectedLeaderId: "", unsubscribe: null, deleteId: null, overviewId: null, overviewRelated: null, memberActionId: null, toastTimer: null };
 
     const $ = selector => document.querySelector(selector);
     const els = { form: $("#groupForm"), editingId: $("#editingId"), name: $("#groupName"), code: $("#groupCode"), description: $("#groupDescription"), leader: $("#groupLeader"), leaderPicker: $("#leaderPicker"), leaderTrigger: $("#leaderTrigger"), leaderSelected: $("#leaderSelected"), leaderSearch: $("#leaderSearch"), leaderOptions: $("#leaderOptions"), submit: $("#submitBtn"), cancel: $("#cancelBtn"), list: $("#groupList"), count: $("#groupCount"), refresh: $("#refreshBtn"), toast: $("#toast"), adminIdentity: $("#adminIdentity"), modal: $("#deleteModal"), deleteText: $("#deleteText"), confirmDelete: $("#confirmDelete"), overview: $("#overviewModal"), overviewTitle: $("#overviewTitle"), overviewSubtitle: $("#overviewSubtitle"), overviewContent: $("#overviewContent"), overviewEdit: $("#overviewEditBtn"), closeOverview: $("#closeOverviewBtn") };
@@ -1667,6 +1819,91 @@
       };
     }
 
+    function activityFieldValues(record, keys) {
+      return keys.flatMap(key => {
+        const value = record?.[key];
+        if (value === undefined || value === null || value === "") return [];
+        if (typeof value === "object") return [value.id, value.uid, value.userId, value.groupId, value.value].filter(Boolean);
+        return [value];
+      }).map(value => String(value).trim()).filter(Boolean);
+    }
+
+    function activityActorId(activity) {
+      return activityFieldValues(activity, [
+        "uid", "userId", "userUid", "actorId", "actorUid", "authorId", "authorUid", "createdBy", "performedBy"
+      ])[0] || activityFieldValues(activity?.actor, ["uid", "id", "userId"])[0] || activityFieldValues(activity?.user, ["uid", "id", "userId"])[0] || "";
+    }
+
+    function activityTimestamp(activity) {
+      return activity?.createdAt || activity?.timestamp || activity?.time || activity?.loggedAt || activity?.date || activity?.updatedAt || activity?.completedAt || null;
+    }
+
+    function activityGroupMatches(activity, group) {
+      const groupIds = new Set(activityFieldValues(activity, [
+        "groupId", "groupUid", "teamId", "teamUid", "departmentId", "departmentUid"
+      ]));
+      [activity?.group, activity?.team, activity?.department, activity?.context, activity?.metadata, activity?.target].forEach(value => {
+        if (value && typeof value === "object") {
+          activityFieldValues(value, ["id", "uid", "groupId", "teamId", "departmentId", "code"]).forEach(id => groupIds.add(id));
+        }
+      });
+
+      const expectedIds = [group.id, group.code].filter(Boolean).map(value => String(value));
+      if (expectedIds.some(id => groupIds.has(id))) return true;
+
+      const objectId = activityFieldValues(activity, ["objectId", "targetId", "resourceId", "documentId", "docId"])[0];
+      const objectName = String(activity.object || activity.targetType || activity.collection || activity.resource || "").toLowerCase();
+      if (objectId && expectedIds.includes(objectId) && /(group|team|department|nhom)/i.test(objectName)) return true;
+
+      const groupText = [group.name, group.code].filter(Boolean).map(value => String(value).trim().toLowerCase()).filter(Boolean);
+      const rawText = JSON.stringify(activity).toLowerCase();
+      return groupText.some(value => value.length > 2 && rawText.includes(value));
+    }
+
+    function activityMemberMatches(activity, members) {
+      const memberIds = new Set(members.map(memberKey).filter(Boolean).map(String));
+      const actorId = activityActorId(activity);
+      if (actorId && memberIds.has(String(actorId))) return true;
+      const actorEmail = activityFieldValues(activity, ["userEmail", "email", "actorEmail", "authorEmail"])[0]?.toLowerCase();
+      const actorName = activityFieldValues(activity, ["userName", "displayName", "name", "actorName", "fullName"])[0]?.toLowerCase();
+      return members.some(member => (actorEmail && String(member.email || "").toLowerCase() === actorEmail) || (actorName && String(member.name || member.displayName || "").toLowerCase() === actorName));
+    }
+
+    function normalizeActivity(activity, source = "systemLogs") {
+      return { ...activity, source, activityDate: toDate(activityTimestamp(activity)) };
+    }
+
+    async function loadGroupActivities(groupRef, group, members) {
+      const activities = [];
+      try {
+        const snapshot = await groupRef.collection(GROUP_ACTIVITY_SUBCOLLECTION).get();
+        snapshot.docs.forEach(doc => activities.push(normalizeActivity({ id: doc.id, documentId: doc.id, ...doc.data() }, GROUP_ACTIVITY_SUBCOLLECTION)));
+      } catch (error) {
+        console.warn("Không thể tải subcollection activities:", error);
+      }
+
+      try {
+        let snapshot;
+        try {
+          snapshot = await phongBanDb.collection(ACTIVITY_COLLECTION).orderBy("createdAt", "desc").limit(ACTIVITY_LIMIT).get();
+        } catch (_) {
+          snapshot = await phongBanDb.collection(ACTIVITY_COLLECTION).limit(ACTIVITY_LIMIT).get();
+        }
+        snapshot.docs.forEach(doc => {
+          const activity = doc.data() || {};
+          if (activityGroupMatches(activity, group) && activityMemberMatches(activity, members)) {
+            activities.push(normalizeActivity({ id: doc.id, documentId: doc.id, ...activity }, ACTIVITY_COLLECTION));
+          }
+        });
+      } catch (error) {
+        console.warn("Không thể tải systemLogs cho báo cáo nhóm:", error);
+      }
+
+      const unique = new Map();
+      activities.forEach(activity => unique.set(`${activity.source}:${activity.id}`, activity));
+      return [...unique.values()].sort((a, b) => (b.activityDate?.getTime() || 0) - (a.activityDate?.getTime() || 0));
+    }
+
     async function getGroupRelated(groupId) {
       const groupRef = phongBanDb.collection(GROUPS_COLLECTION).doc(groupId);
       const groupSnap = await groupRef.get();
@@ -1681,7 +1918,8 @@
         })) : [],
         tasks: Array.isArray(groupData?.tasks) ? groupData.tasks.map((x, i) => ({
           ...x, id: x.id || x.taskId || `task-${i}`, documentId: x.id || x.taskId || `task-${i}`
-        })) : []
+        })) : [],
+        activities: []
       };
 
       // Ưu tiên subcollection nếu có, nhưng vẫn bổ sung các UID chỉ nằm trong memberIds.
@@ -1723,7 +1961,65 @@
           console.warn(`Không thể tải subcollection ${name}:`, error);
         }
       }
+      result.activities = await loadGroupActivities(groupRef, groupData || { id: groupId }, result.members);
       return result;
+    }
+
+    function activityTypeText(activity) {
+      const raw = String(activity.type || activity.actionType || activity.eventType || activity.action || activity.operation || "Hoạt động").toLowerCase();
+      const labels = {
+        login: "Đăng nhập", logout: "Đăng xuất", create: "Tạo dữ liệu", add: "Thêm dữ liệu",
+        update: "Cập nhật", edit: "Chỉnh sửa", delete: "Xóa dữ liệu", complete: "Hoàn thành",
+        claim_ticket: "Nhận ticket", complete_ticket: "Hoàn thành ticket", update_status: "Cập nhật trạng thái",
+        message: "Phản hồi ticket", error: "Lỗi hệ thống"
+      };
+      const key = Object.keys(labels).find(candidate => raw.includes(candidate));
+      return key ? labels[key] : (activity.typeText || activity.label || activity.action || "Hoạt động");
+    }
+
+    function activityActorName(activity) {
+      return activity.userName || activity.displayName || activity.name || activity.actorName || activity.fullName || activity.actor?.name || activity.user?.name || activity.userEmail || activity.actorEmail || "Thành viên trong nhóm";
+    }
+
+    function activityDescription(activity) {
+      return activity.description || activity.detail || activity.details || activity.message || activity.summary || activity.reason || "Đã phát sinh một hoạt động trong hệ thống.";
+    }
+
+    function activityObjectText(activity) {
+      const object = activity.object || activity.targetType || activity.collection || activity.resource || activity.entity || "";
+      const objectId = activity.objectId || activity.targetId || activity.resourceId || activity.documentId || "";
+      return [object, objectId].filter(Boolean).join(" · ") || "Không xác định đối tượng";
+    }
+
+    function renderActivityReport(group, activities, members) {
+      if (!activities.length) {
+        return `<section class="admin-control-card full activity-report-card">
+          <div class="admin-card-head"><div><h3>Báo cáo hoạt động</h3><p>Hoạt động của các thành viên thuộc nhóm này.</p></div><span class="count-badge">0 hoạt động</span></div>
+          <div class="admin-empty">Chưa ghi nhận hoạt động nào của thành viên trong nhóm.</div>
+        </section>`;
+      }
+
+      const activeMemberIds = new Set(activities.map(activityActorId).filter(Boolean));
+      return `<section class="admin-control-card full activity-report-card">
+        <div class="admin-card-head"><div><h3>Báo cáo hoạt động</h3><p>Các hoạt động mới nhất của thành viên trong nhóm.</p></div><span class="count-badge">${activities.length} hoạt động</span></div>
+        <div class="activity-report-summary">
+          <div class="activity-summary-item"><strong>${activeMemberIds.size || members.length}</strong><span>Thành viên có hoạt động</span></div>
+          <div class="activity-summary-item"><strong>${activities.filter(item => /create|add|update|edit|complete|claim|message/i.test(String(item.type || item.action || item.eventType || ""))).length}</strong><span>Hoạt động xử lý</span></div>
+          <div class="activity-summary-item"><strong>${activities[0]?.activityDate ? esc(dateText(activities[0].activityDate)) : "—"}</strong><span>Hoạt động gần nhất</span></div>
+        </div>
+        <div class="activity-report-list">
+          ${activities.map(activity => `<article class="activity-report-item">
+            <span class="activity-report-icon material-symbols-rounded">${esc(/error|fail/i.test(String(activity.type || activity.action || "")) ? "error" : "bolt")}</span>
+            <div class="activity-report-main">
+              <div class="activity-report-topline"><strong>${esc(activityActorName(activity))}</strong><span class="activity-report-time">${esc(activity.activityDate ? dateText(activity.activityDate) : "Chưa có thời gian")}</span></div>
+              <div class="activity-report-action">${esc(activityTypeText(activity))}</div>
+              <p>${esc(activityDescription(activity))}</p>
+              <span class="activity-report-object">${esc(activityObjectText(activity))}</span>
+            </div>
+          </article>`).join("")}
+        </div>
+        <p class="activity-report-note">Nguồn dữ liệu: nhật ký hệ thống và lịch sử hoạt động của nhóm.</p>
+      </section>`;
     }
 
     function renderGroupSummary(group, related) {
@@ -1832,6 +2128,7 @@
       const members = state.overviewRelated.members.length ? state.overviewRelated.members : (Array.isArray(group.members) ? group.members : []);
       const classes = state.overviewRelated.classes.length ? state.overviewRelated.classes : (Array.isArray(group.classes) ? group.classes : []);
       const tasks = state.overviewRelated.tasks.length ? state.overviewRelated.tasks : (Array.isArray(group.tasks) ? group.tasks : []);
+      const activities = state.overviewRelated.activities || [];
 
       if (tab === "summary") {
         els.overviewContent.innerHTML = renderGroupSummary(group, state.overviewRelated);
@@ -1839,6 +2136,8 @@
         els.overviewContent.innerHTML = `<section class="admin-control-card"><div class="admin-card-head"><div><h3>Tất cả thành viên</h3><p>Admin toàn quyền quản lý thành viên.</p></div><span class="count-badge">${members.length}</span></div>${renderOverviewList(members, "Chưa có thành viên.", "members")}</section>`;
       } else if (tab === "classes") {
         els.overviewContent.innerHTML = `<section class="admin-control-card"><div class="admin-card-head"><div><h3>Tất cả lớp học</h3><p>Danh sách lớp đang thuộc nhóm.</p></div><span class="count-badge">${classes.length}</span></div>${renderOverviewList(classes, "Chưa có lớp học.", "classes")}</section>`;
+      } else if (tab === "activity") {
+        els.overviewContent.innerHTML = renderActivityReport(group, activities, members);
       } else {
         els.overviewContent.innerHTML = `<section class="admin-control-card"><div class="admin-card-head"><div><h3>Tất cả công việc</h3><p>Danh sách task/hoạt động của nhóm.</p></div><span class="count-badge">${tasks.length}</span></div>${renderOverviewList(tasks, "Chưa có công việc.", "tasks")}</section>`;
       }
@@ -1846,7 +2145,7 @@
 
     async function openGroupOverview(group) {
       state.overviewId = group.id;
-      state.overviewRelated = { members: [], classes: [], tasks: [] };
+      state.overviewRelated = { members: [], classes: [], tasks: [], activities: [] };
       els.overviewTitle.textContent = group.name || "Nhóm chưa đặt tên";
       els.overviewSubtitle.textContent = group.description || "Admin Control Center — toàn quyền quản lý nhóm.";
       els.overviewContent.innerHTML = '<div class="overview-loading">Đang tải toàn bộ thông tin nhóm...</div>';

@@ -1,1772 +1,2964 @@
+"use strict";
+
+/* =========================================================
+   CS CHAT GLOBAL
+   =========================================================
+   DÙNG CHUNG CHO:
+
+   - Admin
+   - CS Leader
+   - CS
+   - Các trang khác có navbar chung
+
+   FIRESTORE:
+
+   chats/{roomId}
+      participants
+      participantIds
+      participantNames
+      lastMessage
+      lastMessageBy
+      lastMessageSenderId
+      lastMessageReadBy
+      lastMessageReadAt
+      createdAt
+      updatedAt
+
+   chats/{roomId}/messages/{messageId}
+      from
+      to
+      senderId
+      senderUID
+      senderName
+      receiverId
+      receiverUID
+      receiverName
+      text
+      message
+      createdAt
+      timestamp
+      read
+      readAt
+========================================================= */
+
 (function () {
-  "use strict";
-  /* =========================================================
-     CS NAVBAR
-     ========================================================= */
-  const COLLAPSE_KEY = "cs-navbar-collapsed";
-  const MOBILE_BREAKPOINT = 860;
-  const HOME_URL = "/CS/homepageCS/trangchu-cs.html";
-  const LEADER_ROLES = new Set([
-    "leader",
-    "cs_leader",
-    "team_leader",
-    "group_leader",
-    "manager",
-    "cs_manager",
-  ]);
-  /* =========================================================
-     ICONS
-  ========================================================= */
-  const icons = {
-    home:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>' +
-      '<path d="M9 22V12h6v10"></path>' +
-      "</svg>",
-    tickets:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"></path>' +
-      "</svg>",
-    create:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<path d="M12 20h9"></path>' +
-      '<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>' +
-      "</svg>",
-    groups:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<circle cx="9" cy="7" r="4"></circle>' +
-      '<path d="M17 11a4 4 0 1 0-2.7-7"></path>' +
-      '<path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"></path>' +
-      '<path d="M17 15a4 4 0 0 1 4 4v2"></path>' +
-      "</svg>",
-    membergroups:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<path d="M17 20.5c1.4-.6 2.6-1.6 3.5-2.8V5.5A2.5 2.5 0 0 0 18 3H6A2.5 2.5 0 0 0 3.5 5.5v12A2.5 2.5 0 0 0 6 20h8.7"></path>' +
-      '<path d="M7 8h10M7 12h6"></path>' +
-      '<path d="M15 18h6"></path>' +
-      '<path d="M18 15v6"></path>' +
-      "</svg>",
-    reports:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<path d="M3 3v18h18"></path>' +
-      '<path d="m7 16 4-5 3 3 5-7"></path>' +
-      "</svg>",
-    faq:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<circle cx="12" cy="12" r="10"></circle>' +
-      '<path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path>' +
-      '<path d="M12 17h.01"></path>' +
-      "</svg>",
-    account:
-      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<circle cx="12" cy="12" r="3"></circle>' +
-      '<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.1A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.1A1.65 1.65 0 0 0 20.91 10H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15Z"></path>' +
-      "</svg>",
-  };
-  /* =========================================================
-     MENU
-  ========================================================= */
-  const links = [
-    {
-      page: "home",
-      href: HOME_URL,
-      label: "Trang chủ",
-    },
-    {
-      page: "tickets",
-      href: "/CS/TicketManagement/cs-ticket.html",
-      label: "Quản lý ticket",
-    },
-    {
-      page: "create",
-      href: "/CS/PhieuHoTroCS/phieuhotro-cs.html",
-      label: "Tạo phiếu hỗ trợ",
-    },
-    {
-      page: "groups",
-      href: "/CS/Groups/group.html",
-      label: "Nhóm của tôi",
-      leaderOnly: true,
-    },
-    {
-      page: "membergroups",
-      href: "/CS/Groups/group-member.html",
-      label: "Nhóm trao đổi",
-      memberOnly: true,
-    },
-    {
-      page: "reports",
-      href: "/CS/Dashboard/cs-dashboard.html",
-      label: "Báo cáo thống kê",
-      leaderOnly: true,
-    },
-    {
-      page: "faq",
-      href: "/FAQs/CS-FAQ.html",
-      label: "FAQs",
-    },
-    {
-      page: "account",
-      href: "/CS/account-CS.html",
-      label: "Cài đặt hệ thống",
-    },
-  ];
-  /* =========================================================
-     HELPERS
-  ========================================================= */
-  const safeGet = (key) => {
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  };
-  const safeSet = (key, value) => {
-    try {
-      localStorage.setItem(key, value);
-    } catch {
-      /* ignore */
-    }
-  };
-  const isMobile = () => {
-    return window.innerWidth <= MOBILE_BREAKPOINT;
-  };
-  const normalizeRole = (value) => {
-    return String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[\s-]+/g, "_");
-  };
-  const escapeHTML = (value) => {
-    const node = document.createElement("div");
-    node.textContent = value == null ? "" : String(value);
-    return node.innerHTML;
-  };
-  const notificationTime = (value) => {
-    const date = value?.toDate
-      ? value.toDate()
-      : value?.seconds
-        ? new Date(value.seconds * 1000)
-        : null;
-    return date
-      ? date.toLocaleString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          day: "2-digit",
-          month: "2-digit",
-        })
-      : "Vừa xong";
-  };
-  const getInitials = (name) => {
-    const text = String(name || "U").trim();
-    if (!text) return "U";
-    const parts = text.split(/\s+/).filter(Boolean);
-    if (parts.length === 1) {
-      return parts[0].slice(0, 2).toUpperCase();
-    }
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  };
-  const timestampToDate = (value) => {
-    if (!value) return null;
-    if (typeof value.toDate === "function") {
-      return value.toDate();
-    }
-    if (value.seconds) {
-      return new Date(value.seconds * 1000);
-    }
-    if (value instanceof Date) {
-      return value;
-    }
-    return null;
-  };
-  /* =========================================================
-     CONTENT
-  ========================================================= */
-  function resolveContent(app) {
-    return app.querySelector(
-      ":scope > main, " +
-        ":scope > .main, " +
-        ":scope > .page, " +
-        ":scope > .wrap, " +
-        ":scope > [data-page-content]",
+
+  if (window.__CS_GLOBAL_CHAT_LOADED__) {
+    console.warn(
+      "[CS CHAT] cs-chat.js đã được load trước đó."
     );
+    return;
   }
-  function prepareLegacyShell(app) {
-    let content = resolveContent(app);
-    if (content) {
-      return content;
-    }
-    const legacyBody = app.querySelector(":scope > .body");
-    content = legacyBody?.querySelector(
-      ":scope > main, " +
-        ":scope > .main, " +
-        ":scope > .page, " +
-        ":scope > .wrap, " +
-        ":scope > [data-page-content]",
-    );
-    if (!content) {
-      return null;
-    }
-    app.querySelector(":scope > .topbar")?.remove();
-    app.appendChild(content);
-    legacyBody.remove();
-    return content;
-  }
-  /* =========================================================
-     ACTIVE PAGE
-  ========================================================= */
-  function activePage(visibleLinks) {
-    return (
-      document.body.dataset.navPage ||
-      visibleLinks.find((link) =>
-        window.location.pathname.endsWith(link.href.split("#")[0]),
-      )?.page ||
-      ""
-    );
-  }
-  function menuMarkup(profile) {
-    const visibleLinks = links.filter(
-      (link) =>
-        (!link.leaderOnly || profile.isLeader) &&
-        (!link.memberOnly || (!profile.isLeader && profile.isGroupMember)),
-    );
-    const page = activePage(visibleLinks);
-    return visibleLinks
-      .map((link) => {
-        const active = link.page === page;
-        return `
-          <a
-            data-nav-page="${link.page}"
-            href="${link.href}"
-            ${active ? 'class="active" aria-current="page"' : ""}
-          >
-            ${icons[link.page]}
-            <span>${link.label}</span>
-          </a>
-        `;
-      })
-      .join("");
-  }
-  /* =========================================================
-     FIREBASE PROFILE
-  ========================================================= */
-  async function getProfile(user) {
-    const base = {
-      uid: user.uid,
-      email: user.email || "",
-      name: user.displayName || user.email || "CS",
-      isLeader: false,
-      isGroupMember: false,
-      raw: {},
-    };
-    if (typeof firebase === "undefined" || !firebase.firestore) {
-      return base;
-    }
-    const database = firebase.firestore();
-    const users = database.collection("users");
-    try {
-      let snapshot = await users.doc(user.uid).get();
-      if (!snapshot.exists) {
-        const byUid = await users.where("uid", "==", user.uid).limit(1).get();
-        snapshot = byUid.docs[0] || snapshot;
-      }
-      const data = snapshot.exists ? snapshot.data() || {} : {};
-      const values = [
-        data.role,
-        data.accountType,
-        data.leaderRole,
-        data.teamRole,
-        data.position,
-      ].map(normalizeRole);
-      const profile = {
-        ...base,
-        name: data.name || data.displayName || base.name,
-        raw: data,
-      };
-      profile.isLeader = Boolean(
-        data.isLeader ||
-        data.isCSLeader ||
-        values.some((value) => LEADER_ROLES.has(value)),
-      );
-      if (!profile.isLeader) {
-        const groups = await database
-          .collection("groups")
-          .where("leaderUid", "==", user.uid)
-          .limit(1)
-          .get();
-        profile.isLeader = !groups.empty;
-      }
-      if (!profile.isLeader) {
-        const memberGroups = await database
-          .collection("groups")
-          .where("memberIds", "array-contains", user.uid)
-          .limit(1)
-          .get();
-        profile.isGroupMember = !memberGroups.empty;
-      }
-      return profile;
-    } catch (error) {
-      console.warn("Không thể tải quyền Customer Success:", error);
-      return base;
-    }
-  }
-  /* =========================================================
-     PAGE PERMISSION
-  ========================================================= */
-  function enforceLeaderPage(profile) {
-    if (document.body.dataset.csLeaderOnly === "true" && !profile.isLeader) {
-      window.location.replace(HOME_URL);
-      return true;
-    }
-    return false;
-  }
-  function enforceMemberPage(profile) {
+
+  window.__CS_GLOBAL_CHAT_LOADED__ = true;
+
+  console.log(
+    "[CS CHAT] Global chat loading..."
+  );
+
+  /* =====================================================
+     STATE
+  ===================================================== */
+
+  const state = {
+
+    currentUser: null,
+
+    currentUserData: null,
+
+    users: [],
+
+    selectedUser: null,
+
+    roomId: null,
+
+    messagesUnsubscribe: null,
+
+    roomsUnsubscribe: null,
+
+    authUnsubscribe: null,
+
+    initialized: false,
+
+    eventsBound: false,
+
+    starting: false,
+
+    sending: false
+
+  };
+
+
+  /* =====================================================
+     FIREBASE
+  ===================================================== */
+
+  function getFirebase() {
+
     if (
-      document.body.dataset.csMemberOnly === "true" &&
-      (profile.isLeader || !profile.isGroupMember)
+      window.CS_FIREBASE &&
+      window.CS_FIREBASE.firebase
     ) {
-      window.location.replace(HOME_URL);
-      return true;
+      return window.CS_FIREBASE.firebase;
     }
-    return false;
+
+    if (window.firebase) {
+      return window.firebase;
+    }
+
+    return null;
   }
-  /* =========================================================
-     INIT NAVBAR
-  ========================================================= */
-  function initNavbar() {
-    let app = document.querySelector(".app");
-    if (!app) {
-      const standalone = document.querySelector(
-        "body > main, " + "body > .wrap, " + "body > [data-page-content]",
-      );
-      if (!standalone) {
-        return;
+
+
+  function getAuth() {
+
+    try {
+
+      if (
+        window.CS_FIREBASE &&
+        window.CS_FIREBASE.auth
+      ) {
+        return window.CS_FIREBASE.auth;
       }
-      app = document.createElement("div");
-      app.className = "app";
-      const main = document.createElement("main");
-      main.className = "cs-navbar-standalone";
-      document.body.insertBefore(app, standalone);
-      app.appendChild(main);
-      main.appendChild(standalone);
+
+      const fb = getFirebase();
+
+      if (
+        fb &&
+        typeof fb.auth === "function"
+      ) {
+        return fb.auth();
+      }
+
+    } catch (error) {
+
+      console.error(
+        "[CS CHAT] getAuth error:",
+        error
+      );
+
     }
-    if (app.dataset.csNavbarReady === "true") {
-      return;
+
+    return null;
+  }
+
+
+  function getDB() {
+
+    try {
+
+      if (
+        window.CS_FIREBASE &&
+        window.CS_FIREBASE.db
+      ) {
+        return window.CS_FIREBASE.db;
+      }
+
+      const fb = getFirebase();
+
+      if (
+        fb &&
+        typeof fb.firestore === "function"
+      ) {
+        return fb.firestore();
+      }
+
+    } catch (error) {
+
+      console.error(
+        "[CS CHAT] getDB error:",
+        error
+      );
+
     }
-    const content = prepareLegacyShell(app);
-    if (!content) {
-      return;
+
+    return null;
+  }
+
+
+  function serverTimestamp() {
+
+    const fb = getFirebase();
+
+    try {
+
+      if (
+        fb &&
+        fb.firestore &&
+        fb.firestore.FieldValue &&
+        fb.firestore.FieldValue.serverTimestamp
+      ) {
+        return fb.firestore.FieldValue.serverTimestamp();
+      }
+
+    } catch (error) {}
+
+    return new Date();
+  }
+
+
+  /* =====================================================
+     DOM HELPERS
+  ===================================================== */
+
+  function $(selector, root = document) {
+
+    try {
+      return root.querySelector(selector);
+    } catch (error) {
+      return null;
     }
-    app.dataset.csNavbarReady = "true";
-    /* =====================================================
-       TOPBAR
-    ===================================================== */
-    const topbar = document.createElement("header");
-    topbar.className = "cs-navbar-topbar";
-    topbar.innerHTML = `
-      <button
-        class="cs-navbar-toggle"
-        type="button"
-        aria-label="Mở điều hướng"
-        aria-expanded="false"
-        aria-controls="csNavbarSidebar"
-      >☰</button>
-      <a
-        class="cs-navbar-brand"
-        href="/CS/homepageCS/trangchu-cs.html"
-        aria-label="Trang chủ Customer Success"
+
+  }
+
+
+  function escapeHTML(value) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent =
+      value == null
+        ? ""
+        : String(value);
+
+    return div.innerHTML;
+
+  }
+
+
+  /* =====================================================
+     USER HELPERS
+  ===================================================== */
+
+  function getUserName(user) {
+
+    if (!user) {
+      return "Người dùng";
+    }
+
+    return String(
+
+      user.displayName ||
+
+      user.name ||
+
+      user.fullName ||
+
+      user.full_name ||
+
+      user.username ||
+
+      user.email ||
+
+      "Người dùng"
+
+    ).trim();
+
+  }
+
+
+  function getUserEmail(user) {
+
+    return String(
+      user?.email || ""
+    ).trim();
+
+  }
+
+
+  function getUserRole(user) {
+
+    return String(
+
+      user?.role ||
+
+      user?.accountType ||
+
+      user?.account_type ||
+
+      user?.position ||
+
+      "Thành viên"
+
+    ).trim();
+
+  }
+
+
+  function getInitials(name) {
+
+    const text =
+      String(name || "U").trim();
+
+    if (!text) {
+      return "U";
+    }
+
+    const parts =
+      text.split(/\s+/).filter(Boolean);
+
+    if (parts.length === 1) {
+
+      return parts[0]
+        .substring(0, 2)
+        .toUpperCase();
+
+    }
+
+    return (
+
+      parts[0][0] +
+
+      parts[parts.length - 1][0]
+
+    ).toUpperCase();
+
+  }
+
+
+  function timestampValue(value) {
+
+    if (!value) {
+      return 0;
+    }
+
+    if (
+      typeof value.toMillis ===
+      "function"
+    ) {
+      return value.toMillis();
+    }
+
+    if (
+      typeof value.toDate ===
+      "function"
+    ) {
+      return value.toDate().getTime();
+    }
+
+    if (
+      typeof value.seconds ===
+      "number"
+    ) {
+      return value.seconds * 1000;
+    }
+
+    if (
+      typeof value._seconds ===
+      "number"
+    ) {
+      return value._seconds * 1000;
+    }
+
+    if (
+      value instanceof Date
+    ) {
+      return value.getTime();
+    }
+
+    const parsed =
+      Date.parse(value);
+
+    return Number.isNaN(parsed)
+      ? 0
+      : parsed;
+
+  }
+
+
+  /* =====================================================
+     ROOM ID
+  ===================================================== */
+
+  function makeRoomId(uidA, uidB) {
+
+    const ids = [
+
+      String(uidA || ""),
+
+      String(uidB || "")
+
+    ]
+
+      .filter(Boolean)
+
+      .sort();
+
+    if (ids.length !== 2) {
+      return "";
+    }
+
+    return `${ids[0]}_${ids[1]}`;
+
+  }
+
+
+  /* =====================================================
+     FIND NAVBAR BUTTON
+  ===================================================== */
+
+  function findChatButton() {
+
+    return (
+
+      document.querySelector(
+        "#csNavbarMessengerBtn"
+      ) ||
+
+      document.querySelector(
+        "#csChatButton"
+      ) ||
+
+      document.querySelector(
+        "[data-cs-chat-button]"
+      )
+
+    );
+
+  }
+
+
+  /* =====================================================
+     CREATE CHAT UI
+  ===================================================== */
+
+  function createChatUI() {
+
+    const button =
+      findChatButton();
+
+    if (!button) {
+      return false;
+    }
+
+
+    let panel =
+      document.querySelector(
+        "#csNavbarMessengerPanel"
+      );
+
+
+    if (!panel) {
+
+      panel =
+        document.createElement("aside");
+
+      panel.id =
+        "csNavbarMessengerPanel";
+
+      panel.className =
+        "cs-navbar-messenger-panel";
+
+      panel.hidden = true;
+
+      panel.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.appendChild(panel);
+
+    }
+
+
+    if (
+      document.querySelector(
+        "#csSingleChatContainer"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    const container =
+      document.createElement("div");
+
+    container.id =
+      "csSingleChatContainer";
+
+
+    container.innerHTML = `
+
+      <div
+        class="cs-single-chat-list"
+        id="csSingleChatList"
       >
-        <span class="cs-navbar-mark">
-          CS
-        </span>
-        <span class="cs-navbar-brand-copy">
-          <strong>
-            Hệ thống Quản lý Hỗ trợ
-          </strong>
-          <small id="csNavbarRoleText">
-            Đang kiểm tra quyền truy cập…
-          </small>
-        </span>
-      </a>
-      <div class="cs-navbar-actions">
-        <!-- CHAT -->
-        <div class="cs-chat-wrap">
+
+        <div class="cs-single-chat-header">
+
+          <strong>Tin nhắn</strong>
+
           <button
-            class="cs-navbar-chat-button"
-            id="csChatButton"
             type="button"
-            aria-label="Mở tin nhắn"
-            aria-expanded="false"
+            id="csSingleChatClose"
           >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                d="M21 11.5a8 8 0 0 1-8 8H8l-5 3v-11a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"
-              ></path>
-            </svg>
-            <span
-              class="cs-navbar-chat-count"
-              id="csChatCount"
-              hidden
-            >0</span>
+            ×
           </button>
+
         </div>
-        <!-- NOTIFICATION -->
-        <button
-          class="cs-navbar-notification-button"
-          id="csNotificationButton"
-          type="button"
-          aria-label="Mở thông báo"
-          aria-expanded="false"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
-            ></path>
-            <path
-              d="M10 21h4"
-            ></path>
-          </svg>
-          <span
-            class="cs-navbar-notification-count"
-            id="csNotificationCount"
-            hidden
-          >0</span>
-        </button>
-      </div>
-    `;
-    /* =====================================================
-       LAYOUT
-    ===================================================== */
-    const layout = document.createElement("div");
-    layout.className = "cs-navbar-layout";
-    const sidebar = document.createElement("aside");
-    sidebar.className = "cs-navbar-sidebar";
-    sidebar.id = "csNavbarSidebar";
-    sidebar.setAttribute("aria-label", "Điều hướng Customer Success");
-    const overlay = document.createElement("button");
-    overlay.type = "button";
-    overlay.className = "cs-navbar-overlay";
-    overlay.setAttribute("aria-label", "Đóng điều hướng");
-    content.classList.add("cs-navbar-content");
-    app.insertBefore(topbar, content);
-    app.insertBefore(layout, content);
-    layout.append(sidebar, content);
-    document.body.appendChild(overlay);
-    /* =====================================================
-       NOTIFICATION PANEL
-    ===================================================== */
-    const notificationPanel = document.createElement("aside");
-    notificationPanel.className = "cs-notification-panel";
-    notificationPanel.id = "csNotificationPanel";
-    notificationPanel.setAttribute("aria-hidden", "true");
-    notificationPanel.innerHTML = `
-      <div class="cs-notification-head">
-        <div>
-          <span>
-            CS CẬP NHẬT
-          </span>
-          <h2>
-            Thông báo
-          </h2>
-          <p>
-            Phân công ticket và trao đổi nhóm mới.
-          </p>
-        </div>
-        <button
-          id="csNotificationClose"
-          type="button"
-          aria-label="Đóng thông báo"
-        >
-          ×
-        </button>
-      </div>
-      <div class="cs-notification-toolbar">
-        <strong id="csNotificationUnreadLabel">
-          Chưa có thông báo
-        </strong>
-        <button
-          id="csNotificationReadAll"
-          type="button"
-          disabled
-        >
-          Đọc tất cả
-        </button>
-      </div>
-      <div
-        class="cs-notification-list"
-        id="csNotificationList"
-      ></div>
-      <div
-        class="cs-notification-empty"
-        id="csNotificationEmpty"
-      >
-        Khi Leader phân công ticket hoặc thành viên Group nhắn tin,
-        thông báo sẽ xuất hiện tại đây.
-      </div>
-    `;
-    document.body.appendChild(notificationPanel);
-    const notificationBackdrop = document.createElement("button");
-    notificationBackdrop.type = "button";
-    notificationBackdrop.className = "cs-notification-backdrop";
-    notificationBackdrop.id = "csNotificationBackdrop";
-    notificationBackdrop.setAttribute("aria-label", "Đóng thông báo");
-    notificationBackdrop.hidden = true;
-    document.body.appendChild(notificationBackdrop);
-    /* =====================================================
-       CHAT PANEL
-    ===================================================== */
-    const chatPanel = document.createElement("aside");
-    chatPanel.className = "cs-chat-panel";
-    chatPanel.id = "csChatPanel";
-    chatPanel.setAttribute("aria-hidden", "true");
-    chatPanel.innerHTML = `
-      <div class="cs-chat-panel-head">
-        <div>
-          <strong>
-            Tin nhắn
-          </strong>
-          <small id="csChatStatus">
-            Chọn người để bắt đầu trò chuyện
-          </small>
-        </div>
-        <button
-          class="cs-chat-close"
-          id="csChatClose"
-          type="button"
-          aria-label="Đóng tin nhắn"
-        >
-          ×
-        </button>
-      </div>
-      <div
-        class="cs-chat-list-view"
-        id="csChatListView"
-      >
-        <label class="cs-chat-search">
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="6"
-            ></circle>
-            <path
-              d="m20 20-4-4"
-            ></path>
-          </svg>
+
+
+        <div class="cs-single-chat-search">
+
           <input
-            id="csChatSearch"
+            id="csSingleChatSearch"
             type="search"
             placeholder="Tìm tên hoặc email..."
             autocomplete="off"
           >
-        </label>
-        <div
-          class="cs-chat-user-list"
-          id="csChatUserList"
-        >
-          <p class="cs-chat-state">
-            Đang tải danh sách người dùng...
-          </p>
+
         </div>
+
+
+        <div
+          id="csSingleChatUsers"
+          class="cs-single-chat-users"
+        >
+
+          <div class="cs-single-chat-loading">
+            Đang tải...
+          </div>
+
+        </div>
+
       </div>
+
+
       <div
-        class="cs-chat-conversation"
-        id="csChatConversation"
+        class="cs-single-chat-conversation"
+        id="csSingleChatConversation"
         hidden
       >
-        <div class="cs-chat-conversation-head">
+
+        <div class="cs-single-chat-header">
+
           <button
-            class="cs-chat-back"
-            id="csChatBack"
             type="button"
-            aria-label="Quay lại"
+            id="csSingleChatBack"
           >
             ←
           </button>
-          <span
-            class="cs-chat-avatar"
-            id="csChatAvatar"
+
+
+          <div
+            class="cs-single-chat-avatar"
+            id="csSingleChatAvatar"
           >
             U
-          </span>
+          </div>
+
+
           <div>
-            <strong id="csChatName">
+
+            <strong id="csSingleChatName">
               Trò chuyện
             </strong>
-            <small id="csChatRole">
-              Đang hoạt động
+
+            <small id="csSingleChatRole">
+              Thành viên
             </small>
+
           </div>
+
         </div>
+
+
         <div
-          class="cs-chat-messages"
-          id="csChatMessages"
+          id="csSingleChatMessages"
+          class="cs-single-chat-messages"
         >
-          <p class="cs-chat-state">
+
+          <div class="cs-single-chat-empty">
             Hãy gửi tin nhắn đầu tiên.
-          </p>
+          </div>
+
         </div>
+
+
         <form
-          class="cs-chat-composer"
-          id="csChatForm"
+          id="csSingleChatForm"
+          class="cs-single-chat-form"
         >
+
           <textarea
-            id="csChatInput"
+            id="csSingleChatInput"
             rows="1"
             maxlength="2000"
             placeholder="Nhập tin nhắn..."
             required
           ></textarea>
-          <button
-            class="cs-chat-send"
-            type="submit"
-            aria-label="Gửi tin nhắn"
-          >
-            ➤
-          </button>
-        </form>
-      </div>
-    `;
-    document.body.appendChild(chatPanel);
-    const chatBackdrop = document.createElement("button");
-    chatBackdrop.type = "button";
-    chatBackdrop.className = "cs-chat-backdrop";
-    chatBackdrop.id = "csChatBackdrop";
-    chatBackdrop.setAttribute("aria-label", "Đóng tin nhắn");
-    chatBackdrop.hidden = true;
-    document.body.appendChild(chatBackdrop);
-    /* =====================================================
-       MOBILE NAV
-    ===================================================== */
-    const toggle = topbar.querySelector(".cs-navbar-toggle");
-    const closeMobile = () => {
-      layout.classList.remove("is-mobile-open");
-      overlay.classList.remove("is-visible");
-      toggle.setAttribute("aria-expanded", "false");
-    };
-    const syncLayout = () => {
-      if (isMobile()) {
-        layout.classList.remove("is-collapsed");
-        closeMobile();
-      } else {
-        layout.classList.toggle(
-          "is-collapsed",
-          safeGet(COLLAPSE_KEY) === "true",
-        );
-        toggle.setAttribute(
-          "aria-expanded",
-          String(!layout.classList.contains("is-collapsed")),
-        );
-      }
-    };
-    toggle.addEventListener("click", () => {
-      if (isMobile()) {
-        const opening = !layout.classList.contains("is-mobile-open");
-        layout.classList.toggle("is-mobile-open", opening);
-        overlay.classList.toggle("is-visible", opening);
-        toggle.setAttribute("aria-expanded", String(opening));
-      } else {
-        const collapsed = !layout.classList.contains("is-collapsed");
-        layout.classList.toggle("is-collapsed", collapsed);
-        safeSet(COLLAPSE_KEY, String(collapsed));
-        toggle.setAttribute("aria-expanded", String(!collapsed));
-      }
-    });
-    overlay.addEventListener("click", closeMobile);
-    sidebar.addEventListener("click", (event) => {
-      if (event.target.closest("a")) {
-        closeMobile();
-      }
-    });
-    window.addEventListener("resize", syncLayout, {
-      passive: true,
-    });
-    syncLayout();
-    /* =====================================================
-       NOTIFICATION
-    ===================================================== */
-    const notificationButton = topbar.querySelector("#csNotificationButton");
-    const notificationCount = topbar.querySelector("#csNotificationCount");
-    const notificationList = notificationPanel.querySelector(
-      "#csNotificationList",
-    );
-    const notificationEmpty = notificationPanel.querySelector(
-      "#csNotificationEmpty",
-    );
-    const notificationUnreadLabel = notificationPanel.querySelector(
-      "#csNotificationUnreadLabel",
-    );
-    const notificationReadAll = notificationPanel.querySelector(
-      "#csNotificationReadAll",
-    );
-    const notificationClose = notificationPanel.querySelector(
-      "#csNotificationClose",
-    );
-    let notificationRecords = [];
-    let notificationUid = "";
-    let unsubscribeNotifications = null;
-    const closeNotifications = () => {
-      notificationPanel.classList.remove("open");
-      notificationPanel.setAttribute("aria-hidden", "true");
-      notificationButton.setAttribute("aria-expanded", "false");
-      notificationBackdrop.classList.remove("show");
-      window.setTimeout(() => {
-        notificationBackdrop.hidden = true;
-      }, 180);
-    };
-    const openNotifications = () => {
-      closeChat();
-      notificationPanel.classList.add("open");
-      notificationPanel.setAttribute("aria-hidden", "false");
-      notificationButton.setAttribute("aria-expanded", "true");
-      notificationBackdrop.hidden = false;
-      requestAnimationFrame(() => {
-        notificationBackdrop.classList.add("show");
-      });
-    };
-    const renderNotifications = () => {
-      const unread = notificationRecords.filter((item) => !item.read);
-      notificationCount.hidden = unread.length === 0;
-      notificationCount.textContent =
-        unread.length > 99 ? "99+" : String(unread.length);
-      notificationUnreadLabel.textContent = unread.length
-        ? `${unread.length} chưa đọc`
-        : notificationRecords.length
-          ? "Đã đọc tất cả"
-          : "Chưa có thông báo";
-      notificationReadAll.disabled = unread.length === 0;
-      notificationEmpty.classList.toggle(
-        "show",
-        notificationRecords.length === 0,
-      );
-      notificationList.innerHTML = notificationRecords
-        .map(
-          (item) => `
-              <button
-                class="cs-notification-item${item.read ? " is-read" : ""}"
-                type="button"
-                data-notification-id="${escapeHTML(item.id)}"
-                data-notification-link="${escapeHTML(item.link || "")}"
-              >
-                <span class="cs-notification-icon">
-                  ${item.type === "group_message" ? "✦" : "✓"}
-                </span>
-                <span class="cs-notification-copy">
-                  <strong>
-                    ${escapeHTML(item.title || "Thông báo Customer Success")}
-                  </strong>
-                  <b>
-                    ${escapeHTML(item.preview || "Có cập nhật mới.")}
-                  </b>
-                  <small>
-                    ${escapeHTML(notificationTime(item.createdAt))}
-                  </small>
-                </span>
-              </button>
-            `,
-        )
-        .join("");
-    };
-    const markNotificationRead = async (id) => {
-      if (
-        !notificationUid ||
-        !id ||
-        typeof firebase === "undefined" ||
-        !firebase.firestore
-      ) {
-        return;
-      }
-      const item = notificationRecords.find((record) => record.id === id);
-      if (!item || item.read) {
-        return;
-      }
-      try {
-        await firebase
-          .firestore()
-          .collection("csNotifications")
-          .doc(notificationUid)
-          .collection("items")
-          .doc(id)
-          .set(
-            {
-              read: true,
-              readAt: firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            {
-              merge: true,
-            },
-          );
-      } catch (error) {
-        console.warn("Không thể đánh dấu thông báo đã đọc:", error);
-      }
-    };
-    const bindNotifications = (profile) => {
-      notificationUid = profile?.uid || "";
-      if (unsubscribeNotifications) {
-        unsubscribeNotifications();
-        unsubscribeNotifications = null;
-      }
-      notificationRecords = [];
-      renderNotifications();
-      if (
-        !notificationUid ||
-        typeof firebase === "undefined" ||
-        !firebase.firestore
-      ) {
-        return;
-      }
-      unsubscribeNotifications = firebase
-        .firestore()
-        .collection("csNotifications")
-        .doc(notificationUid)
-        .collection("items")
-        .orderBy("createdAt", "desc")
-        .limit(50)
-        .onSnapshot(
-          (snapshot) => {
-            notificationRecords = snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
-            renderNotifications();
-          },
-          (error) => {
-            console.warn("Không thể đồng bộ thông báo CS:", error);
-          },
-        );
-    };
-    notificationButton.addEventListener("click", () => {
-      if (notificationPanel.classList.contains("open")) {
-        closeNotifications();
-      } else {
-        openNotifications();
-      }
-    });
-    notificationClose.addEventListener("click", closeNotifications);
-    notificationBackdrop.addEventListener("click", closeNotifications);
-    notificationList.addEventListener("click", async (event) => {
-      const item = event.target.closest("[data-notification-id]");
-      if (!item) {
-        return;
-      }
-      const id = item.dataset.notificationId;
-      const link = item.dataset.notificationLink;
-      await markNotificationRead(id);
-      if (link) {
-        window.location.href = link;
-      }
-    });
-    notificationReadAll.addEventListener("click", async () => {
-      const unread = notificationRecords.filter((item) => !item.read);
-      if (
-        !unread.length ||
-        !notificationUid ||
-        typeof firebase === "undefined" ||
-        !firebase.firestore
-      ) {
-        return;
-      }
-      notificationReadAll.disabled = true;
-      try {
-        const database = firebase.firestore();
-        const batch = database.batch();
-        unread.forEach((item) => {
-          batch.set(
-            database
-              .collection("csNotifications")
-              .doc(notificationUid)
-              .collection("items")
-              .doc(item.id),
-            {
-              read: true,
-              readAt: firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            {
-              merge: true,
-            },
-          );
-        });
-        await batch.commit();
-      } catch (error) {
-        console.warn("Không thể đánh dấu toàn bộ thông báo đã đọc:", error);
-      }
-    });
-    /* =====================================================
-       CHAT
-    ===================================================== */
-    const chatButton = topbar.querySelector("#csChatButton");
-    const chatCount = topbar.querySelector("#csChatCount");
-    const chatClose = chatPanel.querySelector("#csChatClose");
-    const chatListView = chatPanel.querySelector("#csChatListView");
-    const chatConversation = chatPanel.querySelector("#csChatConversation");
-    const chatBack = chatPanel.querySelector("#csChatBack");
-    const chatSearch = chatPanel.querySelector("#csChatSearch");
-    const chatUserList = chatPanel.querySelector("#csChatUserList");
-    const chatAvatar = chatPanel.querySelector("#csChatAvatar");
-    const chatName = chatPanel.querySelector("#csChatName");
-    const chatRole = chatPanel.querySelector("#csChatRole");
-    const chatMessages = chatPanel.querySelector("#csChatMessages");
-    const chatForm = chatPanel.querySelector("#csChatForm");
-    const chatInput = chatPanel.querySelector("#csChatInput");
-    const chatStatus = chatPanel.querySelector("#csChatStatus");
 
-    let chatUid = "";
-    let chatProfile = null;
-    let chatUsers = [];
-    let selectedChatUser = null;
-    let unsubscribeChatMessages = null;
-    let unsubscribeChatRooms = null;
-    let unreadChatCount = 0;
-    
-    const makeChatRoomId = (uidA, uidB) => {
-      return [String(uidA), String(uidB)].sort().join("_");
+
+          <button
+            type="submit"
+            id="csSingleChatSend"
+          >
+            Gửi
+          </button>
+
+        </form>
+
+      </div>
+
+    `;
+
+
+    panel.appendChild(container);
+
+    return true;
+
+  }
+
+
+  /* =====================================================
+     ELEMENTS
+  ===================================================== */
+
+  function getElements() {
+
+    return {
+
+      button:
+        findChatButton(),
+
+      panel:
+        document.querySelector(
+          "#csNavbarMessengerPanel"
+        ),
+
+      list:
+        document.querySelector(
+          "#csSingleChatList"
+        ),
+
+      users:
+        document.querySelector(
+          "#csSingleChatUsers"
+        ),
+
+      search:
+        document.querySelector(
+          "#csSingleChatSearch"
+        ),
+
+      conversation:
+        document.querySelector(
+          "#csSingleChatConversation"
+        ),
+
+      close:
+        document.querySelector(
+          "#csSingleChatClose"
+        ),
+
+      back:
+        document.querySelector(
+          "#csSingleChatBack"
+        ),
+
+      avatar:
+        document.querySelector(
+          "#csSingleChatAvatar"
+        ),
+
+      name:
+        document.querySelector(
+          "#csSingleChatName"
+        ),
+
+      role:
+        document.querySelector(
+          "#csSingleChatRole"
+        ),
+
+      messages:
+        document.querySelector(
+          "#csSingleChatMessages"
+        ),
+
+      form:
+        document.querySelector(
+          "#csSingleChatForm"
+        ),
+
+      input:
+        document.querySelector(
+          "#csSingleChatInput"
+        ),
+
+      send:
+        document.querySelector(
+          "#csSingleChatSend"
+        )
+
     };
-    
-    function isFirestoreReady() {
-      return typeof firebase !== "undefined" && Boolean(firebase.firestore);
-    }
-    
-    function getChatDatabase() {
-      return isFirestoreReady() ? firebase.firestore() : null;
-    }
-    
-    function getTimestampDate(value) {
-      if (!value) return null;
-    
-      if (typeof value.toDate === "function") {
-        return value.toDate();
-      }
-    
-      if (typeof value.seconds === "number") {
-        return new Date(value.seconds * 1000);
-      }
-    
-      if (value instanceof Date) {
-        return value;
-      }
-    
+
+  }
+
+
+  /* =====================================================
+     LOAD CURRENT USER DATA
+  ===================================================== */
+
+  async function loadCurrentUserData() {
+
+    const db =
+      getDB();
+
+    const user =
+      state.currentUser;
+
+    if (
+      !db ||
+      !user
+    ) {
       return null;
     }
-    
-    function closeChatConversation() {
-      if (unsubscribeChatMessages) {
-        unsubscribeChatMessages();
-        unsubscribeChatMessages = null;
-      }
-    
-      selectedChatUser = null;
-      chatConversation.hidden = true;
-      chatListView.hidden = false;
-      chatMessages.innerHTML = `
-        <p class="cs-chat-state">Hãy gửi tin nhắn đầu tiên.</p>
-      `;
-    }
-    
-    function closeChat() {
-      chatPanel.setAttribute("aria-hidden", "true");
-      chatButton.setAttribute("aria-expanded", "false");
-      chatBackdrop.hidden = true;
-      chatBackdrop.classList.remove("show");
-      closeChatConversation();
-    }
-    
-    function openChat() {
-      closeNotifications();
-      chatPanel.setAttribute("aria-hidden", "false");
-      chatButton.setAttribute("aria-expanded", "true");
-      chatBackdrop.hidden = false;
-    
-      requestAnimationFrame(() => {
-        chatBackdrop.classList.add("show");
-      });
-    
-      loadChatUsers();
-    }
-    
-    /* =====================================================
-       LOAD CHAT USERS
-       Không dùng orderBy cùng array-contains để tránh composite index.
-       Dữ liệu được sắp xếp bằng chatUsers.sort() phía trình duyệt.
-    ===================================================== */
-    async function loadChatUsers() {
-      if (!isFirestoreReady()) {
-        chatUserList.innerHTML = `
-          <p class="cs-chat-state">Firebase chưa được khởi tạo.</p>
-        `;
-        return;
-      }
-    
-      if (!chatUid) {
-        chatUserList.innerHTML = `
-          <p class="cs-chat-state">Chưa xác định tài khoản CS.</p>
-        `;
-        return;
-      }
-    
-      chatUserList.innerHTML = `
-        <p class="cs-chat-state">Đang tải cuộc trò chuyện...</p>
-      `;
-    
-      const database = getChatDatabase();
-    
-      try {
-        /*
-         * Không đặt orderBy("updatedAt") ở đây.
-         * Query này chỉ dùng array-contains, không cần composite index.
-         */
-        const chatSnapshot = await database
-          .collection("chats")
-          .where("participants", "array-contains", chatUid)
-          .limit(100)
-          .get();
-    
-        const userSnapshot = await database
+
+
+    try {
+
+      const doc =
+        await db
           .collection("users")
-          .limit(300)
+          .doc(user.uid)
           .get();
-    
-        const userMap = new Map();
-    
-        userSnapshot.docs.forEach((doc) => {
-          const data = doc.data() || {};
-          const uid = String(data.uid || doc.id);
-    
-          if (!uid || uid === String(chatUid)) {
-            return;
-          }
-    
-          userMap.set(uid, {
-            uid,
-            id: doc.id,
-            name:
-              data.name ||
-              data.displayName ||
-              data.fullName ||
-              data.email ||
-              "Người dùng",
-            email: data.email || "",
-            role:
-              data.role ||
-              data.accountType ||
-              data.position ||
-              "CS",
-            avatar:
-              data.avatar ||
-              data.photoURL ||
-              data.photoUrl ||
-              "",
-          });
-        });
-    
-        const chatMap = new Map();
-    
-        chatSnapshot.docs.forEach((doc) => {
-          const data = doc.data() || {};
-          const participants = Array.isArray(data.participants)
-            ? data.participants.map(String)
-            : [];
-    
-          const otherUid = participants.find(
-            (uid) => uid !== String(chatUid),
-          );
-    
-          if (!otherUid) {
-            return;
-          }
-    
-          const participantNames = data.participantNames || {};
-          const roomName = participantNames[otherUid] || "";
-          const user = userMap.get(otherUid);
-    
-          chatMap.set(otherUid, {
-            uid: otherUid,
-            id: user?.id || otherUid,
-            name:
-              roomName ||
-              user?.name ||
-              user?.email ||
-              "Người dùng",
-            email:
-              user?.email ||
-              (roomName && roomName.includes("@") ? roomName : ""),
-            role: user?.role || "Customer Success",
-            avatar: user?.avatar || "",
-            lastMessage: data.lastMessage || "",
-            lastMessageBy:
-              data.lastMessageBy ||
-              data.lastMessageSenderId ||
-              "",
-            updatedAt: data.updatedAt || null,
-            roomId: doc.id,
-            hasRoom: true,
-          });
-        });
-    
-        userMap.forEach((user, uid) => {
-          if (chatMap.has(uid)) {
-            return;
-          }
-    
-          chatMap.set(uid, {
-            ...user,
-            lastMessage: "",
-            lastMessageBy: "",
-            updatedAt: null,
-            roomId: makeChatRoomId(chatUid, uid),
-            hasRoom: false,
-          });
-        });
-    
-        chatUsers = Array.from(chatMap.values());
-    
-        chatUsers.sort((a, b) => {
-          if (a.hasRoom && !b.hasRoom) return -1;
-          if (!a.hasRoom && b.hasRoom) return 1;
-    
-          const dateA = getTimestampDate(a.updatedAt);
-          const dateB = getTimestampDate(b.updatedAt);
-    
-          return (
-            (dateB?.getTime() || 0) -
-            (dateA?.getTime() || 0)
-          );
-        });
-    
-        renderChatUsers();
-      } catch (error) {
-        console.error("Không thể tải danh sách chat:", error);
-    
-        /* Fallback: vẫn tải danh sách users nếu query chats gặp lỗi. */
-        try {
-          const userSnapshot = await database
-            .collection("users")
-            .limit(300)
-            .get();
-    
-          chatUsers = userSnapshot.docs
-            .map((doc) => {
-              const data = doc.data() || {};
-              const uid = String(data.uid || doc.id);
-    
-              return {
-                uid,
-                id: doc.id,
-                name:
-                  data.name ||
-                  data.displayName ||
-                  data.fullName ||
-                  data.email ||
-                  "Người dùng",
-                email: data.email || "",
-                role:
-                  data.role ||
-                  data.accountType ||
-                  data.position ||
-                  "CS",
-                avatar:
-                  data.avatar ||
-                  data.photoURL ||
-                  data.photoUrl ||
-                  "",
-                lastMessage: "",
-                lastMessageBy: "",
-                updatedAt: null,
-                roomId: makeChatRoomId(chatUid, uid),
-                hasRoom: false,
-              };
-            })
-            .filter((user) => user.uid !== String(chatUid));
-    
-          renderChatUsers();
-        } catch (fallbackError) {
-          console.error(
-            "Không thể tải danh sách người dùng:",
-            fallbackError,
-          );
-    
-          chatUserList.innerHTML = `
-            <p class="cs-chat-state">
-              Không thể tải danh sách người dùng.
-            </p>
-          `;
-        }
+
+
+      if (
+        doc.exists
+      ) {
+
+        state.currentUserData = {
+
+          uid: user.uid,
+
+          ...doc.data()
+
+        };
+
+      } else {
+
+        state.currentUserData = {
+
+          uid: user.uid,
+
+          email: user.email || "",
+
+          name:
+            user.displayName ||
+            user.email ||
+            "Người dùng"
+
+        };
+
       }
+
+
+      return state.currentUserData;
+
+    } catch (error) {
+
+      console.warn(
+        "[CS CHAT] Không đọc được users/current:",
+        error
+      );
+
+      state.currentUserData = {
+
+        uid: user.uid,
+
+        email: user.email || "",
+
+        name:
+          user.displayName ||
+          user.email ||
+          "Người dùng"
+
+      };
+
+      return state.currentUserData;
+
     }
-    
-    function renderChatUsers() {
-      const keyword = String(chatSearch.value || "")
+
+  }
+
+
+  /* =====================================================
+     LOAD USERS
+  ===================================================== */
+
+  async function loadUsers() {
+
+    const db =
+      getDB();
+
+    const currentUser =
+      state.currentUser;
+
+    const elements =
+      getElements();
+
+
+    if (
+      !db ||
+      !currentUser ||
+      !elements.users
+    ) {
+
+      return;
+
+    }
+
+
+    elements.users.innerHTML = `
+
+      <div class="cs-single-chat-loading">
+        Đang tải danh sách...
+      </div>
+
+    `;
+
+
+    try {
+
+      const snapshot =
+        await db
+          .collection("users")
+          .get();
+
+
+      const users = [];
+
+
+      snapshot.forEach(
+        (doc) => {
+
+          const data =
+            doc.data() || {};
+
+
+          const uid =
+            String(
+
+              data.uid ||
+
+              data.userId ||
+
+              doc.id
+
+            );
+
+
+          if (
+            !uid ||
+            uid ===
+              String(
+                currentUser.uid
+              )
+          ) {
+
+            return;
+
+          }
+
+
+          users.push({
+
+            uid,
+
+            id: uid,
+
+            ...data
+
+          });
+
+        }
+      );
+
+
+      state.users =
+        users.sort(
+          (a, b) =>
+            getUserName(a).localeCompare(
+              getUserName(b),
+              "vi"
+            )
+        );
+
+
+      renderUsers();
+
+
+    } catch (error) {
+
+      console.error(
+        "[CS CHAT] LOAD USERS ERROR:",
+        error
+      );
+
+
+      elements.users.innerHTML = `
+
+        <div class="cs-single-chat-error">
+
+          Không tải được danh sách người dùng.
+
+          <br>
+
+          <small>
+            ${escapeHTML(
+              error.message || ""
+            )}
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     RENDER USERS
+  ===================================================== */
+
+  function renderUsers() {
+
+    const elements =
+      getElements();
+
+
+    if (
+      !elements.users
+    ) {
+      return;
+    }
+
+
+    const keyword =
+      String(
+        elements.search?.value || ""
+      )
         .trim()
         .toLowerCase();
-    
-      const filtered = chatUsers.filter((user) => {
-        if (!keyword) return true;
-    
-        return (
-          String(user.name || "")
-            .toLowerCase()
-            .includes(keyword) ||
-          String(user.email || "")
-            .toLowerCase()
-            .includes(keyword)
-        );
-      });
-    
-      if (!filtered.length) {
-        chatUserList.innerHTML = `
-          <p class="cs-chat-state">Không tìm thấy người dùng.</p>
-        `;
-        return;
-      }
-    
-      chatUserList.innerHTML = filtered
-        .map((user) => {
-          const initials = getInitials(user.name);
-          const lastMessage = String(user.lastMessage || "");
-          const preview =
-            lastMessage.length > 45
-              ? `${lastMessage.slice(0, 45)}...`
-              : lastMessage;
-          const isMine = user.lastMessageBy === chatUid;
-    
-          return `
-            <button
-              type="button"
-              class="cs-chat-user ${user.hasRoom ? "has-chat" : ""}"
-              data-chat-user-id="${escapeHTML(user.uid)}"
-            >
-              <span class="cs-chat-avatar">
-                ${
-                  user.avatar
-                    ? `<img src="${escapeHTML(user.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
-                    : escapeHTML(initials)
-                }
-              </span>
-              <span class="cs-chat-user-info">
-                <strong>${escapeHTML(user.name)}</strong>
-                <small>
-                  ${
-                    preview
-                      ? `${isMine ? "Bạn: " : ""}${escapeHTML(preview)}`
-                      : escapeHTML(
-                          user.email || user.role || "Customer Success",
-                        )
-                  }
-                </small>
-              </span>
-              ${
-                user.hasRoom
-                  ? `<span class="cs-chat-user-status" title="Đã có cuộc trò chuyện"></span>`
-                  : ""
-              }
-            </button>
-          `;
-        })
-        .join("");
-    }
-    
-    /* =====================================================
-       OPEN CONVERSATION
-       Đọc cả room ID cũ (_) và room ID mới (__)
-    ===================================================== */
-    async function openConversation(user) {
-      if (!user || !chatUid || !isFirestoreReady()) {
-        return;
-      }
 
-      selectedChatUser = user;
-      chatListView.hidden = true;
-      chatConversation.hidden = false;
-      chatName.textContent = user.name || "Trò chuyện";
-      chatRole.textContent = user.role || user.email || "Customer Success";
-      chatAvatar.textContent = getInitials(user.name);
-      chatStatus.textContent = `Đang trò chuyện với ${user.name}`;
-      chatMessages.innerHTML = `
-        <p class="cs-chat-state">Đang tải tin nhắn...</p>
+
+    const users =
+      state.users.filter(
+        (user) => {
+
+          if (!keyword) {
+            return true;
+          }
+
+
+          const name =
+            getUserName(user)
+              .toLowerCase();
+
+
+          const email =
+            getUserEmail(user)
+              .toLowerCase();
+
+
+          return (
+
+            name.includes(keyword) ||
+
+            email.includes(keyword)
+
+          );
+
+        }
+      );
+
+
+    if (!users.length) {
+
+      elements.users.innerHTML = `
+
+        <div class="cs-single-chat-empty">
+          Không tìm thấy người dùng.
+        </div>
+
       `;
 
-      if (unsubscribeChatMessages) {
-        unsubscribeChatMessages();
-        unsubscribeChatMessages = null;
-      }
+      return;
 
-      const database = getChatDatabase();
-      const roomIds = Array.from(new Set([
-        makeChatRoomId(chatUid, user.uid),
-        [String(chatUid), String(user.uid)].sort().join("__"),
-        [String(chatUid), String(user.uid)].sort().join("_"),
-      ]));
+    }
 
-      const messageMap = new Map();
-      const unsubscribers = [];
 
-      const getMillis = (value) => {
-        if (!value) return 0;
-        if (typeof value.toMillis === "function") return value.toMillis();
-        if (typeof value.toDate === "function") return value.toDate().getTime();
-        if (typeof value.seconds === "number") return value.seconds * 1000;
-        return value instanceof Date ? value.getTime() : 0;
-      };
+    elements.users.innerHTML =
 
-      const renderAllMessages = () => {
-        const rows = Array.from(messageMap.values()).sort(
-          (a, b) => getMillis(a.createdAt) - getMillis(b.createdAt),
+      users
+        .map(
+          (user) => {
+
+            const name =
+              getUserName(user);
+
+            const email =
+              getUserEmail(user);
+
+
+            return `
+
+              <button
+                type="button"
+                class="cs-single-chat-user"
+                data-chat-user="${escapeHTML(
+                  user.uid
+                )}"
+              >
+
+                <span
+                  class="cs-single-chat-avatar"
+                >
+                  ${escapeHTML(
+                    getInitials(name)
+                  )}
+                </span>
+
+
+                <span
+                  class="cs-single-chat-user-info"
+                >
+
+                  <strong>
+                    ${escapeHTML(name)}
+                  </strong>
+
+                  <small>
+                    ${escapeHTML(
+                      email ||
+                      getUserRole(user)
+                    )}
+                  </small>
+
+                </span>
+
+              </button>
+
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  /* =====================================================
+     OPEN PANEL
+  ===================================================== */
+
+  async function openPanel() {
+
+    const elements =
+      getElements();
+
+
+    if (!elements.panel) {
+
+      createChatUI();
+
+    }
+
+
+    const now =
+      getElements();
+
+
+    if (!now.panel) {
+      return;
+    }
+
+
+    now.panel.hidden = false;
+
+    now.panel.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+    if (
+      !state.currentUser
+    ) {
+
+      console.warn(
+        "[CS CHAT] Chưa đăng nhập."
+      );
+
+      return;
+
+    }
+
+
+    await loadUsers();
+
+  }
+
+
+  /* =====================================================
+     CLOSE PANEL
+  ===================================================== */
+
+  function closePanel() {
+
+    const elements =
+      getElements();
+
+
+    if (
+      elements.panel
+    ) {
+
+      elements.panel.hidden = true;
+
+      elements.panel.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+
+    closeConversation();
+
+  }
+
+
+  /* =====================================================
+     OPEN CONVERSATION
+  ===================================================== */
+
+  async function openConversation(uid) {
+
+    const db =
+      getDB();
+
+    const currentUser =
+      state.currentUser;
+
+
+    if (
+      !db ||
+      !currentUser
+    ) {
+
+      console.error(
+        "[CS CHAT] Firebase/Auth chưa sẵn sàng."
+      );
+
+      return;
+
+    }
+
+
+    const target =
+      state.users.find(
+        (user) =>
+          String(user.uid) ===
+          String(uid)
+      );
+
+
+    if (!target) {
+
+      console.error(
+        "[CS CHAT] Không tìm thấy user:",
+        uid
+      );
+
+      return;
+
+    }
+
+
+    stopMessageListener();
+
+
+    state.selectedUser =
+      target;
+
+
+    const roomId =
+      makeRoomId(
+        currentUser.uid,
+        target.uid
+      );
+
+
+    if (!roomId) {
+
+      console.error(
+        "[CS CHAT] Không tạo được roomId."
+      );
+
+      return;
+
+    }
+
+
+    state.roomId =
+      roomId;
+
+
+    const elements =
+      getElements();
+
+
+    if (
+      !elements.conversation
+    ) {
+      return;
+    }
+
+
+    if (elements.list) {
+      elements.list.hidden = true;
+    }
+
+
+    elements.conversation.hidden =
+      false;
+
+
+    if (elements.name) {
+
+      elements.name.textContent =
+        getUserName(target);
+
+    }
+
+
+    if (elements.role) {
+
+      elements.role.textContent =
+        getUserRole(target);
+
+    }
+
+
+    if (elements.avatar) {
+
+      elements.avatar.textContent =
+        getInitials(
+          getUserName(target)
         );
 
-        chatMessages.innerHTML = "";
+    }
 
-        if (!rows.length) {
-          chatMessages.innerHTML = `
-            <p class="cs-chat-state">Hãy gửi tin nhắn đầu tiên.</p>
-          `;
-          return;
+
+    if (elements.messages) {
+
+      elements.messages.innerHTML = `
+
+        <div class="cs-single-chat-loading">
+          Đang tải tin nhắn...
+        </div>
+
+      `;
+
+    }
+
+
+    const roomRef =
+      db
+        .collection("chats")
+        .doc(roomId);
+
+
+    try {
+
+      const roomSnapshot =
+        await roomRef.get();
+
+
+      if (
+        !roomSnapshot.exists
+      ) {
+
+        await roomRef.set({
+
+          participants: [
+
+            currentUser.uid,
+
+            target.uid
+
+          ],
+
+
+          participantIds: [
+
+            currentUser.uid,
+
+            target.uid
+
+          ],
+
+
+          participantNames: {
+
+            [currentUser.uid]:
+              getUserName(
+                state.currentUserData ||
+                currentUser
+              ),
+
+            [target.uid]:
+              getUserName(target)
+
+          },
+
+
+          lastMessage: "",
+
+          lastMessageBy: "",
+
+          lastMessageSenderId: "",
+
+          lastMessageReadBy: "",
+
+          lastMessageReadAt: null,
+
+          createdAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp()
+
+        });
+
+      }
+
+
+      await markRoomRead(
+        roomId
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "[CS CHAT] ROOM ERROR:",
+        error
+      );
+
+      if (elements.messages) {
+
+        elements.messages.innerHTML = `
+
+          <div class="cs-single-chat-error">
+
+            Không thể mở cuộc trò chuyện.
+
+            <br>
+
+            <small>
+              ${escapeHTML(
+                error.message || ""
+              )}
+            </small>
+
+          </div>
+
+        `;
+
+      }
+
+      return;
+
+    }
+
+
+    listenMessages(
+      roomId
+    );
+
+  }
+
+
+  /* =====================================================
+     LISTEN MESSAGES
+  ===================================================== */
+
+  function listenMessages(roomId) {
+
+    const db =
+      getDB();
+
+    const elements =
+      getElements();
+
+
+    if (
+      !db ||
+      !roomId ||
+      !elements.messages
+    ) {
+      return;
+    }
+
+
+    stopMessageListener();
+
+
+    const messagesRef =
+      db
+        .collection("chats")
+        .doc(roomId)
+        .collection("messages");
+
+
+    /*
+       KHÔNG dùng orderBy.
+
+       Lý do:
+       Dữ liệu cũ của bé có thể không đồng nhất
+       giữa createdAt/timestamp.
+
+       Vì vậy lấy toàn bộ messages
+       rồi sort bằng JS.
+    */
+
+
+    state.messagesUnsubscribe =
+      messagesRef.onSnapshot(
+
+        (snapshot) => {
+
+          const messages =
+            snapshot.docs.map(
+              (doc) => ({
+
+                id: doc.id,
+
+                ...doc.data()
+
+              })
+            );
+
+
+          renderMessages(
+            messages
+          );
+
+
+          /*
+             Chỉ đánh dấu đọc khi đang mở đúng room.
+          */
+
+          if (
+            state.roomId === roomId
+          ) {
+
+            markRoomRead(
+              roomId
+            );
+
+          }
+
+        },
+
+
+        (error) => {
+
+          console.error(
+            "[CS CHAT] MESSAGE LISTENER ERROR:",
+            error
+          );
+
+
+          if (
+            elements.messages
+          ) {
+
+            elements.messages.innerHTML = `
+
+              <div class="cs-single-chat-error">
+
+                Không thể tải tin nhắn.
+
+                <br>
+
+                <small>
+                  ${escapeHTML(
+                    error.message || ""
+                  )}
+                </small>
+
+              </div>
+
+            `;
+
+          }
+
         }
 
-        rows.forEach((data) => {
-          const senderId =
-            data.senderId ||
-            data.senderUID ||
-            data.from ||
-            data.sender ||
-            "";
-          const text = data.text || data.message || data.content || "";
-          const bubble = document.createElement("div");
+      );
 
-          bubble.className = "cs-chat-bubble";
-          if (String(senderId) === String(chatUid)) {
-            bubble.classList.add("mine");
+  }
+
+
+  /* =====================================================
+     STOP MESSAGE LISTENER
+  ===================================================== */
+
+  function stopMessageListener() {
+
+    if (
+      typeof state.messagesUnsubscribe ===
+      "function"
+    ) {
+
+      try {
+
+        state.messagesUnsubscribe();
+
+      } catch (error) {}
+
+    }
+
+
+    state.messagesUnsubscribe =
+      null;
+
+  }
+
+
+  /* =====================================================
+     RENDER MESSAGES
+  ===================================================== */
+
+  function renderMessages(messages) {
+
+    const elements =
+      getElements();
+
+    const currentUser =
+      state.currentUser;
+
+
+    if (
+      !elements.messages ||
+      !currentUser
+    ) {
+      return;
+    }
+
+
+    messages.sort(
+      (a, b) => {
+
+        const ta =
+          timestampValue(
+            a.createdAt ||
+            a.timestamp
+          );
+
+        const tb =
+          timestampValue(
+            b.createdAt ||
+            b.timestamp
+          );
+
+        return ta - tb;
+
+      }
+    );
+
+
+    if (!messages.length) {
+
+      elements.messages.innerHTML = `
+
+        <div class="cs-single-chat-empty">
+          Hãy gửi tin nhắn đầu tiên.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    elements.messages.innerHTML =
+
+      messages
+        .map(
+          (message) => {
+
+            const senderId =
+              String(
+
+                message.senderId ||
+
+                message.senderUID ||
+
+                message.from ||
+
+                ""
+
+              );
+
+
+            const isMine =
+              senderId ===
+              String(
+                currentUser.uid
+              );
+
+
+            const text =
+              message.text ||
+
+              message.message ||
+
+              message.content ||
+
+              "";
+
+
+            const time =
+              timestampValue(
+                message.createdAt ||
+                message.timestamp
+              );
+
+
+            let timeText = "";
+
+
+            if (time) {
+
+              try {
+
+                timeText =
+                  new Date(time)
+                    .toLocaleTimeString(
+                      "vi-VN",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      }
+                    );
+
+              } catch (error) {}
+
+            }
+
+
+            return `
+
+              <div
+                class="
+                  cs-single-chat-message
+                  ${isMine ? "mine" : "other"}
+                "
+              >
+
+                <div
+                  class="cs-single-chat-bubble"
+                >
+
+                  ${escapeHTML(text)}
+
+                  ${
+                    timeText
+                      ? `
+                        <small
+                          class="cs-single-chat-time"
+                        >
+                          ${escapeHTML(
+                            timeText
+                          )}
+                        </small>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              </div>
+
+            `;
+
           }
-          bubble.textContent = String(text);
-          chatMessages.appendChild(bubble);
-        });
+        )
+        .join("");
 
-        requestAnimationFrame(() => {
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-      };
 
-      const subscribeRoom = (roomId) => {
-        const messagesRef = database
+    elements.messages.scrollTop =
+      elements.messages.scrollHeight;
+
+  }
+
+
+  /* =====================================================
+     SEND MESSAGE
+  ===================================================== */
+
+  async function sendMessage(event) {
+
+    if (event) {
+      event.preventDefault();
+    }
+
+
+    if (state.sending) {
+      return;
+    }
+
+
+    const db =
+      getDB();
+
+    const currentUser =
+      state.currentUser;
+
+    const target =
+      state.selectedUser;
+
+    const roomId =
+      state.roomId;
+
+    const elements =
+      getElements();
+
+
+    if (
+      !db ||
+      !currentUser ||
+      !target ||
+      !roomId ||
+      !elements.input
+    ) {
+
+      console.error(
+        "[CS CHAT] Thiếu dữ liệu gửi."
+      );
+
+      return;
+
+    }
+
+
+    const text =
+      String(
+        elements.input.value || ""
+      ).trim();
+
+
+    if (!text) {
+      return;
+    }
+
+
+    state.sending =
+      true;
+
+
+    if (elements.send) {
+
+      elements.send.disabled =
+        true;
+
+    }
+
+
+    try {
+
+      const roomRef =
+        db
+          .collection("chats")
+          .doc(roomId);
+
+
+      const messagesRef =
+        roomRef.collection(
+          "messages"
+        );
+
+
+      const now =
+        serverTimestamp();
+
+
+      /*
+         Dùng transaction để
+         cập nhật room an toàn.
+      */
+
+      await roomRef.set(
+
+        {
+
+          participants: [
+
+            currentUser.uid,
+
+            target.uid
+
+          ],
+
+
+          participantIds: [
+
+            currentUser.uid,
+
+            target.uid
+
+          ],
+
+
+          participantNames: {
+
+            [currentUser.uid]:
+              getUserName(
+                state.currentUserData ||
+                currentUser
+              ),
+
+            [target.uid]:
+              getUserName(target)
+
+          },
+
+
+          lastMessage:
+            text,
+
+          lastMessageBy:
+            currentUser.uid,
+
+          lastMessageSenderId:
+            currentUser.uid,
+
+          lastMessageReadBy:
+            currentUser.uid,
+
+          lastMessageReadAt:
+            now,
+
+          updatedAt:
+            now
+
+        },
+
+        {
+          merge: true
+        }
+
+      );
+
+
+      /*
+         Tạo message.
+
+         QUAN TRỌNG:
+         Dùng cùng roomId.
+      */
+
+      await messagesRef.add({
+
+        from:
+          currentUser.uid,
+
+        to:
+          target.uid,
+
+        senderId:
+          currentUser.uid,
+
+        senderUID:
+          currentUser.uid,
+
+        senderName:
+          getUserName(
+            state.currentUserData ||
+            currentUser
+          ),
+
+        receiverId:
+          target.uid,
+
+        receiverUID:
+          target.uid,
+
+        receiverName:
+          getUserName(target),
+
+        text:
+          text,
+
+        message:
+          text,
+
+        createdAt:
+          now,
+
+        timestamp:
+          now,
+
+        read:
+          false
+
+      });
+
+
+      elements.input.value =
+        "";
+
+
+      elements.input.focus();
+
+
+      console.log(
+        "[CS CHAT] MESSAGE SENT",
+        {
+          roomId,
+          sender:
+            currentUser.uid,
+          receiver:
+            target.uid
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "[CS CHAT] SEND ERROR:",
+        error
+      );
+
+
+      alert(
+        "Không gửi được tin nhắn:\n" +
+        (
+          error.message ||
+          "Firestore error"
+        )
+      );
+
+
+    } finally {
+
+      state.sending =
+        false;
+
+
+      if (elements.send) {
+
+        elements.send.disabled =
+          false;
+
+      }
+
+    }
+
+  }
+
+
+  /* =====================================================
+     MARK READ
+  ===================================================== */
+
+  async function markRoomRead(roomId) {
+
+    const db =
+      getDB();
+
+    const currentUser =
+      state.currentUser;
+
+
+    if (
+      !db ||
+      !currentUser ||
+      !roomId
+    ) {
+      return;
+    }
+
+
+    try {
+
+      const messagesRef =
+        db
           .collection("chats")
           .doc(roomId)
           .collection("messages");
 
-        const unsubscribe = messagesRef
-          .orderBy("createdAt", "asc")
-          .onSnapshot(
-            (snapshot) => {
-              snapshot.forEach((doc) => {
-                messageMap.set(`${roomId}/${doc.id}`, doc.data() || {});
-              });
-              renderAllMessages();
-            },
-            (error) => {
-              console.warn(
-                `[CHAT] Không đọc được room ${roomId} bằng orderBy:`,
-                error,
-              );
 
-              /* Dữ liệu cũ có thể thiếu createdAt. */
-              messagesRef
-                .get()
-                .then((snapshot) => {
-                  snapshot.forEach((doc) => {
-                    messageMap.set(`${roomId}/${doc.id}`, doc.data() || {});
-                  });
-                  renderAllMessages();
-                })
-                .catch((fallbackError) => {
-                  console.error(
-                    `[CHAT] Không đọc được messages/${roomId}:`,
-                    fallbackError,
-                  );
-                  renderAllMessages();
-                });
-            },
-          );
+      const snapshot =
+        await messagesRef.get();
 
-        unsubscribers.push(unsubscribe);
-      };
 
-      roomIds.forEach(subscribeRoom);
+      const batch =
+        db.batch();
 
-      unsubscribeChatMessages = () => {
-        unsubscribers.forEach((unsubscribe) => {
-          try {
-            unsubscribe();
-          } catch (error) {
-            console.warn("[CHAT] Không thể hủy listener:", error);
-          }
-        });
-      };
 
-      try {
-        await database
-          .collection("chats")
-          .doc(makeChatRoomId(chatUid, user.uid))
-          .set(
-            {
-              participants: firebase.firestore.FieldValue.arrayUnion(
-                chatUid,
-                user.uid,
-              ),
-              participantNames: {
-                [chatUid]: chatProfile?.name || chatProfile?.email || "CS",
-                [user.uid]: user.name || user.email || "Người dùng",
-              },
-              lastMessageReadBy: chatUid,
-              lastMessageReadAt:
-                firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true },
-          );
-      } catch (error) {
-        console.warn("[CHAT] Không thể cập nhật trạng thái đã đọc:", error);
-      }
-    }
+      let changed =
+        false;
 
-    function renderChatMessages(snapshot) {
-      if (!snapshot || snapshot.empty) {
-        chatMessages.innerHTML = `
-          <p class="cs-chat-state">Hãy gửi tin nhắn đầu tiên.</p>
-        `;
-        return;
-      }
 
-      chatMessages.innerHTML = "";
-      snapshot.docs.forEach((doc) => {
-        const data = doc.data() || {};
-        const senderId =
-          data.senderId || data.senderUID || data.from || data.sender || "";
-        const text = data.text || data.message || data.content || "";
-        const bubble = document.createElement("div");
+      snapshot.forEach(
+        (doc) => {
 
-        bubble.className = "cs-chat-bubble";
-        if (String(senderId) === String(chatUid)) {
-          bubble.classList.add("mine");
-        }
-        bubble.textContent = String(text);
-        chatMessages.appendChild(bubble);
-      });
+          const data =
+            doc.data() || {};
 
-      requestAnimationFrame(() => {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
-    }
 
-    /* =====================================================
-       SEND MESSAGE
-    ===================================================== */
-    chatForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-    
-      const text = String(chatInput.value || "").trim();
-    
-      if (!text || !chatUid || !selectedChatUser || !isFirestoreReady()) {
-        return;
-      }
-    
-      const database = getChatDatabase();
-      const roomId = makeChatRoomId(chatUid, selectedChatUser.uid);
-      const roomRef = database.collection("chats").doc(roomId);
-      const sendButton = chatForm.querySelector(".cs-chat-send");
-    
-      if (sendButton) {
-        sendButton.disabled = true;
-      }
-    
-      chatInput.value = "";
-    
-      try {
-        await roomRef.set(
-          {
-            participants: firebase.firestore.FieldValue.arrayUnion(
-              chatUid,
-              selectedChatUser.uid,
-            ),
-            participantIds: [chatUid, selectedChatUser.uid],
-            participantNames: {
-              [chatUid]:
-                chatProfile?.name ||
-                chatProfile?.email ||
-                "CS",
-              [selectedChatUser.uid]:
-                selectedChatUser.name ||
-                selectedChatUser.email ||
-                "Người dùng",
-            },
-            lastMessage: text,
-            lastMessageBy: chatUid,
-            lastMessageSenderId: chatUid,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastMessageReadBy: chatUid,
-          },
-          { merge: true },
-        );
-    
-        await roomRef.collection("messages").add({
-          text,
-          senderId: chatUid,
-          senderName: chatProfile?.name || "CS",
-          receiverId: selectedChatUser.uid,
-          receiverName: selectedChatUser.name || "",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          read: false,
-        });
-    
-        try {
-          const notificationId = `${roomId}_${Date.now()}`;
-    
-          await database
-            .collection("csNotifications")
-            .doc(selectedChatUser.uid)
-            .collection("items")
-            .doc(notificationId)
-            .set({
-              type: "chat_message",
-              title: chatProfile?.name || "Customer Success",
-              preview:
-                text.length > 100
-                  ? `${text.slice(0, 100)}...`
-                  : text,
-              link: window.location.pathname,
-              read: false,
-              createdAt:
-                firebase.firestore.FieldValue.serverTimestamp(),
-              senderId: chatUid,
-              roomId,
-            });
-        } catch (notificationError) {
-          console.warn(
-            "Không thể tạo notification chat:",
-            notificationError,
-          );
-        }
-      } catch (error) {
-        console.error("Không thể gửi tin nhắn:", error);
-        chatInput.value = text;
-      } finally {
-        if (sendButton) {
-          sendButton.disabled = false;
-        }
-        chatInput.focus();
-      }
-    });
-    
-    /* =====================================================
-       EVENTS
-    ===================================================== */
-    chatUserList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-chat-user-id]");
-      if (!button) return;
-    
-      const uid = button.dataset.chatUserId;
-      const user = chatUsers.find(
-        (item) => String(item.uid) === String(uid),
-      );
-    
-      if (user) {
-        openConversation(user);
-      }
-    });
-    
-    chatSearch.addEventListener("input", renderChatUsers);
-    
-    chatBack.addEventListener("click", () => {
-      closeChatConversation();
-      loadChatUsers();
-    });
-    
-    chatButton.addEventListener("click", () => {
-      const isOpen = chatPanel.getAttribute("aria-hidden") === "false";
-    
-      if (isOpen) {
-        closeChat();
-      } else {
-        openChat();
-      }
-    });
-    
-    chatClose.addEventListener("click", closeChat);
-    chatBackdrop.addEventListener("click", closeChat);
-    
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeMobile();
-        closeNotifications();
-        closeChat();
-      }
-    });
-    
-    /* =====================================================
-       UNREAD CHAT BADGE
-       Query này chỉ dùng array-contains, không cần composite index.
-    ===================================================== */
-    function bindChatUnread(profile) {
-      if (unsubscribeChatRooms) {
-        unsubscribeChatRooms();
-        unsubscribeChatRooms = null;
-      }
-    
-      if (!profile?.uid || !isFirestoreReady()) {
-        return;
-      }
-    
-      const database = getChatDatabase();
-    
-      unsubscribeChatRooms = database
-        .collection("chats")
-        .where("participants", "array-contains", profile.uid)
-        .limit(100)
-        .onSnapshot(
-          (snapshot) => {
-            let count = 0;
-    
-            snapshot.forEach((doc) => {
-              const data = doc.data() || {};
-              const senderId =
-                data.lastMessageBy ||
-                data.lastMessageSenderId ||
-                "";
-    
-              if (
-                senderId &&
-                String(senderId) !== String(profile.uid) &&
-                String(data.lastMessageReadBy || "") !==
-                  String(profile.uid)
-              ) {
-                count += 1;
+          const receiverId =
+            String(
+
+              data.receiverId ||
+
+              data.receiverUID ||
+
+              data.to ||
+
+              ""
+
+            );
+
+
+          const senderId =
+            String(
+
+              data.senderId ||
+
+              data.senderUID ||
+
+              data.from ||
+
+              ""
+
+            );
+
+
+          if (
+
+            receiverId ===
+              String(
+                currentUser.uid
+              ) &&
+
+            senderId !==
+              String(
+                currentUser.uid
+              ) &&
+
+            data.read !== true
+
+          ) {
+
+            batch.update(
+              doc.ref,
+              {
+
+                read: true,
+
+                readAt:
+                  serverTimestamp()
+
               }
-            });
-    
-            unreadChatCount = count;
-            updateChatBadge();
-          },
-          (error) => {
-            console.warn("Không thể đồng bộ badge chat:", error);
-          },
-        );
-    }
-    
-    function updateChatBadge() {
-      chatCount.hidden = unreadChatCount <= 0;
-      chatCount.textContent =
-        unreadChatCount > 99 ? "99+" : String(unreadChatCount);
-    }
-    
-    async function markCurrentRoomRead() {
-      if (
-        !chatUid ||
-        !selectedChatUser ||
-        !isFirestoreReady()
-      ) {
-        return;
+            );
+
+
+            changed =
+              true;
+
+          }
+
+        }
+      );
+
+
+      if (changed) {
+
+        await batch.commit();
+
       }
-    
-      try {
-        const roomId = makeChatRoomId(
-          chatUid,
-          selectedChatUser.uid,
-        );
-    
-        await getChatDatabase()
+
+
+      /*
+         Chỉ update lastMessageRead*
+         nếu đây là room đang mở.
+      */
+
+      if (
+        state.roomId === roomId
+      ) {
+
+        await db
           .collection("chats")
           .doc(roomId)
           .set(
+
             {
-              lastMessageReadBy: chatUid,
+
+              lastMessageReadBy:
+                currentUser.uid,
+
               lastMessageReadAt:
-                firebase.firestore.FieldValue.serverTimestamp(),
+                serverTimestamp()
+
             },
-            { merge: true },
+
+            {
+              merge: true
+            }
+
           );
-      } catch (error) {
-        console.warn("Không thể đánh dấu chat đã đọc:", error);
+
       }
-    }
-        /* =====================================================
-       PROFILE APPLY
-    ===================================================== */
-    const applyProfile = (profile) => {
-      if (enforceLeaderPage(profile)) {
-        return;
-      }
-      if (enforceMemberPage(profile)) {
-        return;
-      }
-      document.body.dataset.csRole = profile.isLeader ? "leader" : "member";
-      document.body.dataset.csRoleReady = "true";
-      window.csCurrentProfile = profile;
-      chatUid = profile.uid || "";
-      chatProfile = profile;
-      sidebar.innerHTML = `
-          <nav class="cs-navbar-menu">
-            ${menuMarkup(profile)}
-          </nav>
-          <div class="cs-navbar-note">
-            <i></i>
-            <span>
-              ${
-                profile.isLeader
-                  ? "CS Leader · sẵn sàng phân công"
-                  : "Customer Success online"
-              }
-            </span>
-          </div>
-        `;
-      topbar.querySelector("#csNavbarRoleText").textContent = profile.isLeader
-        ? "CS Leader · Điều phối nhóm"
-        : "Trung tâm Customer Success";
-      bindNotifications(profile);
-      bindChatUnread(profile);
-      document.dispatchEvent(
-        new CustomEvent("cs:role-ready", {
-          detail: profile,
-        }),
+
+
+    } catch (error) {
+
+      console.warn(
+        "[CS CHAT] MARK READ ERROR:",
+        error
       );
-    };
-    /* =====================================================
-       FIREBASE AUTH
-    ===================================================== */
-    const auth =
-      typeof firebase !== "undefined" && firebase.auth ? firebase.auth() : null;
-    if (!auth) {
-      applyProfile({
-        isLeader: false,
-        isGroupMember: false,
-        name: "CS",
-        email: "",
-        uid: "",
-        raw: {},
-      });
+
+    }
+
+  }
+
+
+  /* =====================================================
+     UNREAD
+  ===================================================== */
+
+  function bindUnread() {
+
+    const db =
+      getDB();
+
+    const currentUser =
+      state.currentUser;
+
+
+    if (
+      !db ||
+      !currentUser
+    ) {
       return;
     }
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        applyProfile({
-          isLeader: false,
-          isGroupMember: false,
-          name: "CS",
-          email: "",
-          uid: "",
-          raw: {},
-        });
-        return;
-      }
-      const profile = await getProfile(user);
-      applyProfile(profile);
-    });
+
+
+    if (
+      typeof state.roomsUnsubscribe ===
+      "function"
+    ) {
+
+      state.roomsUnsubscribe();
+
+    }
+
+
+    /*
+       Không where.
+       Không orderBy.
+       Không composite index.
+    */
+
+    state.roomsUnsubscribe =
+      db
+        .collection("chats")
+        .onSnapshot(
+
+          (snapshot) => {
+
+            let unread =
+              0;
+
+
+            snapshot.forEach(
+              (doc) => {
+
+                const data =
+                  doc.data() || {};
+
+
+                const participants = [
+
+                  ...(Array.isArray(
+                    data.participants
+                  )
+                    ? data.participants
+                    : []),
+
+                  ...(Array.isArray(
+                    data.participantIds
+                  )
+                    ? data.participantIds
+                    : [])
+
+                ].map(String);
+
+
+                if (
+                  !participants.includes(
+                    String(
+                      currentUser.uid
+                    )
+                  )
+                ) {
+
+                  return;
+
+                }
+
+
+                const sender =
+                  String(
+
+                    data.lastMessageBy ||
+
+                    data.lastMessageSenderId ||
+
+                    ""
+
+                  );
+
+
+                const readBy =
+                  String(
+                    data.lastMessageReadBy ||
+                    ""
+                  );
+
+
+                if (
+
+                  data.lastMessage &&
+
+                  sender !==
+                    String(
+                      currentUser.uid
+                    ) &&
+
+                  readBy !==
+                    String(
+                      currentUser.uid
+                    )
+
+                ) {
+
+                  unread++;
+
+                }
+
+              }
+            );
+
+
+            updateBadge(
+              unread
+            );
+
+          },
+
+
+          (error) => {
+
+            console.warn(
+              "[CS CHAT] UNREAD ERROR:",
+              error
+            );
+
+          }
+
+        );
+
   }
-  /* =========================================================
+
+
+  /* =====================================================
+     BADGE
+  ===================================================== */
+
+  function updateBadge(count) {
+
+    const badges = [
+
+      document.querySelector(
+        "#csNavbarMessengerBadge"
+      ),
+
+      document.querySelector(
+        "#csChatCount"
+      ),
+
+      document.querySelector(
+        "[data-cs-chat-badge]"
+      )
+
+    ].filter(Boolean);
+
+
+    const total =
+      Math.max(
+        0,
+        Number(count) || 0
+      );
+
+
+    badges.forEach(
+      (badge) => {
+
+        badge.textContent =
+          total > 99
+            ? "99+"
+            : String(total);
+
+
+        badge.hidden =
+          total === 0;
+
+      }
+    );
+
+  }
+
+
+  /* =====================================================
+     EVENTS
+  ===================================================== */
+
+  function bindEvents() {
+
+    if (
+      state.eventsBound
+    ) {
+      return;
+    }
+
+
+    /*
+       Dùng document delegation.
+
+       Vì navbar có thể được inject
+       sau khi cs-chat.js load.
+    */
+
+
+    document.addEventListener(
+      "click",
+      async (event) => {
+
+        const button =
+          event.target.closest(
+            "#csNavbarMessengerBtn, #csChatButton, [data-cs-chat-button]"
+          );
+
+
+        if (button) {
+
+          event.preventDefault();
+
+          const elements =
+            getElements();
+
+
+          if (
+            elements.panel &&
+            !elements.panel.hidden
+          ) {
+
+            closePanel();
+
+          } else {
+
+            await openPanel();
+
+          }
+
+          return;
+
+        }
+
+
+        const userButton =
+          event.target.closest(
+            "[data-chat-user]"
+          );
+
+
+        if (userButton) {
+
+          const uid =
+            userButton.dataset.chatUser;
+
+
+          if (uid) {
+
+            await openConversation(
+              uid
+            );
+
+          }
+
+          return;
+
+        }
+
+
+        if (
+          event.target.closest(
+            "#csSingleChatClose"
+          )
+        ) {
+
+          closePanel();
+
+          return;
+
+        }
+
+
+        if (
+          event.target.closest(
+            "#csSingleChatBack"
+          )
+        ) {
+
+          closeConversation();
+
+          return;
+
+        }
+
+      }
+    );
+
+
+    document.addEventListener(
+      "input",
+      (event) => {
+
+        if (
+          event.target?.id ===
+          "csSingleChatSearch"
+        ) {
+
+          renderUsers();
+
+        }
+
+      }
+    );
+
+
+    document.addEventListener(
+      "submit",
+      (event) => {
+
+        if (
+          event.target?.id ===
+          "csSingleChatForm"
+        ) {
+
+          sendMessage(
+            event
+          );
+
+        }
+
+      }
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      (event) => {
+
+        if (
+          event.target?.id ===
+          "csSingleChatInput"
+        ) {
+
+          if (
+            event.key === "Enter" &&
+            !event.shiftKey
+          ) {
+
+            event.preventDefault();
+
+            const form =
+              document.querySelector(
+                "#csSingleChatForm"
+              );
+
+
+            if (form) {
+
+              if (
+                typeof form.requestSubmit ===
+                "function"
+              ) {
+
+                form.requestSubmit();
+
+              } else {
+
+                sendMessage({
+                  preventDefault() {}
+                });
+
+              }
+
+            }
+
+          }
+
+        }
+
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          const elements =
+            getElements();
+
+
+          if (
+            elements.panel &&
+            !elements.panel.hidden
+          ) {
+
+            closePanel();
+
+          }
+
+        }
+
+      }
+    );
+
+
+    state.eventsBound =
+      true;
+
+
+    console.log(
+      "[CS CHAT] Global events ready."
+    );
+
+  }
+
+
+  /* =====================================================
+     CLOSE CONVERSATION
+  ===================================================== */
+
+  function closeConversation() {
+
+    stopMessageListener();
+
+
+    state.selectedUser =
+      null;
+
+    state.roomId =
+      null;
+
+
+    const elements =
+      getElements();
+
+
+    if (
+      elements.conversation
+    ) {
+
+      elements.conversation.hidden =
+        true;
+
+    }
+
+
+    if (
+      elements.list
+    ) {
+
+      elements.list.hidden =
+        false;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     AUTH
+  ===================================================== */
+
+  function bindAuth() {
+
+    const auth =
+      getAuth();
+
+
+    if (!auth) {
+
+      console.warn(
+        "[CS CHAT] Firebase Auth chưa sẵn sàng."
+      );
+
+      return false;
+
+    }
+
+
+    if (
+      state.authUnsubscribe
+    ) {
+
+      try {
+
+        state.authUnsubscribe();
+
+      } catch (error) {}
+
+    }
+
+
+    state.authUnsubscribe =
+      auth.onAuthStateChanged(
+        async (user) => {
+
+          console.log(
+            "[CS CHAT] Auth:",
+            user
+              ? user.uid
+              : "LOGOUT"
+          );
+
+
+          if (!user) {
+
+            state.currentUser =
+              null;
+
+            state.currentUserData =
+              null;
+
+            state.users =
+              [];
+
+            state.selectedUser =
+              null;
+
+            state.roomId =
+              null;
+
+
+            stopMessageListener();
+
+
+            if (
+              state.roomsUnsubscribe
+            ) {
+
+              try {
+
+                state.roomsUnsubscribe();
+
+              } catch (error) {}
+
+              state.roomsUnsubscribe =
+                null;
+
+            }
+
+
+            updateBadge(
+              0
+            );
+
+
+            return;
+
+          }
+
+
+          state.currentUser =
+            user;
+
+
+          await loadCurrentUserData();
+
+
+          bindUnread();
+
+
+          /*
+             Nếu chat UI đã tồn tại
+             thì có thể load user ngay.
+          */
+
+          if (
+            document.querySelector(
+              "#csSingleChatContainer"
+            )
+          ) {
+
+            loadUsers();
+
+          }
+
+        }
+      );
+
+
+    return true;
+
+  }
+
+
+  /* =====================================================
      START
-  ========================================================= */
-  initNavbar();
+  ===================================================== */
+
+  async function start() {
+
+    if (state.starting) {
+      return;
+    }
+
+
+    state.starting =
+      true;
+
+
+    try {
+
+      bindEvents();
+
+
+      /*
+         Firebase có thể được load
+         sau chat.js.
+      */
+
+      const auth =
+        getAuth();
+
+
+      if (auth) {
+
+        bindAuth();
+
+      } else {
+
+        console.warn(
+          "[CS CHAT] Đang chờ Firebase..."
+        );
+
+      }
+
+
+      /*
+         Navbar có thể được inject
+         sau khi DOM ready.
+      */
+
+      createChatUI();
+
+
+      console.log(
+        "[CS CHAT] Global chat started."
+      );
+
+
+    } finally {
+
+      state.starting =
+        false;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     AUTO INIT
+  ===================================================== */
+
+  function boot() {
+
+    start();
+
+
+    /*
+       Kiểm tra navbar xuất hiện
+       sau đó vài giây.
+    */
+
+    let count =
+      0;
+
+
+    const timer =
+      setInterval(
+        () => {
+
+          count++;
+
+
+          createChatUI();
+
+
+          if (
+            getAuth() &&
+            !state.authUnsubscribe
+          ) {
+
+            bindAuth();
+
+          }
+
+
+          if (
+            count >= 30
+          ) {
+
+            clearInterval(
+              timer
+            );
+
+          }
+
+        },
+        500
+      );
+
+
+    /*
+       Nếu navbar được render bằng JS
+       MutationObserver sẽ bắt được.
+    */
+
+    if (
+      window.MutationObserver
+    ) {
+
+      const observer =
+        new MutationObserver(
+          () => {
+
+            if (
+              !document.querySelector(
+                "#csSingleChatContainer"
+              )
+            ) {
+
+              createChatUI();
+
+            }
+
+          }
+        );
+
+
+      observer.observe(
+        document.body,
+        {
+          childList: true,
+          subtree: true
+        }
+      );
+
+
+      setTimeout(
+        () => {
+
+          try {
+            observer.disconnect();
+          } catch (error) {}
+
+        },
+        15000
+      );
+
+    }
+
+  }
+
+
+  /* =====================================================
+     PUBLIC API
+  ===================================================== */
+
+  window.csSingleChat = {
+
+    open:
+      openPanel,
+
+    close:
+      closePanel,
+
+    reload:
+      loadUsers,
+
+    openConversation:
+      openConversation,
+
+    sendMessage:
+      sendMessage,
+
+    makeRoomId:
+      makeRoomId,
+
+    markRead:
+      markRoomRead,
+
+    getState:
+      () => ({
+        ...state
+      })
+
+  };
+
+
+  /* =====================================================
+     DOM READY
+  ===================================================== */
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      boot,
+      {
+        once: true
+      }
+    );
+
+  } else {
+
+    boot();
+
+  }
+
+
 })();

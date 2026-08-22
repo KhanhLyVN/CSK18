@@ -1514,3 +1514,245 @@ body {
     bottom: 0 !important;
   }
 }
+
+/* Khôi phục ô Thông báo: hiển thị từng notification theo một dòng */
+
+#adminbarNotificationPanel {
+  width: min(390px, calc(100vw - 24px));
+  max-height: min(560px, calc(100vh - 92px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  background: rgba(255, 253, 249, .99);
+  box-shadow: 0 18px 45px rgba(55, 24, 18, .18);
+}
+
+#adminbarNotificationPanel[hidden] {
+  display: none !important;
+}
+
+#adminbarNotificationPanel .adminbar-panel-head {
+  flex: 0 0 auto;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(244, 231, 213, .45), transparent);
+}
+
+#adminbarNotificationPanel .adminbar-panel-head strong {
+  display: block;
+  color: var(--maroon);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+#adminbarNotificationPanel .adminbar-panel-head small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+#adminbarNotificationPanel .adminbar-text-btn,
+#adminbarMarkAllReadBtn {
+  flex: 0 0 auto;
+  border: 0;
+  color: var(--maroon);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+#adminbarNotificationList {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0;
+}
+
+/* Chặn CSS cũ làm notification thành nhiều cột/ô. */
+#adminbarNotificationList > .adminbar-notification-item {
+  width: 100%;
+  min-height: 70px;
+  flex: 0 0 auto;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 11px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(112, 27, 25, .08);
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+  white-space: normal;
+}
+
+#adminbarNotificationList > .adminbar-notification-item:hover,
+#adminbarNotificationList > .adminbar-notification-item.is-unread {
+  background: rgba(244, 231, 213, .55);
+}
+
+#adminbarNotificationList > .adminbar-notification-item.is-unread {
+  border-left: 3px solid #bd4137;
+  padding-left: 11px;
+}
+
+.adminbar-notification-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, var(--maroon-soft), var(--maroon));
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.adminbar-notification-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.adminbar-notification-sender,
+.adminbar-notification-copy strong {
+  display: block !important;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--maroon-dark) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.adminbar-notification-item.is-read .adminbar-notification-sender,
+.adminbar-notification-item.is-read .adminbar-notification-copy strong {
+  font-weight: 600 !important;
+}
+
+.adminbar-notification-copy > span:not(.adminbar-reply-cue) {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.adminbar-notification-item.is-unread .adminbar-notification-copy > span:not(.adminbar-reply-cue) {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.adminbar-notification-copy small {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.adminbar-reply-cue {
+  display: inline-flex !important;
+  width: fit-content;
+  margin-top: 2px;
+  padding: 3px 7px;
+  border-radius: 99px;
+  color: #fff !important;
+  background: #bd4137;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.adminbar-notification-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #bd4137;
+}
+
+#adminbarNotificationList > .adminbar-empty {
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  text-align: center;
+}
+
+#adminbarNotificationList > .adminbar-empty .material-symbols-rounded {
+  font-size: 32px;
+}
+
+@media (max-width: 560px) {
+  #adminbarNotificationPanel {
+    right: -4px;
+    width: min(390px, calc(100vw - 20px));
+  }
+}
+
+
+/* =========================================================
+   MESSENGER RECENT CHAT OVERRIDES
+   - Tin chưa đọc: in đậm + chấm xanh
+   - Tin đã đọc: chữ thường
+   - Tin do mình gửi: hiển thị Bạn: nội dung
+   - Kết bạn/Tạo nhóm: thay thế toàn bộ danh sách chat
+========================================================= */
+
+#adminbarMessengerPanel { width:min(380px,calc(100vw - 20px)); height:min(560px,calc(100vh - 92px)); display:flex; flex-direction:column; overflow:hidden; }
+#adminbarMessengerPanel[hidden], #adminbarFriendsView[hidden], #adminbarGroupsView[hidden] { display:none !important; }
+#adminbarMessengerListView { display:flex; flex:1 1 auto; min-height:0; flex-direction:column; overflow:hidden; }
+#adminbarMessengerListView > .adminbar-tabs { flex:0 0 auto; display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:12px; border-bottom:1px solid var(--line); }
+#adminbarMessengerListView > .adminbar-tabs .adminbar-tab { min-height:40px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid var(--line); border-radius:9px; color:var(--maroon); background:#fff; font-size:10px; font-weight:800; line-height:1; }
+#adminbarMessengerListView > .adminbar-tabs .adminbar-tab.is-active, #adminbarMessengerListView > .adminbar-tabs .adminbar-tab:hover { color:#fff; background:var(--maroon); }
+#adminbarMessengerListView > .adminbar-tabs .material-symbols-rounded { width:19px; height:19px; display:inline-flex; align-items:center; justify-content:center; line-height:1; }
+#adminbarFriendsView { display:flex !important; flex:1 1 auto; min-height:0; flex-direction:column; overflow:hidden; padding:0 12px 12px; }
+#adminbarFriendsView[data-view-mode="groups"] { display:none !important; }
+#adminbarGroupsView { flex:1 1 auto; min-height:0; overflow-y:auto; padding:0 12px 12px; }
+#adminbarFriendList { flex:1 1 auto; min-height:0; max-height:none; overflow-y:auto; overflow-x:hidden; padding:0 4px 12px; }
+.adminbar-friend-row { width:100%; min-height:68px; display:flex; align-items:center; gap:11px; padding:10px 8px; border:0; border-bottom:1px solid rgba(112,27,25,.09); border-radius:10px; cursor:pointer; text-align:left; transition:background .16s ease,transform .12s ease; }
+.adminbar-friend-row:hover, .adminbar-friend-row:focus-visible { outline:none; background:rgba(244,231,213,.62); box-shadow:inset 3px 0 var(--maroon); }
+.adminbar-friend-row:active { transform:scale(.99); }
+.adminbar-friend-row.is-unread { background:rgba(24,119,242,.045); }
+.adminbar-friend-row.is-unread::after { content:""; width:8px; height:8px; flex:0 0 8px; margin-left:auto; border-radius:50%; background:#1877f2; box-shadow:0 0 0 3px rgba(24,119,242,.12); }
+.adminbar-chat-avatar { width:42px !important; height:42px !important; min-width:42px; flex:0 0 42px; display:inline-flex !important; align-items:center !important; justify-content:center !important; border-radius:50% !important; line-height:1 !important; text-align:center; }
+.adminbar-friend-info { min-width:0; flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; gap:3px; }
+.adminbar-friend-name { display:block !important; max-width:100%; overflow:hidden; color:#2b211d !important; font-size:12px !important; font-weight:600 !important; line-height:1.25; white-space:nowrap; text-overflow:ellipsis; }
+.adminbar-friend-name.is-unread, .adminbar-friend-row.is-unread .adminbar-friend-name { color:#17110f !important; font-weight:800 !important; }
+.adminbar-friend-preview { display:block !important; max-width:100%; overflow:hidden; color:var(--muted) !important; font-size:10px !important; font-weight:400 !important; line-height:1.3; white-space:nowrap; text-overflow:ellipsis; }
+.adminbar-friend-preview.is-unread, .adminbar-friend-row.is-unread .adminbar-friend-preview { color:#2b211d !important; font-weight:800 !important; }
+.adminbar-friend-preview.is-read { color:var(--muted) !important; font-weight:400 !important; }
+.adminbar-friend-info small { display:none !important; }
+#adminbarFriendList > .adminbar-state { padding:30px 16px; color:var(--muted); font-size:11px; text-align:center; }
+@media (max-width:560px) { #adminbarMessengerPanel { right:-4px; width:min(380px,calc(100vw - 20px)); } }

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer Success</title>
   <link rel="stylesheet" href="/CS/navbar.css">
+  
   <!-- Material Symbols -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
@@ -36,9 +37,7 @@
         <div class="cs-navbar-panel-wrap">
           <button id="csNavbarMessengerBtn" class="cs-navbar-icon-btn" type="button" aria-label="Tin nhắn"
             aria-expanded="false">
-            <span class="material-symbols-rounded">
-              chat
-            </span>
+            <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8 8 0 0 1-8 8H8l-5 3v-11a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"></path></svg>
             <b id="csNavbarMessengerBadge" class="cs-navbar-badge" hidden>
               0
             </b>
@@ -57,9 +56,7 @@
                 </small>
               </div>
               <button id="csNavbarMessengerCloseBtn" class="cs-navbar-close" type="button" aria-label="Đóng">
-                <span class="material-symbols-rounded">
-                  close
-                </span>
+                <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg>
               </button>
             </div>
             <!-- =================================================
@@ -68,25 +65,23 @@
             <div id="csNavbarMessengerListView" class="cs-navbar-messenger-view">
               <!-- TABS -->
               <div class="cs-navbar-tabs" role="tablist">
-                <button class="cs-navbar-tab is-active" type="button" data-messenger-tab="friends" role="tab">
-                  <span class="material-symbols-rounded">
-                    person_add
-                  </span>
+                <button class="cs-navbar-tab is-active" type="button" data-messenger-tab="recent" role="tab" aria-selected="true">
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8 8 0 0 1-8 8H8l-5 3v-11a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"></path></svg>
+                  Gần đây
+                </button>
+                <button class="cs-navbar-tab" type="button" data-messenger-tab="friends" role="tab" aria-selected="false">
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2 21v-2a7 7 0 0 1 14 0"></path><path d="M19 8v6M16 11h6"></path></svg>
                   Kết bạn
                 </button>
-                <button class="cs-navbar-tab" type="button" data-messenger-tab="groups" role="tab">
-                  <span class="material-symbols-rounded">
-                    group_add
-                  </span>
+                <button class="cs-navbar-tab" type="button" data-messenger-tab="groups" role="tab" aria-selected="false">
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2 21v-2a7 7 0 0 1 14 0"></path><path d="M19 8v6M16 11h6"></path></svg>
                   Tạo nhóm
                 </button>
               </div>
               <!-- FRIENDS -->
               <div id="csNavbarFriendsView" class="cs-navbar-panel-view">
                 <label class="cs-navbar-search">
-                  <span class="material-symbols-rounded">
-                    search
-                  </span>
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
                   <input id="csNavbarFriendSearch" type="search" placeholder="Tìm tên hoặc email..." autocomplete="off">
                 </label>
                 <div id="csNavbarFriendList" class="cs-navbar-list">
@@ -108,9 +103,7 @@
                   <div id="csNavbarGroupMembers" class="cs-navbar-member-list">
                   </div>
                   <button class="cs-navbar-primary-btn" type="submit">
-                    <span class="material-symbols-rounded">
-                      group_add
-                    </span>
+                    <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2 21v-2a7 7 0 0 1 14 0"></path><path d="M19 8v6M16 11h6"></path></svg>
                     Tạo nhóm
                   </button>
                 </form>
@@ -123,9 +116,7 @@
               <!-- CHAT HEADER -->
               <div class="cs-navbar-chat-head">
                 <button id="csNavbarChatBackBtn" class="cs-navbar-back-btn" type="button" aria-label="Quay lại">
-                  <span class="material-symbols-rounded">
-                    arrow_back
-                  </span>
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
                 </button>
                 <span id="csNavbarChatAvatar" class="cs-navbar-chat-avatar">
                   U
@@ -150,9 +141,7 @@
                 <textarea id="csNavbarChatInput" rows="1" maxlength="2000" placeholder="Nhập tin nhắn..." required>
                 </textarea>
                 <button class="cs-navbar-send-btn" type="submit" aria-label="Gửi tin nhắn">
-                  <span class="material-symbols-rounded">
-                    send
-                  </span>
+                  <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
                 </button>
               </form>
             </div>
@@ -164,9 +153,7 @@
         <div class="cs-navbar-panel-wrap">
           <button id="csNavbarNoticeBtn" class="cs-navbar-icon-btn" type="button" aria-label="Thông báo"
             aria-expanded="false">
-            <span class="material-symbols-rounded">
-              notifications
-            </span>
+            <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
             <b id="csNavbarNoticeBadge" class="cs-navbar-badge" hidden>
               0
             </b>
@@ -188,9 +175,7 @@
             </div>
             <div id="csNavbarNotificationList" class="cs-navbar-list">
               <div class="cs-navbar-empty">
-                <span class="material-symbols-rounded">
-                  notifications_none
-                </span>
+                <svg class="cs-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18"></path><path d="M10 21h4"></path><path d="m4 4 16 16"></path></svg>
                 <p>
                   Không có thông báo mới
                 </p>
@@ -198,6 +183,7 @@
             </div>
           </section>
         </div>
+
         <!-- AVATAR -->
         <span id="csNavbarTopAvatar" class="cs-navbar-top-avatar" aria-label="Tài khoản CS">
           CS
