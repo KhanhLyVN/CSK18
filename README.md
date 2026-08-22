@@ -1,92 +1,152 @@
-# CSK18 - Hệ thống hỗ trợ Học viên / Customer Success / Admin
+# CSK18 — Student Support Hub
 
-Dự án này là một ứng dụng web tĩnh đa vai trò, được xây dựng để hỗ trợ luồng xử lý yêu cầu của học viên và đội ngũ Customer Success (CS). Mọi giao diện đều chạy ở phía client, dữ liệu được lưu trữ và đồng bộ qua Firebase Authentication + Firestore + Storage. Mục tiêu của hệ thống là giúp:
+> **Hệ thống hỗ trợ học viên đa vai trò** vận hành trên nền tảng web tĩnh với Firebase Authentication, Cloud Firestore và Firebase Storage. Dự án phục vụ ba nhóm người dùng: **Học viên**, **Customer Success** và **Quản trị viên**.
 
-- Học viên gửi yêu cầu hỗ trợ, theo dõi trạng thái ticket và trao đổi trực tiếp với CS
-- CS quản lý ticket, cập nhật trạng thái, chat và theo dõi tiến độ xử lý
-- Admin quản lý tài khoản CS, xem báo cáo hoạt động, nhật ký hệ thống và cấu hình trang quản trị
-- Khách truy cập xem FAQ và các tài liệu hỗ trợ nhanh
+CSK18 được xây dựng bằng **HTML, CSS và JavaScript thuần**. Không có backend Node.js hoặc framework frontend trong mã nguồn hiện tại; toàn bộ xác thực, lưu trữ dữ liệu, đồng bộ thời gian thực và tệp đính kèm được thực hiện qua Firebase SDK bản Compat được nhúng trực tiếp theo từng trang.
 
-Project hiện đang viết bằng HTML + CSS + JavaScript thuần, không dùng framework frontend. Phần dữ liệu và xác thực chạy trên Firebase.
+## Mục lục
 
----
-
-## Tính năng tổng quan
-
-### 1. Đăng nhập và phân quyền
-- Đăng nhập bằng email/password hoặc Google Sign-In
-- Tự động xác định role từ Firestore collection users
-- Chuyển hướng theo role:
-  - student -> trang học viên
-  - cs -> trang Customer Success
-  - admin -> trang Admin
-- Tự động kiểm tra Firebase ready state và hiển thị thông báo rõ ràng khi thiếu cấu hình
-- Có giao diện password toggle và trạng thái loading khi đăng nhập
-
-### 2. Học viên (HV)
-- Tạo phiếu hỗ trợ với các trường: họ tên, email, số điện thoại, cơ sở, khóa học, loại yêu cầu, tiêu đề, mô tả, tệp đính kèm
-- Chọn nhóm vấn đề theo category và issue
-- Cấu hình ưu tiên tự động theo mức độ nghiêm trọng của câu hỏi và từ khóa nội dung
-- Gợi ý tiêu đề AI (khi người dùng nhập tiêu đề, có thể gọi AI để đề xuất cách viết rõ và hiệu quả hơn)
-- Lưu ticket vào Firestore collection tickets
-- Tạo message đầu tiên trong subcollection tickets/{ticketId}/messages
-- Gửi email thông báo qua EmailJS sau khi tạo ticket
-- Theo dõi những ticket mình đã gửi từ trang homepage và Ticket đã gửi
-- Xem trạng thái ticket: Đang mở, Đang xử lý, Đã giải quyết, Đã đóng
-- NHắn tin trao đổi với CS trên cùng ticket
-- Nhận thông báo khi CS cập nhật trạng thái hoặc phản hồi
-- Tra cứu FAQ nhanh
-- Quản lý thông tin tài khoản cá nhân
-
-### 3. Customer Success (CS)
-- Dashboard tổng quan về các ticket đang có trong hệ thống
-- Tổng hợp số liệu theo trạng thái: toàn bộ, đang mở, đang xử lý, đã giải quyết, đã đóng
-- Phân loại yêu cầu theo category và issue
-- Tìm kiếm và lọc theo nhiều tiêu chí: trạng thái, ưu tiên, category, từ khóa
-- Phân công / nhận ticket, xem chi tiết trong drawer side panel
-- Cập nhật trạng thái ticket theo quy trình xử lý
-- Chat realtime trong từng ticket với học viên
-- Có khả năng upload ảnh đính kèm trong chat
-- Có gợi ý phản hồi AI dựa trên context ticket / chat
-- Có hệ thống thông báo nội bộ và các thống kê báo cáo nhanh
-
-### 4. Admin
-- Quản lý danh sách tài khoản CS
-- Thêm tài khoản CS
-- Xem trạng thái hoạt động của từng tài khoản
-- Tìm kiếm, lọc danh sách CS theo trạng thái và tên/email
-- Mở chi tiết hồ sơ CS trong drawer
-- Theo dõi báo cáo hoạt động theo campus, phòng ban, khoảng thời gian
-- Xuất CSV báo cáo
-- Xem nhật ký hệ thống (system log) theo loại hoạt động, mức độ cảnh báo
-- Cài đặt thông tin quản trị viên và tùy chọn thông báo
-- Quản lý navbar sử dụng chung cho các trang admin
-
-### 5. FAQ / hỗ trợ nhanh
-- Có trang FAQ cho học viên và FAQ riêng cho CS
-- Người dùng có thể cộng đồng tìm kiếm câu hỏi / hướng dẫn nhanh
-- Các layout FAQ có design riêng, gọn và thân thiện
-
-### 6. Tính năng phụ trợ liên quan
-- Tự động phân loại ưu tiên ticket bằng logic JS: automaticTicketPriority
-- Tìm mã ticket nhanh qua ô tra cứu trên màn hình home CS
-- Navbar dùng chung cho từng nhóm vai trò
-- Live dashboard và realtime dữ liệu từ Firestore
-- Giao diện responsive, có sidebar collapse trên desktop và mobile menu trên thiết bị nhỏ
+1. [Mục tiêu và phạm vi](#mục-tiêu-và-phạm-vi)
+2. [Tính năng theo vai trò](#tính-năng-theo-vai-trò)
+3. [Luồng nghiệp vụ chính](#luồng-nghiệp-vụ-chính)
+4. [Kiến trúc kỹ thuật](#kiến-trúc-kỹ-thuật)
+5. [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+6. [Cấu trúc dữ liệu Firebase](#cấu-trúc-dữ-liệu-firebase)
+7. [Cài đặt và chạy local](#cài-đặt-và-chạy-local)
+8. [Cấu hình Firebase](#cấu-hình-firebase)
+9. [Các route quan trọng](#các-route-quan-trọng)
+10. [Phân quyền và lưu ý bảo mật](#phân-quyền-và-lưu-ý-bảo-mật)
+11. [Khắc phục sự cố](#khắc-phục-sự-cố)
+12. [Giới hạn hiện tại và hướng phát triển](#giới-hạn-hiện-tại-và-hướng-phát-triển)
 
 ---
 
-## Công nghệ sử dụng
+## Mục tiêu và phạm vi
 
-- HTML5
-- CSS3
-- JavaScript ES6+
-- Firebase App / Auth / Firestore / Storage (compat SDK)
-- EmailJS để gửi email thông báo
-- Chart.js để vẽ biểu đồ trong dashboard
-- SheetJS (xlsx) để xuất CSV/Excel từ báo cáo admin
-- Font chữ từ Google Fonts
-- Material Symbols từ Google Fonts
+CSK18 hỗ trợ quy trình tiếp nhận, phân loại, xử lý và theo dõi yêu cầu của học viên. Học viên tạo ticket, theo dõi trạng thái, trao đổi với Customer Success và nhận thông báo. Đội ngũ Customer Success quản lý ticket, phối hợp theo Group, cập nhật tiến độ và theo dõi số liệu. Quản trị viên quản lý tài khoản, xem nhật ký hệ thống và giám sát hoạt động tổng quan.
+
+| Thành phần | Mục đích chính |
+|---|---|
+| **Học viên (HV)** | Gửi yêu cầu, đính kèm tệp, theo dõi ticket, trao đổi với CS, đọc thông báo và quản lý hồ sơ. |
+| **Customer Success (CS)** | Theo dõi ticket, xử lý ticket được giao, trao đổi với học viên, phối hợp trong Group và xem Dashboard. |
+| **CS Leader** | Quản lý Group/Lớp, phân công ticket cho CS con phù hợp, theo dõi báo cáo và xem thông tin ticket. |
+| **Admin** | Quản lý tài khoản, thêm/import tài khoản, theo dõi hoạt động, nhật ký hệ thống và cài đặt quản trị. |
+| **Khách truy cập** | Xem FAQ dành cho học viên hoặc đội ngũ CS. |
+
+---
+
+## Tính năng theo vai trò
+
+### Học viên
+
+Học viên có thể tạo phiếu hỗ trợ với nội dung, danh mục, mức độ ưu tiên và tệp đính kèm. Các ticket đã tạo hiển thị trong trang tổng quan và trang Ticket đã gửi. Khi ticket được xử lý, học viên có thể mở trao đổi để nhắn tin theo từng ticket với Customer Success.
+
+Navbar học viên có khu vực thông báo. Lịch sử thông báo được tổng hợp từ dữ liệu ticket, trong khi trạng thái **đã đọc** và **đã xóa** được đồng bộ theo từng tài khoản tại Firestore. Khi mở một thông báo, badge chưa đọc giảm và trạng thái đã đọc được lưu cho tài khoản đang đăng nhập.
+
+Các chức năng chính gồm:
+
+| Chức năng | Tệp/nhóm tệp tiêu biểu |
+|---|---|
+| Trang chủ và thông báo | `HV/homepage-hv/homepage.*`, `HV/navbar.*` |
+| Gửi ticket | `HV/tickets/phieuhotro.*` |
+| Ticket đã gửi | `HV/ticketssent/ticketssent.*`, `useticket.js` |
+| Trao đổi ticket | `HV/chat-hv/trao-doi-ticket.html`, `traodoiticket.*` |
+| Hồ sơ cá nhân | `HV/account-HV.html` |
+
+### Customer Success
+
+Customer Success sử dụng trang chủ và màn hình quản lý ticket để tìm kiếm, lọc, xem chi tiết và xử lý yêu cầu. Ticket có thể được tổ chức theo trạng thái, ưu tiên, danh mục và thông tin người gửi. Phần trao đổi ticket dùng Firestore để đồng bộ tin nhắn gần thời gian thực.
+
+Dashboard CS tổng hợp các chỉ số xử lý ticket, tỷ lệ hoàn thành, biểu đồ theo loại yêu cầu, đánh giá hài lòng và **thời gian giải quyết trung bình**. Thời gian trung bình được tính từ mốc tạo ticket đến mốc ticket hoàn tất/đóng khi dữ liệu timestamp hợp lệ.
+
+| Chức năng | Tệp/nhóm tệp tiêu biểu |
+|---|---|
+| Trang chủ CS | `CS/homepageCS/trangchu-cs.*` |
+| Quản lý ticket | `CS/TicketManagement/cs-ticket.html`, `cs.js`, `cs.css` |
+| Dashboard và xuất báo cáo | `CS/Dashboard/cs-dashboard.*` |
+| Tạo ticket từ phía CS | `CS/PhieuHoTroCS/phieuhotro-cs.*` |
+| Tài khoản CS | `CS/account-CS.html` |
+| Navbar CS và chat nội bộ | `CS/navbar.*` |
+
+### Group, Leader và CS con
+
+Module Group được tách thành trang quản lý cho Leader và trang trao đổi chung cho thành viên. Leader có thể quản lý Group, Lớp, học viên và thành viên CS; ticket được phân công theo dữ liệu Group/Lớp. CS con có luồng trao đổi Group để phối hợp nội bộ. Tin nhắn Group được lưu trong subcollection `memberMessages` của từng Group, vì vậy Leader và các CS con nhìn thấy cùng một lịch sử hội thoại.
+
+Quyền thao tác ticket cần được hiểu theo nghiệp vụ hiện hành: CS con được giao ticket là đối tượng cập nhật trạng thái và trao đổi với học viên; Leader có thể theo dõi thông tin và phân công theo phạm vi Group/Lớp. Giao diện có thể tiếp tục thay đổi theo quy trình vận hành thực tế.
+
+### Admin
+
+Admin có các màn hình quản lý tài khoản Customer Success, tạo/import tài khoản, quản lý học viên, tổng quan hệ thống, báo cáo hoạt động, nhật ký và cài đặt. Các màn hình import sử dụng SheetJS để đọc/ghi dữ liệu `.xlsx`, `.xls` hoặc `.csv` ở phía trình duyệt.
+
+| Chức năng | Tệp/nhóm tệp tiêu biểu |
+|---|---|
+| Dashboard Admin | `ADMIN/homepage-ad.*` |
+| Danh sách tài khoản CS | `ADMIN/accounts.*` |
+| Thêm/import tài khoản | `ADMIN/addAccount.html`, `ADMIN/addstudent.html` |
+| Báo cáo hoạt động | `ADMIN/activity-report.*` |
+| Nhật ký hệ thống | `ADMIN/system-log.*` |
+| Cài đặt | `ADMIN/settings.*` |
+| Navbar/Admin bar dùng chung | `ADMIN/admin-bar.*` |
+
+---
+
+## Luồng nghiệp vụ chính
+
+### 1. Đăng nhập và định tuyến theo vai trò
+
+Người dùng đăng nhập bằng Email/Password hoặc Google Sign-In. Sau khi Firebase Authentication trả về tài khoản, ứng dụng đọc hồ sơ từ collection `users`, ưu tiên document có ID bằng `uid`, sau đó mới tìm theo email. Hệ thống kiểm tra trạng thái hoạt động và xác định `accountType` hoặc `role` trước khi điều hướng.
+
+| Giá trị được nhận diện | Trang đích mặc định |
+|---|---|
+| `student`, `hocvien`, `học viên` | `/HV/homepage-hv/homepage.html` |
+| `customer_success`, `customer-success`, `cs`, `manager`, `cs_manager` | `/CS/homepageCS/trangchu-cs.html` |
+| `admin`, `administrator` | `/ADMIN/accounts.html` |
+
+### 2. Ticket hỗ trợ
+
+1. Học viên hoặc CS tạo ticket.
+2. Ticket được lưu tại `tickets/{ticketId}` với dữ liệu người gửi, nội dung, trạng thái, ưu tiên, thời gian và metadata tệp.
+3. Lịch sử trao đổi được lưu trong `tickets/{ticketId}/messages`.
+4. CS xử lý ticket, cập nhật trạng thái theo quyền nghiệp vụ và có thể phản hồi học viên.
+5. Học viên theo dõi ticket, đọc thông báo và tiếp tục trao đổi khi cần.
+6. Dashboard sử dụng ticket hoàn tất để tính thời lượng giải quyết trung bình.
+
+### 3. Group và phân công
+
+1. Leader tạo hoặc chọn Group.
+2. Leader quản lý Lớp trong Group, danh sách học viên và CS con phù hợp.
+3. Ticket được xác định Group/Lớp để hỗ trợ phân công đúng người xử lý.
+4. CS con nhận ticket thực hiện cập nhật tiến độ và trao đổi với học viên.
+5. Leader và CS con phối hợp qua kênh chat chung của Group.
+
+---
+
+## Kiến trúc kỹ thuật
+
+```text
+Browser
+  ├─ HTML/CSS/JavaScript thuần
+  ├─ Firebase Compat SDK được nhúng theo trang
+  ├─ Navbar dùng chung theo vai trò
+  └─ Chart/Excel UI theo các module có nhu cầu
+        │
+        ▼
+Firebase
+  ├─ Authentication     → Email/Password, Google Sign-In
+  ├─ Cloud Firestore    → users, tickets, messages, groups, logs, notifications
+  └─ Cloud Storage      → tệp đính kèm ticket/chat
+```
+
+| Thành phần | Vai trò |
+|---|---|
+| HTML5/CSS3/JavaScript ES6+ | Xây dựng giao diện và logic phía client. |
+| Firebase Authentication | Đăng nhập Email/Password và Google, quản lý phiên. |
+| Cloud Firestore | Lưu hồ sơ, ticket, message, Group, thông báo và log. |
+| Firebase Storage | Lưu tệp đính kèm của ticket hoặc trao đổi. |
+| Google Fonts / Material Symbols | Phông chữ và icon giao diện. |
+| SheetJS | Import/export Excel/CSV tại các màn hình hỗ trợ. |
+
+> **Lưu ý kiến trúc:** Đây là dự án static client-side. Những kiểm tra hiển thị trên giao diện không thể thay thế chính sách truy cập dữ liệu. Việc giới hạn đọc/ghi dữ liệu cần được cấu hình trên Firebase theo vai trò và quan hệ sở hữu dữ liệu.
 
 ---
 
@@ -94,321 +154,282 @@ Project hiện đang viết bằng HTML + CSS + JavaScript thuần, không dùng
 
 ```text
 CSK18/
-├── .git/                                # Git metadata
-├── .vscode/                             # Thiết lập VS Code
-├── ADMIN/                               # Trang quản trị dành cho Admin
-│   ├── accounts.css                     # Style màn hình quản lý tài khoản CS
-│   ├── accounts.html                    # Danh sách tài khoản CS
-│   ├── accounts.js                      # Logic quản lý tài khoản CS
-│   ├── activity-report.css              # Style báo cáo hoạt động
-│   ├── activity-report.html             # Màn hình báo cáo hoạt động
-│   ├── activity-report.js               # Logic báo cáo, filter, export CSV
-│   ├── addAccount.html                  # Form thêm tài khoản CS
-│   ├── admin-bar.css                    # Style thanh điều hướng admin
-│   ├── admin-bar.html                   # HTML thanh điều hướng admin dùng chung
-│   ├── admin-bar.js                     # Logic sidebar, user identity, logout
-│   ├── header/                          # Phần header bổ sung admin
-│   │   ├── header.css
-│   │   ├── header.html
-│   │   └── header.js
-│   ├── homepage-ad.css                  # Style trang tổng quan admin
-│   ├── homepage-ad.html                 # Trang dashboard/admin overview
-│   ├── homepage-ad.js                   # Logic tổng quan admin
-│   ├── phong_ban.html                   # Trang / màn hình phòng ban (nếu có dùng trong admin)
-│   ├── settings.css                     # Style cài đặt hệ thống admin
-│   ├── settings.html                    # Màn hình cài đặt quản trị
-│   ├── settings.js                      # Logic settings
-│   ├── system-log.css                   # Style system log
-│   ├── system-log.html                  # Màn hình nhật ký hệ thống
-│   └── system-log.js                    # Logic system log, filter, thống kê log
-├── CS/                                  # Trang dành cho Customer Success
-│   ├── Dashboard/
-│   │   ├── cs-dashboard.html            # Dashboard thống kê CS
-│   │   └── cs-dashboard.js              # Logic biểu đồ, thống kê
-│   ├── Login/
-│   │   ├── login.css                    # Style login
-│   │   ├── login.html                   # Trang đăng nhập chính
-│   │   ├── login.js                     # Xử lý login, logout, redirect, Google Auth
-│   │   ├── quenmatkhau.css              # Style quên mật khẩu
-│   │   └── quenmatkhau.html             # Trang khôi phục mật khẩu
-│   ├── PhieuHoTroCS/
-│   │   ├── phieuhotro-cs.css            # Style tạo phiếu CS (hoặc form CS)
-│   │   ├── phieuhotro-cs.html           # Form tạo ticket từ góc nhìn CS
-│   │   └── phieuhotro-cs.js             # Logic tạo ticket, AI, email, Firestore
-│   ├── TicketManagement/
-│   │   ├── cs-ticket.html               # Trang quản lý ticket của CS
-│   │   ├── cs.css                       # Style quản lý ticket
-│   │   └── cs.js                        # Logic lọc, tìm kiếm, cập nhật trạng thái, chat
-│   ├── account-CS.html                  # Trang tài khoản CS
-│   ├── homepageCS/
-│   │   ├── trangchu-cs.css              # Style trang chủ CS
-│   │   ├── trangchu-cs.html             # Trang chủ CS
-│   │   └── trangchu-cs.js               # Logic dashboard nhanh, thống kê, quick find
-│   ├── navbar.css                       # Style navbar chung cho CS
-│   ├── navbar.html                      # Hình thức navbar dùng chung
-│   ├── navbar.js                        # Logic sidebar, active nav, collapse
-│   └── tao_email_HV.html                # Form tạo email / cấp tài khoản HV
-├── FAQs/                                # Trang FAQ
-│   ├── CS-FAQ.html                      # FAQ dành cho customer success
-│   └── faq.html                         # FAQ dành cho học viên
-├── HV/                                  # Trang dành cho học viên
-│   ├── account-HV.html                  # Quản lý tài khoản học viên
-│   ├── chat-hv/
-│   │   ├── trao-doi-ticket.html         # Trang trao đổi ticket của học viên
-│   │   ├── traodoiticket.css            # Style chat ticket
-│   │   └── traodoiticket.js             # Logic chat HS - CS
-│   ├── homepage-hv/
-│   │   ├── homepage.css                 # Style trang chủ học viên
-│   │   ├── homepage.html                # Trang chủ học viên
-│   │   └── homepage.js                  # Logic homepage, thông báo, thống kê
-│   ├── navbar.css                       # Navbar chung học viên
-│   ├── navbar.html                      # HTML navbar học viên
-│   ├── navbar.js                        # Logic navbar học viên
-│   ├── tickets/
-│   │   ├── phieuhotro.css               # Style form tạo ticket HV
-│   │   ├── phieuhotro.html              # Form gửi ticket cho học viên
-│   │   └── phieuhotro.js                # Logic ticket form, AI, email, attachment
-│   ├── ticketssent/
-│   │   ├── ticketssent.css              # Style trang ticket đã gửi
-│   │   ├── ticketssent.html             # Trang tổng quan ticket đã gửi
-│   │   ├── ticketssent.js               # Logic hiển thị danh sách ticket đã gửi
-│   │   ├── useticket.js                 # Logic tính toán / xem ticket
-│   │   └── ...
-│   └── ...
-├── firebase-config.js                   # Khởi tạo Firebase project
-├── priority.js                          # Logic xác định mức độ ưu tiên tự động
-├── cs.css                               # CSS dùng chung cho layout CS
-├── index.html                           # Redirect mặc định về /CS/login/login.html
-├── README.md                            # Tài liệu dự án
-└── ...                                  # Các file phụ trợ có thể được thêm trong quá trình phát triển
+├── ADMIN/                         # Module quản trị
+│   ├── admin-bar.*                # Thanh điều hướng dùng chung Admin
+│   ├── accounts.*                 # Quản lý tài khoản CS
+│   ├── homepage-ad.*              # Tổng quan Admin
+│   ├── activity-report.*          # Báo cáo hoạt động
+│   ├── settings.*                 # Cài đặt
+│   ├── system-log.*               # Nhật ký hệ thống
+│   ├── addAccount.html            # Tạo/import tài khoản CS
+│   └── addstudent.html            # Tạo/import tài khoản học viên
+├── CS/                            # Module Customer Success
+│   ├── Dashboard/                 # Dashboard và xuất Excel
+│   ├── Groups/                    # Group Leader và chat Group thành viên
+│   ├── PhieuHoTroCS/              # Tạo ticket từ CS
+│   ├── TicketManagement/          # Quản lý ticket, trạng thái, chat HV
+│   ├── homepageCS/                # Trang chủ CS
+│   ├── login/                     # Đăng nhập và quên mật khẩu
+│   ├── navbar.*                   # Navbar/chat/thông báo dùng chung CS
+│   ├── account-CS.html            # Hồ sơ CS
+│   └── tao_email_HV.html          # Hỗ trợ tạo/import học viên
+├── HV/                            # Module học viên
+│   ├── homepage-hv/               # Trang chủ và tổng quan ticket
+│   ├── tickets/                   # Form tạo ticket
+│   ├── ticketssent/               # Danh sách ticket đã gửi
+│   ├── chat-hv/                   # Trao đổi theo ticket
+│   ├── navbar.*                   # Navbar/thông báo dùng chung HV
+│   └── account-HV.html            # Hồ sơ học viên
+├── FAQs/                          # FAQ cho HV và CS
+├── firebase-config.js             # Khởi tạo Firebase App/Auth/Firestore/Storage
+├── priority.js                    # Hỗ trợ xác định ưu tiên ticket
+├── index.html                     # Điểm vào/điều hướng mặc định
+└── README.md                      # Tài liệu dự án
 ```
 
 ---
 
-## Cấu hình Firebase cần chuẩn bị
+## Cấu trúc dữ liệu Firebase
 
-File root `firebase-config.js` chứa cấu hình Firebase. Bạn cần đảm bảo project Firebase đã được tạo và bật các dịch vụ sau:
+Tên trường có thể thay đổi giữa các phiên bản legacy; bảng dưới đây là hợp đồng dữ liệu nên duy trì khi mở rộng dự án.
 
-- Firebase Authentication
-- Firestore Database
-- Firebase Storage
-- Google Sign-In (nếu dùng login Google)
+### `users/{uid}`
 
-Cấu hình cần có các giá trị:
+| Trường gợi ý | Ý nghĩa |
+|---|---|
+| `uid` | Firebase Authentication UID. |
+| `email` | Email dùng để đối chiếu hồ sơ. |
+| `name` hoặc `displayName` | Tên hiển thị. |
+| `accountType` | `student`, `customer_success` hoặc `admin`. |
+| `role` | Role legacy/fallback như `cs`, `admin`, `hocvien`. |
+| `status` | Trạng thái tài khoản; thường là `active` để được đăng nhập. |
+| `campus`, `phone`, `classId` | Thông tin nghiệp vụ tùy vai trò. |
+| `createdAt`, `updatedAt` | Mốc thời gian phục vụ truy vết. |
 
-- apiKey
-- authDomain
-- projectId
-- storageBucket
-- messagingSenderId
-- appId
-- measurementId
+### `tickets/{ticketId}`
 
-Nếu bạn đổi project Firebase, cập nhật file này trước khi chạy ứng dụng. Nhiều trang trong hệ thống giả định project là `faq-csk18`, do đó nếu project mới khác, cần đảm bảo dữ liệu và collection/role đồng bộ theo đúng cấu trúc.
+| Nhóm dữ liệu | Trường thường dùng |
+|---|---|
+| Định danh | `ticketNum`, `studentId`/`userId`, `ticketId` (nếu có) |
+| Nội dung | `title`, `description`, `category`, `issue`, `ticketType` |
+| Người gửi | `name`, `email`, `phone`, `campus` |
+| Vận hành | `status`, `priority`, `assigneeUid`, `assigneeName`, `groupId`, `classId` |
+| Thời gian | `createdAt`, `updatedAt`, `closedAt`, `resolvedAt`, `completedAt` |
+| Đánh giá | `satisfactionStatus`, `satisfactionAttemptCount` khi được dùng |
+| Tệp | URL, Storage path hoặc metadata của tệp đính kèm |
+| Thông báo | `notificationHistory` khi trang học viên tổng hợp lịch sử notification từ ticket |
 
----
+### Subcollection trao đổi ticket
 
-## Luồng dữ liệu chính trong hệ thống
+```text
+tickets/{ticketId}/messages/{messageId}
+```
 
-### 1. Users
-Collection `users` lưu thông tin tài khoản người dùng, gồm ít nhất:
+Mỗi tin nhắn nên bao gồm `senderId`, `senderRole`, `senderName`, `text`, `createdAt`, `read` và metadata tệp đính kèm nếu có.
 
-- uid
-- email
-- displayName / name
-- role (student / cs / admin)
-- campus
-- phone
-- createdAt
-- status
+### Group, Lớp và chat nội bộ
 
-### 2. Tickets
-Collection `tickets` lưu toàn bộ phiếu hỗ trợ, ví dụ:
+```text
+groups/{groupId}
+├── classes/{classId}
+└── memberMessages/{messageId}
+```
 
-- ticketNum
-- userId
-- name
-- email
-- phone
-- campus
-- title
-- description
-- category
-- issue
-- status
-- priority
-- createdAt
-- updatedAt
-- attachmentUrls / file metadata
+Group thường chứa `leaderUid`, `memberIds` hoặc `members`. Lớp có thể liên kết `studentIds`, `csMemberIds`, danh sách học viên và danh sách CS phụ trách. `memberMessages` lưu hội thoại nội bộ Group giữa Leader và CS con.
 
-### 3. Messages
-Subcollection `tickets/{ticketId}/messages` lưu lịch sử trao đổi giữa học viên và CS.
+### Thông báo và log
 
-Mỗi message thường có:
-
-- senderId
-- senderRole
-- senderName
-- text
-- createdAt
-- attachmentUrl (nếu có)
-
-### 4. Logs
-Admin có màn hình system-log để theo dõi các hoạt động chính như:
-
-- login
-- logout
-- create
-- update
-- delete
-- message
-- claim_ticket
-- complete_ticket
-- update_status
-- error
+| Đường dẫn | Mục đích |
+|---|---|
+| `studentNotificationState/{uid}` | Trạng thái đã đọc/đã xóa notification của học viên. |
+| `csNotifications/{uid}/items/{notificationId}` | Thông báo nội bộ dành cho CS/Leader. |
+| `adminNotifications/...` | Thông báo phục vụ khu vực quản trị nếu module đang dùng. |
+| `systemLogs/{logId}` | Sự kiện hoạt động để hiển thị trên System Log. |
+| `faqs/{faqId}` | Nội dung FAQ nếu dữ liệu được quản lý trên Firestore. |
 
 ---
 
-## Quy trình sử dụng thực tế
+## Cài đặt và chạy local
 
-### Quy trình học viên
-1. Mở trang login: `/CS/Login/login.html`
-2. Đăng nhập bằng tài khoản hệ thống hoặc Google
-3. Xem trang tổng quan học viên trên `/HV/homepage-hv/homepage.html`
-4. Nhấn "Tạo phiếu hỗ trợ" hoặc vào `/HV/tickets/phieuhotro.html`
-5. Chọn loại yêu cầu, mô tả vấn đề và đính kèm file nếu cần
-6. Gửi ticket
-7. Theo dõi trạng thái ở mục "Ticket đã gửi" hoặc "Trao đổi ticket"
-8. Nhắn tin với CS khi cần cập nhật thêm thông tin
+Vì ứng dụng sử dụng các đường dẫn tuyệt đối như `/HV/...`, `/CS/...` và `/ADMIN/...`, hãy chạy qua web server thay vì mở file bằng `file://`.
 
-### Quy trình Customer Success
-1. Đăng nhập bằng role `cs`
-2. Vào trang chủ CS `/CS/homepageCS/trangchu-cs.html`
-3. Xem thống kê nhanh và danh sách ticket gần đây
-4. Vào `/CS/TicketManagement/cs-ticket.html` để quản lý danh sách ticket
-5. Tìm kiếm, filter, mở chi tiết ticket
-6. Cập nhật trạng thái ticket (đang mở, đang chờ, đang xử lý, đã giải quyết, đã đóng)
-7. Gửi phản hồi trong chat
-8. Nếu cần, gửi email hoặc thông báo cho học viên tùy theo quy trình
+### Yêu cầu
 
-### Quy trình Admin
-1. Đăng nhập bằng role `admin`
-2. Vào dashboard admin `/ADMIN/homepage-ad.html`
-3. Quản lý tài khoản CS ở `/ADMIN/accounts.html`
-4. Xem báo cáo ở `/ADMIN/activity-report.html`
-5. Xem nhật ký hoạt động ở `/ADMIN/system-log.html`
-6. Cài đặt tùy chọn hệ thống ở `/ADMIN/settings.html`
-7. Đăng xuất hoặc đóng thao tác quản trị
+| Yêu cầu | Gợi ý |
+|---|---|
+| Trình duyệt hiện đại | Chrome, Edge, Firefox hoặc Safari phiên bản mới. |
+| Python 3 hoặc web server tĩnh | Dùng để phục vụ thư mục project. |
+| Firebase project | Đã bật Authentication, Firestore và Storage. |
+| Kết nối Internet | Cần để tải Firebase SDK, Google Fonts và CDN SheetJS. |
 
----
-
-## Hướng dẫn chạy local
-
-Vì đây là project static, nên cần chạy dưới một local web server để các đường dẫn tuyệt đối như `/CS/...`, `/HV/...`, `/ADMIN/...` hoạt động đúng.
-
-### Cách 1: Dùng Python
+### Cách chạy bằng Python
 
 ```bash
-cd C:\Users\LEGION\Documents\GitHub\CSK18.worktrees\detailed-readme-generation
-python -m http.server 8000
+cd /duong-dan/den/CSK18
+python3 -m http.server 8000
 ```
 
 Sau đó mở:
 
 ```text
-http://localhost:8000/CS/Login/login.html
+http://localhost:8000/CS/login/login.html
 ```
 
-### Cách 2: Dùng Live Server trong VS Code
-- Mở thư mục project trong VS Code
-- Mở `index.html` hoặc `CS/Login/login.html`
-- Chạy với Live Server
+Trên Windows, có thể dùng:
 
-### Lưu ý quan trọng
-- Không mở trực tiếp file html bằng browser file:// nếu không có cấu hình đặc biệt, vì điều hướng /CS/... có thể không hoạt động đúng
-- Dự án các link và file script đều dùng đường dẫn tuyệt đối, do đó cần chạy từ thư mục gốc project
-
----
-
-## Một số điểm tích cực và nâng cao của dự án
-
-### AI và tự động hóa
-- Gợi ý tiêu đề AI trong form tạo ticket của học viên
-- Phân loại ưu tiên tự động thông qua `priority.js`
-- AI gợi ý phản hồi trong chat CS
-
-### Realtime và thông báo
-- Lọc danh sách và cập nhật dữ liệu theo thời gian thực từ Firestore
-- Có notification panel cho học viên và admin
-- Có các badge trạng thái và thống kê nhanh ở nhiều màn hình
-
-### Quản lý hồ sơ người dùng
-- Người dùng có profile page riêng cho học viên và admin
-- Admin có trung tâm quản lý tài khoản CS, trạng thái, phòng ban, campus
-
-### Tài liệu và FAQ
-- FAQ được tách riêng cho học viên và CS
-- Giao diện chuyên nghiệp với phong cách maroon + cream + paper
-
-### Chất lượng UX
-- Sidebar điều hướng, navbar dùng chung, active state rõ ràng
-- Responsive design cho màn hình desktop và mobile
-- Mô hình navigation chuẩn và ngắn gọn
-
----
-
-## Ghi chú kỹ thuật quan trọng
-
-- Các file HTML hầu hết đều nhúng Firebase compatibility SDK:
-  - firebase-app-compat.js
-  - firebase-auth-compat.js
-  - firebase-firestore-compat.js
-  - firebase-storage-compat.js
-- `firebase-config.js` được load trước các file JS chính để đảm bảo Firebase đã khởi tạo đúng
-- Một số trang dùng `type="module"` cho file JS riêng
-- Một số file JS, như `cs.js`, `phieuhotro-cs.js`, `phieuhotro.js`, rất dài và chứa nhiều chức năng nghiệp vụ, nên khi chỉnh sửa cần lưu ý không phá vỡ các DOM ID và cấu trúc HTML có sẵn
-- Tài liệu này mô tả tổng quan, nếu cần làm thêm tính năng hay tái cấu trúc dự án, cần đồng bộ lại cấu trúc Firestore và route
-
----
-
-## Mục tiêu của dự án
-
-Dự án này là một hệ thống hỗ trợ học viên hoàn chỉnh theo mô hình:
-
-- Học viên -> gửi yêu cầu -> nhận phản hồi
-- CS -> quản lý, xử lý, trò chuyện, cập nhật status
-- Admin -> giám sát và quản trị toàn bộ hệ thống
-
-Với mô hình hiện tại, dự án phù hợp để làm demo, prototype hoặc nền tảng hỗ trợ nghiệp vụ hỗ trợ học viên trong một trung tâm đào tạo / học trực tuyến / e-learning.
-
----
-
-## Tóm tắt nhanh
-
-Nếu bạn cần mở ứng dụng, hãy chạy local server và vào:
-
-```text
-http://localhost:8000/CS/Login/login.html
+```powershell
+cd C:\duong-dan\den\CSK18
+py -m http.server 8000
 ```
 
-Nếu cần truy cập các module chính, các địa chỉ thường dùng là:
+### Cách chạy bằng VS Code Live Server
 
-- Trang login: `/CS/Login/login.html`
-- Trang học viên: `/HV/homepage-hv/homepage.html`
-- Trang tạo ticket học viên: `/HV/tickets/phieuhotro.html`
-- Trang chat học viên: `/HV/chat-hv/trao-doi-ticket.html`
-- Trang CS home: `/CS/homepageCS/trangchu-cs.html`
-- Trang quản lý ticket CS: `/CS/TicketManagement/cs-ticket.html`
-- Trang dashboard CS: `/CS/Dashboard/cs-dashboard.html`
-- Trang Admin overview: `/ADMIN/homepage-ad.html`
-- Trang quản lý CS: `/ADMIN/accounts.html`
-- Trang báo cáo hoạt động: `/ADMIN/activity-report.html`
-- Trang system log: `/ADMIN/system-log.html`
-- Trang FAQ học viên: `/FAQs/faq.html`
-- Trang FAQ CS: `/FAQs/CS-FAQ.html`
+1. Mở thư mục `CSK18` trong VS Code.
+2. Cài extension **Live Server** nếu chưa có.
+3. Mở `CS/login/login.html`.
+4. Chọn **Open with Live Server**.
+5. Bảo đảm URL được phục vụ từ thư mục gốc dự án để các route bắt đầu bằng `/` hoạt động chính xác.
 
 ---
 
-## Lời nhắn
+## Cấu hình Firebase
 
-Dự án này đã có sự đầu tư kỹ lưỡng về layout, luồng xử lý, chức năng quản lý và tích hợp Firebase. README này được viết dựa trên các file thực tế trong repository để giúp người mới tiếp cận được toàn bộ hệ thống, nhiệm vụ từng module và cách chạy / cấu hình một cách rõ ràng nhất.
+### 1. Chuẩn bị dịch vụ
+
+Trong Firebase Console, cần bật các dịch vụ sau:
+
+| Dịch vụ | Mục đích |
+|---|---|
+| Authentication | Đăng nhập Email/Password và Google Sign-In. |
+| Cloud Firestore | Lưu users, tickets, message, Group, notification và log. |
+| Cloud Storage | Lưu tệp đính kèm. |
+| Google provider | Chỉ bắt buộc nếu sử dụng nút đăng nhập Google. |
+
+### 2. Cập nhật `firebase-config.js`
+
+Tệp `firebase-config.js` khởi tạo Firebase App và xuất các biến toàn cục `auth`, `db`, `storage`. Nếu triển khai sang Firebase project khác, thay cấu hình web app của **chính project đó** trong tệp này. Không đưa khóa dịch vụ quản trị, private key hoặc file service account vào mã nguồn client.
+
+```js
+const firebaseConfig = {
+  apiKey: "<YOUR_WEB_API_KEY>",
+  authDomain: "<YOUR_PROJECT>.firebaseapp.com",
+  projectId: "<YOUR_PROJECT>",
+  storageBucket: "<YOUR_BUCKET>",
+  messagingSenderId: "<YOUR_SENDER_ID>",
+  appId: "<YOUR_APP_ID>"
+};
+```
+
+### 3. Thiết lập Authentication
+
+1. Bật **Email/Password** nếu dùng đăng nhập bằng mật khẩu.
+2. Bật **Google** nếu dùng đăng nhập Google.
+3. Thêm `localhost` và tên miền triển khai vào danh sách **Authorized domains**.
+4. Tạo document hồ sơ tương ứng trong `users` cho mỗi tài khoản được phép truy cập.
+
+### 4. Khởi tạo hồ sơ người dùng
+
+Document `users/{uid}` là cách ổn định nhất. Hệ thống có fallback tìm theo email, nhưng nên sử dụng UID làm document ID để truy vấn nhanh và tránh email trùng/đổi email.
+
+```js
+// Ví dụ minh họa hồ sơ học viên
+{
+  uid: "<FIREBASE_AUTH_UID>",
+  email: "student@example.edu",
+  name: "Nguyễn Văn A",
+  accountType: "student",
+  status: "active",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+}
+```
+
+### 5. Truy cập Firestore và Storage
+
+Repository hiện không kèm theo tệp rule triển khai. Chính sách đọc/ghi phải được thiết kế và quản lý trong Firebase Console hoặc hạ tầng triển khai của bạn. Tối thiểu cần bảo đảm người dùng chỉ có thể đọc/ghi dữ liệu thuộc quyền của mình, còn quyền phân công và quản trị chỉ dành cho role phù hợp.
+
+> Không dùng mã client để thay thế kiểm soát truy cập dữ liệu. Mọi điều kiện quyền quan trọng phải được thực thi ở chính sách dữ liệu hoặc một lớp backend đáng tin cậy.
+
+---
+
+## Các route quan trọng
+
+| Vai trò | Route |
+|---|---|
+| Đăng nhập | `/CS/login/login.html` |
+| Quên mật khẩu | `/CS/login/quenmatkhau.html` |
+| Trang chủ học viên | `/HV/homepage-hv/homepage.html` |
+| Tạo ticket học viên | `/HV/tickets/phieuhotro.html` |
+| Ticket đã gửi | `/HV/ticketssent/ticketssent.html` |
+| Trao đổi ticket | `/HV/chat-hv/trao-doi-ticket.html?ticket={ticketId}` |
+| Trang chủ CS | `/CS/homepageCS/trangchu-cs.html` |
+| Quản lý ticket CS | `/CS/TicketManagement/cs-ticket.html` |
+| Dashboard CS | `/CS/Dashboard/cs-dashboard.html` |
+| Group Leader | `/CS/Groups/group.html` |
+| Chat Group | `/CS/Groups/group-member.html` |
+| Dashboard Admin | `/ADMIN/homepage-ad.html` |
+| Quản lý tài khoản | `/ADMIN/accounts.html` |
+| Báo cáo hoạt động | `/ADMIN/activity-report.html` |
+| System Log | `/ADMIN/system-log.html` |
+| FAQ học viên | `/FAQs/faq.html` |
+| FAQ CS | `/FAQs/CS-FAQ.html` |
+
+---
+
+## Phân quyền và lưu ý bảo mật
+
+Phân quyền giao diện giúp người dùng nhìn thấy đúng công cụ, nhưng không đủ để bảo vệ dữ liệu. Mỗi lần mở rộng tính năng ghi dữ liệu, hãy kiểm tra đồng thời: điều kiện UI, điều kiện JavaScript và chính sách dữ liệu Firebase.
+
+| Khu vực | Điều cần kiểm soát |
+|---|---|
+| `users` | Người dùng chỉ đọc/sửa hồ sơ của mình; Admin quản lý các hồ sơ được cấp quyền. |
+| `tickets` | Học viên chỉ truy cập ticket của mình; CS chỉ xử lý phạm vi được giao; Leader/Admin theo phạm vi nghiệp vụ. |
+| `messages` | Chỉ thành viên của hội thoại ticket được đọc/ghi. |
+| `groups` và `memberMessages` | Chỉ Leader/Member được xác thực của Group truy cập. |
+| `csNotifications`, `studentNotificationState` | Chỉ chủ sở hữu UID đọc/ghi trạng thái của mình. |
+| `systemLogs` | Chỉ Admin được đọc; ghi log qua luồng tin cậy theo chính sách triển khai. |
+| Storage | Xác thực người tải lên và hạn chế loại/kích thước tệp theo nhu cầu nghiệp vụ. |
+
+Không commit các thông tin nhạy cảm như service account, private key, mật khẩu test hoặc token của bên thứ ba. Cấu hình web Firebase là cấu hình phía client, nhưng vẫn cần giới hạn API, domain được ủy quyền và rules phù hợp.
+
+---
+
+## Khắc phục sự cố
+
+| Triệu chứng | Kiểm tra/khắc phục |
+|---|---|
+| `Firebase chưa được initialize` | Kiểm tra thứ tự nhúng SDK; `firebase-config.js` phải được tải trước controller của trang. |
+| Đăng nhập thành công nhưng bị đăng xuất | Kiểm tra document `users/{uid}`, email, `accountType`/`role` và `status: "active"`. |
+| Google Sign-In báo `unauthorized-domain` | Thêm domain đang chạy vào Firebase Authentication → Authorized domains. |
+| Không thấy ticket hoặc chat | Kiểm tra UID người dùng, trường `studentId`/người nhận và quyền Firestore. |
+| Không tải được tệp đính kèm | Kiểm tra Firebase Storage, URL/path metadata, quyền Storage và CORS nếu dùng URL ngoài. |
+| Route `/HV/...` hoặc `/CS/...` lỗi | Không mở bằng `file://`; chạy project bằng HTTP server từ thư mục gốc. |
+| Dashboard không có thời gian trung bình | Kiểm tra ticket hoàn tất có `createdAt` cùng một mốc `closedAt`, `resolvedAt`, `completedAt` hoặc `updatedAt` hợp lệ. |
+| Badge thông báo không giảm | Kiểm tra kết nối Firestore và document `studentNotificationState/{uid}` của tài khoản đang đăng nhập. |
+
+---
+
+## Giới hạn hiện tại và hướng phát triển
+
+Phiên bản hiện tại phù hợp làm hệ thống nội bộ, demo hoặc nền tảng nghiệp vụ quy mô nhỏ đến vừa. Khi triển khai thật, nên ưu tiên các hướng sau:
+
+1. Tách logic dùng chung trong JavaScript thành module nhỏ hơn để giảm trùng lặp giữa các trang.
+2. Chuẩn hóa một schema Firestore duy nhất thay vì duy trì nhiều tên trường legacy cho cùng một ý nghĩa.
+3. Viết chính sách Firestore/Storage theo vai trò, ownership và membership của Group.
+4. Bổ sung kiểm thử luồng quan trọng: login, tạo ticket, phân công, cập nhật trạng thái, chat và notification.
+5. Dùng Cloud Functions hoặc backend tin cậy cho nghiệp vụ cần đặc quyền, gửi email, audit log và thông báo cross-user.
+6. Cân nhắc chuyển dần sang kiến trúc component/module khi số trang và logic tiếp tục tăng.
+
+---
+
+## Tài liệu tham khảo
+
+- [1] [Firebase Authentication — Web](https://firebase.google.com/docs/auth/web/start)
+- [2] [Cloud Firestore — Web](https://firebase.google.com/docs/firestore/quickstart)
+- [3] [Cloud Storage for Firebase — Web](https://firebase.google.com/docs/storage/web/start)
+- [4] [SheetJS Documentation](https://docs.sheetjs.com/)
+
+---
+
+## Ghi nhận
+
+README này được viết lại dựa trên **README gốc** và việc đối chiếu mã nguồn có trong gói dự án CSK18: cấu trúc thư mục, HTML pages, controller JavaScript, cấu hình Firebase và các contract Firestore được tham chiếu. Những trường dữ liệu mang tính legacy được mô tả theo hướng tương thích; trước khi đưa vào production, hãy chuẩn hóa schema và kiểm thử trên Firebase project riêng.
