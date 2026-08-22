@@ -491,7 +491,7 @@ function getRedirectPage(data) {
   const accountType = getAccountType(data);
   /* ADMIN */
   if (accountType === "admin") {
-    return "/ADMIN/homepage-ad.html";
+    return "/ADMIN/accounts.html";
   }
   /* CUSTOMER SUCCESS */
   if (accountType === "customer_success") {

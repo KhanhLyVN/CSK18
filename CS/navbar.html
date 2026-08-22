@@ -1,83 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Customer Success</title>
   <link rel="stylesheet" href="/CS/navbar.css">
+  <!-- Material Symbols -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
 </head>
-
 <body>
   <template id="csNavbarTemplate">
+    <!-- =====================================================
+         TOPBAR
+    ====================================================== -->
     <header class="cs-navbar-topbar">
-      <button class="cs-navbar-toggle" type="button" aria-label="Mở điều hướng" aria-expanded="false"
-        aria-controls="csNavbarSidebar">☰</button>
-      <a class="cs-navbar-brand" href="/CS/homepageCS/trangchu-cs.html" aria-label="Trang chủ Customer Success">
-        <span class="cs-navbar-mark">CS</span>
-        <span class="cs-navbar-brand-copy"><strong>Hệ thống Quản lý Hỗ trợ</strong><small>Trung tâm Customer
-            Success</small></span>
-      </a>
-    </header>
-    <aside class="cs-navbar-sidebar" id="csNavbarSidebar" aria-label="Điều hướng Customer Success">
-      <nav class="cs-navbar-menu">
-        <a data-nav-page="home" href="/CS/homepageCS/trangchu-cs.html">Trang chủ</a>
-        <a data-nav-page="tickets" href="/CS/TicketManagement/cs-ticket.html">Quản lý ticket</a>
-        <a data-nav-page="create" href="/CS/PhieuHoTroCS/phieuhotro-cs.html">Tạo phiếu hỗ trợ</a>
-        <a data-nav-page="groups" href="/CS/Groups/group.html">Nhóm của tôi</a>
-        <a data-nav-page="membergroups" href="/CS/Groups/group-member.html" data-member-only="true">Nhóm trao đổi</a>
-        <a data-nav-page="reports" href="/CS/Dashboard/cs-dashboard.html" data-leader-only="true">Báo cáo thống kê</a>
-        <a data-nav-page="faq" href="/FAQs/CS-FAQ.html">FAQs</a>
-        <a data-nav-page="account" href="/CS/account-CS.html">Cài đặt hệ thống</a>
-      </nav>
-      <div class="cs-navbar-note"><i></i><span>Customer Success online</span></div>
-    </aside>
-  </template>
-  <script type="module" src="/CS/navbar.js"></script>
-</body>
-
-</html>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="/CS/navbar.css">
-</head>
-
-<body>
-  <template id="csNavbarTemplate">
-    <header class="cs-navbar-topbar">
-      <button class="cs-navbar-toggle" type="button" aria-label="Mở điều hướng" aria-expanded="false"
-        aria-controls="csNavbarSidebar">☰</button>
-      <a class="cs-navbar-brand" href="/CS/homepageCS/trangchu-cs.html" aria-label="Trang chủ Customer Success">
-        <span class="cs-navbar-mark">CS</span>
-        <span class="cs-navbar-brand-copy"><strong>Hệ thống Quản lý Hỗ trợ</strong><small>Trung tâm Customer
-            Success</small></span>
-      </a>
-      <div class="cs-navbar-actions">
-        <button class="cs-navbar-notification-button" type="button" aria-label="Mở thông báo">
-          <span aria-hidden="true">♢</span><span class="cs-navbar-notification-count" hidden>0</span>
+      <div class="cs-navbar-top-left">
+        <button id="csNavbarMenuBtn" class="cs-navbar-toggle" type="button" aria-label="Mở điều hướng"
+          aria-expanded="false" aria-controls="csNavbarSidebar">
+          ☰
         </button>
+        <a class="cs-navbar-brand" href="/CS/homepageCS/trangchu-cs.html" aria-label="Trang chủ Customer Success">
+          <span class="cs-navbar-mark">CS</span>
+          <span class="cs-navbar-brand-copy">
+            <strong>Hệ thống Quản lý Hỗ trợ</strong>
+            <small>Trung tâm Customer Success</small>
+          </span>
+        </a>
+      </div>
+      <!-- =====================================================
+           TOPBAR ACTIONS
+      ====================================================== -->
+      <div class="cs-navbar-actions">
+        <!-- CHAT -->
+        <div class="cs-navbar-panel-wrap">
+          <button id="csNavbarMessengerBtn" class="cs-navbar-icon-btn" type="button" aria-label="Tin nhắn"
+            aria-expanded="false">
+            <span class="material-symbols-rounded">
+              chat
+            </span>
+            <b id="csNavbarMessengerBadge" class="cs-navbar-badge" hidden>
+              0
+            </b>
+          </button>
+          <!-- CHAT PANEL -->
+          <section id="csNavbarMessengerPanel" class="cs-navbar-panel cs-navbar-messenger-panel" hidden
+            aria-label="Tin nhắn">
+            <!-- PANEL HEADER -->
+            <div class="cs-navbar-panel-head">
+              <div>
+                <strong id="csNavbarMessengerTitle">
+                  Tin nhắn
+                </strong>
+                <small id="csNavbarMessengerStatus">
+                  Chọn người để bắt đầu trò chuyện
+                </small>
+              </div>
+              <button id="csNavbarMessengerCloseBtn" class="cs-navbar-close" type="button" aria-label="Đóng">
+                <span class="material-symbols-rounded">
+                  close
+                </span>
+              </button>
+            </div>
+            <!-- =================================================
+                 DANH SÁCH CHAT
+            ================================================== -->
+            <div id="csNavbarMessengerListView" class="cs-navbar-messenger-view">
+              <!-- TABS -->
+              <div class="cs-navbar-tabs" role="tablist">
+                <button class="cs-navbar-tab is-active" type="button" data-messenger-tab="friends" role="tab">
+                  <span class="material-symbols-rounded">
+                    person_add
+                  </span>
+                  Kết bạn
+                </button>
+                <button class="cs-navbar-tab" type="button" data-messenger-tab="groups" role="tab">
+                  <span class="material-symbols-rounded">
+                    group_add
+                  </span>
+                  Tạo nhóm
+                </button>
+              </div>
+              <!-- FRIENDS -->
+              <div id="csNavbarFriendsView" class="cs-navbar-panel-view">
+                <label class="cs-navbar-search">
+                  <span class="material-symbols-rounded">
+                    search
+                  </span>
+                  <input id="csNavbarFriendSearch" type="search" placeholder="Tìm tên hoặc email..." autocomplete="off">
+                </label>
+                <div id="csNavbarFriendList" class="cs-navbar-list">
+                  <p class="cs-navbar-state">
+                    Đang tải danh sách người dùng...
+                  </p>
+                </div>
+              </div>
+              <!-- GROUPS -->
+              <div id="csNavbarGroupsView" class="cs-navbar-panel-view" hidden>
+                <form id="csNavbarGroupForm">
+                  <label class="cs-navbar-field">
+                    Tên nhóm
+                    <input id="csNavbarGroupName" type="text" maxlength="80" required placeholder="Ví dụ: Nhóm CSO">
+                  </label>
+                  <p class="cs-navbar-field-title">
+                    Chọn thành viên
+                  </p>
+                  <div id="csNavbarGroupMembers" class="cs-navbar-member-list">
+                  </div>
+                  <button class="cs-navbar-primary-btn" type="submit">
+                    <span class="material-symbols-rounded">
+                      group_add
+                    </span>
+                    Tạo nhóm
+                  </button>
+                </form>
+              </div>
+            </div>
+            <!-- =================================================
+                 CHAT DETAIL
+            ================================================== -->
+            <div id="csNavbarChatView" class="cs-navbar-chat-view" hidden>
+              <!-- CHAT HEADER -->
+              <div class="cs-navbar-chat-head">
+                <button id="csNavbarChatBackBtn" class="cs-navbar-back-btn" type="button" aria-label="Quay lại">
+                  <span class="material-symbols-rounded">
+                    arrow_back
+                  </span>
+                </button>
+                <span id="csNavbarChatAvatar" class="cs-navbar-chat-avatar">
+                  U
+                </span>
+                <div>
+                  <strong id="csNavbarChatName">
+                    Trò chuyện
+                  </strong>
+                  <small id="csNavbarChatRole">
+                    Đang hoạt động
+                  </small>
+                </div>
+              </div>
+              <!-- MESSAGES -->
+              <div id="csNavbarChatMessages" class="cs-navbar-chat-messages">
+                <p class="cs-navbar-state">
+                  Hãy gửi tin nhắn đầu tiên.
+                </p>
+              </div>
+              <!-- COMPOSER -->
+              <form id="csNavbarChatForm" class="cs-navbar-chat-composer">
+                <textarea id="csNavbarChatInput" rows="1" maxlength="2000" placeholder="Nhập tin nhắn..." required>
+                </textarea>
+                <button class="cs-navbar-send-btn" type="submit" aria-label="Gửi tin nhắn">
+                  <span class="material-symbols-rounded">
+                    send
+                  </span>
+                </button>
+              </form>
+            </div>
+          </section>
+        </div>
+        <!-- =====================================================
+             NOTIFICATION
+        ====================================================== -->
+        <div class="cs-navbar-panel-wrap">
+          <button id="csNavbarNoticeBtn" class="cs-navbar-icon-btn" type="button" aria-label="Thông báo"
+            aria-expanded="false">
+            <span class="material-symbols-rounded">
+              notifications
+            </span>
+            <b id="csNavbarNoticeBadge" class="cs-navbar-badge" hidden>
+              0
+            </b>
+          </button>
+          <section id="csNavbarNotificationPanel" class="cs-navbar-panel cs-navbar-notification-panel" hidden
+            aria-label="Thông báo">
+            <div class="cs-navbar-panel-head">
+              <div>
+                <strong>
+                  Thông báo
+                </strong>
+                <small id="csNavbarNotificationCount">
+                  Không có thông báo mới
+                </small>
+              </div>
+              <button id="csNavbarMarkAllReadBtn" class="cs-navbar-text-btn" type="button">
+                Đánh dấu đã đọc
+              </button>
+            </div>
+            <div id="csNavbarNotificationList" class="cs-navbar-list">
+              <div class="cs-navbar-empty">
+                <span class="material-symbols-rounded">
+                  notifications_none
+                </span>
+                <p>
+                  Không có thông báo mới
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+        <!-- AVATAR -->
+        <span id="csNavbarTopAvatar" class="cs-navbar-top-avatar" aria-label="Tài khoản CS">
+          CS
+        </span>
       </div>
     </header>
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
     <aside class="cs-navbar-sidebar" id="csNavbarSidebar" aria-label="Điều hướng Customer Success">
       <nav class="cs-navbar-menu">
-        <a data-nav-page="home" href="/CS/homepageCS/trangchu-cs.html">Trang chủ</a>
-        <a data-nav-page="tickets" href="/CS/TicketManagement/cs-ticket.html">Quản lý ticket</a>
-        <a data-nav-page="create" href="/CS/PhieuHoTroCS/phieuhotro-cs.html">Tạo phiếu hỗ trợ</a>
-        <a data-nav-page="groups" href="/CS/Groups/group.html">Nhóm của tôi</a>
-        <a data-nav-page="membergroups" href="/CS/Groups/group-member.html" data-member-only="true">Nhóm trao đổi</a>
-        <a data-nav-page="reports" href="/CS/Dashboard/cs-dashboard.html" data-leader-only="true">Báo cáo thống kê</a>
-        <a data-nav-page="faq" href="/FAQs/CS-FAQ.html">FAQs</a>
-        <a data-nav-page="account" href="/CS/account-CS.html">Cài đặt hệ thống</a>
+        <a data-nav-page="home" href="/CS/homepageCS/trangchu-cs.html">
+          Trang chủ
+        </a>
+        <a data-nav-page="tickets" href="/CS/TicketManagement/cs-ticket.html">
+          Quản lý ticket
+        </a>
+        <a data-nav-page="create" href="/CS/PhieuHoTroCS/phieuhotro-cs.html">
+          Tạo phiếu hỗ trợ
+        </a>
+        <a data-nav-page="groups" href="/CS/Groups/group.html">
+          Nhóm của tôi
+        </a>
+        <a data-nav-page="membergroups" href="/CS/Groups/group-member.html" data-member-only="true">
+          Nhóm trao đổi
+        </a>
+        <a data-nav-page="reports" href="/CS/Dashboard/cs-dashboard.html" data-leader-only="true">
+          Báo cáo thống kê
+        </a>
+        <a data-nav-page="faq" href="/FAQs/CS-FAQ.html">
+          FAQs
+        </a>
+        <a data-nav-page="account" href="/CS/account-CS.html">
+          Cài đặt hệ thống
+        </a>
       </nav>
-      <div class="cs-navbar-note"><i></i><span>Customer Success online</span></div>
+      <div class="cs-navbar-note">
+        <i></i>
+        <span>
+          Customer Success online
+        </span>
+      </div>
     </aside>
+    <!-- MOBILE BACKDROP -->
+    <div id="csNavbarSidebarBackdrop" class="cs-navbar-backdrop" hidden>
+    </div>
+    <!-- CHAT BACKDROP -->
+    <div id="csNavbarMessengerBackdrop" class="cs-navbar-messenger-backdrop" hidden>
+    </div>
   </template>
-  <script type="module" src="/CS/navbar.js"></script>
+  <!-- =====================================================
+       NAVBAR JS
+  ====================================================== -->
+  <script type="module" src="/CS/navbar.js">
+  </script>
 </body>
-
 </html>

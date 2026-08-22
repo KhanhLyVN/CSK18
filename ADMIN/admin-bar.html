@@ -1,95 +1,44 @@
-<aside class="adminbar-sidebar" id="adminbarSidebar">
-  <div class="adminbar-sidebar-brand">
-    <div class="adminbar-brand-mark">HV</div>
-    <div class="adminbar-brand-text">
-      <strong>Học Viện</strong>
-      <small>ADMIN CENTER</small>
-    </div>
+<aside class="adminbar-sidebar" id="adminbarSidebar" aria-label="Thanh điều hướng quản trị">
+  <div class="adminbar-brand">
+    <span class="adminbar-brand-mark" aria-hidden="true">HV</span>
+    <span class="adminbar-brand-copy"><strong>Học Viện</strong><small>ADMIN CENTER</small></span>
   </div>
-
-  <nav class="adminbar-sidebar-nav" aria-label="Điều hướng quản trị">
-    <div class="adminbar-nav-label">Quản lý</div>
-    <a href="/ADMIN/accounts.html" class="adminbar-nav-item" data-page="accounts">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">home</span>
-      <span class="adminbar-nav-text">Trang chủ</span>
-      <b class="adminbar-nav-badge" id="adminbarAccountCount">0</b>
+  <nav class="adminbar-nav" aria-label="Điều hướng quản trị">
+    <p class="adminbar-nav-label">Quản lý</p>
+    <a class="adminbar-nav-item" href="/ADMIN/accounts.html" data-page="accounts">
+      <span class="adminbar-icon material-symbols-rounded" aria-hidden="true">home</span><span>Trang chủ</span><b id="adminbarAccountCount" class="adminbar-count" hidden>0</b>
     </a>
-    <a href="/ADMIN/addAccount.html" class="adminbar-nav-item" data-page="add-cs">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">person_add</span>
-      <span class="adminbar-nav-text">Thêm CS</span>
-    </a>
-    <a href="/ADMIN/addStudent.html" class="adminbar-nav-item" data-page="add-student">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">school</span>
-      <span class="adminbar-nav-text">Thêm học viên</span>
-    </a>
-    <a href="/ADMIN/nhomcuatoi.html" class="adminbar-nav-item" data-page="departments">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">corporate_fare</span>
-      <span class="adminbar-nav-text">Quản lý nhóm </span>
-    </a>
-    <a href="/ADMIN/activity-report.html" class="adminbar-nav-item" data-page="reports">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">analytics</span>
-      <span class="adminbar-nav-text">Báo cáo hoạt động</span>
-    </a>
-
-    <div class="adminbar-nav-label">Hệ thống</div>
-    <a href="/ADMIN/settings.html" class="adminbar-nav-item" data-page="settings">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">settings</span>
-      <span class="adminbar-nav-text">Cài đặt</span>
-    </a>
-    <a href="/ADMIN/system-log.html" class="adminbar-nav-item" data-page="logs">
-      <span class="adminbar-nav-icon adminbar-material-symbols-rounded">history</span>
-      <span class="adminbar-nav-text">Nhật ký hệ thống</span>
-    </a>
+    <a class="adminbar-nav-item" href="/ADMIN/addAccount.html" data-page="add-cs"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">person_add</span><span>Thêm CS</span></a>
+    <a class="adminbar-nav-item" href="/ADMIN/addStudent.html" data-page="add-student"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">school</span><span>Thêm học viên</span></a>
+    <a class="adminbar-nav-item" href="/ADMIN/nhomcuatoi.html" data-page="departments"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">groups</span><span>Quản lý nhóm</span></a>
+    <a class="adminbar-nav-item" href="/ADMIN/activity-report.html" data-page="reports"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">analytics</span><span>Báo cáo hoạt động</span></a>
+    <p class="adminbar-nav-label">Hệ thống</p>
+    <a class="adminbar-nav-item" href="/ADMIN/settings.html" data-page="settings"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">settings</span><span>Cài đặt</span></a>
+    <a class="adminbar-nav-item" href="/ADMIN/system-log.html" data-page="logs"><span class="adminbar-icon material-symbols-rounded" aria-hidden="true">history</span><span>Nhật ký hệ thống</span></a>
   </nav>
-
-  <div class="adminbar-sidebar-user">
-    <div class="adminbar-user-avatar" id="adminbarSidebarAvatar">AD</div>
-    <div class="adminbar-user-info">
-      <strong id="adminbarSidebarUserName">Administrator</strong>
-      <small id="adminbarSidebarUserRole">System Admin</small>
-    </div>
-    <button type="button" class="adminbar-user-menu" id="adminbarSidebarLogoutBtn" title="Đăng xuất" aria-label="Đăng xuất">
-      <span class="adminbar-material-symbols-rounded">logout</span>
-    </button>
+  <div class="adminbar-user">
+    <span id="adminbarSidebarAvatar" class="adminbar-user-avatar" aria-hidden="true">AD</span>
+    <span class="adminbar-user-copy"><strong id="adminbarSidebarUserName">Administrator</strong><small id="adminbarSidebarUserRole">System Admin</small></span>
+    <button id="adminbarSidebarLogoutBtn" class="adminbar-user-action" type="button" title="Đăng xuất" aria-label="Đăng xuất"><span class="material-symbols-rounded" aria-hidden="true">logout</span></button>
   </div>
 </aside>
-
-<div class="adminbar-sidebar-backdrop" id="adminbarSidebarBackdrop" hidden></div>
-
+<div id="adminbarSidebarBackdrop" class="adminbar-backdrop" hidden></div>
 <header class="adminbar-topbar">
-  <div class="adminbar-topbar-left">
-    <button type="button" id="adminbarMenuBtn" class="adminbar-icon-btn adminbar-mobile-only" title="Mở menu" aria-label="Mở menu">
-      <span class="adminbar-material-symbols-rounded">menu</span>
-    </button>
-  </div>
-
+  <div class="adminbar-topbar-left"><button id="adminbarMenuBtn" class="adminbar-icon-btn adminbar-mobile-only" type="button" aria-label="Mở menu" aria-controls="adminbarSidebar" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">menu</span></button></div>
   <div class="adminbar-top-actions">
-    <div class="adminbar-notification-wrapper">
-      <button type="button" class="adminbar-icon-btn adminbar-notification-btn" id="adminbarNoticeBtn" title="Thông báo" aria-label="Thông báo"
-        aria-expanded="false">
-        <span class="adminbar-material-symbols-rounded">notifications</span>
-        <span id="adminbarNoticeBadge" class="adminbar-notice-badge adminbar-hidden">0</span>
-      </button>
-
-      <div id="adminbarNotificationPanel" class="adminbar-notification-panel" hidden>
-        <div class="adminbar-notification-header">
-          <div>
-            <strong>Thông báo</strong>
-            <small id="adminbarNotificationCount">Không có thông báo mới</small>
-          </div>
-          <button type="button" id="adminbarMarkAllReadBtn" class="adminbar-notification-action">Đánh dấu đã đọc</button>
-        </div>
-        <div id="adminbarNotificationList" class="adminbar-notification-list">
-          <div class="adminbar-notification-empty">
-            <span class="adminbar-material-symbols-rounded">notifications_none</span>
-            <p>Không có thông báo mới</p>
-          </div>
-        </div>
-      </div>
+    <div class="adminbar-panel-wrap">
+      <button id="adminbarMessengerBtn" class="adminbar-icon-btn" type="button" aria-label="Mở tin nhắn" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">chat</span><b id="adminbarMessengerBadge" class="adminbar-badge" hidden>0</b></button>
+      <section id="adminbarMessengerPanel" class="adminbar-panel adminbar-messenger-panel" hidden aria-label="Tin nhắn">
+        <div class="adminbar-panel-head"><div><strong id="adminbarMessengerTitle">Tin nhắn</strong><small id="adminbarMessengerStatus">Chọn người để bắt đầu trò chuyện</small></div><button id="adminbarMessengerCloseBtn" class="adminbar-close" type="button" aria-label="Đóng"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
+        <div id="adminbarMessengerListView" class="adminbar-messenger-view"><div class="adminbar-tabs" role="tablist"><button class="adminbar-tab is-active" type="button" data-messenger-tab="friends" role="tab"><span class="material-symbols-rounded">person_add</span>Kết bạn</button><button class="adminbar-tab" type="button" data-messenger-tab="groups" role="tab"><span class="material-symbols-rounded">group_add</span>Tạo nhóm</button></div><div id="adminbarFriendsView" class="adminbar-panel-view"><label class="adminbar-search"><span class="material-symbols-rounded" aria-hidden="true">search</span><input id="adminbarFriendSearch" type="search" placeholder="Tìm tên hoặc email..." autocomplete="off"></label><div id="adminbarFriendList" class="adminbar-list"><p class="adminbar-state">Đang tải danh sách người dùng...</p></div></div><div id="adminbarGroupsView" class="adminbar-panel-view" hidden><form id="adminbarGroupForm"><label class="adminbar-field">Tên nhóm<input id="adminbarGroupName" type="text" maxlength="80" required placeholder="Ví dụ: Nhóm CSO"></label><p class="adminbar-field-title">Chọn thành viên</p><div id="adminbarGroupMembers" class="adminbar-member-list"></div><button class="adminbar-primary-btn" type="submit"><span class="material-symbols-rounded" aria-hidden="true">group_add</span>Tạo nhóm</button></form></div></div>
+        <div id="adminbarChatView" class="adminbar-chat-view" hidden><div class="adminbar-chat-head"><button id="adminbarChatBackBtn" class="adminbar-back-btn" type="button" aria-label="Quay lại danh sách"><span class="material-symbols-rounded">arrow_back</span></button><span id="adminbarChatAvatar" class="adminbar-chat-avatar">U</span><div><strong id="adminbarChatName">Trò chuyện</strong><small id="adminbarChatRole">Đang hoạt động</small></div></div><div id="adminbarChatMessages" class="adminbar-chat-messages"><p class="adminbar-state">Hãy gửi tin nhắn đầu tiên.</p></div><form id="adminbarChatForm" class="adminbar-chat-composer"><textarea id="adminbarChatInput" rows="1" maxlength="2000" placeholder="Nhập tin nhắn..." required></textarea><button class="adminbar-send-btn" type="submit" aria-label="Gửi tin nhắn"><span class="material-symbols-rounded">send</span></button></form></div>
+      </section>
     </div>
-
-    <div class="adminbar-identity" aria-label="Tài khoản quản trị">
+    <div class="adminbar-panel-wrap">
+      <button id="adminbarNoticeBtn" class="adminbar-icon-btn" type="button" aria-label="Thông báo" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">notifications</span><b id="adminbarNoticeBadge" class="adminbar-badge" hidden>0</b></button>
+      <section id="adminbarNotificationPanel" class="adminbar-panel adminbar-notification-panel" hidden aria-label="Thông báo"><div class="adminbar-panel-head"><div><strong>Thông báo</strong><small id="adminbarNotificationCount">Không có thông báo mới</small></div><button id="adminbarMarkAllReadBtn" class="adminbar-text-btn" type="button">Đánh dấu đã đọc</button></div><div id="adminbarNotificationList" class="adminbar-list"><div class="adminbar-empty"><span class="material-symbols-rounded" aria-hidden="true">notifications_none</span><p>Không có thông báo mới</p></div></div></section>
     </div>
-    <div class="adminbar-avatar adminbar-avatar-admin" id="adminbarTopAdminAvatar" aria-label="Tài khoản Admin">AD</div>
+    <span id="adminbarTopAdminAvatar" class="adminbar-top-avatar" aria-label="Tài khoản Admin">AD</span>
   </div>
 </header>
+<div id="adminbarMessengerBackdrop" class="adminbar-messenger-backdrop" hidden></div>

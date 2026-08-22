@@ -11,7 +11,6 @@
   position: relative;
   z-index: 70;
 }
-
 .cs-navbar-toggle {
   width: 32px;
   height: 32px;
@@ -28,15 +27,12 @@
   line-height: 1;
   transition: background .16s ease, transform .16s ease;
 }
-
 .cs-navbar-toggle:hover {
   background: rgba(255, 255, 255, .12);
 }
-
 .cs-navbar-toggle:active {
   transform: scale(.95);
 }
-
 .cs-navbar-brand {
   min-width: 0;
   display: inline-flex;
@@ -45,7 +41,6 @@
   color: inherit;
   text-decoration: none;
 }
-
 .cs-navbar-mark {
   width: 32px;
   height: 32px;
@@ -57,26 +52,22 @@
   background: var(--cream, #eedcc8);
   font: 700 15px/1 "Fraunces", serif;
 }
-
 .cs-navbar-brand-copy {
   min-width: 0;
   display: grid;
   gap: 2px;
   line-height: 1.2;
 }
-
 .cs-navbar-brand-copy strong {
   overflow: hidden;
   font: 600 17px/1.2 "Fraunces", serif;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .cs-navbar-brand-copy small {
   color: rgba(251, 244, 233, .76);
   font: 11px/1.2 "Inter", sans-serif;
 }
-
 .cs-navbar-layout {
   min-height: 0;
   flex: 1;
@@ -84,7 +75,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .cs-navbar-sidebar {
   width: 260px;
   min-height: 0;
@@ -98,14 +88,12 @@
   transition: width .22s ease, transform .22s ease;
   z-index: 45;
 }
-
 .cs-navbar-menu {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 16px 12px;
 }
-
 .cs-navbar-menu a {
   min-height: 42px;
   display: flex;
@@ -119,7 +107,6 @@
   white-space: nowrap;
   transition: background .16s ease, color .16s ease;
 }
-
 .cs-navbar-menu a svg {
   width: 18px;
   height: 18px;
@@ -131,19 +118,16 @@
   stroke-linejoin: round;
   stroke-width: 2;
 }
-
 .cs-navbar-menu a:hover {
   color: var(--maroon, #5d0703);
   background: var(--cream-pale, #fbf4e9);
 }
-
 .cs-navbar-menu a.active {
   color: var(--maroon-deep, #3e0402);
   background: var(--cream, #eedcc8);
   border-left-color: var(--maroon, #5d0703);
   font-weight: 800;
 }
-
 .cs-navbar-note {
   display: flex;
   align-items: center;
@@ -157,7 +141,6 @@
   font: 700 10.5px/1 "Inter", sans-serif;
   white-space: nowrap;
 }
-
 .cs-navbar-note i {
   width: 8px;
   height: 8px;
@@ -167,19 +150,16 @@
   background: #9ab77c;
   box-shadow: 0 0 0 3px rgba(154, 183, 124, .18);
 }
-
 .cs-navbar-content {
   min-width: 0;
   min-height: 0;
   flex: 1;
 }
-
 .app[data-cs-navbar-ready="true"] {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-
 .cs-navbar-overlay {
   position: fixed;
   inset: 0;
@@ -192,40 +172,33 @@
   pointer-events: none;
   transition: opacity .2s ease, visibility .2s ease;
 }
-
 .cs-navbar-overlay.is-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
-
 .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
   width: 70px;
 }
-
 .cs-navbar-layout.is-collapsed .cs-navbar-menu a {
   justify-content: center;
   padding-inline: 10px;
   font-size: 0;
 }
-
 .cs-navbar-layout.is-collapsed .cs-navbar-menu a svg {
   margin-right: 0;
 }
-
 .cs-navbar-layout.is-collapsed .cs-navbar-note {
   justify-content: center;
   margin-inline: 12px;
   padding-inline: 0;
   font-size: 0;
 }
-
 @media (min-width: 861px) {
   .cs-navbar-overlay {
     display: none !important;
   }
 }
-
 @media (max-width: 860px) {
   .cs-navbar-sidebar {
     position: fixed;
@@ -234,25 +207,20 @@
     box-shadow: 12px 0 30px rgba(62, 4, 2, .14);
     transform: translateX(-104%);
   }
-
   .cs-navbar-layout.is-mobile-open .cs-navbar-sidebar {
     transform: translateX(0);
   }
-
   .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
     width: min(280px, 84vw);
   }
-
   .cs-navbar-layout.is-collapsed .cs-navbar-menu a {
     justify-content: flex-start;
     padding-inline: 14px;
     font-size: 13px;
   }
-
   .cs-navbar-layout.is-collapsed .cs-navbar-menu a svg {
     margin-right: 12px;
   }
-
   .cs-navbar-layout.is-collapsed .cs-navbar-note {
     justify-content: flex-start;
     margin-inline: 16px;
@@ -260,41 +228,33 @@
     font-size: 10.5px;
   }
 }
-
 @media (max-width: 560px) {
   .cs-navbar-topbar {
     min-height: 56px;
     padding-inline: 14px;
   }
-
   .cs-navbar-sidebar {
     inset-block-start: 56px;
   }
-
   .cs-navbar-brand-copy small {
     display: none;
   }
-
   .cs-navbar-brand-copy strong {
     max-width: 225px;
     font-size: 15px;
   }
 }
-
 /* =========================================================
    CUSTOMER SUCCESS NAVBAR - SIDEBAR CỐ ĐỊNH
    Nạp file này sau /CS/navbar.css.
    ========================================================= */
-
 @media (min-width: 861px) {
-
   html,
   body {
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: auto !important;
   }
-
   .app[data-cs-navbar-ready="true"] {
     display: flex;
     min-height: 100vh;
@@ -302,7 +262,6 @@
     overflow: visible !important;
     padding-top: 58px;
   }
-
   .cs-navbar-topbar {
     position: fixed;
     top: 0;
@@ -311,7 +270,6 @@
     z-index: 70;
     height: 58px;
   }
-
   /* Layout chứa sidebar và nội dung */
   .cs-navbar-layout {
     display: block;
@@ -320,7 +278,6 @@
     height: auto !important;
     overflow: visible !important;
   }
-
   /* Sidebar Customer Success đứng im khi cuộn */
   .cs-navbar-sidebar {
     position: fixed;
@@ -334,7 +291,6 @@
     overflow-x: hidden;
     overflow-y: auto;
   }
-
   /* Nội dung tự quyết định cách hiển thị và chiều cao */
   .cs-navbar-content {
     display: block;
@@ -344,52 +300,574 @@
     margin-left: 290px;
     overflow: visible !important;
   }
-
   /* Thu gọn sidebar trên desktop */
   .cs-navbar-layout.is-collapsed .cs-navbar-sidebar {
     width: 70px;
   }
-
   .cs-navbar-layout.is-collapsed .cs-navbar-content {
     margin-left: 70px;
   }
 }
-
 /* Mobile vẫn sử dụng sidebar dạng drawer của navbar.css */
 @media (max-width: 860px) {
   .cs-navbar-content {
     margin-left: 0;
   }
 }
-
 /* Trung tâm thông báo Customer Success */
-.cs-navbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.cs-navbar-notification-button { position: relative; width: 36px; height: 36px; display: inline-grid; place-items: center; border: 1px solid rgba(255,255,255,.2); border-radius: 9px; color: #fff; background: rgba(255,255,255,.08); cursor: pointer; transition: background .16s ease, transform .16s ease; }
-.cs-navbar-notification-button:hover { background: rgba(255,255,255,.16); }
-.cs-navbar-notification-button:active { transform: scale(.96); }
-.cs-navbar-notification-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
-.cs-navbar-notification-count { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; display: grid; place-items: center; border: 2px solid var(--maroon, #5d0703); border-radius: 999px; color: #fff; background: #bd3b30; font: 800 9px/1 "Inter", sans-serif; }
-.cs-notification-backdrop { position: fixed; inset: 0; z-index: 150; border: 0; background: rgba(42,23,18,.28); opacity: 0; transition: opacity .18s ease; }
-.cs-notification-backdrop.show { opacity: 1; }
-.cs-notification-panel { position: fixed; z-index: 160; top: 0; right: 0; width: min(390px, 100vw); height: 100dvh; display: flex; flex-direction: column; border-left: 1px solid var(--line, rgba(93,7,3,.15)); color: var(--ink, #2a1712); background: var(--paper, #fffbf5); box-shadow: -18px 0 45px rgba(62,4,2,.17); transform: translateX(104%); transition: transform .24s cubic-bezier(.23,1,.32,1); }
-.cs-notification-panel.open { transform: translateX(0); }
-.cs-notification-head { display: flex; justify-content: space-between; gap: 14px; padding: 22px 20px 17px; border-bottom: 1px solid var(--line, rgba(93,7,3,.15)); }
-.cs-notification-head span { color: #b08a4e; font: 800 9px/1 "Inter", sans-serif; letter-spacing: .12em; }
-.cs-notification-head h2 { margin: 7px 0 0; color: var(--maroon-deep, #3e0402); font: 700 25px/1 "Fraunces", serif; }
-.cs-notification-head p { margin: 6px 0 0; color: var(--ink-soft, #6b5348); font: 11px/1.45 "Inter", sans-serif; }
-.cs-notification-head button { width: 34px; height: 34px; border: 1px solid var(--line, rgba(93,7,3,.15)); border-radius: 8px; color: var(--maroon, #5d0703); background: #fff; cursor: pointer; font-size: 20px; }
-.cs-notification-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 20px; border-bottom: 1px solid var(--line, rgba(93,7,3,.12)); color: var(--ink-soft, #6b5348); font: 800 10px/1 "Inter", sans-serif; }
-.cs-notification-toolbar button { border: 0; color: var(--maroon, #5d0703); background: transparent; cursor: pointer; font: 800 10px/1 "Inter", sans-serif; }
-.cs-notification-toolbar button:disabled { cursor: not-allowed; opacity: .42; }
-.cs-notification-list { min-height: 0; flex: 1; overflow-y: auto; padding: 11px; }
-.cs-notification-item { width: 100%; display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 9px; margin-bottom: 8px; padding: 12px; border: 1px solid rgba(93,7,3,.1); border-radius: 10px; color: var(--ink, #2a1712); background: #fff; text-align: left; cursor: pointer; }
-.cs-notification-item:not(.is-read) { border-color: rgba(93,7,3,.26); background: #fff8ef; }
-.cs-notification-item:hover { border-color: #b08a4e; }
-.cs-notification-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--maroon, #5d0703); background: var(--cream, #eedcc8); font: 800 13px/1 "Inter", sans-serif; }
-.cs-notification-copy { min-width: 0; display: grid; gap: 4px; }
-.cs-notification-copy strong { color: var(--maroon-deep, #3e0402); font: 800 11px/1.3 "Inter", sans-serif; }
-.cs-notification-copy b { overflow: hidden; color: var(--ink-soft, #6b5348); font: 500 11px/1.4 "Inter", sans-serif; text-overflow: ellipsis; white-space: nowrap; }
-.cs-notification-copy small { color: #9a8477; font: 9px/1.2 "Inter", sans-serif; }
-.cs-notification-empty { display: none; padding: 38px 24px; color: var(--ink-soft, #6b5348); font: 12px/1.6 "Inter", sans-serif; text-align: center; }
-.cs-notification-empty.show { display: block; }
-@media (max-width: 860px) { .cs-navbar-topbar { padding-inline: 14px; } .cs-notification-panel { width: min(390px, 92vw); } }
+.cs-navbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cs-navbar-notification-button {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 9px;
+  color: #fff;
+  background: rgba(255, 255, 255, .08);
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease;
+}
+.cs-navbar-notification-button:hover {
+  background: rgba(255, 255, 255, .16);
+}
+.cs-navbar-notification-button:active {
+  transform: scale(.96);
+}
+.cs-navbar-notification-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+.cs-navbar-notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--maroon, #5d0703);
+  border-radius: 999px;
+  color: #fff;
+  background: #bd3b30;
+  font: 800 9px/1 "Inter", sans-serif;
+}
+.cs-notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  border: 0;
+  background: rgba(42, 23, 18, .28);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.cs-notification-backdrop.show {
+  opacity: 1;
+}
+.cs-notification-panel {
+  position: fixed;
+  z-index: 160;
+  top: 0;
+  right: 0;
+  width: min(390px, 100vw);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line, rgba(93, 7, 3, .15));
+  color: var(--ink, #2a1712);
+  background: var(--paper, #fffbf5);
+  box-shadow: -18px 0 45px rgba(62, 4, 2, .17);
+  transform: translateX(104%);
+  transition: transform .24s cubic-bezier(.23, 1, .32, 1);
+}
+.cs-notification-panel.open {
+  transform: translateX(0);
+}
+.cs-notification-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 20px 17px;
+  border-bottom: 1px solid var(--line, rgba(93, 7, 3, .15));
+}
+.cs-notification-head span {
+  color: #b08a4e;
+  font: 800 9px/1 "Inter", sans-serif;
+  letter-spacing: .12em;
+}
+.cs-notification-head h2 {
+  margin: 7px 0 0;
+  color: var(--maroon-deep, #3e0402);
+  font: 700 25px/1 "Fraunces", serif;
+}
+.cs-notification-head p {
+  margin: 6px 0 0;
+  color: var(--ink-soft, #6b5348);
+  font: 11px/1.45 "Inter", sans-serif;
+}
+.cs-notification-head button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line, rgba(93, 7, 3, .15));
+  border-radius: 8px;
+  color: var(--maroon, #5d0703);
+  background: #fff;
+  cursor: pointer;
+  font-size: 20px;
+}
+.cs-notification-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--line, rgba(93, 7, 3, .12));
+  color: var(--ink-soft, #6b5348);
+  font: 800 10px/1 "Inter", sans-serif;
+}
+.cs-notification-toolbar button {
+  border: 0;
+  color: var(--maroon, #5d0703);
+  background: transparent;
+  cursor: pointer;
+  font: 800 10px/1 "Inter", sans-serif;
+}
+.cs-notification-toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+.cs-notification-list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 11px;
+}
+.cs-notification-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid rgba(93, 7, 3, .1);
+  border-radius: 10px;
+  color: var(--ink, #2a1712);
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.cs-notification-item:not(.is-read) {
+  border-color: rgba(93, 7, 3, .26);
+  background: #fff8ef;
+}
+.cs-notification-item:hover {
+  border-color: #b08a4e;
+}
+.cs-notification-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--maroon, #5d0703);
+  background: var(--cream, #eedcc8);
+  font: 800 13px/1 "Inter", sans-serif;
+}
+.cs-notification-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.cs-notification-copy strong {
+  color: var(--maroon-deep, #3e0402);
+  font: 800 11px/1.3 "Inter", sans-serif;
+}
+.cs-notification-copy b {
+  overflow: hidden;
+  color: var(--ink-soft, #6b5348);
+  font: 500 11px/1.4 "Inter", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cs-notification-copy small {
+  color: #9a8477;
+  font: 9px/1.2 "Inter", sans-serif;
+}
+.cs-notification-empty {
+  display: none;
+  padding: 38px 24px;
+  color: var(--ink-soft, #6b5348);
+  font: 12px/1.6 "Inter", sans-serif;
+  text-align: center;
+}
+.cs-notification-empty.show {
+  display: block;
+}
+@media (max-width: 860px) {
+  .cs-navbar-topbar {
+    padding-inline: 14px;
+  }
+  .cs-notification-panel {
+    width: min(390px, 92vw);
+  }
+}
+/* =====================================================
+   CS CHAT / MESSENGER
+===================================================== */
+.cs-chat-wrap {
+  position: relative;
+}
+.cs-navbar-chat-button {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 12px;
+  background: #fff;
+  color: #701b19;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.cs-navbar-chat-button:hover {
+  background: #701b19;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.cs-navbar-chat-button svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cs-navbar-chat-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  border: 3px solid #fff;
+  border-radius: 99px;
+  background: #bd4137;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+}
+/* PANEL */
+.cs-chat-panel {
+  position: fixed;
+  top: 76px;
+  right: 22px;
+  z-index: 5000;
+  width: 380px;
+  height: min(600px, calc(100vh - 100px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 16px;
+  background: #fffdf9;
+  box-shadow:
+    0 18px 50px rgba(55, 24, 18, 0.2);
+}
+.cs-chat-panel[aria-hidden="true"] {
+  display: none;
+}
+/* HEADER */
+.cs-chat-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(112, 27, 25, 0.12);
+  background:
+    linear-gradient(180deg,
+      rgba(244, 231, 213, 0.45),
+      transparent);
+}
+.cs-chat-panel-head strong {
+  display: block;
+  color: #701b19;
+  font-size: 15px;
+}
+.cs-chat-panel-head small {
+  display: block;
+  margin-top: 4px;
+  color: #8d7d73;
+  font-size: 10px;
+}
+.cs-chat-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 9px;
+  background: transparent;
+  color: #701b19;
+  font-size: 20px;
+  cursor: pointer;
+}
+.cs-chat-close:hover {
+  background: #701b19;
+  color: #fff;
+}
+/* LIST */
+.cs-chat-list-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px;
+}
+.cs-chat-search {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 10px;
+  background: #fff;
+}
+.cs-chat-search svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: #8d7d73;
+  stroke-width: 2;
+}
+.cs-chat-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #2b211d;
+  font-size: 11px;
+}
+.cs-chat-user-list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+/* USER */
+.cs-chat-user {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border: 0;
+  border-bottom: 1px solid rgba(112, 27, 25, 0.08);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.cs-chat-user:hover {
+  background: rgba(244, 231, 213, 0.4);
+}
+.cs-chat-avatar {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background:
+    linear-gradient(145deg,
+      #98433e,
+      #701b19);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+}
+.cs-chat-user-info {
+  min-width: 0;
+  flex: 1;
+}
+.cs-chat-user-info strong,
+.cs-chat-user-info small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cs-chat-user-info strong {
+  color: #2b211d;
+  font-size: 11px;
+}
+.cs-chat-user-info small {
+  margin-top: 3px;
+  color: #8d7d73;
+  font-size: 9px;
+}
+/* CHAT CONVERSATION */
+.cs-chat-conversation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.cs-chat-conversation-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(112, 27, 25, 0.12);
+  background: rgba(244, 231, 213, 0.25);
+}
+.cs-chat-conversation-head>div {
+  min-width: 0;
+}
+.cs-chat-conversation-head strong,
+.cs-chat-conversation-head small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cs-chat-conversation-head strong {
+  color: #701b19;
+  font-size: 12px;
+}
+.cs-chat-conversation-head small {
+  margin-top: 3px;
+  color: #8d7d73;
+  font-size: 9px;
+}
+.cs-chat-back {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 9px;
+  background: transparent;
+  color: #701b19;
+  cursor: pointer;
+}
+.cs-chat-back:hover {
+  background: #701b19;
+  color: #fff;
+}
+/* MESSAGES */
+.cs-chat-messages {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  padding: 16px;
+  background:
+    linear-gradient(180deg,
+      rgba(250, 243, 233, 0.5),
+      transparent);
+}
+.cs-chat-bubble {
+  max-width: 80%;
+  margin: 4px 0;
+  padding: 9px 11px;
+  border-radius: 12px 12px 12px 3px;
+  background: #fff;
+  color: #2b211d;
+  box-shadow:
+    0 3px 10px rgba(55, 24, 18, 0.06);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.cs-chat-bubble.mine {
+  margin-left: auto;
+  border-radius: 12px 12px 3px 12px;
+  background: #701b19;
+  color: #fff;
+}
+/* INPUT */
+.cs-chat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 11px 12px;
+  border-top: 1px solid rgba(112, 27, 25, 0.12);
+  background: #fffdf9;
+}
+.cs-chat-composer textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 100px;
+  padding: 10px;
+  resize: none;
+  border: 1px solid rgba(112, 27, 25, 0.14);
+  border-radius: 10px;
+  outline: none;
+  font-size: 11px;
+}
+.cs-chat-composer textarea:focus {
+  border-color: #98433e;
+  box-shadow:
+    0 0 0 3px rgba(112, 27, 25, 0.08);
+}
+.cs-chat-send {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border: 0;
+  border-radius: 10px;
+  background: #701b19;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+.cs-chat-send:hover {
+  background: #4f0f0d;
+}
+/* EMPTY */
+.cs-chat-state {
+  margin: auto;
+  padding: 25px 15px;
+  color: #8d7d73;
+  font-size: 11px;
+  text-align: center;
+}
+/* BACKDROP */
+.cs-chat-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 4999;
+  border: 0;
+  background: transparent;
+}
+/* MOBILE */
+@media (max-width: 600px) {
+  .cs-chat-panel {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    height: calc(100vh - 82px);
+  }
+}
