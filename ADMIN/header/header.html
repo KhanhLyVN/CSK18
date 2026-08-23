@@ -1,17 +1,26 @@
-<aside class="admin-sidebar" id="adminSidebar">
-  <div class="admin-sidebar-brand">
-    <div class="admin-brand-mark">HV</div>
-    <div class="admin-brand-text">
-      <strong>Học Viện</strong>
-      <small>ADMIN CENTER</small>
-    </div>
+<header class="topbar shared-header" id="sharedAdminHeader">
+  <div class="topbar-left">
+    <button id="menuBtn" class="icon-btn mobile-only" type="button" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
   </div>
-
-
-
-    <div class="admin-identity" aria-label="Tài khoản quản trị">
-      <span class="top-admin" id="topAdminName">Admin</span>
+  <div class="top-actions">
+    <div class="header-chat-wrap">
+      <button id="headerChatBtn" class="icon-btn" type="button" aria-label="Mở tin nhắn" aria-expanded="false">
+        <span class="material-symbols-rounded">chat</span><b id="headerChatBadge" class="notice-badge" hidden>0</b>
+      </button>
+      <section id="headerChatPanel" class="header-chat-panel" hidden aria-label="Tin nhắn Admin">
+        <div class="header-chat-panel-head"><div><strong>Tin nhắn</strong><small id="headerChatStatus">Chọn người để bắt đầu trò chuyện</small></div><button id="headerChatClose" type="button" class="header-chat-close" aria-label="Đóng">×</button></div>
+        <div id="headerChatListView" class="header-chat-list-view">
+          <div class="header-chat-tabs"><button type="button" class="is-active" data-header-tab="friends">Bạn bè</button><button type="button" data-header-tab="groups">Nhóm</button></div>
+          <div id="headerFriendsView"><label class="header-chat-search"><span class="material-symbols-rounded">search</span><input id="headerChatSearch" type="search" placeholder="Tìm tên hoặc email..."></label><div id="headerChatUsers" class="header-chat-users"><p>Đang tải danh sách...</p></div></div>
+          <div id="headerGroupsView" hidden><form id="headerGroupForm" class="header-group-form"><label>Tên nhóm<input id="headerGroupName" type="text" maxlength="80" placeholder="Ví dụ: Nhóm CS" required></label><p>Chọn thành viên</p><div id="headerGroupMembers" class="header-group-members"></div><button type="submit">Tạo nhóm</button></form><p class="header-group-section-title">Nhóm của bạn</p><div id="headerChatGroups" class="header-chat-users"><p>Đang tải nhóm...</p></div></div>
+        </div>
+        <div id="headerChatConversation" class="header-chat-conversation" hidden><div class="header-chat-conversation-head"><button id="headerChatBack" type="button" aria-label="Quay lại">←</button><span id="headerChatAvatar" class="header-chat-avatar">U</span><div><strong id="headerChatName">Trò chuyện</strong><small id="headerChatRole">Đang hoạt động</small></div></div><div id="headerChatMessages" class="header-chat-messages"><p>Hãy gửi tin nhắn đầu tiên.</p></div><form id="headerChatForm" class="header-chat-composer"><textarea id="headerChatInput" rows="1" maxlength="2000" placeholder="Nhập tin nhắn..." required></textarea><button type="submit" aria-label="Gửi tin nhắn"><span class="material-symbols-rounded">send</span></button></form></div>
+      </section>
     </div>
-    <div class="avatar avatar-admin" id="topAdminAvatar" aria-label="Tài khoản Admin">AD</div>
+    <div class="notification-wrapper">
+      <button id="noticeBtn" class="icon-btn notification-btn" type="button" aria-label="Thông báo" aria-expanded="false"><span class="material-symbols-rounded">notifications</span><b id="noticeBadge" class="notice-badge" hidden>0</b></button>
+      <section id="notificationPanel" class="notification-panel" hidden aria-label="Thông báo"><div class="notification-header"><div><strong>Thông báo</strong><small id="notificationCount">Không có thông báo mới</small></div><button id="headerMarkAllRead" type="button" class="notification-action">Đánh dấu đã đọc</button></div><div id="headerNotificationList" class="notification-list"><div class="notification-empty"><span class="material-symbols-rounded">notifications_none</span><p>Không có thông báo mới</p></div></div></section>
+    </div>
+    <span class="top-admin" id="topAdminName">Administrator</span><span class="avatar avatar-admin" id="topAdminAvatar">AD</span>
   </div>
 </header>

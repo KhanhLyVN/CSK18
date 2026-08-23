@@ -306,6 +306,50 @@
       .sort()
       .join('__');
   }
+  /* Contract chat trực tiếp dùng chung với navbar.js của Customer Success. */
+  function directMessageSender(message) {
+    return String(message?.senderId || message?.senderUID || message?.senderUid || message?.from || message?.uid || '');
+  }
+  function directMessageReceiver(message) {
+    return String(message?.receiverId || message?.receiverUID || message?.recipientId || message?.to || '');
+  }
+  function directMessageText(message) {
+    return String(message?.text ?? message?.message ?? message?.content ?? message?.body ?? '');
+  }
+  function makeDirectMessage({ senderId, senderName, senderEmail, receiverId, receiverName, text, timestamp }) {
+    return {
+      from: String(senderId),
+      to: String(receiverId),
+      senderId: String(senderId),
+      senderUID: String(senderId),
+      senderUid: String(senderId),
+      senderName: String(senderName || ''),
+      senderEmail: String(senderEmail || ''),
+      receiverId: String(receiverId),
+      receiverUID: String(receiverId),
+      receiverUid: String(receiverId),
+      receiverName: String(receiverName || ''),
+      text: String(text),
+      message: String(text),
+      content: String(text),
+      createdAt: timestamp,
+      timestamp,
+      read: false
+    };
+  }
+  async function findDirectRoomIds(firestore, uid, targetUid) {
+    const roomIds = new Set([getChatId(uid, targetUid), [String(uid), String(targetUid)].sort().join('_')]);
+    const collect = snapshot => snapshot.forEach(doc => {
+      const room = doc.data() || {};
+      const participants = [...(Array.isArray(room.participants) ? room.participants : []), ...(Array.isArray(room.participantIds) ? room.participantIds : [])].map(String);
+      if (participants.includes(String(uid)) && participants.includes(String(targetUid))) roomIds.add(doc.id);
+    });
+    for (const field of ['participants', 'participantIds']) {
+      try { collect(await firestore.collection('chats').where(field, 'array-contains', String(uid)).get()); }
+      catch (error) { console.warn('[ADMIN CHAT] Không truy vấn được room theo ' + field + ':', error); }
+    }
+    return [...roomIds].filter(Boolean);
+  }
   function setText(
     host,
     selector,
@@ -1063,8 +1107,8 @@
     let changed = false;
     snapshot.forEach(doc => {
       const data = doc.data() || {};
-      const receiverId = data.to || data.receiverId || data.recipientId || '';
-      const senderId = data.from || data.senderId || data.senderUID || '';
+      const receiverId = directMessageReceiver(data);
+      const senderId = directMessageSender(data);
       if (
         String(receiverId) === String(uid) &&
         String(senderId) !== String(uid) &&
@@ -1901,10 +1945,7 @@
     setText(document, SELECTOR.chatAvatar, getInitials(name));
     setMessengerStatus(document, `Đang trò chuyện với ${name}`);
     messages.innerHTML = '<p class="adminbar-state">Đang tải tin nhắn...</p>';
-    const roomIds = Array.from(new Set([
-      getChatId(currentUser.uid, target.uid),
-      [String(currentUser.uid), String(target.uid)].sort().join('_')
-    ]));
+    const roomIds = await findDirectRoomIds(firestore, currentUser.uid, target.uid);
     console.log('[ADMIN CHAT] OPEN rooms:', roomIds);
     /* Đồng bộ cả notification bell khi mở cuộc trò chuyện. */
     await markChatNotificationsReadForRooms(roomIds, currentUser.uid);
@@ -1952,7 +1993,7 @@
       rows.forEach(data => {
         const bubble = document.createElement('div');
         bubble.className = 'adminbar-chat-bubble';
-        const senderId = data.from || data.senderId || data.senderUID || '';
+        const senderId = directMessageSender(data);
         if (String(senderId) === String(currentUser.uid)) {
           bubble.classList.add('is-mine');
         }
@@ -2038,7 +2079,7 @@
         const bubble = document.createElement('div');
         bubble.className = 'adminbar-chat-bubble';
         if (String(data.from || data.senderId || '') === String(currentUser.uid)) bubble.classList.add('is-mine');
-        bubble.textContent = data.text || data.message || '';
+        bubble.textContent = directMessageText(data) || 'Tin nhắn không có nội dung';
         messages.appendChild(bubble);
       });
       messages.scrollTop = messages.scrollHeight;
@@ -2117,10 +2158,7 @@
     if (!currentUser || !target || !firestore || !text) return;
     input.disabled = true;
     try {
-      const candidateIds = Array.from(new Set([
-        getChatId(currentUser.uid, target.uid),
-        [String(currentUser.uid), String(target.uid)].sort().join('_')
-      ]));
+      const candidateIds = await findDirectRoomIds(firestore, currentUser.uid, target.uid);
       let chatId = candidateIds[0];
       for (const candidateId of candidateIds) {
         const roomSnapshot = await firestore
@@ -2136,6 +2174,7 @@
       const timestamp = serverTimestamp();
       await chatRef.set({
         participants: [currentUser.uid, target.uid],
+        participantIds: [currentUser.uid, target.uid],
         participantNames: {
           [currentUser.uid]: getName(currentUser),
           [target.uid]: getName(target)
@@ -2145,15 +2184,15 @@
         lastMessageReadBy: currentUser.uid,
         updatedAt: timestamp
       }, { merge: true });
-      await chatRef.collection('messages').add({
-        from: currentUser.uid,
-        to: target.uid,
+      await chatRef.collection('messages').add(makeDirectMessage({
         senderId: currentUser.uid,
+        senderName: getName(currentUser),
+        senderEmail: currentUser.email || '',
         receiverId: target.uid,
+        receiverName: getName(target),
         text,
-        createdAt: timestamp,
-        read: false
-      });
+        timestamp
+      }));
       await createChatNotification({
         recipientUid: target.uid,
         senderUid: currentUser.uid,

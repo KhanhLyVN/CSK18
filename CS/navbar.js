@@ -772,8 +772,43 @@
       return "";
     }
 
-    return `${ids[0]}_${ids[1]}`;
+    return ids.join("__");
 
+  }
+
+  /* Contract chat trực tiếp dùng chung với Header Admin. */
+  function directMessageSender(message) {
+    return String(message?.senderId || message?.senderUID || message?.senderUid || message?.from || message?.uid || "");
+  }
+
+  function directMessageReceiver(message) {
+    return String(message?.receiverId || message?.receiverUID || message?.receiverUid || message?.recipientId || message?.to || "");
+  }
+
+  function directMessageText(message) {
+    return String(message?.text ?? message?.message ?? message?.content ?? message?.body ?? "");
+  }
+
+  function makeDirectMessage({ senderId, senderName, senderEmail, receiverId, receiverName, text, timestamp }) {
+    return {
+      from: String(senderId),
+      to: String(receiverId),
+      senderId: String(senderId),
+      senderUID: String(senderId),
+      senderUid: String(senderId),
+      senderName: String(senderName || ""),
+      senderEmail: String(senderEmail || ""),
+      receiverId: String(receiverId),
+      receiverUID: String(receiverId),
+      receiverUid: String(receiverId),
+      receiverName: String(receiverName || ""),
+      text: String(text),
+      message: String(text),
+      content: String(text),
+      createdAt: timestamp,
+      timestamp,
+      read: false
+    };
   }
 
 
@@ -1891,6 +1926,9 @@
         .collection("chats")
         .doc(roomId);
 
+    /* Không để lỗi metadata chặn listener nhận tin nhắn đối phương. */
+    listenMessages(roomId);
+
 
     try {
 
@@ -1991,14 +2029,9 @@
 
       }
 
-      return;
+      /* Listener phía trên vẫn tiếp tục tải lịch sử nếu quyền đọc messages hợp lệ. */
 
     }
-
-
-    listenMessages(
-      roomId
-    );
 
   }
 
@@ -2052,8 +2085,9 @@
     }
 
 
-    const legacyRoomId = [String(state.currentUser?.uid || ""), String(state.selectedUser?.uid || "")].sort().join("__");
-    const roomIds = [...new Set([roomId, legacyRoomId].filter(Boolean))];
+    const canonicalRoomId = makeRoomId(state.currentUser?.uid, state.selectedUser?.uid);
+    const legacyRoomId = [String(state.currentUser?.uid || ""), String(state.selectedUser?.uid || "")].filter(Boolean).sort().join("_");
+    const roomIds = [...new Set([roomId, canonicalRoomId, legacyRoomId].filter(Boolean))];
     const messageMap = new Map();
     const unsubscribers = [];
     const renderCombinedMessages = () => {
@@ -2062,15 +2096,20 @@
     };
     roomIds.forEach((candidateRoomId) => {
       const messagesRef = db.collection("chats").doc(candidateRoomId).collection("messages");
+      const loadFallback = () => messagesRef.get().then((snapshot) => {
+        snapshot.docs.forEach((doc) => messageMap.set(`${candidateRoomId}/${doc.id}`, { id: doc.id, ...doc.data() }));
+        renderCombinedMessages();
+      }).catch((fallbackError) => console.error("[CS CHAT] MESSAGE FALLBACK ERROR:", candidateRoomId, fallbackError));
+      loadFallback();
       const unsubscribe = messagesRef.onSnapshot((snapshot) => {
         snapshot.docs.forEach((doc) => messageMap.set(`${candidateRoomId}/${doc.id}`, { id: doc.id, ...doc.data() }));
         renderCombinedMessages();
         if (state.roomId === roomId) {
-          markRoomRead(roomId);
-          if (legacyRoomId && legacyRoomId !== roomId) markRoomRead(legacyRoomId);
+          roomIds.forEach((id) => markRoomRead(id));
         }
       }, (error) => {
         console.error("[CS CHAT] MESSAGE LISTENER ERROR:", candidateRoomId, error);
+        loadFallback();
         if (!messageMap.size && elements.messages) elements.messages.innerHTML = `<div class="cs-single-chat-error">Không thể tải tin nhắn.<br><small>${escapeHTML(error.message || "")}</small></div>`;
       });
       unsubscribers.push(unsubscribe);
@@ -2170,18 +2209,7 @@
         .map(
           (message) => {
 
-            const senderId =
-              String(
-
-                message.senderId ||
-
-                message.senderUID ||
-
-                message.from ||
-
-                ""
-
-              );
+            const senderId = directMessageSender(message);
 
 
             const isMine =
@@ -2191,14 +2219,7 @@
               );
 
 
-            const text =
-              message.text ||
-
-              message.message ||
-
-              message.content ||
-
-              "";
+            const text = directMessageText(message);
 
 
             const time =
@@ -2339,9 +2360,6 @@
       return sendGroupMessage(event);
     }
 
-    const roomId = state.roomId || await resolveDirectRoomId(db, currentUser.uid, target.uid);
-    state.roomId = roomId;
-
     const elements =
       getElements();
 
@@ -2350,7 +2368,6 @@
       !db ||
       !currentUser ||
       !target ||
-      !roomId ||
       !elements.input
     ) {
 
@@ -2361,6 +2378,10 @@
       return;
 
     }
+
+    const roomId = state.roomId || makeRoomId(currentUser.uid, target.uid);
+    state.roomId = roomId;
+    if (!roomId) return;
 
 
     const text =
@@ -2479,57 +2500,15 @@
          Dùng cùng roomId.
       */
 
-      await messagesRef.add({
-
-        from:
-          currentUser.uid,
-
-        to:
-          target.uid,
-
-        senderId:
-          currentUser.uid,
-
-        senderUID:
-          currentUser.uid,
-
-        senderName:
-          getUserName(
-            state.currentUserData ||
-            currentUser
-          ),
-
-          receiverId:
-            target.uid,
-
-          receiverUID:
-            target.uid,
-
-          receiverName:
-            getUserName(target),
-
-          senderName:
-            getUserName(state.currentUserData || currentUser),
-
-          senderEmail:
-            currentUser.email || "",
-
-          text:
-            text,
-
-        message:
-          text,
-
-        createdAt:
-          now,
-
-        timestamp:
-          now,
-
-        read:
-          false
-
-      });
+      await messagesRef.add(makeDirectMessage({
+        senderId: currentUser.uid,
+        senderName: getUserName(state.currentUserData || currentUser),
+        senderEmail: currentUser.email || "",
+        receiverId: target.uid,
+        receiverName: getUserName(target),
+        text,
+        timestamp: now
+      }));
 
       await createDirectChatNotification(db, {
         recipientUid: target.uid,
@@ -2662,32 +2641,10 @@
             doc.data() || {};
 
 
-          const receiverId =
-            String(
-
-              data.receiverId ||
-
-              data.receiverUID ||
-
-              data.to ||
-
-              ""
-
-            );
+          const receiverId = directMessageReceiver(data);
 
 
-          const senderId =
-            String(
-
-              data.senderId ||
-
-              data.senderUID ||
-
-              data.from ||
-
-              ""
-
-            );
+          const senderId = directMessageSender(data);
 
 
           if (
