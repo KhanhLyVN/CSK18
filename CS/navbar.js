@@ -186,7 +186,6 @@
   const CS_NAVIGATION = [
     { key: "home", label: "Trang chủ", icon: "home", href: "/CS/homepageCS/trangchu-cs.html" },
     { key: "tickets", label: "Quản lý ticket", icon: "tickets", href: "/CS/TicketManagement/cs-ticket.html" },
-    { key: "create", label: "Tạo phiếu hỗ trợ", icon: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html" },
     { key: "groups", label: "Nhóm của tôi", icon: "groups", href: "/CS/Groups/group.html", leaderOnly: true },
     { key: "member-groups", label: "Nhóm trao đổi", icon: "memberGroups", href: "/CS/Groups/group-member.html", memberOnly: true },
     { key: "faq", label: "FAQs", icon: "faq", href: "/FAQs/CS-FAQ.html" },
@@ -196,7 +195,6 @@
   const CS_NAV_ICONS = {
     home: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"></path></svg>',
     tickets: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6Z"></path><path d="M15 3v4h4M9 12h6M9 16h4"></path></svg>',
-    create: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path><circle cx="12" cy="12" r="9"></circle></svg>',
     groups: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M18 20v-1a6 6 0 0 0-3-5.2"></path></svg>',
     memberGroups: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2.5v-10A7.5 7.5 0 0 1 11.5 4h1A7.5 7.5 0 0 1 20 11.5Z"></path><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"></path></svg>',
     reports: '<svg class="cs-inline-icon cs-navbar-menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h16M8 16v-5M12 16V7M16 16v-8"></path></svg>',

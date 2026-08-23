@@ -347,7 +347,7 @@
 
         .password-form input {
             width: 100%;
-            padding: 10px 42px 10px 36px;
+            padding: 10px 13px 10px 36px;
             border: 1px solid var(--line);
             border-radius: 7px;
             background: var(--white);
@@ -355,6 +355,20 @@
             font: inherit;
             font-size: 13px;
             outline: none;
+        }
+
+
+        /* Ẩn nút hiện mật khẩu mặc định của trình duyệt */
+        .password-form input[type="password"]::-ms-reveal,
+        .password-form input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        .password-form input[type="password"]::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
         }
 
         .toggle-password {
@@ -632,24 +646,28 @@
                                 Mật khẩu mới
                                 <span class="password-input-wrap">
                                     <i class="fa-solid fa-lock" aria-hidden="true"></i>
-                                    <input type="password" id="newPassword" minlength="6" autocomplete="new-password"
+                                                                        <input type="password" id="newPassword" minlength="6" autocomplete="new-password"
                                         placeholder="Nhập mật khẩu mới" required>
                                     <button class="toggle-password" type="button" data-target="newPassword"
                                         aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
                                         <i class="fa-solid fa-eye" aria-hidden="true"></i>
                                     </button>
+
+                                    
                                 </span>
                             </label>
                             <label>
                                 Xác nhận mật khẩu mới
                                 <span class="password-input-wrap">
                                     <i class="fa-solid fa-lock" aria-hidden="true"></i>
-                                    <input type="password" id="confirmPassword" minlength="6"
+                                                                        <input type="password" id="confirmPassword" minlength="6"
                                         autocomplete="new-password" placeholder="Nhập lại mật khẩu mới" required>
                                     <button class="toggle-password" type="button" data-target="confirmPassword"
                                         aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
                                         <i class="fa-solid fa-eye" aria-hidden="true"></i>
                                     </button>
+
+                                    
                                 </span>
                             </label>
                             <p class="password-hint">Mật khẩu cần có ít nhất 6 ký tự.</p>
@@ -669,7 +687,8 @@
         const $ = id => document.getElementById(id);
         const accountContainer = $("accountContainer");
         const authEmptyState = $("authEmptyState");
-        /* =========================
+        
+                /* =========================
            SHOW / HIDE PASSWORD
         ========================= */
         document.querySelectorAll(".toggle-password").forEach(button => {
@@ -691,8 +710,10 @@
                 );
             });
         });
+
         /* =========================
            TOAST
+
         ========================= */
         function toast(message) {
             const element = $("toast");
