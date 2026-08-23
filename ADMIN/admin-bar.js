@@ -1,21 +1,5 @@
 (() => {
   'use strict';
-  /* =========================================================
-     ADMIN BAR
-     Version: 2026-08-22-chat-fixed-final
-     
-     FIX:
-     - Không còn chatSetTab undefined
-     - Không còn chatRenderFriends undefined
-     - Không còn chatOpen undefined
-     - Không còn chatClose undefined
-     - Không còn chatSendMessage undefined
-     - Không tạo Messenger trùng
-     - Hỗ trợ admin-bar.html được load vào #adminBar
-     - Hỗ trợ HTML Messenger đã tồn tại
-     - Không đăng ký event chat nhiều lần
-     - Firebase Auth + Firestore realtime
-  ========================================================= */
   const ADMINBAR_VERSION =
     '2026-08-22-chat-fixed-final';
   if (
@@ -306,6 +290,13 @@
       .sort()
       .join('__');
   }
+  function valueContainsUid(value, uid) {
+    const normalizedUid = String(uid || '');
+    if (!normalizedUid) return false;
+    if (Array.isArray(value)) return value.map(String).includes(normalizedUid);
+    if (value && typeof value === 'object') return Object.keys(value).map(String).includes(normalizedUid);
+    return String(value || '') === normalizedUid;
+  }
   /* Contract chat trực tiếp dùng chung với navbar.js của Customer Success. */
   function directMessageSender(message) {
     return String(message?.senderId || message?.senderUID || message?.senderUid || message?.from || message?.uid || '');
@@ -338,16 +329,42 @@
     };
   }
   async function findDirectRoomIds(firestore, uid, targetUid) {
-    const roomIds = new Set([getChatId(uid, targetUid), [String(uid), String(targetUid)].sort().join('_')]);
-    const collect = snapshot => snapshot.forEach(doc => {
-      const room = doc.data() || {};
-      const participants = [...(Array.isArray(room.participants) ? room.participants : []), ...(Array.isArray(room.participantIds) ? room.participantIds : [])].map(String);
-      if (participants.includes(String(uid)) && participants.includes(String(targetUid))) roomIds.add(doc.id);
-    });
-    for (const field of ['participants', 'participantIds']) {
-      try { collect(await firestore.collection('chats').where(field, 'array-contains', String(uid)).get()); }
-      catch (error) { console.warn('[ADMIN CHAT] Không truy vấn được room theo ' + field + ':', error); }
+    const uidString = String(uid || '');
+    const targetString = String(targetUid || '');
+    const canonicalRoomId = getChatId(uidString, targetString);
+    const legacyRoomId = [uidString, targetString].sort().join('_');
+    const roomIds = new Set();
+    const addIfMatching = (roomId, room) => {
+      const participants = [
+        ...(Array.isArray(room?.participants) ? room.participants : []),
+        ...(Array.isArray(room?.participantIds) ? room.participantIds : [])
+      ].map(String);
+      if (participants.includes(uidString) && participants.includes(targetString)) {
+        roomIds.add(String(roomId));
+      }
+    };
+
+    for (const candidate of [canonicalRoomId, legacyRoomId]) {
+      if (!candidate) continue;
+      try {
+        const snapshot = await firestore.collection('chats').doc(candidate).get();
+        if (snapshot.exists) addIfMatching(candidate, snapshot.data() || {});
+      } catch (error) {
+        console.warn('[ADMIN CHAT] Không đọc được room candidate ' + candidate + ':', error);
+      }
     }
+
+    const collect = snapshot => snapshot.forEach(doc => addIfMatching(doc.id, doc.data() || {}));
+    for (const field of ['participantIds', 'participants']) {
+      try {
+        collect(await firestore.collection('chats').where(field, 'array-contains', uidString).get());
+      } catch (error) {
+        console.warn('[ADMIN CHAT] Không truy vấn được room theo ' + field + ':', error);
+      }
+    }
+
+    /* Chat mới chỉ dùng room canonical; không tạo thêm room legacy rỗng. */
+    if (!roomIds.size && canonicalRoomId) roomIds.add(canonicalRoomId);
     return [...roomIds].filter(Boolean);
   }
   function setText(
@@ -563,6 +580,21 @@
   /* =========================================================
      ENSURE MESSENGER
   ========================================================= */
+  function ensureRecentTab() {
+    const tabs = document.querySelector('.adminbar-tabs');
+    if (!tabs) return;
+    let recentTab = tabs.querySelector('[data-messenger-tab="recent"]');
+    if (!recentTab) {
+      recentTab = document.createElement('button');
+      recentTab.type = 'button';
+      recentTab.className = 'adminbar-tab';
+      recentTab.dataset.messengerTab = 'recent';
+      recentTab.setAttribute('role', 'tab');
+      recentTab.innerHTML = '<span class="material-symbols-rounded">chat</span>Gần đây';
+      tabs.insertBefore(recentTab, tabs.firstElementChild || null);
+    }
+    tabs.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+  }
   function ensureMessengerHTML(
     host
   ) {
@@ -628,6 +660,7 @@
       hasFriendList &&
       hasChatForm
     ) {
+      ensureRecentTab();
       return true;
     }
     /*
@@ -815,6 +848,7 @@
         </form>
       </div>
     `;
+    ensureRecentTab();
     return true;
   }
   /* =========================================================
@@ -1114,10 +1148,7 @@
         String(senderId) !== String(uid) &&
         data.read !== true
       ) {
-        batch.update(doc.ref, {
-          read: true,
-          readAt: serverTimestamp()
-        });
+        batch.update(doc.ref, { read: true });
         changed = true;
       }
     });
@@ -1125,24 +1156,32 @@
   }
   async function markChatNotificationRead(item) {
     const firestore = getFirestore();
-    const uid = state.user?.uid;
-    if (!firestore || !uid || !item?.id) return;
+    const uid = String(state.user?.uid || '');
+    const notificationId = String(item?.id || '');
+    if (!firestore || !uid || !notificationId) return;
+
+    /* Cập nhật UI ngay cả khi mạng đang chập chờn; tránh gửi lặp khi click lại. */
+    const wasRead = item.read === true;
+    chatNotificationRecords = chatNotificationRecords.map(record =>
+      String(record.id) === notificationId
+        ? { ...record, read: true }
+        : record
+    );
+    renderChatNotifications();
+    if (wasRead) return;
+
     try {
+      /*
+       * Chỉ ghi boolean `read` ở thao tác này. `serverTimestamp()` trong
+       * request đánh dấu notification có thể làm WebChannel cũ trả 400;
+       * thời gian đọc không ảnh hưởng đến việc mở/trả lời chat.
+       */
       await firestore
         .collection('csNotifications')
         .doc(uid)
         .collection('items')
-        .doc(item.id)
-        .set({
-          read: true,
-          readAt: serverTimestamp()
-        }, { merge: true });
-      chatNotificationRecords = chatNotificationRecords.map(record =>
-        String(record.id) === String(item.id)
-          ? { ...record, read: true }
-          : record
-      );
-      renderChatNotifications();
+        .doc(notificationId)
+        .set({ read: true }, { merge: true });
     } catch (error) {
       console.warn('[ADMIN CHAT] Không thể đồng bộ trạng thái đã đọc:', error);
     }
@@ -1166,10 +1205,7 @@
           roomSet.has(String(data.roomId || data.chatId || '')) &&
           data.read !== true
         ) {
-          batch.set(doc.ref, {
-            read: true,
-            readAt: serverTimestamp()
-          }, { merge: true });
+          batch.set(doc.ref, { read: true }, { merge: true });
           changed = true;
         }
       });
@@ -1186,22 +1222,52 @@
   }
   async function openChatFromNotification(item) {
     if (!item) return;
+
     await markChatNotificationRead(item);
+
     const noticeBadge = $(SELECTOR.noticeBadge);
     if (noticeBadge) noticeBadge.hidden = true;
     const notice = $(SELECTOR.noticePanel);
     const noticeButton = $(SELECTOR.noticeButton);
     const messenger = $(SELECTOR.messengerPanel);
     const messengerButton = $(SELECTOR.messengerButton);
+
     if (notice) notice.hidden = true;
     noticeButton?.setAttribute('aria-expanded', 'false');
     if (messenger) messenger.hidden = false;
     messengerButton?.setAttribute('aria-expanded', 'true');
+
     await loadChatUsers();
     setChatTab('recent');
-    state.showAllFriends = true;
+    state.showAllFriends = false;
     state.showGroupComposer = false;
     renderFriends();
+
+    // Quan trọng: thông báo phải mở đúng cuộc trò chuyện.
+    const senderUid = String(
+      item.senderId || item.senderUID || item.senderUid || item.from || ''
+    );
+    if (senderUid && String(senderUid) !== String(state.user?.uid || '')) {
+      await openChat(senderUid);
+      return;
+    }
+
+    // Dự phòng cho notification chỉ có roomId/chatId.
+    const roomId = String(item.roomId || item.chatId || '');
+    if (!roomId) return;
+    try {
+      const roomSnapshot = await getFirestore().collection('chats').doc(roomId).get();
+      const roomData = roomSnapshot.data() || {};
+      const participants = Array.isArray(roomData.participants)
+        ? roomData.participants
+        : (Array.isArray(roomData.participantIds) ? roomData.participantIds : []);
+      const otherUid = participants.find(
+        uid => String(uid) !== String(state.user?.uid || '')
+      );
+      if (otherUid) await openChat(String(otherUid));
+    } catch (error) {
+      console.warn('[ADMIN CHAT] Không thể mở chat từ room notification:', error);
+    }
   }
   function setupChatNotificationUI() {
     if (chatNotificationUIReady) return;
@@ -1385,9 +1451,9 @@
         }
         if (
           target instanceof Element &&
-          target.closest(
-            '.adminbar-panel-wrap'
-          )
+          ((messenger && messenger.contains(target)) ||
+            (notice && notice.contains(target)) ||
+            target.closest('.adminbar-panel-wrap'))
         ) {
           return;
         }
@@ -1599,47 +1665,84 @@
         await firestore
           .collection('users')
           .get();
-      const roomSnapshot = await firestore
-        .collection('chats')
-        .where('participants', 'array-contains', currentUser.uid)
-        .limit(100)
-        .get();
       const recentByUid = new Map();
-      roomSnapshot.forEach(roomDoc => {
-        const room = roomDoc.data() || {};
-        const participants = Array.isArray(room.participants) ? room.participants : [];
-        const otherUid = participants.find(uid => String(uid) !== String(currentUser.uid));
-        if (!otherUid) return;
-        const updatedAtValue = room.updatedAt?.toMillis
-          ? room.updatedAt.toMillis()
-          : room.updatedAt?.seconds
-            ? room.updatedAt.seconds * 1000
-            : 0;
-        recentByUid.set(String(otherUid), {
-          hasRoom: true,
-          roomId: roomDoc.id,
-          lastMessage: room.lastMessage || '',
-          lastMessageBy: room.lastMessageBy || room.lastMessageSenderId || '',
-          lastMessageReadBy: room.lastMessageReadBy || '',
-          updatedAtValue
+      const roomSnapshots = await Promise.all(
+        ['participantIds', 'participants'].map(async field => {
+          try {
+            return await firestore
+              .collection('chats')
+              .where(field, 'array-contains', String(currentUser.uid))
+              .limit(100)
+              .get();
+          } catch (error) {
+            console.warn('[ADMIN CHAT] Không tải được room gần đây theo ' + field + ':', error);
+            return null;
+          }
+        })
+      );
+      roomSnapshots.filter(Boolean).forEach(roomSnapshot => {
+        roomSnapshot.forEach(roomDoc => {
+          const room = roomDoc.data() || {};
+          const participants = [
+            ...(Array.isArray(room.participantIds) ? room.participantIds : []),
+            ...(Array.isArray(room.participants) ? room.participants : [])
+          ].map(String);
+          const otherUid = participants.find(uid => uid !== String(currentUser.uid));
+          if (!otherUid) return;
+          const participantNames = room.participantNames && typeof room.participantNames === 'object'
+            ? room.participantNames
+            : {};
+          const otherName = String(participantNames[otherUid] || '').trim();
+          const updatedAtValue = room.updatedAt?.toMillis
+            ? room.updatedAt.toMillis()
+            : room.updatedAt?.seconds
+              ? room.updatedAt.seconds * 1000
+              : 0;
+          const previous = recentByUid.get(String(otherUid));
+          if (!previous || updatedAtValue >= previous.updatedAtValue) {
+            recentByUid.set(String(otherUid), {
+              hasRoom: true,
+              roomId: roomDoc.id,
+              ...(otherName ? { displayName: otherName, name: otherName } : {}),
+              lastMessage: room.lastMessage || '',
+              lastMessageBy: room.lastMessageBy || room.lastMessageSenderId || '',
+              lastMessageReadBy: room.lastMessageReadBy || '',
+              updatedAtValue
+            });
+          }
         });
       });
-      state.users = snapshot.docs
-        .map(doc => {
-          const data = doc.data() || {};
-          const uid = data.uid || doc.id;
-          return {
-            uid,
-            ...data,
-            ...(recentByUid.get(String(uid)) || {
-              hasRoom: false,
-              updatedAtValue: 0,
-              lastMessage: '',
-              lastMessageBy: ''
-            })
-          };
-        })
-        .filter(user => String(user.uid) !== String(currentUser.uid))
+      const usersByUid = new Map();
+      snapshot.docs.forEach(doc => {
+        const data = doc.data() || {};
+        const uid = String(data.uid || data.authUid || data.firebaseUid || doc.id);
+        if (uid && uid !== String(currentUser.uid)) {
+          usersByUid.set(uid, { uid, ...data });
+        }
+      });
+      /* Nếu Admin/CS chưa có profile trong users, room vẫn phải hiện ở Gần đây. */
+      recentByUid.forEach((recent, uid) => {
+        if (uid === String(currentUser.uid)) return;
+        const existing = usersByUid.get(uid) || { uid };
+        usersByUid.set(uid, {
+          ...existing,
+          uid,
+          ...(recent.displayName && !existing.displayName && !existing.name
+            ? { displayName: recent.displayName, name: recent.name }
+            : {}),
+          ...recent
+        });
+      });
+      state.users = [...usersByUid.values()]
+        .map(user => ({
+          ...user,
+          ...(recentByUid.get(String(user.uid)) || {
+            hasRoom: false,
+            updatedAtValue: 0,
+            lastMessage: '',
+            lastMessageBy: ''
+          })
+        }))
         .sort((a, b) => {
           if (Boolean(a.hasRoom) !== Boolean(b.hasRoom)) return a.hasRoom ? -1 : 1;
           if (a.updatedAtValue !== b.updatedAtValue) return b.updatedAtValue - a.updatedAtValue;
@@ -1709,17 +1812,24 @@
       users
         .map(
           user => {
+            const userUid = String(user.uid || '');
             const unreadCount = Math.max(
               0,
-              Number(state.unreadByUser[String(user.uid)] || 0)
+              Number(state.unreadByUser[userUid] || 0)
             );
-            const isUnread = unreadCount > 0 || Boolean(
+            const unreadCountKnown = Object.prototype.hasOwnProperty.call(state.unreadByUser, userUid);
+            const isMine = Boolean(
+              user.lastMessage &&
+              String(user.lastMessageBy || user.lastMessageSenderId || '') === String(state.user?.uid || '')
+            );
+            const metadataUnread = Boolean(
               user.hasRoom &&
               user.lastMessage &&
-              user.lastMessageBy &&
-              String(user.lastMessageBy) !== String(state.user?.uid) &&
-              String(user.lastMessageReadBy || '') !== String(state.user?.uid)
+              !isMine &&
+              !valueContainsUid(user.lastMessageReadBy, state.user?.uid)
             );
+            // Khi đã có kết quả từ messages thì số 0 thắng metadata room cũ.
+            const isUnread = unreadCount > 0 || (!unreadCountKnown && metadataUnread);
             const preview = user.lastMessage
               ? String(user.lastMessageBy) === String(state.user?.uid)
                 ? `Bạn: ${user.lastMessage}`
@@ -1900,7 +2010,8 @@
     }
     $$('[data-messenger-tab]').forEach(button => {
       const value = button.dataset.messengerTab;
-      const active = (value === 'friends' && state.showAllFriends) ||
+      const active = (value === 'recent' && !state.showAllFriends && !state.showGroupComposer) ||
+        (value === 'friends' && state.showAllFriends) ||
         (value === 'groups' && state.showGroupComposer);
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-expanded', String(active));
@@ -1929,6 +2040,11 @@
       state.unsubscribeMessages = null;
     }
     state.selectedUser = target;
+    state.selectedGroup = null;
+    state.chatMode = 'direct';
+    // Bỏ dấu chưa đọc ngay khi mở conversation; listener sẽ đồng bộ lại từ messages.
+    state.unreadByUser[String(target.uid)] = 0;
+    renderFriends();
     /* Badge sẽ được ẩn ngay sau khi phòng được mở. */
     const listView = $(SELECTOR.messengerListView);
     const chatView = $(SELECTOR.chatView);
@@ -1946,6 +2062,33 @@
     setMessengerStatus(document, `Đang trò chuyện với ${name}`);
     messages.innerHTML = '<p class="adminbar-state">Đang tải tin nhắn...</p>';
     const roomIds = await findDirectRoomIds(firestore, currentUser.uid, target.uid);
+    const primaryRoomId = roomIds[0] || getChatId(currentUser.uid, target.uid);
+    if (primaryRoomId) {
+      try {
+        const primaryRoomRef = firestore.collection('chats').doc(primaryRoomId);
+        const primaryRoomSnapshot = await primaryRoomRef.get();
+        if (!primaryRoomSnapshot.exists) {
+          await primaryRoomRef.set({
+            participants: [String(currentUser.uid), String(target.uid)],
+            participantIds: [String(currentUser.uid), String(target.uid)],
+            participantNames: {
+              [currentUser.uid]: getName(currentUser),
+              [target.uid]: getName(target)
+            },
+            lastMessage: '',
+            lastMessageBy: '',
+            lastMessageSenderId: '',
+            lastMessageReadBy: '',
+            lastMessageReadAt: null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+          if (!roomIds.includes(primaryRoomId)) roomIds.unshift(primaryRoomId);
+        }
+      } catch (error) {
+        console.warn('[ADMIN CHAT] Không thể khởi tạo room chat:', error);
+      }
+    }
     console.log('[ADMIN CHAT] OPEN rooms:', roomIds);
     /* Đồng bộ cả notification bell khi mở cuộc trò chuyện. */
     await markChatNotificationsReadForRooms(roomIds, currentUser.uid);
@@ -1958,8 +2101,7 @@
         try {
           await markChatRoomMessagesRead(roomId, currentUser.uid);
           await firestore.collection('chats').doc(roomId).set({
-            lastMessageReadBy: currentUser.uid,
-            lastMessageReadAt: serverTimestamp()
+            lastMessageReadBy: currentUser.uid
           }, { merge: true });
         } catch (error) {
           console.warn('[ADMIN CHAT] Không thể đánh dấu room đã đọc:', roomId, error);
@@ -2181,7 +2323,9 @@
         },
         lastMessage: text,
         lastMessageBy: currentUser.uid,
+        lastMessageSenderId: currentUser.uid,
         lastMessageReadBy: currentUser.uid,
+        lastMessageReadAt: timestamp,
         updatedAt: timestamp
       }, { merge: true });
       await chatRef.collection('messages').add(makeDirectMessage({
@@ -2403,91 +2547,79 @@
     stopUnreadListeners();
     setMessengerUnreadBadge(0);
     const firestore = getFirestore();
-    const uid = user?.uid;
+    const uid = String(user?.uid || '');
     if (!firestore || !uid) return;
-    unsubscribeUnreadRooms = firestore
-      .collection('chats')
-      .where('participants', 'array-contains', uid)
-      .limit(100)
-      .onSnapshot(
-        roomsSnapshot => {
-          unreadMessageListeners.forEach(unsubscribe => {
-            try { unsubscribe(); } catch (_) {}
+
+    const roomsById = new Map();
+    const counts = new Map();
+    const updateBadge = () => {
+      let total = 0;
+      const unreadByUser = {};
+      counts.forEach(record => {
+        const count = Number(record?.count || 0);
+        total += count;
+        if (record?.otherUid) {
+          unreadByUser[record.otherUid] = (unreadByUser[record.otherUid] || 0) + count;
+        }
+      });
+      state.unreadByUser = unreadByUser;
+      setMessengerUnreadBadge(total);
+      renderFriends();
+    };
+    const bindRoomMessages = (roomDoc, roomData) => {
+      const participants = [
+        ...(Array.isArray(roomData.participantIds) ? roomData.participantIds : []),
+        ...(Array.isArray(roomData.participants) ? roomData.participants : [])
+      ].map(String);
+      const otherUid = String(participants.find(participant => participant !== uid) || '');
+      const unsubscribe = roomDoc.ref.collection('messages').onSnapshot(
+        messagesSnapshot => {
+          let count = 0;
+          messagesSnapshot.forEach(messageDoc => {
+            const data = messageDoc.data() || {};
+            const receiverId = data.to || data.receiverId || data.receiverUID || data.recipientId || '';
+            const senderId = data.from || data.senderId || data.senderUID || data.senderUid || '';
+            if (String(receiverId) === uid && String(senderId) !== uid && data.read !== true) count += 1;
           });
-          unreadMessageListeners = [];
-          const counts = new Map();
-          const updateBadge = () => {
-            let total = 0;
-            const unreadByUser = {};
-            counts.forEach(record => {
-              const count = Number(record?.count || 0);
-              total += count;
-              if (record?.otherUid && count) {
-                unreadByUser[record.otherUid] = (unreadByUser[record.otherUid] || 0) + count;
-              }
-            });
-            state.unreadByUser = unreadByUser;
-            setMessengerUnreadBadge(total);
-            renderFriends();
-          };
-          if (!roomsSnapshot.size) {
-            updateBadge();
-            return;
+          const currentRoomData = roomsById.get(roomDoc.id) || roomData;
+          if (
+            count === 0 &&
+            currentRoomData.lastMessageBy &&
+            String(currentRoomData.lastMessageBy) !== uid &&
+            String(currentRoomData.lastMessageReadBy || '') !== uid
+          ) {
+            count = 1;
           }
-          roomsSnapshot.forEach(roomDoc => {
-            const roomData = roomDoc.data() || {};
-            const participants = Array.isArray(roomData.participants)
-              ? roomData.participants
-              : (Array.isArray(roomData.participantIds) ? roomData.participantIds : []);
-            const otherUid = String(participants.find(participant => String(participant) !== String(uid)) || '');
-            const messagesRef = roomDoc.ref.collection('messages');
-            const unsubscribe = messagesRef.onSnapshot(
-              messagesSnapshot => {
-                let count = 0;
-                messagesSnapshot.forEach(messageDoc => {
-                  const data = messageDoc.data() || {};
-                  const receiverId =
-                    data.to || data.receiverId || data.recipientId || '';
-                  const senderId =
-                    data.from || data.senderId || data.senderUID || '';
-                  if (
-                    String(receiverId) === String(uid) &&
-                    String(senderId) !== String(uid) &&
-                    data.read !== true
-                  ) {
-                    count += 1;
-                  }
-                });
-                /* Hỗ trợ dữ liệu cũ chỉ lưu trạng thái ở chat room. */
-                if (
-                  count === 0 &&
-                  roomData.lastMessageBy &&
-                  String(roomData.lastMessageBy) !== String(uid) &&
-                  String(roomData.lastMessageReadBy || '') !== String(uid)
-                ) {
-                  count = 1;
-                }
-                counts.set(roomDoc.id, { count, otherUid });
-                updateBadge();
-              },
-              error => {
-                console.warn(
-                  '[ADMIN CHAT] Không thể đếm tin chưa đọc:',
-                  roomDoc.id,
-                  error
-                );
-                counts.set(roomDoc.id, { count: 0, otherUid });
-                updateBadge();
-              }
-            );
-            unreadMessageListeners.push(unsubscribe);
-          });
+          counts.set(roomDoc.id, { count, otherUid });
+          updateBadge();
         },
         error => {
-          console.warn('[ADMIN CHAT] Không đồng bộ được badge:', error);
-          setMessengerUnreadBadge(0);
+          console.warn('[ADMIN CHAT] Không thể đếm tin chưa đọc:', roomDoc.id, error);
+          counts.set(roomDoc.id, { count: 0, otherUid });
+          updateBadge();
         }
       );
+      unreadMessageListeners.push(unsubscribe);
+    };
+    const roomListeners = ['participantIds', 'participants'].map(field => firestore
+      .collection('chats')
+      .where(field, 'array-contains', uid)
+      .limit(100)
+      .onSnapshot(snapshot => {
+        snapshot.forEach(roomDoc => {
+          const roomData = roomDoc.data() || {};
+          const existing = roomsById.get(roomDoc.id);
+          roomsById.set(roomDoc.id, roomData);
+          if (!existing) bindRoomMessages(roomDoc, roomData);
+        });
+        updateBadge();
+      }, error => {
+        console.warn('[ADMIN CHAT] Không đồng bộ được badge theo ' + field + ':', error);
+        updateBadge();
+      }));
+    unsubscribeUnreadRooms = () => roomListeners.forEach(unsubscribe => {
+      try { unsubscribe(); } catch (_) {}
+    });
   }
   /* =========================================================
      CHAT EVENTS
@@ -2569,7 +2701,8 @@
             return;
           }
           event.preventDefault();
-          openChat(
+          event.stopPropagation();
+          void openChat(
             target.dataset.chat
           );
         }
@@ -2578,7 +2711,8 @@
       const target = event.target.closest('.adminbar-friend-row[data-chat]');
       if (!target || (event.key !== 'Enter' && event.key !== ' ')) return;
       event.preventDefault();
-      openChat(target.dataset.chat);
+      event.stopPropagation();
+      void openChat(target.dataset.chat);
     });
     $(SELECTOR.groupsView)
       ?.addEventListener('click', event => {

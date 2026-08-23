@@ -1,46 +1,4 @@
 "use strict";
-
-/* =========================================================
-   CS CHAT GLOBAL
-   =========================================================
-   DÙNG CHUNG CHO:
-
-   - Admin
-   - CS Leader
-   - CS
-   - Các trang khác có navbar chung
-
-   FIRESTORE:
-
-   chats/{roomId}
-      participants
-      participantIds
-      participantNames
-      lastMessage
-      lastMessageBy
-      lastMessageSenderId
-      lastMessageReadBy
-      lastMessageReadAt
-      createdAt
-      updatedAt
-
-   chats/{roomId}/messages/{messageId}
-      from
-      to
-      senderId
-      senderUID
-      senderName
-      receiverId
-      receiverUID
-      receiverName
-      text
-      message
-      createdAt
-      timestamp
-      read
-      readAt
-========================================================= */
-
 (function () {
 
   if (window.__CS_GLOBAL_CHAT_LOADED__) {
@@ -67,6 +25,8 @@
     currentUserData: null,
 
     users: [],
+
+    allUsers: [],
 
     groups: [],
 
@@ -511,8 +471,31 @@
       button.addEventListener("click", async () => {
         const database = getDB();
         const uid = state.currentUser?.uid;
-        if (database && uid) await database.collection("csNotifications").doc(uid).collection("items").doc(button.dataset.notificationId).set({ read: true, readAt: serverTimestamp() }, { merge: true });
-        if (button.dataset.notificationLink) window.location.href = button.dataset.notificationLink;
+        const item = items.find((notification) =>
+          String(notification.id) === String(button.dataset.notificationId)
+        );
+
+        if (database && uid) {
+          await database.collection("csNotifications").doc(uid).collection("items").doc(button.dataset.notificationId).set({
+            read: true,
+            readAt: serverTimestamp()
+          }, { merge: true });
+        }
+
+        if (!item) return;
+
+        // Notification chat trực tiếp phải mở đúng conversation.
+        if (item.type === "chat_message" || item.roomId || item.chatId) {
+          const senderUid = String(
+            item.senderId || item.senderUID || item.senderUid || item.from || ""
+          );
+          if (senderUid && senderUid !== String(state.currentUser?.uid || "")) {
+            await openConversation(senderUid, item);
+          }
+          return;
+        }
+
+        if (item.link) window.location.href = item.link;
       });
     });
   }
@@ -920,14 +903,14 @@
     }
 
 
-    if (
-      document.querySelector(
-        "#csSingleChatContainer"
-      )
-    ) {
-
+    const existingContainer = document.querySelector("#csSingleChatContainer");
+    if (existingContainer) {
+      const recentTab = existingContainer.querySelector('[data-chat-tab="recent"], [data-chat-tab="friends"]');
+      if (recentTab) {
+        recentTab.dataset.chatTab = "recent";
+        recentTab.textContent = "Tin nhắn gần đây";
+      }
       return true;
-
     }
 
 
@@ -960,7 +943,7 @@
 
 
         <div class="cs-single-chat-tabs" role="tablist">
-          <button type="button" class="cs-single-chat-tab is-active" data-chat-tab="friends" role="tab" aria-selected="true">Bạn bè</button>
+          <button type="button" class="cs-single-chat-tab is-active" data-chat-tab="recent" role="tab" aria-selected="true">Tin nhắn gần đây</button>
           <button type="button" class="cs-single-chat-tab" data-chat-tab="groups" role="tab" aria-selected="false">Nhóm</button>
           <button type="button" class="cs-single-chat-tab" data-chat-tab="create-group" role="tab" aria-selected="false">Tạo nhóm</button>
         </div>
@@ -1304,137 +1287,97 @@
   ===================================================== */
 
   async function loadUsers() {
+    const db = getDB();
+    const currentUser = state.currentUser;
+    const elements = getElements();
+    if (!db || !currentUser || !elements.users) return;
 
-    const db =
-      getDB();
-
-    const currentUser =
-      state.currentUser;
-
-    const elements =
-      getElements();
-
-
-    if (
-      !db ||
-      !currentUser ||
-      !elements.users
-    ) {
-
-      return;
-
-    }
-
-
-    elements.users.innerHTML = `
-
-      <div class="cs-single-chat-loading">
-        Đang tải danh sách...
-      </div>
-
-    `;
-
+    elements.users.innerHTML = '<div class="cs-single-chat-loading">Đang tải tin nhắn gần đây...</div>';
 
     try {
+      const snapshot = await db.collection("users").get();
+      const allUsersByUid = new Map();
+      snapshot.forEach((doc) => {
+        const data = doc.data() || {};
+        const uid = String(data.uid || data.authUid || data.firebaseUid || doc.id || "").trim();
+        if (!uid || uid === String(currentUser.uid)) return;
+        allUsersByUid.set(uid, { uid, id: uid, ...data });
+      });
+      state.allUsers = [...allUsersByUid.values()];
 
-      const snapshot =
-        await db
-          .collection("users")
-          .get();
-
-
-      const users = [];
-
-
-      snapshot.forEach(
-        (doc) => {
-
-          const data =
-            doc.data() || {};
-
-
-          const uid =
-            String(
-
-              data.uid ||
-
-              data.userId ||
-
-              doc.id
-
-            );
-
-
-          if (
-            !uid ||
-            uid ===
-              String(
-                currentUser.uid
-              )
-          ) {
-
-            return;
-
+      const recentByUid = new Map();
+      const roomSnapshots = await Promise.all(
+        ["participantIds", "participants"].map(async (field) => {
+          try {
+            return await db.collection("chats")
+              .where(field, "array-contains", String(currentUser.uid))
+              .limit(100)
+              .get();
+          } catch (error) {
+            console.warn("[CS CHAT] Không tải được room gần đây theo " + field + ":", error);
+            return null;
           }
-
-
-          users.push({
-
-            uid,
-
-            id: uid,
-
-            ...data
-
-          });
-
-        }
+        })
       );
 
+      roomSnapshots.filter(Boolean).forEach((roomSnapshot) => {
+        roomSnapshot.forEach((roomDoc) => {
+          const room = roomDoc.data() || {};
+          let participantIds = [
+            ...(Array.isArray(room.participantIds) ? room.participantIds : []),
+            ...(Array.isArray(room.participants) ? room.participants : [])
+          ].map(String).filter(Boolean);
+          participantIds = [...new Set(participantIds)];
+          if (participantIds.length < 2) {
+            const fromRoomId = String(roomDoc.id || "").split("__").filter(Boolean);
+            if (fromRoomId.length === 2) participantIds = fromRoomId;
+          }
+          const otherUid = participantIds.find((participantUid) => participantUid !== String(currentUser.uid));
+          if (!otherUid) return;
+          const participantNames = room.participantNames && typeof room.participantNames === "object" ? room.participantNames : {};
+          const updatedAtValue = timestampValue(room.updatedAt || room.lastMessageAt || room.createdAt);
+          const previous = recentByUid.get(otherUid);
+          if (!previous || updatedAtValue >= previous.updatedAtValue) {
+            recentByUid.set(otherUid, {
+              uid: otherUid,
+              id: otherUid,
+              hasRoom: true,
+              roomId: String(roomDoc.id),
+              participantName: String(participantNames[otherUid] || "").trim(),
+              lastMessage: String(room.lastMessage || ""),
+              lastMessageBy: String(room.lastMessageBy || room.lastMessageSenderId || ""),
+              lastMessageReadBy: room.lastMessageReadBy || "",
+              updatedAtValue
+            });
+          }
+        });
+      });
 
-      state.users =
-        users.sort(
-          (a, b) =>
-            getUserName(a).localeCompare(
-              getUserName(b),
-              "vi"
-            )
-        );
+      recentByUid.forEach((recent, uid) => {
+        const existing = allUsersByUid.get(uid) || {
+          uid,
+          id: uid,
+          name: recent.participantName || "Người dùng"
+        };
+        const fallbackName = recent.participantName && !existing.name && !existing.displayName
+          ? { name: recent.participantName, displayName: recent.participantName }
+          : {};
+        allUsersByUid.set(uid, { ...existing, ...fallbackName, ...recent });
+      });
 
-
+      state.users = [...recentByUid.keys()]
+        .map((uid) => allUsersByUid.get(uid))
+        .filter(Boolean)
+        .sort((a, b) => {
+          const timeDiff = Number(b.updatedAtValue || 0) - Number(a.updatedAtValue || 0);
+          return timeDiff || getUserName(a).localeCompare(getUserName(b), "vi");
+        });
       renderUsers();
-
-
     } catch (error) {
-
-      console.error(
-        "[CS CHAT] LOAD USERS ERROR:",
-        error
-      );
-
-
-      elements.users.innerHTML = `
-
-        <div class="cs-single-chat-error">
-
-          Không tải được danh sách người dùng.
-
-          <br>
-
-          <small>
-            ${escapeHTML(
-              error.message || ""
-            )}
-          </small>
-
-        </div>
-
-      `;
-
+      console.error("[CS CHAT] LOAD RECENT USERS ERROR:", error);
+      elements.users.innerHTML = `<div class="cs-single-chat-error">Không tải được tin nhắn gần đây.<br><small>${escapeHTML(error.message || "")}</small></div>`;
     }
-
   }
-
 
   /* =====================================================
      LOAD AND RENDER GROUPS
@@ -1518,7 +1461,7 @@
   function renderCreateGroupMembers() {
     const elements = getElements();
     if (!elements.groupMembers) return;
-    const users = state.users || [];
+    const users = state.allUsers || state.users || [];
     elements.groupMembers.innerHTML = users.length ? users.map((user) => `<label class="cs-single-chat-member-option"><input type="checkbox" value="${escapeHTML(user.uid)}"><span>${escapeHTML(getUserName(user))}</span></label>`).join("") : '<div class="cs-single-chat-empty">Chưa có người dùng để thêm.</div>';
   }
 
@@ -1535,7 +1478,7 @@
       const groupRef = db.collection("chatGroups").doc();
       const participantNames = {};
       allIds.forEach((uid) => {
-        const member = uid === currentUser.uid ? (state.currentUserData || currentUser) : state.users.find((user) => String(user.uid) === String(uid));
+        const member = uid === currentUser.uid ? (state.currentUserData || currentUser) : (state.allUsers || state.users).find((user) => String(user.uid) === String(uid));
         participantNames[uid] = getUserName(member || { name: "Thành viên" });
       });
       await groupRef.set({ name, participants: allIds, participantNames, createdBy: currentUser.uid, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMessage: "", lastMessageBy: "" });
@@ -1546,6 +1489,33 @@
     } catch (error) {
       console.error("[CS CHAT] CREATE GROUP ERROR:", error);
     }
+  }
+
+  /* =====================================================
+     RECENT MESSAGE STATUS
+  ===================================================== */
+
+  function valueContainsUid(value, uid) {
+    const normalizedUid = String(uid || "");
+    if (!normalizedUid) return false;
+    if (Array.isArray(value)) return value.map(String).includes(normalizedUid);
+    if (value && typeof value === "object") return Object.keys(value).map(String).includes(normalizedUid);
+    return String(value || "") === normalizedUid;
+  }
+
+  function ensureRecentStatusStyles() {
+    if (document.querySelector("#csSingleChatRecentStatusStyles")) return;
+    const style = document.createElement("style");
+    style.id = "csSingleChatRecentStatusStyles";
+    style.textContent = `
+      #csNavbarMessengerPanel .cs-single-chat-user.is-unread { background: #fff8ef; }
+      #csNavbarMessengerPanel .cs-single-chat-user.is-unread .cs-single-chat-user-info strong,
+      #csNavbarMessengerPanel .cs-single-chat-user.is-unread .cs-single-chat-user-info small { color: #2b211d; font-weight: 800; }
+      #csNavbarMessengerPanel .cs-single-chat-user.is-read .cs-single-chat-user-info strong { font-weight: 600; }
+      #csNavbarMessengerPanel .cs-single-chat-user.is-read .cs-single-chat-user-info small { font-weight: 400; }
+      #csNavbarMessengerPanel .cs-single-chat-unread-dot { width: 8px; height: 8px; flex: 0 0 8px; margin-left: auto; border-radius: 50%; background: #bd3b30; box-shadow: 0 0 0 3px rgba(189, 59, 48, .14); }
+    `;
+    document.head.appendChild(style);
   }
 
   /* =====================================================
@@ -1564,6 +1534,7 @@
       return;
     }
 
+    ensureRecentStatusStyles();
 
     const keyword =
       String(
@@ -1609,7 +1580,7 @@
       elements.users.innerHTML = `
 
         <div class="cs-single-chat-empty">
-          Không tìm thấy người dùng.
+          Chưa có tin nhắn gần đây.
         </div>
 
       `;
@@ -1630,16 +1601,23 @@
 
             const email =
               getUserEmail(user);
+            const preview = String(user.lastMessage || "").trim();
+            const currentUid = String(state.currentUser?.uid || "");
+            const senderUid = String(user.lastMessageBy || user.lastMessageSenderId || "");
+            const isMine = Boolean(preview && senderUid && senderUid === currentUid);
+            const isUnread = Boolean(preview && !isMine && !valueContainsUid(user.lastMessageReadBy, currentUid));
+            const previewText = preview ? (isMine ? `Bạn: ${preview}` : preview) : (email || getUserRole(user));
 
 
             return `
 
               <button
                 type="button"
-                class="cs-single-chat-user"
+                class="cs-single-chat-user ${isUnread ? "is-unread" : "is-read"}"
                 data-chat-user="${escapeHTML(
                   user.uid
                 )}"
+                aria-label="${escapeHTML(`${name}${isUnread ? ", tin nhắn chưa đọc" : ""}`)}"
               >
 
                 <span
@@ -1660,13 +1638,12 @@
                   </strong>
 
                   <small>
-                    ${escapeHTML(
-                      email ||
-                      getUserRole(user)
-                    )}
+                    ${escapeHTML(previewText)}
                   </small>
 
                 </span>
+
+                ${isUnread ? '<span class="cs-single-chat-unread-dot" aria-label="Chưa đọc" title="Tin nhắn chưa đọc"></span>' : ""}
 
               </button>
 
@@ -1712,6 +1689,8 @@
       "false"
     );
 
+    // Mỗi lần mở Messenger luôn bắt đầu ở danh sách recent.
+    closeConversation();
 
     if (
       !state.currentUser
@@ -1775,8 +1754,9 @@
     state.roomId = group.id;
     const elements = getElements();
     if (!elements.conversation) return;
-    if (elements.list) elements.list.hidden = true;
+    if (elements.list) { elements.list.hidden = true; elements.list.style.display = "none"; }
     elements.conversation.hidden = false;
+    elements.conversation.style.display = "flex";
     if (elements.name) elements.name.textContent = groupTitle(group);
     if (elements.role) elements.role.textContent = group.isChatGroup ? `${groupParticipants(group).length} thành viên · Nhóm chat` : `${groupParticipants(group).length} thành viên · Leader và CS con`;
     if (elements.avatar) elements.avatar.textContent = getInitials(groupTitle(group));
@@ -1785,11 +1765,71 @@
     listenMessages(group.id);
   }
 
+    /* =====================================================
+     RESOLVE CHAT USER
+     Notification có thể được tạo bởi Admin chưa có document
+     users/{uid}; vì vậy không được phụ thuộc tuyệt đối vào
+     state.users hoặc document ID của collection users.
+  ===================================================== */
+  async function resolveChatUser(uid, hint = {}) {
+    const database = getDB();
+    const normalizedUid = String(uid || "").trim();
+    if (!normalizedUid) return null;
+
+    const fromState = [...(state.users || []), ...(state.allUsers || [])].find((user) => String(user.uid) === normalizedUid);
+    if (fromState) return fromState;
+
+    let profile = null;
+    if (database) {
+      try {
+        const byDocumentId = await database.collection("users").doc(normalizedUid).get();
+        if (byDocumentId.exists) {
+          profile = { uid: normalizedUid, id: normalizedUid, ...byDocumentId.data() };
+        }
+      } catch (error) {
+        console.warn("[CS CHAT] Không đọc được users/" + normalizedUid + ":", error);
+      }
+
+      if (!profile) {
+        for (const field of ["uid", "authUid", "firebaseUid"]) {
+          try {
+            const snapshot = await database.collection("users").where(field, "==", normalizedUid).limit(1).get();
+            if (!snapshot.empty) {
+              const doc = snapshot.docs[0];
+              profile = { uid: normalizedUid, id: normalizedUid, ...doc.data() };
+              break;
+            }
+          } catch (error) {
+            console.warn("[CS CHAT] Không tìm được user theo " + field + ":", error);
+          }
+        }
+      }
+    }
+
+    const hintName = String(hint.senderName || hint.displayName || hint.name || hint.senderEmail || "").trim();
+    const hintEmail = String(hint.senderEmail || hint.email || "").trim();
+    const resolved = {
+      uid: normalizedUid,
+      id: normalizedUid,
+      ...(profile || {}),
+      displayName: profile?.displayName || profile?.name || hintName || normalizedUid,
+      name: profile?.name || profile?.displayName || hintName || hintEmail || normalizedUid,
+      email: profile?.email || hintEmail,
+      role: profile?.role || profile?.accountType || hint.senderRole || hint.role || "Thành viên"
+    };
+
+    if (!fromState) {
+      state.users = [...state.users.filter((user) => String(user.uid) !== normalizedUid), resolved]
+        .sort((a, b) => getUserName(a).localeCompare(getUserName(b), "vi"));
+      renderUsers();
+    }
+    return resolved;
+  }
+
   /* =====================================================
      OPEN CONVERSATION
   ===================================================== */
-
-  async function openConversation(uid) {
+  async function openConversation(uid, userHint = {}) {
 
     state.chatMode = "direct";
     state.selectedGroup = null;
@@ -1815,23 +1855,11 @@
     }
 
 
-    const target =
-      state.users.find(
-        (user) =>
-          String(user.uid) ===
-          String(uid)
-      );
-
+    const target = await resolveChatUser(uid, userHint);
 
     if (!target) {
-
-      console.error(
-        "[CS CHAT] Không tìm thấy user:",
-        uid
-      );
-
+      console.error("[CS CHAT] Không tìm thấy user:", uid);
       return;
-
     }
 
     await saveChatContact(target);
@@ -1875,11 +1903,13 @@
 
     if (elements.list) {
       elements.list.hidden = true;
+      elements.list.style.display = "none";
     }
 
 
     elements.conversation.hidden =
       false;
+    elements.conversation.style.display = "flex";
 
 
     if (elements.name) {
@@ -1991,6 +2021,56 @@
             serverTimestamp()
 
         });
+
+      } else {
+
+        /*
+           Vá dữ liệu cũ: nếu room đã tồn tại nhưng
+           thiếu participantIds (chỉ có participants),
+           bổ sung lại để badge unread (bindUnread)
+           luôn where được đúng field, tránh
+           permission-denied do thiếu participantIds.
+        */
+
+        const roomData = roomSnapshot.data() || {};
+
+        const hasParticipantIds =
+          Array.isArray(roomData.participantIds) &&
+          roomData.participantIds.map(String).includes(String(currentUser.uid)) &&
+          roomData.participantIds.map(String).includes(String(target.uid));
+
+        if (!hasParticipantIds) {
+
+          try {
+
+            await roomRef.set(
+
+              {
+
+                participantIds: [
+
+                  currentUser.uid,
+
+                  target.uid
+
+                ]
+
+              },
+
+              { merge: true }
+
+            );
+
+          } catch (patchError) {
+
+            console.warn(
+              "[CS CHAT] Không thể vá participantIds:",
+              patchError
+            );
+
+          }
+
+        }
 
       }
 
@@ -2739,6 +2819,23 @@
 
   /* =====================================================
      UNREAD
+     -----------------------------------------------------
+     SỬA LỖI: bản cũ lắng nghe TOÀN BỘ collection "chats"
+     (không where), nên nếu Security Rules yêu cầu
+     request.auth.uid phải nằm trong participants/
+     participantIds thì Firestore sẽ từ chối truy vấn này
+     với lỗi "Missing or insufficient permissions" (vì
+     rule không thể đảm bảo an toàn cho 1 query không lọc).
+     Khi đó onSnapshot rơi vào nhánh error, directUnreadCount
+     bị reset về 0 và badge "Tin nhắn" không bao giờ hiện,
+     dù badge "Thông báo" (đọc theo doc riêng của từng user)
+     vẫn hoạt động bình thường.
+
+     Cách sửa: luôn where theo field mảng có chứa uid hiện
+     tại. Dùng 2 listener song song (participantIds và
+     participants) để tương thích cả room mới lẫn room cũ
+     (một số room cũ có thể chỉ có "participants" mà chưa
+     có "participantIds"), rồi gộp kết quả lại theo doc id.
   ===================================================== */
 
   function bindUnread() {
@@ -2768,121 +2865,141 @@
     }
 
 
+    const uid = String(currentUser.uid);
+
     /*
-       Không where.
-       Không orderBy.
-       Không composite index.
+       Gộp kết quả từ 2 query (participantIds và
+       participants) vào 1 Map dùng chung, để tránh
+       đếm trùng khi 1 room khớp cả 2 điều kiện.
     */
 
-    state.roomsUnsubscribe =
-      db
-        .collection("chats")
-        .onSnapshot(
+    const roomsById = new Map();
 
-          (snapshot) => {
+    function recomputeDirectUnread() {
 
-            let unread =
-              0;
+      let unread = 0;
 
+      roomsById.forEach((data) => {
 
-            snapshot.forEach(
-              (doc) => {
+        const sender = String(
 
-                const data =
-                  doc.data() || {};
+          data.lastMessageBy ||
 
+          data.lastMessageSenderId ||
 
-                const participants = [
-
-                  ...(Array.isArray(
-                    data.participants
-                  )
-                    ? data.participants
-                    : []),
-
-                  ...(Array.isArray(
-                    data.participantIds
-                  )
-                    ? data.participantIds
-                    : [])
-
-                ].map(String);
-
-
-                if (
-                  !participants.includes(
-                    String(
-                      currentUser.uid
-                    )
-                  )
-                ) {
-
-                  return;
-
-                }
-
-
-                const sender =
-                  String(
-
-                    data.lastMessageBy ||
-
-                    data.lastMessageSenderId ||
-
-                    ""
-
-                  );
-
-
-                const readBy =
-                  String(
-                    data.lastMessageReadBy ||
-                    ""
-                  );
-
-
-                if (
-
-                  data.lastMessage &&
-
-                  sender !==
-                    String(
-                      currentUser.uid
-                    ) &&
-
-                  readBy !==
-                    String(
-                      currentUser.uid
-                    )
-
-                ) {
-
-                  unread++;
-
-                }
-
-              }
-            );
-
-
-            state.directUnreadCount = unread;
-            updateBadge(state.directUnreadCount + state.groupUnreadCount);
-
-          },
-
-
-          (error) => {
-
-            console.warn(
-              "[CS CHAT] UNREAD ERROR:",
-              error
-            );
-            state.directUnreadCount = 0;
-            updateBadge(state.groupUnreadCount);
-
-          }
+          ""
 
         );
+
+        const readBy = String(
+          data.lastMessageReadBy || ""
+        );
+
+        if (
+
+          data.lastMessage &&
+
+          sender !== uid &&
+
+          readBy !== uid
+
+        ) {
+
+          unread++;
+
+        }
+
+      });
+
+      state.directUnreadCount = unread;
+
+      updateBadge(state.directUnreadCount + state.groupUnreadCount);
+
+    }
+
+    const unsubscribers = [];
+
+    ["participantIds", "participants"].forEach((field) => {
+
+      try {
+
+        const unsubscribe = db
+          .collection("chats")
+          .where(field, "array-contains", uid)
+          .onSnapshot(
+
+            (snapshot) => {
+
+              /*
+                 Xoá các doc không còn nằm trong kết quả
+                 mới nhất của field này (ví dụ tin nhắn/room
+                 bị xoá), rồi ghi đè dữ liệu mới.
+              */
+
+              const seenIds = new Set();
+
+              snapshot.forEach((doc) => {
+
+                seenIds.add(doc.id);
+
+                roomsById.set(doc.id, doc.data() || {});
+
+              });
+
+              // Không xoá chéo giữa 2 field để tránh mất
+              // dữ liệu khi room chỉ khớp field còn lại.
+
+              recomputeDirectUnread();
+
+            },
+
+            (error) => {
+
+              console.warn(
+                "[CS CHAT] UNREAD ERROR (" + field + "):",
+                error
+              );
+
+              // Nếu cả 2 query đều lỗi thì coi như 0,
+              // còn nếu chỉ 1 field lỗi (ví dụ field đó
+              // chưa tồn tại ở rule) thì vẫn giữ nguyên
+              // dữ liệu đã có từ field kia.
+
+              if (!roomsById.size) {
+
+                state.directUnreadCount = 0;
+
+                updateBadge(state.groupUnreadCount);
+
+              }
+
+            }
+
+          );
+
+        unsubscribers.push(unsubscribe);
+
+      } catch (error) {
+
+        console.warn(
+          "[CS CHAT] Không thể lắng nghe unread theo " + field + ":",
+          error
+        );
+
+      }
+
+    });
+
+    state.roomsUnsubscribe = () => unsubscribers.forEach((unsubscribe) => {
+
+      try {
+
+        unsubscribe();
+
+      } catch (error) {}
+
+    });
+
 
     if (typeof state.groupUnreadUnsubscribe === "function") state.groupUnreadUnsubscribe();
     state.groupUnreadUnsubscribe = db.collection("csNotifications").doc(currentUser.uid).collection("items").onSnapshot((snapshot) => {
@@ -2974,6 +3091,7 @@
         const tab = event.target.closest("[data-chat-tab]");
         if (tab) {
           const elements = getElements();
+          const recent = tab.dataset.chatTab === "recent";
           const groups = tab.dataset.chatTab === "groups";
           const createGroup = tab.dataset.chatTab === "create-group";
           elements.tabs?.forEach((item) => {
@@ -2985,6 +3103,7 @@
           if (elements.groups) elements.groups.hidden = !groups;
           if (elements.createGroup) elements.createGroup.hidden = !createGroup;
           if (elements.search) elements.search.parentElement.hidden = createGroup;
+          if (recent) renderUsers();
           if (groups) renderGroups();
           if (createGroup) renderCreateGroupMembers();
           return;
@@ -3081,6 +3200,21 @@
 
         }
 
+      }
+    );
+
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        const elements = getElements();
+        if (!elements.panel || elements.panel.hidden) return;
+        const target = event.target;
+        const clickedInsidePanel = target && elements.panel.contains(target);
+        const clickedMessengerButton = target && elements.button?.contains(target);
+        if (!clickedInsidePanel && !clickedMessengerButton) {
+          closePanel();
+        }
       }
     );
 
@@ -3228,6 +3362,7 @@
 
       elements.conversation.hidden =
         true;
+      elements.conversation.style.display = "none";
 
     }
 
@@ -3238,6 +3373,7 @@
 
       elements.list.hidden =
         false;
+      elements.list.style.display = "flex";
 
     }
 
@@ -3311,6 +3447,9 @@
             state.users =
               [];
 
+            state.allUsers =
+              [];
+
             state.selectedUser =
               null;
 
@@ -3333,6 +3472,18 @@
 
               state.roomsUnsubscribe =
                 null;
+
+            }
+
+            if (state.groupUnreadUnsubscribe) {
+
+              try {
+
+                state.groupUnreadUnsubscribe();
+
+              } catch (error) {}
+
+              state.groupUnreadUnsubscribe = null;
 
             }
 
