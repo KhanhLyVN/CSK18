@@ -68,7 +68,15 @@
 
     users: [],
 
+    groups: [],
+
     selectedUser: null,
+
+    selectedGroup: null,
+
+    chatMode: "direct",
+
+    groupUnreadUnsubscribe: null,
 
     roomId: null,
 
@@ -708,6 +716,46 @@
   }
 
 
+  async function resolveDirectRoomId(db, uidA, uidB) {
+    const ids = [String(uidA || ""), String(uidB || "")].filter(Boolean);
+    const candidates = [...new Set([
+      makeRoomId(uidA, uidB),
+      ids.slice().sort().join("__")
+    ].filter(Boolean))];
+    const existingRooms = [];
+    for (const candidate of candidates) {
+      try {
+        const snapshot = await db.collection("chats").doc(candidate).get();
+        if (snapshot.exists) existingRooms.push({ id: candidate, data: snapshot.data() || {} });
+      } catch (error) {
+        console.warn("[CS CHAT] Không đọc được room candidate:", candidate, error);
+      }
+    }
+    if (existingRooms.length) {
+      existingRooms.sort((a, b) => {
+        const aHasMessage = a.data.lastMessage ? 1 : 0;
+        const bHasMessage = b.data.lastMessage ? 1 : 0;
+        if (aHasMessage !== bHasMessage) return bHasMessage - aHasMessage;
+        return timestampValue(b.data.updatedAt) - timestampValue(a.data.updatedAt);
+      });
+      return existingRooms[0].id;
+    }
+    for (const field of ["participantIds", "participants"]) {
+      try {
+        const snapshot = await db.collection("chats").where(field, "array-contains", String(uidA)).get();
+        const found = snapshot.docs.find((doc) => {
+          const data = doc.data() || {};
+          const participants = Array.isArray(data.participantIds) ? data.participantIds : (Array.isArray(data.participants) ? data.participants : []);
+          return participants.map(String).includes(String(uidB));
+        });
+        if (found) return found.id;
+      } catch (error) {
+        console.warn("[CS CHAT] Không truy vấn room theo " + field + ":", error);
+      }
+    }
+    return candidates[0] || "";
+  }
+
   /* =====================================================
      FIND NAVBAR BUTTON
   ===================================================== */
@@ -815,6 +863,12 @@
         </div>
 
 
+        <div class="cs-single-chat-tabs" role="tablist">
+          <button type="button" class="cs-single-chat-tab is-active" data-chat-tab="friends" role="tab" aria-selected="true">Bạn bè</button>
+          <button type="button" class="cs-single-chat-tab" data-chat-tab="groups" role="tab" aria-selected="false">Nhóm</button>
+          <button type="button" class="cs-single-chat-tab" data-chat-tab="create-group" role="tab" aria-selected="false">Tạo nhóm</button>
+        </div>
+
         <div class="cs-single-chat-search">
 
           <input
@@ -836,6 +890,19 @@
             Đang tải...
           </div>
 
+        </div>
+
+        <div id="csSingleChatGroups" class="cs-single-chat-users" hidden>
+          <div class="cs-single-chat-loading">Đang tải nhóm...</div>
+        </div>
+
+        <div id="csSingleChatCreateGroup" hidden>
+          <form id="csSingleChatCreateGroupForm" class="cs-single-chat-create-form">
+            <label>Tên nhóm<input id="csSingleChatGroupName" type="text" maxlength="80" placeholder="Ví dụ: Nhóm CSO" required></label>
+            <p class="cs-single-chat-field-title">Chọn thành viên</p>
+            <div id="csSingleChatGroupMembers" class="cs-single-chat-member-list"></div>
+            <button type="submit" class="cs-single-chat-primary">Tạo nhóm</button>
+          </form>
         </div>
 
       </div>
@@ -951,6 +1018,36 @@
       users:
         document.querySelector(
           "#csSingleChatUsers"
+        ),
+
+      groups:
+        document.querySelector(
+          "#csSingleChatGroups"
+        ),
+
+      createGroup:
+        document.querySelector(
+          "#csSingleChatCreateGroup"
+        ),
+
+      createGroupForm:
+        document.querySelector(
+          "#csSingleChatCreateGroupForm"
+        ),
+
+      groupName:
+        document.querySelector(
+          "#csSingleChatGroupName"
+        ),
+
+      groupMembers:
+        document.querySelector(
+          "#csSingleChatGroupMembers"
+        ),
+
+      tabs:
+        document.querySelectorAll(
+          "[data-chat-tab]"
         ),
 
       search:
@@ -1244,6 +1341,103 @@
 
 
   /* =====================================================
+     LOAD AND RENDER GROUPS
+  ===================================================== */
+
+  async function loadGroups() {
+    const db = getDB();
+    const currentUser = state.currentUser;
+    const elements = getElements();
+    if (!db || !currentUser || !elements.groups) return;
+    elements.groups.innerHTML = '<div class="cs-single-chat-loading">Đang tải nhóm...</div>';
+    const groupsById = new Map();
+    try {
+      const [memberSnapshot, leaderSnapshot] = await Promise.all([
+        db.collection("groups").where("memberIds", "array-contains", currentUser.uid).get(),
+        db.collection("groups").where("leaderUid", "==", currentUser.uid).get()
+      ]);
+      [...memberSnapshot.docs, ...leaderSnapshot.docs].forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.warn("[CS CHAT] Không tải nhanh được nhóm, thử tải toàn bộ:", error);
+      const snapshot = await db.collection("groups").get();
+      snapshot.docs.forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
+    }
+    state.groups = [...groupsById.values()].filter((group) => groupBelongsToCurrentUser(group, currentUser.uid)).sort((a, b) => groupTitle(a).localeCompare(groupTitle(b), "vi"));
+    renderGroups();
+    renderCreateGroupMembers();
+  }
+
+  function groupLeaderId(group) {
+    const leader = group?.leader || {};
+    return String(group?.leaderUid || leader.uid || leader.id || "");
+  }
+
+  function groupTitle(group) {
+    return String(group?.name || group?.code || "Nhóm CS");
+  }
+
+  function groupParticipants(group) {
+    const result = new Map();
+    const leaderId = groupLeaderId(group);
+    const leader = group?.leader || {};
+    if (leaderId) result.set(leaderId, { uid: leaderId, name: group.leaderName || leader.name || "CS Leader", email: group.leaderEmail || leader.email || "", role: "leader" });
+    (Array.isArray(group?.members) ? group.members : []).forEach((member) => {
+      const uid = String(member?.uid || member?.id || "");
+      if (uid) result.set(uid, { uid, name: member.name || member.displayName || "CS thành viên", email: member.email || "", role: uid === leaderId ? "leader" : "member" });
+    });
+    (Array.isArray(group?.memberIds) ? group.memberIds : []).forEach((uidValue) => {
+      const uid = String(uidValue || "");
+      if (uid && !result.has(uid)) result.set(uid, { uid, name: uid === leaderId ? "CS Leader" : "CS thành viên", email: "", role: uid === leaderId ? "leader" : "member" });
+    });
+    return [...result.values()];
+  }
+
+  function groupBelongsToCurrentUser(group, uid) {
+    const id = String(uid || "");
+    return groupLeaderId(group) === id || groupParticipants(group).some((member) => String(member.uid) === id);
+  }
+
+  function renderGroups() {
+    const elements = getElements();
+    if (!elements.groups) return;
+    const keyword = String(elements.search?.value || "").trim().toLowerCase();
+    const groups = state.groups.filter((group) => !keyword || groupTitle(group).toLowerCase().includes(keyword) || String(group.code || "").toLowerCase().includes(keyword));
+    if (!groups.length) {
+      elements.groups.innerHTML = '<div class="cs-single-chat-empty">Bạn chưa tham gia nhóm nào phù hợp.</div>';
+      return;
+    }
+    elements.groups.innerHTML = groups.map((group) => `<button type="button" class="cs-single-chat-user" data-chat-group="${escapeHTML(group.id)}"><span class="cs-single-chat-avatar">${escapeHTML(getInitials(groupTitle(group)))}</span><span class="cs-single-chat-user-info"><strong>${escapeHTML(groupTitle(group))}</strong><small>${groupParticipants(group).length} thành viên · Trao đổi nội bộ</small></span></button>`).join("");
+  }
+
+  function renderCreateGroupMembers() {
+    const elements = getElements();
+    if (!elements.groupMembers) return;
+    const users = state.users || [];
+    elements.groupMembers.innerHTML = users.length ? users.map((user) => `<label class="cs-single-chat-member-option"><input type="checkbox" value="${escapeHTML(user.uid)}"><span>${escapeHTML(getUserName(user))}</span></label>`).join("") : '<div class="cs-single-chat-empty">Chưa có người dùng để thêm.</div>';
+  }
+
+  async function createGroup(event) {
+    event.preventDefault();
+    const db = getDB();
+    const currentUser = state.currentUser;
+    const elements = getElements();
+    const name = String(elements.groupName?.value || "").trim();
+    const memberIds = [...(elements.groupMembers?.querySelectorAll("input:checked") || [])].map((input) => input.value);
+    if (!db || !currentUser || !name) return;
+    const allIds = [currentUser.uid, ...memberIds.filter((uid) => uid !== currentUser.uid)];
+    try {
+      const groupRef = db.collection("groups").doc();
+      await groupRef.set({ name, leaderUid: currentUser.uid, leaderName: getUserName(state.currentUserData || currentUser), leaderEmail: currentUser.email || "", memberIds: allIds, members: allIds.map((uid) => uid === currentUser.uid ? { uid, name: getUserName(state.currentUserData || currentUser), email: currentUser.email || "" } : { uid }), createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      await loadGroups();
+      if (elements.groupName) elements.groupName.value = "";
+      elements.groupMembers?.querySelectorAll("input:checked").forEach((input) => { input.checked = false; });
+      document.querySelector("[data-chat-tab=groups]")?.click();
+    } catch (error) {
+      console.error("[CS CHAT] CREATE GROUP ERROR:", error);
+    }
+  }
+
+  /* =====================================================
      RENDER USERS
   ===================================================== */
 
@@ -1422,6 +1616,7 @@
 
 
     await loadUsers();
+    await loadGroups();
 
   }
 
@@ -1456,10 +1651,37 @@
 
 
   /* =====================================================
+     OPEN GROUP CONVERSATION
+  ===================================================== */
+
+  async function openGroupConversation(groupId) {
+    const group = state.groups.find((item) => String(item.id) === String(groupId));
+    if (!group) return;
+    stopMessageListener();
+    state.chatMode = "group";
+    state.selectedGroup = group;
+    state.selectedUser = null;
+    state.roomId = group.id;
+    const elements = getElements();
+    if (!elements.conversation) return;
+    if (elements.list) elements.list.hidden = true;
+    elements.conversation.hidden = false;
+    if (elements.name) elements.name.textContent = groupTitle(group);
+    if (elements.role) elements.role.textContent = `${groupParticipants(group).length} thành viên · Leader và CS con`;
+    if (elements.avatar) elements.avatar.textContent = getInitials(groupTitle(group));
+    if (elements.messages) elements.messages.innerHTML = '<div class="cs-single-chat-loading">Đang tải tin nhắn nhóm...</div>';
+    if (elements.input) elements.input.placeholder = "Nhập tin nhắn cho các CS trong nhóm...";
+    listenMessages(group.id);
+  }
+
+  /* =====================================================
      OPEN CONVERSATION
   ===================================================== */
 
   async function openConversation(uid) {
+
+    state.chatMode = "direct";
+    state.selectedGroup = null;
 
     const db =
       getDB();
@@ -1509,11 +1731,7 @@
       target;
 
 
-    const roomId =
-      makeRoomId(
-        currentUser.uid,
-        target.uid
-      );
+    const roomId = makeRoomId(currentUser.uid, target.uid);
 
 
     if (!roomId) {
@@ -1732,102 +1950,47 @@
     stopMessageListener();
 
 
-    const messagesRef =
-      db
-        .collection("chats")
-        .doc(roomId)
-        .collection("messages");
+    if (state.chatMode === "group") {
+      const groupMessagesRef = db.collection("groups").doc(roomId).collection("memberMessages");
+      state.messagesUnsubscribe = groupMessagesRef.orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+        renderMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        if (state.roomId === roomId) markRoomRead(roomId);
+      }, (error) => {
+        console.error("[CS CHAT] GROUP MESSAGE LISTENER ERROR:", error);
+        if (elements.messages) elements.messages.innerHTML = `<div class="cs-single-chat-error">Không thể tải tin nhắn nhóm.<br><small>${escapeHTML(error.message || "")}</small></div>`;
+      });
+      return;
+    }
 
 
-    /*
-       KHÔNG dùng orderBy.
-
-       Lý do:
-       Dữ liệu cũ của bé có thể không đồng nhất
-       giữa createdAt/timestamp.
-
-       Vì vậy lấy toàn bộ messages
-       rồi sort bằng JS.
-    */
-
-
-    state.messagesUnsubscribe =
-      messagesRef.onSnapshot(
-
-        (snapshot) => {
-
-          const messages =
-            snapshot.docs.map(
-              (doc) => ({
-
-                id: doc.id,
-
-                ...doc.data()
-
-              })
-            );
-
-
-          renderMessages(
-            messages
-          );
-
-
-          /*
-             Chỉ đánh dấu đọc khi đang mở đúng room.
-          */
-
-          if (
-            state.roomId === roomId
-          ) {
-
-            markRoomRead(
-              roomId
-            );
-
-          }
-
-        },
-
-
-        (error) => {
-
-          console.error(
-            "[CS CHAT] MESSAGE LISTENER ERROR:",
-            error
-          );
-
-
-          if (
-            elements.messages
-          ) {
-
-            elements.messages.innerHTML = `
-
-              <div class="cs-single-chat-error">
-
-                Không thể tải tin nhắn.
-
-                <br>
-
-                <small>
-                  ${escapeHTML(
-                    error.message || ""
-                  )}
-                </small>
-
-              </div>
-
-            `;
-
-          }
-
+    const legacyRoomId = [String(state.currentUser?.uid || ""), String(state.selectedUser?.uid || "")].sort().join("__");
+    const roomIds = [...new Set([roomId, legacyRoomId].filter(Boolean))];
+    const messageMap = new Map();
+    const unsubscribers = [];
+    const renderCombinedMessages = () => {
+      const messages = [...messageMap.values()].sort((a, b) => timestampValue(a.createdAt || a.timestamp) - timestampValue(b.createdAt || b.timestamp));
+      renderMessages(messages);
+    };
+    roomIds.forEach((candidateRoomId) => {
+      const messagesRef = db.collection("chats").doc(candidateRoomId).collection("messages");
+      const unsubscribe = messagesRef.onSnapshot((snapshot) => {
+        snapshot.docs.forEach((doc) => messageMap.set(`${candidateRoomId}/${doc.id}`, { id: doc.id, ...doc.data() }));
+        renderCombinedMessages();
+        if (state.roomId === roomId) {
+          markRoomRead(roomId);
+          if (legacyRoomId && legacyRoomId !== roomId) markRoomRead(legacyRoomId);
         }
-
-      );
+      }, (error) => {
+        console.error("[CS CHAT] MESSAGE LISTENER ERROR:", candidateRoomId, error);
+        if (!messageMap.size && elements.messages) elements.messages.innerHTML = `<div class="cs-single-chat-error">Không thể tải tin nhắn.<br><small>${escapeHTML(error.message || "")}</small></div>`;
+      });
+      unsubscribers.push(unsubscribe);
+    });
+    state.messagesUnsubscribe = () => unsubscribers.forEach((unsubscribe) => {
+      try { unsubscribe(); } catch (error) { console.warn("[CS CHAT] Không thể hủy listener:", error); }
+    });
 
   }
-
 
   /* =====================================================
      STOP MESSAGE LISTENER
@@ -2024,6 +2187,37 @@
   }
 
 
+  async function sendGroupMessage(event) {
+    if (event) event.preventDefault();
+    if (state.sending || !state.selectedGroup) return;
+    const db = getDB();
+    const currentUser = state.currentUser;
+    const elements = getElements();
+    const text = String(elements.input?.value || "").trim();
+    if (!db || !currentUser || !text || !elements.input) return;
+    state.sending = true;
+    if (elements.send) elements.send.disabled = true;
+    try {
+      const group = state.selectedGroup;
+      const messageRef = db.collection("groups").doc(group.id).collection("memberMessages").doc();
+      const senderName = getUserName(state.currentUserData || currentUser);
+      const batch = db.batch();
+      batch.set(messageRef, { senderUid: currentUser.uid, senderName, senderEmail: currentUser.email || "", senderType: groupLeaderId(group) === String(currentUser.uid) ? "cs_leader" : "cs_member", text, message: text, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      groupParticipants(group).filter((member) => String(member.uid) !== String(currentUser.uid)).forEach((member) => {
+        const notice = db.collection("csNotifications").doc(member.uid).collection("items").doc();
+        batch.set(notice, { type: "group_message", recipientUid: member.uid, groupId: group.id, groupName: groupTitle(group), messageId: messageRef.id, title: `Tin nhắn mới trong ${groupTitle(group)}`, preview: `${senderName}: ${text.slice(0, 180)}`, link: groupLeaderId(group) === String(member.uid) ? `/CS/Groups/group.html?group=${encodeURIComponent(group.id)}` : `/CS/Groups/group-member.html?group=${encodeURIComponent(group.id)}`, read: false, createdAt: serverTimestamp() });
+      });
+      await batch.commit();
+      elements.input.value = "";
+      elements.input.focus();
+    } catch (error) {
+      console.error("[CS CHAT] SEND GROUP MESSAGE ERROR:", error);
+    } finally {
+      state.sending = false;
+      if (elements.send) elements.send.disabled = false;
+    }
+  }
+
   /* =====================================================
      SEND MESSAGE
   ===================================================== */
@@ -2049,8 +2243,12 @@
     const target =
       state.selectedUser;
 
-    const roomId =
-      state.roomId;
+    if (state.chatMode === "group") {
+      return sendGroupMessage(event);
+    }
+
+    const roomId = makeRoomId(currentUser.uid, target.uid);
+    state.roomId = roomId;
 
     const elements =
       getElements();
@@ -2209,17 +2407,23 @@
             currentUser
           ),
 
-        receiverId:
-          target.uid,
+          receiverId:
+            target.uid,
 
-        receiverUID:
-          target.uid,
+          receiverUID:
+            target.uid,
 
-        receiverName:
-          getUserName(target),
+          receiverName:
+            getUserName(target),
 
-        text:
-          text,
+          senderName:
+            getUserName(state.currentUserData || currentUser),
+
+          senderEmail:
+            currentUser.email || "",
+
+          text:
+            text,
 
         message:
           text,
@@ -2313,6 +2517,22 @@
 
 
     try {
+
+      if (state.chatMode === "group") {
+        const notifications = db.collection("csNotifications").doc(currentUser.uid).collection("items");
+        const notificationSnapshot = await notifications.get();
+        const notificationBatch = db.batch();
+        let notificationChanged = false;
+        notificationSnapshot.forEach((doc) => {
+          const data = doc.data() || {};
+          if (data.type === "group_message" && String(data.groupId) === String(roomId) && data.read !== true) {
+            notificationBatch.update(doc.ref, { read: true, readAt: serverTimestamp() });
+            notificationChanged = true;
+          }
+        });
+        if (notificationChanged) await notificationBatch.commit();
+        return;
+      }
 
       const messagesRef =
         db
@@ -2604,6 +2824,16 @@
 
         );
 
+    if (typeof state.groupUnreadUnsubscribe === "function") state.groupUnreadUnsubscribe();
+    state.groupUnreadUnsubscribe = db.collection("csNotifications").doc(currentUser.uid).collection("items").onSnapshot((snapshot) => {
+      let unreadGroups = 0;
+      snapshot.forEach((doc) => {
+        const data = doc.data() || {};
+        if (data.type === "group_message" && data.read !== true) unreadGroups += 1;
+      });
+      updateBadge(unreadGroups);
+    }, (error) => console.warn("[CS CHAT] GROUP BADGE ERROR:", error));
+
   }
 
 
@@ -2680,6 +2910,25 @@
       "click",
       async (event) => {
 
+        const tab = event.target.closest("[data-chat-tab]");
+        if (tab) {
+          const elements = getElements();
+          const groups = tab.dataset.chatTab === "groups";
+          const createGroup = tab.dataset.chatTab === "create-group";
+          elements.tabs?.forEach((item) => {
+            const active = item === tab;
+            item.classList.toggle("is-active", active);
+            item.setAttribute("aria-selected", String(active));
+          });
+          if (elements.users) elements.users.hidden = groups || createGroup;
+          if (elements.groups) elements.groups.hidden = !groups;
+          if (elements.createGroup) elements.createGroup.hidden = !createGroup;
+          if (elements.search) elements.search.parentElement.hidden = createGroup;
+          if (groups) renderGroups();
+          if (createGroup) renderCreateGroupMembers();
+          return;
+        }
+
         const button =
           event.target.closest(
             "#csNavbarMessengerBtn, #csChatButton, [data-cs-chat-button]"
@@ -2712,14 +2961,23 @@
         }
 
 
+        const groupButton =
+          event.target.closest(
+            "[data-chat-group]"
+          );
+
+        if (groupButton) {
+          await openGroupConversation(groupButton.dataset.chatGroup);
+          return;
+        }
+
         const userButton =
           event.target.closest(
             "[data-chat-user]"
           );
 
 
-        if (userButton) {
-
+                if (userButton) {
           const uid =
             userButton.dataset.chatUser;
 
@@ -2774,9 +3032,8 @@
           event.target?.id ===
           "csSingleChatSearch"
         ) {
-
           renderUsers();
-
+          renderGroups();
         }
 
       }
@@ -2786,18 +3043,15 @@
     document.addEventListener(
       "submit",
       (event) => {
-
-        if (
-          event.target?.id ===
-          "csSingleChatForm"
-        ) {
-
-          sendMessage(
-            event
-          );
-
+        if (event.target?.id === "csSingleChatForm") {
+          if (event.__csChatSubmitHandled) return;
+          event.__csChatSubmitHandled = true;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          sendMessage(event);
+          return;
         }
-
+        if (event.target?.id === "csSingleChatCreateGroupForm") createGroup(event);
       }
     );
 
@@ -2893,6 +3147,11 @@
 
     state.selectedUser =
       null;
+
+    state.selectedGroup =
+      null;
+
+    state.chatMode = "direct";
 
     state.roomId =
       null;

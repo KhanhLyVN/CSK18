@@ -150,7 +150,7 @@
     chatInitialized: false,
     authInitialized: false,
     eventsInitialized: false,
-    showAllFriends: false,
+    showAllFriends: true,
     showGroupComposer: false
   };
   /* =========================================================
@@ -292,12 +292,11 @@
     uid1,
     uid2
   ) {
-    return [
-      String(uid1),
-      String(uid2)
-    ]
-      .sort()
-      .join('__');
+    return [String(uid1 || ""), String(uid2 || "")].filter(Boolean).sort().join('_');
+  }
+
+  function getLegacyChatId(uid1, uid2) {
+    return [String(uid1 || ""), String(uid2 || "")].filter(Boolean).sort().join('__');
   }
   function setText(
     host,
@@ -1747,6 +1746,44 @@
     });
     renderFriends();
   }
+  async function resolveAdminChatRoomId(firestore, uidA, uidB) {
+    const ids = [String(uidA || ""), String(uidB || "")].filter(Boolean);
+    const candidates = [...new Set([
+      getChatId(uidA, uidB),
+      ids.slice().sort().join("_")
+    ].filter(Boolean))];
+    const existingRooms = [];
+    for (const candidate of candidates) {
+      const snapshot = await firestore.collection("chats").doc(candidate).get();
+      if (snapshot.exists) existingRooms.push({ id: candidate, data: snapshot.data() || {} });
+    }
+    if (existingRooms.length) {
+      existingRooms.sort((a, b) => {
+        const aHasMessage = a.data.lastMessage ? 1 : 0;
+        const bHasMessage = b.data.lastMessage ? 1 : 0;
+        if (aHasMessage !== bHasMessage) return bHasMessage - aHasMessage;
+        const aTime = a.data.updatedAt?.toMillis ? a.data.updatedAt.toMillis() : (a.data.updatedAt?.seconds || 0) * 1000;
+        const bTime = b.data.updatedAt?.toMillis ? b.data.updatedAt.toMillis() : (b.data.updatedAt?.seconds || 0) * 1000;
+        return bTime - aTime;
+      });
+      return existingRooms[0].id;
+    }
+    for (const field of ["participantIds", "participants"]) {
+      try {
+        const snapshot = await firestore.collection("chats").where(field, "array-contains", String(uidA)).get();
+        const found = snapshot.docs.find((doc) => {
+          const data = doc.data() || {};
+          const participants = Array.isArray(data.participantIds) ? data.participantIds : (Array.isArray(data.participants) ? data.participants : []);
+          return participants.map(String).includes(String(uidB));
+        });
+        if (found) return found.id;
+      } catch (error) {
+        console.warn('[ADMIN CHAT] Không truy vấn room theo ' + field + ':', error);
+      }
+    }
+    return candidates[0] || '';
+  }
+
   /* =========================================================
      OPEN CHAT - hỗ trợ room ID mới và room ID cũ
   ========================================================= */
@@ -1787,8 +1824,9 @@
     messages.innerHTML = '<p class="adminbar-state">Đang tải tin nhắn...</p>';
     const roomIds = Array.from(new Set([
       getChatId(currentUser.uid, target.uid),
-      [String(currentUser.uid), String(target.uid)].sort().join('_')
-    ]));
+      getLegacyChatId(currentUser.uid, target.uid),
+      [String(currentUser.uid), String(target.uid)].sort().join('__')
+    ].filter(Boolean)));
     console.log('[ADMIN CHAT] OPEN rooms:', roomIds);
     /* Đồng bộ cả notification bell khi mở cuộc trò chuyện. */
     await markChatNotificationsReadForRooms(roomIds, currentUser.uid);
@@ -1905,25 +1943,12 @@
     if (!currentUser || !target || !firestore || !text) return;
     input.disabled = true;
     try {
-      const candidateIds = Array.from(new Set([
-        getChatId(currentUser.uid, target.uid),
-        [String(currentUser.uid), String(target.uid)].sort().join('_')
-      ]));
-      let chatId = candidateIds[0];
-      for (const candidateId of candidateIds) {
-        const roomSnapshot = await firestore
-          .collection('chats')
-          .doc(candidateId)
-          .get();
-        if (roomSnapshot.exists) {
-          chatId = candidateId;
-          break;
-        }
-      }
+      const chatId = getChatId(currentUser.uid, target.uid);
       const chatRef = firestore.collection('chats').doc(chatId);
       const timestamp = serverTimestamp();
       await chatRef.set({
         participants: [currentUser.uid, target.uid],
+        participantIds: [currentUser.uid, target.uid],
         participantNames: {
           [currentUser.uid]: getName(currentUser),
           [target.uid]: getName(target)
@@ -1937,7 +1962,12 @@
         from: currentUser.uid,
         to: target.uid,
         senderId: currentUser.uid,
+        senderUID: currentUser.uid,
+        senderName: getName(currentUser),
+        senderEmail: currentUser.email || '',
         receiverId: target.uid,
+        receiverUID: target.uid,
+        receiverName: getName(target),
         text,
         createdAt: timestamp,
         read: false
@@ -2308,9 +2338,11 @@
       ?.addEventListener(
         'submit',
         event => {
-          sendMessage(
-            event
-          );
+          if (event.__adminChatSubmitHandled) return;
+          event.__adminChatSubmitHandled = true;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          sendMessage(event);
         }
       );
     /*
