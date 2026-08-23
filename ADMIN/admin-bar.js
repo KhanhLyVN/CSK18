@@ -77,6 +77,8 @@
       '#adminbarGroupName',
     groupMembers:
       '#adminbarGroupMembers',
+    groupList:
+      '#adminbarGroupList',
     messengerListView:
       '#adminbarMessengerListView',
     chatView:
@@ -139,7 +141,11 @@
   const state = {
     user: null,
     users: [],
+    contactIds: new Set(),
+    chatGroups: [],
     selectedUser: null,
+    selectedGroup: null,
+    chatMode: 'direct',
     unsubscribeMessages: null,
     unsubscribeAuth: null,
     usersLoading: false,
@@ -150,8 +156,9 @@
     chatInitialized: false,
     authInitialized: false,
     eventsInitialized: false,
-    showAllFriends: true,
-    showGroupComposer: false
+    showAllFriends: false,
+    showGroupComposer: false,
+    unreadByUser: {}
   };
   /* =========================================================
      FIREBASE
@@ -292,11 +299,12 @@
     uid1,
     uid2
   ) {
-    return [String(uid1 || ""), String(uid2 || "")].filter(Boolean).sort().join('_');
-  }
-
-  function getLegacyChatId(uid1, uid2) {
-    return [String(uid1 || ""), String(uid2 || "")].filter(Boolean).sort().join('__');
+    return [
+      String(uid1),
+      String(uid2)
+    ]
+      .sort()
+      .join('__');
   }
   function setText(
     host,
@@ -319,6 +327,75 @@
       SELECTOR.messengerStatus,
       text
     );
+  }
+
+  async function createChatNotification({
+    recipientUid,
+    senderUid,
+    senderName,
+    roomId,
+    text
+  }) {
+    const firestore = getFirestore();
+    if (
+      !firestore ||
+      !recipientUid ||
+      !senderUid ||
+      !roomId ||
+      String(recipientUid) === String(senderUid)
+    ) {
+      return;
+    }
+    try {
+      await firestore
+        .collection('csNotifications')
+        .doc(String(recipientUid))
+        .collection('items')
+        .add({
+          type: 'chat_message',
+          recipientUid: String(recipientUid),
+          senderId: String(senderUid),
+          senderName: String(senderName || 'Người dùng'),
+          roomId: String(roomId),
+          chatId: String(roomId),
+          title: `${String(senderName || 'Người dùng')} đã gửi tin nhắn cho bạn`,
+          preview: String(text || '').slice(0, 180) || 'Bạn có một tin nhắn mới.',
+          read: false,
+          createdAt: serverTimestamp()
+        });
+    } catch (error) {
+      console.warn('[ADMIN CHAT] Không thể tạo notification chat:', error);
+    }
+  }
+  async function loadContacts() {
+    const firestore = getFirestore();
+    const currentUser = state.user;
+    if (!firestore || !currentUser) return;
+    try {
+      const snapshot = await firestore.collection('chatContacts').doc(currentUser.uid).collection('items').get();
+      state.contactIds = new Set(snapshot.docs.map(doc => String(doc.data()?.contactUid || doc.id)));
+    } catch (error) {
+      console.warn('[ADMIN CHAT] Không tải được danh bạ:', error);
+      state.contactIds = new Set();
+    }
+  }
+  async function addContact(uid) {
+    const firestore = getFirestore();
+    const currentUser = state.user;
+    const target = state.users.find(user => String(user.uid) === String(uid));
+    if (!firestore || !currentUser || !target || String(target.uid) === String(currentUser.uid)) return;
+    try {
+      const batch = firestore.batch();
+      batch.set(firestore.collection('chatContacts').doc(currentUser.uid).collection('items').doc(String(target.uid)), { contactUid: String(target.uid), name: getName(target), email: target.email || '', addedAt: serverTimestamp() }, { merge: true });
+      batch.set(firestore.collection('chatContacts').doc(String(target.uid)).collection('items').doc(currentUser.uid), { contactUid: currentUser.uid, name: getName(currentUser), email: currentUser.email || '', addedAt: serverTimestamp() }, { merge: true });
+      await batch.commit();
+      state.contactIds.add(String(target.uid));
+      renderFriends();
+      setMessengerStatus(document, `Đã thêm ${getName(target)} vào danh bạ.`);
+    } catch (error) {
+      console.warn('[ADMIN CHAT] Không thể thêm bạn:', error);
+      setMessengerStatus(document, 'Không thể thêm bạn.');
+    }
   }
   /* =========================================================
      FIND ADMIN BAR HOST
@@ -1016,27 +1093,12 @@
           read: true,
           readAt: serverTimestamp()
         }, { merge: true });
-      const roomIds = Array.from(new Set([
-        item.roomId,
-        item.chatId,
-        item.roomID
-      ].filter(Boolean).map(String)));
-      await Promise.all(roomIds.map(roomId =>
-        markChatRoomMessagesRead(roomId, uid)
-      ));
-      await Promise.all(roomIds.map(roomId =>
-        firestore.collection('chats').doc(roomId).set({
-          lastMessageReadBy: uid,
-          lastMessageReadAt: serverTimestamp()
-        }, { merge: true })
-      ));
       chatNotificationRecords = chatNotificationRecords.map(record =>
         String(record.id) === String(item.id)
           ? { ...record, read: true }
           : record
       );
       renderChatNotifications();
-      setMessengerUnreadBadge(0);
     } catch (error) {
       console.warn('[ADMIN CHAT] Không thể đồng bộ trạng thái đã đọc:', error);
     }
@@ -1092,10 +1154,10 @@
     if (messenger) messenger.hidden = false;
     messengerButton?.setAttribute('aria-expanded', 'true');
     await loadChatUsers();
-    const senderId = item.senderId || item.from || item.senderUID;
-    if (senderId) {
-      await openChat(String(senderId));
-    }
+    setChatTab('recent');
+    state.showAllFriends = true;
+    state.showGroupComposer = false;
+    renderFriends();
   }
   function setupChatNotificationUI() {
     if (chatNotificationUIReady) return;
@@ -1539,8 +1601,10 @@
           if (a.updatedAtValue !== b.updatedAtValue) return b.updatedAtValue - a.updatedAtValue;
           return getName(a).localeCompare(getName(b), 'vi');
         });
+      await loadContacts();
       renderFriends();
       renderGroupMembers();
+      await loadChatGroups();
     } catch (error) {
       console.error(
         '[ADMIN CHAT] LOAD USERS ERROR:',
@@ -1601,7 +1665,11 @@
       users
         .map(
           user => {
-            const isUnread = Boolean(
+            const unreadCount = Math.max(
+              0,
+              Number(state.unreadByUser[String(user.uid)] || 0)
+            );
+            const isUnread = unreadCount > 0 || Boolean(
               user.hasRoom &&
               user.lastMessage &&
               user.lastMessageBy &&
@@ -1613,6 +1681,7 @@
                 ? `Bạn: ${user.lastMessage}`
                 : String(user.lastMessage)
               : (user.hasRoom ? 'Mở để xem tin nhắn' : '');
+            const isContact = state.contactIds.has(String(user.uid));
             return `
             <div
               class="adminbar-friend-row ${isUnread ? 'is-unread' : 'is-read'}"
@@ -1653,6 +1722,8 @@
                   }
                 </small>
               </span>
+              ${unreadCount ? `<b class="adminbar-chat-unread-count" aria-label="${unreadCount} tin nhắn chưa đọc">${unreadCount > 99 ? '99+' : unreadCount}</b>` : ''}
+              ${isContact ? '' : `<button type="button" class="adminbar-invite-btn" data-add-contact="${escapeHtml(user.uid)}">Thêm bạn</button>`}
             </div>
           `;
           }
@@ -1708,6 +1779,52 @@
         )
         .join('');
   }
+  function ensureChatGroupList() {
+    const groupsView = $(SELECTOR.groupsView);
+    if (!groupsView) return null;
+    let list = $(SELECTOR.groupList);
+    if (!list) {
+      const title = document.createElement('p');
+      title.className = 'adminbar-field-title';
+      title.textContent = 'Nhóm của bạn';
+      list = document.createElement('div');
+      list.id = 'adminbarGroupList';
+      list.className = 'adminbar-list adminbar-chat-group-list';
+      groupsView.append(title, list);
+    }
+    return list;
+  }
+  function renderChatGroups() {
+    const list = ensureChatGroupList();
+    if (!list) return;
+    if (!state.chatGroups.length) {
+      list.innerHTML = '<p class="adminbar-state">Chưa có nhóm chat nào.</p>';
+      return;
+    }
+    list.innerHTML = state.chatGroups.map(group => {
+      const count = Array.isArray(group.participants) ? group.participants.length : 0;
+      return `<div class="adminbar-friend-row" data-chat-group="${escapeHtml(group.id)}" role="button" tabindex="0"><span class="adminbar-chat-avatar">${escapeHtml(getInitials(group.name || 'Nhóm'))}</span><span class="adminbar-friend-info"><strong>${escapeHtml(group.name || 'Nhóm chat')}</strong><span class="adminbar-friend-preview">${escapeHtml(group.lastMessage || 'Chưa có tin nhắn')}</span><small>${count} thành viên</small></span></div>`;
+    }).join('');
+  }
+  async function loadChatGroups() {
+    const firestore = getFirestore();
+    const currentUser = state.user;
+    const list = ensureChatGroupList();
+    if (!firestore || !currentUser || !list) return;
+    try {
+      const snapshot = await firestore.collection('chatGroups').where('participants', 'array-contains', currentUser.uid).get();
+      state.chatGroups = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      state.chatGroups.sort((a, b) => {
+        const aTime = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : 0;
+        const bTime = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : 0;
+        return bTime - aTime;
+      });
+      renderChatGroups();
+    } catch (error) {
+      console.warn('[ADMIN CHAT] Không tải được nhóm chat:', error);
+      list.innerHTML = '<p class="adminbar-state">Không tải được danh sách nhóm.</p>';
+    }
+  }
   /* =========================================================
      SET CHAT TAB
   ========================================================= */
@@ -1746,44 +1863,6 @@
     });
     renderFriends();
   }
-  async function resolveAdminChatRoomId(firestore, uidA, uidB) {
-    const ids = [String(uidA || ""), String(uidB || "")].filter(Boolean);
-    const candidates = [...new Set([
-      getChatId(uidA, uidB),
-      ids.slice().sort().join("_")
-    ].filter(Boolean))];
-    const existingRooms = [];
-    for (const candidate of candidates) {
-      const snapshot = await firestore.collection("chats").doc(candidate).get();
-      if (snapshot.exists) existingRooms.push({ id: candidate, data: snapshot.data() || {} });
-    }
-    if (existingRooms.length) {
-      existingRooms.sort((a, b) => {
-        const aHasMessage = a.data.lastMessage ? 1 : 0;
-        const bHasMessage = b.data.lastMessage ? 1 : 0;
-        if (aHasMessage !== bHasMessage) return bHasMessage - aHasMessage;
-        const aTime = a.data.updatedAt?.toMillis ? a.data.updatedAt.toMillis() : (a.data.updatedAt?.seconds || 0) * 1000;
-        const bTime = b.data.updatedAt?.toMillis ? b.data.updatedAt.toMillis() : (b.data.updatedAt?.seconds || 0) * 1000;
-        return bTime - aTime;
-      });
-      return existingRooms[0].id;
-    }
-    for (const field of ["participantIds", "participants"]) {
-      try {
-        const snapshot = await firestore.collection("chats").where(field, "array-contains", String(uidA)).get();
-        const found = snapshot.docs.find((doc) => {
-          const data = doc.data() || {};
-          const participants = Array.isArray(data.participantIds) ? data.participantIds : (Array.isArray(data.participants) ? data.participants : []);
-          return participants.map(String).includes(String(uidB));
-        });
-        if (found) return found.id;
-      } catch (error) {
-        console.warn('[ADMIN CHAT] Không truy vấn room theo ' + field + ':', error);
-      }
-    }
-    return candidates[0] || '';
-  }
-
   /* =========================================================
      OPEN CHAT - hỗ trợ room ID mới và room ID cũ
   ========================================================= */
@@ -1824,9 +1903,8 @@
     messages.innerHTML = '<p class="adminbar-state">Đang tải tin nhắn...</p>';
     const roomIds = Array.from(new Set([
       getChatId(currentUser.uid, target.uid),
-      getLegacyChatId(currentUser.uid, target.uid),
-      [String(currentUser.uid), String(target.uid)].sort().join('__')
-    ].filter(Boolean)));
+      [String(currentUser.uid), String(target.uid)].sort().join('_')
+    ]));
     console.log('[ADMIN CHAT] OPEN rooms:', roomIds);
     /* Đồng bộ cả notification bell khi mở cuộc trò chuyện. */
     await markChatNotificationsReadForRooms(roomIds, currentUser.uid);
@@ -1930,11 +2008,107 @@
       });
     };
   }
+  async function openChatGroup(groupId) {
+    const currentUser = state.user;
+    const firestore = getFirestore();
+    const group = state.chatGroups.find(item => String(item.id) === String(groupId));
+    if (!currentUser || !firestore || !group) return;
+    if (state.unsubscribeMessages) {
+      state.unsubscribeMessages();
+      state.unsubscribeMessages = null;
+    }
+    state.selectedUser = null;
+    state.selectedGroup = group;
+    state.chatMode = 'group';
+    const listView = $(SELECTOR.messengerListView);
+    const chatView = $(SELECTOR.chatView);
+    const messages = $(SELECTOR.chatMessages);
+    if (!listView || !chatView || !messages) return;
+    listView.hidden = true;
+    chatView.hidden = false;
+    setText(document, SELECTOR.chatName, group.name || 'Nhóm chat');
+    setText(document, SELECTOR.chatRole, `${(group.participants || []).length} thành viên`);
+    setText(document, SELECTOR.chatAvatar, getInitials(group.name || 'Nhóm'));
+    setMessengerStatus(document, `Đang trò chuyện trong ${group.name || 'nhóm chat'}`);
+    messages.innerHTML = '<p class="adminbar-state">Đang tải tin nhắn...</p>';
+    state.unsubscribeMessages = firestore.collection('chatGroups').doc(group.id).collection('messages').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
+      const rows = snapshot.docs.map(doc => doc.data() || {});
+      messages.innerHTML = rows.length ? '' : '<p class="adminbar-state">Hãy gửi tin nhắn đầu tiên.</p>';
+      rows.forEach(data => {
+        const bubble = document.createElement('div');
+        bubble.className = 'adminbar-chat-bubble';
+        if (String(data.from || data.senderId || '') === String(currentUser.uid)) bubble.classList.add('is-mine');
+        bubble.textContent = data.text || data.message || '';
+        messages.appendChild(bubble);
+      });
+      messages.scrollTop = messages.scrollHeight;
+    }, error => {
+      console.warn('[ADMIN CHAT] Không tải được tin nhắn nhóm:', error);
+      messages.innerHTML = '<p class="adminbar-state">Không tải được tin nhắn nhóm.</p>';
+    });
+  }
+  async function sendChatGroupMessage(event) {
+    event.preventDefault();
+    const firestore = getFirestore();
+    const currentUser = state.user;
+    const group = state.selectedGroup;
+    const input = $(SELECTOR.chatInput);
+    const text = input?.value.trim() || '';
+    if (!firestore || !currentUser || !group || !input || !text) return;
+    input.disabled = true;
+    try {
+      const groupRef = firestore.collection('chatGroups').doc(group.id);
+      const participants = Array.isArray(group.participants) ? group.participants.map(String) : [];
+      const senderName = getName(currentUser);
+      const batch = firestore.batch();
+      const messageRef = groupRef.collection('messages').doc();
+      batch.set(messageRef, {
+        from: currentUser.uid,
+        senderId: currentUser.uid,
+        senderName,
+        to: participants.filter(uid => uid !== String(currentUser.uid)),
+        text,
+        message: text,
+        createdAt: serverTimestamp(),
+        read: false
+      });
+      batch.set(groupRef, {
+        lastMessage: text,
+        lastMessageBy: currentUser.uid,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      participants.filter(uid => uid !== String(currentUser.uid)).forEach(uid => {
+        const notice = firestore.collection('csNotifications').doc(uid).collection('items').doc();
+        batch.set(notice, {
+          type: 'chat_group_message',
+          recipientUid: uid,
+          senderId: currentUser.uid,
+          senderName,
+          chatGroupId: group.id,
+          title: `${senderName} đã gửi tin nhắn trong ${group.name || 'nhóm chat'}`,
+          preview: text.slice(0, 180),
+          read: false,
+          createdAt: serverTimestamp()
+        });
+      });
+      await batch.commit();
+      input.value = '';
+      input.focus();
+    } catch (error) {
+      console.error('[ADMIN CHAT] Không gửi được tin nhắn nhóm:', error);
+      setMessengerStatus(document, 'Không gửi được tin nhắn nhóm.');
+    } finally {
+      input.disabled = false;
+    }
+  }
   /* =========================================================
      SEND MESSAGE - gửi vào room đang tồn tại nếu có
   ========================================================= */
   async function sendMessage(event) {
     event.preventDefault();
+    if (state.chatMode === 'group') {
+      return sendChatGroupMessage(event);
+    }
     const currentUser = state.user;
     const target = state.selectedUser;
     const firestore = getFirestore();
@@ -1943,12 +2117,25 @@
     if (!currentUser || !target || !firestore || !text) return;
     input.disabled = true;
     try {
-      const chatId = getChatId(currentUser.uid, target.uid);
+      const candidateIds = Array.from(new Set([
+        getChatId(currentUser.uid, target.uid),
+        [String(currentUser.uid), String(target.uid)].sort().join('_')
+      ]));
+      let chatId = candidateIds[0];
+      for (const candidateId of candidateIds) {
+        const roomSnapshot = await firestore
+          .collection('chats')
+          .doc(candidateId)
+          .get();
+        if (roomSnapshot.exists) {
+          chatId = candidateId;
+          break;
+        }
+      }
       const chatRef = firestore.collection('chats').doc(chatId);
       const timestamp = serverTimestamp();
       await chatRef.set({
         participants: [currentUser.uid, target.uid],
-        participantIds: [currentUser.uid, target.uid],
         participantNames: {
           [currentUser.uid]: getName(currentUser),
           [target.uid]: getName(target)
@@ -1962,15 +2149,17 @@
         from: currentUser.uid,
         to: target.uid,
         senderId: currentUser.uid,
-        senderUID: currentUser.uid,
-        senderName: getName(currentUser),
-        senderEmail: currentUser.email || '',
         receiverId: target.uid,
-        receiverUID: target.uid,
-        receiverName: getName(target),
         text,
         createdAt: timestamp,
         read: false
+      });
+      await createChatNotification({
+        recipientUid: target.uid,
+        senderUid: currentUser.uid,
+        senderName: getName(currentUser),
+        roomId: chatId,
+        text
       });
       input.value = '';
       input.focus();
@@ -1994,6 +2183,8 @@
     }
     state.selectedUser =
       null;
+    state.selectedGroup = null;
+    state.chatMode = 'direct';
     const listView =
       $(SELECTOR.messengerListView);
     const chatView =
@@ -2089,6 +2280,13 @@
           ...selected
         ])
       );
+    const participantNames = {};
+    participants.forEach(uid => {
+      const profile = String(uid) === String(currentUser.uid)
+        ? currentUser
+        : state.users.find(user => String(user.uid) === String(uid));
+      participantNames[uid] = getName(profile || { name: 'Thành viên' });
+    });
     try {
       const groupRef =
         await firestore
@@ -2097,6 +2295,7 @@
             name:
               groupName,
             participants,
+            participantNames,
             createdBy:
               currentUser.uid,
             createdAt:
@@ -2123,6 +2322,8 @@
         document,
         'Đã tạo nhóm thành công.'
       );
+      await loadChatGroups();
+      await openChatGroup(groupRef.id);
     } catch (error) {
       console.error(
         '[ADMIN CHAT] CREATE GROUP ERROR:',
@@ -2178,8 +2379,17 @@
           const counts = new Map();
           const updateBadge = () => {
             let total = 0;
-            counts.forEach(count => { total += count; });
+            const unreadByUser = {};
+            counts.forEach(record => {
+              const count = Number(record?.count || 0);
+              total += count;
+              if (record?.otherUid && count) {
+                unreadByUser[record.otherUid] = (unreadByUser[record.otherUid] || 0) + count;
+              }
+            });
+            state.unreadByUser = unreadByUser;
             setMessengerUnreadBadge(total);
+            renderFriends();
           };
           if (!roomsSnapshot.size) {
             updateBadge();
@@ -2187,6 +2397,10 @@
           }
           roomsSnapshot.forEach(roomDoc => {
             const roomData = roomDoc.data() || {};
+            const participants = Array.isArray(roomData.participants)
+              ? roomData.participants
+              : (Array.isArray(roomData.participantIds) ? roomData.participantIds : []);
+            const otherUid = String(participants.find(participant => String(participant) !== String(uid)) || '');
             const messagesRef = roomDoc.ref.collection('messages');
             const unsubscribe = messagesRef.onSnapshot(
               messagesSnapshot => {
@@ -2214,7 +2428,7 @@
                 ) {
                   count = 1;
                 }
-                counts.set(roomDoc.id, count);
+                counts.set(roomDoc.id, { count, otherUid });
                 updateBadge();
               },
               error => {
@@ -2223,7 +2437,7 @@
                   roomDoc.id,
                   error
                 );
-                counts.set(roomDoc.id, 0);
+                counts.set(roomDoc.id, { count: 0, otherUid });
                 updateBadge();
               }
             );
@@ -2301,6 +2515,13 @@
       ?.addEventListener(
         'click',
         event => {
+          const addButton = event.target.closest('[data-add-contact]');
+          if (addButton) {
+            event.preventDefault();
+            event.stopPropagation();
+            addContact(addButton.dataset.addContact);
+            return;
+          }
           const target =
             event.target.closest(
               '.adminbar-friend-row[data-chat]'
@@ -2320,6 +2541,13 @@
       event.preventDefault();
       openChat(target.dataset.chat);
     });
+    $(SELECTOR.groupsView)
+      ?.addEventListener('click', event => {
+        const target = event.target.closest('[data-chat-group]');
+        if (!target) return;
+        event.preventDefault();
+        openChatGroup(target.dataset.chatGroup);
+      });
     /*
      * Back
      */
@@ -2338,11 +2566,9 @@
       ?.addEventListener(
         'submit',
         event => {
-          if (event.__adminChatSubmitHandled) return;
-          event.__adminChatSubmitHandled = true;
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          sendMessage(event);
+          sendMessage(
+            event
+          );
         }
       );
     /*

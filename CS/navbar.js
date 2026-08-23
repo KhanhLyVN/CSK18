@@ -87,6 +87,8 @@
     authUnsubscribe: null,
     notificationsUnsubscribe: null,
     roleResolved: false,
+    directUnreadCount: 0,
+    groupUnreadCount: 0,
 
     initialized: false,
 
@@ -227,7 +229,6 @@
     { key: "create", label: "Tạo phiếu hỗ trợ", icon: "create", href: "/CS/PhieuHoTroCS/phieuhotro-cs.html" },
     { key: "groups", label: "Nhóm của tôi", icon: "groups", href: "/CS/Groups/group.html", leaderOnly: true },
     { key: "member-groups", label: "Nhóm trao đổi", icon: "memberGroups", href: "/CS/Groups/group-member.html", memberOnly: true },
-    { key: "reports", label: "Báo cáo thống kê", icon: "reports", href: "/CS/Dashboard/cs-dashboard.html", leaderOnly: true },
     { key: "faq", label: "FAQs", icon: "faq", href: "/FAQs/CS-FAQ.html" },
     { key: "account", label: "Cài đặt hệ thống", icon: "account", href: "/CS/account-CS.html" }
   ];
@@ -686,6 +687,66 @@
       ? 0
       : parsed;
 
+  }
+
+  async function createDirectChatNotification(db, options) {
+    const recipientUid = String(options?.recipientUid || "");
+    const senderUid = String(options?.senderUid || "");
+    const roomId = String(options?.roomId || "");
+    if (!db || !recipientUid || !senderUid || !roomId || recipientUid === senderUid) return;
+    const senderName = String(options?.senderName || "Người dùng");
+    const text = String(options?.text || "").trim();
+    try {
+      await db.collection("csNotifications").doc(recipientUid).collection("items").add({
+        type: "chat_message",
+        recipientUid,
+        senderId: senderUid,
+        senderName,
+        roomId,
+        chatId: roomId,
+        title: `${senderName} đã gửi tin nhắn cho bạn`,
+        preview: text.slice(0, 180) || "Bạn có một tin nhắn mới.",
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.warn("[CS CHAT] Không thể tạo notification chat:", error);
+    }
+  }
+
+  async function saveChatContact(target) {
+    const db = getDB();
+    const currentUser = state.currentUser;
+    if (!db || !currentUser || !target?.uid || String(target.uid) === String(currentUser.uid)) return;
+    try {
+      const batch = db.batch();
+      batch.set(db.collection("chatContacts").doc(currentUser.uid).collection("items").doc(String(target.uid)), { contactUid: String(target.uid), name: getUserName(target), email: getUserEmail(target), addedAt: serverTimestamp() }, { merge: true });
+      batch.set(db.collection("chatContacts").doc(String(target.uid)).collection("items").doc(currentUser.uid), { contactUid: currentUser.uid, name: getUserName(state.currentUserData || currentUser), email: currentUser.email || "", addedAt: serverTimestamp() }, { merge: true });
+      await batch.commit();
+    } catch (error) {
+      console.warn("[CS CHAT] Không thể lưu danh bạ:", error);
+    }
+  }
+
+  async function markDirectChatNotificationsRead(roomId) {
+    const db = getDB();
+    const currentUser = state.currentUser;
+    if (!db || !currentUser || !roomId) return;
+    try {
+      const snapshot = await db.collection("csNotifications").doc(currentUser.uid).collection("items").get();
+      const batch = db.batch();
+      let changed = false;
+      snapshot.forEach((doc) => {
+        const item = doc.data() || {};
+        if ((String(item.roomId || item.chatId || "") === String(roomId)) && item.read !== true) {
+          batch.set(doc.ref, { read: true, readAt: serverTimestamp() }, { merge: true });
+          changed = true;
+        }
+      });
+      if (changed) await batch.commit();
+    } catch (error) {
+      console.warn("[CS CHAT] Không thể đánh dấu notification chat đã đọc:", error);
+    }
   }
 
 
@@ -1352,17 +1413,19 @@
     elements.groups.innerHTML = '<div class="cs-single-chat-loading">Đang tải nhóm...</div>';
     const groupsById = new Map();
     try {
-      const [memberSnapshot, leaderSnapshot] = await Promise.all([
+      const [memberSnapshot, leaderSnapshot, chatGroupSnapshot] = await Promise.all([
         db.collection("groups").where("memberIds", "array-contains", currentUser.uid).get(),
-        db.collection("groups").where("leaderUid", "==", currentUser.uid).get()
+        db.collection("groups").where("leaderUid", "==", currentUser.uid).get(),
+        db.collection("chatGroups").where("participants", "array-contains", currentUser.uid).get()
       ]);
       [...memberSnapshot.docs, ...leaderSnapshot.docs].forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
+      chatGroupSnapshot.docs.forEach((doc) => groupsById.set(`chat:${doc.id}`, { id: doc.id, ...doc.data(), isChatGroup: true }));
     } catch (error) {
       console.warn("[CS CHAT] Không tải nhanh được nhóm, thử tải toàn bộ:", error);
       const snapshot = await db.collection("groups").get();
       snapshot.docs.forEach((doc) => groupsById.set(doc.id, { id: doc.id, ...doc.data() }));
     }
-    state.groups = [...groupsById.values()].filter((group) => groupBelongsToCurrentUser(group, currentUser.uid)).sort((a, b) => groupTitle(a).localeCompare(groupTitle(b), "vi"));
+    state.groups = [...groupsById.values()].filter((group) => group.isChatGroup || groupBelongsToCurrentUser(group, currentUser.uid)).sort((a, b) => groupTitle(a).localeCompare(groupTitle(b), "vi"));
     renderGroups();
     renderCreateGroupMembers();
   }
@@ -1378,6 +1441,14 @@
 
   function groupParticipants(group) {
     const result = new Map();
+    if (group?.isChatGroup) {
+      const names = group?.participantNames || {};
+      (Array.isArray(group?.participants) ? group.participants : []).forEach((uidValue) => {
+        const uid = String(uidValue || "");
+        if (uid) result.set(uid, { uid, name: names[uid] || "Thành viên", email: "", role: "member" });
+      });
+      return [...result.values()];
+    }
     const leaderId = groupLeaderId(group);
     const leader = group?.leader || {};
     if (leaderId) result.set(leaderId, { uid: leaderId, name: group.leaderName || leader.name || "CS Leader", email: group.leaderEmail || leader.email || "", role: "leader" });
@@ -1426,8 +1497,13 @@
     if (!db || !currentUser || !name) return;
     const allIds = [currentUser.uid, ...memberIds.filter((uid) => uid !== currentUser.uid)];
     try {
-      const groupRef = db.collection("groups").doc();
-      await groupRef.set({ name, leaderUid: currentUser.uid, leaderName: getUserName(state.currentUserData || currentUser), leaderEmail: currentUser.email || "", memberIds: allIds, members: allIds.map((uid) => uid === currentUser.uid ? { uid, name: getUserName(state.currentUserData || currentUser), email: currentUser.email || "" } : { uid }), createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      const groupRef = db.collection("chatGroups").doc();
+      const participantNames = {};
+      allIds.forEach((uid) => {
+        const member = uid === currentUser.uid ? (state.currentUserData || currentUser) : state.users.find((user) => String(user.uid) === String(uid));
+        participantNames[uid] = getUserName(member || { name: "Thành viên" });
+      });
+      await groupRef.set({ name, participants: allIds, participantNames, createdBy: currentUser.uid, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMessage: "", lastMessageBy: "" });
       await loadGroups();
       if (elements.groupName) elements.groupName.value = "";
       elements.groupMembers?.querySelectorAll("input:checked").forEach((input) => { input.checked = false; });
@@ -1658,7 +1734,7 @@
     const group = state.groups.find((item) => String(item.id) === String(groupId));
     if (!group) return;
     stopMessageListener();
-    state.chatMode = "group";
+    state.chatMode = group.isChatGroup ? "chat-group" : "group";
     state.selectedGroup = group;
     state.selectedUser = null;
     state.roomId = group.id;
@@ -1667,10 +1743,10 @@
     if (elements.list) elements.list.hidden = true;
     elements.conversation.hidden = false;
     if (elements.name) elements.name.textContent = groupTitle(group);
-    if (elements.role) elements.role.textContent = `${groupParticipants(group).length} thành viên · Leader và CS con`;
+    if (elements.role) elements.role.textContent = group.isChatGroup ? `${groupParticipants(group).length} thành viên · Nhóm chat` : `${groupParticipants(group).length} thành viên · Leader và CS con`;
     if (elements.avatar) elements.avatar.textContent = getInitials(groupTitle(group));
     if (elements.messages) elements.messages.innerHTML = '<div class="cs-single-chat-loading">Đang tải tin nhắn nhóm...</div>';
-    if (elements.input) elements.input.placeholder = "Nhập tin nhắn cho các CS trong nhóm...";
+    if (elements.input) elements.input.placeholder = group.isChatGroup ? "Nhập tin nhắn cho các thành viên..." : "Nhập tin nhắn cho các CS trong nhóm...";
     listenMessages(group.id);
   }
 
@@ -1723,6 +1799,8 @@
 
     }
 
+    await saveChatContact(target);
+
 
     stopMessageListener();
 
@@ -1731,7 +1809,7 @@
       target;
 
 
-    const roomId = makeRoomId(currentUser.uid, target.uid);
+    const roomId = await resolveDirectRoomId(db, currentUser.uid, target.uid);
 
 
     if (!roomId) {
@@ -1957,6 +2035,17 @@
         if (state.roomId === roomId) markRoomRead(roomId);
       }, (error) => {
         console.error("[CS CHAT] GROUP MESSAGE LISTENER ERROR:", error);
+        if (elements.messages) elements.messages.innerHTML = `<div class="cs-single-chat-error">Không thể tải tin nhắn nhóm.<br><small>${escapeHTML(error.message || "")}</small></div>`;
+      });
+      return;
+    }
+
+    if (state.chatMode === "chat-group") {
+      const groupMessagesRef = db.collection("chatGroups").doc(roomId).collection("messages");
+      state.messagesUnsubscribe = groupMessagesRef.orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+        renderMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      }, (error) => {
+        console.error("[CS CHAT] CHAT GROUP MESSAGE LISTENER ERROR:", error);
         if (elements.messages) elements.messages.innerHTML = `<div class="cs-single-chat-error">Không thể tải tin nhắn nhóm.<br><small>${escapeHTML(error.message || "")}</small></div>`;
       });
       return;
@@ -2199,13 +2288,16 @@
     if (elements.send) elements.send.disabled = true;
     try {
       const group = state.selectedGroup;
-      const messageRef = db.collection("groups").doc(group.id).collection("memberMessages").doc();
+      const isChatGroup = Boolean(group.isChatGroup);
+      const groupRef = db.collection(isChatGroup ? "chatGroups" : "groups").doc(group.id);
+      const messageRef = groupRef.collection(isChatGroup ? "messages" : "memberMessages").doc();
       const senderName = getUserName(state.currentUserData || currentUser);
       const batch = db.batch();
-      batch.set(messageRef, { senderUid: currentUser.uid, senderName, senderEmail: currentUser.email || "", senderType: groupLeaderId(group) === String(currentUser.uid) ? "cs_leader" : "cs_member", text, message: text, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      batch.set(messageRef, isChatGroup ? { from: currentUser.uid, to: groupParticipants(group).filter((member) => String(member.uid) !== String(currentUser.uid)).map((member) => member.uid), senderId: currentUser.uid, senderUid: currentUser.uid, senderName, senderEmail: currentUser.email || "", text, message: text, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), read: false } : { senderUid: currentUser.uid, senderName, senderEmail: currentUser.email || "", senderType: groupLeaderId(group) === String(currentUser.uid) ? "cs_leader" : "cs_member", text, message: text, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      if (isChatGroup) batch.set(groupRef, { lastMessage: text, lastMessageBy: currentUser.uid, updatedAt: serverTimestamp() }, { merge: true });
       groupParticipants(group).filter((member) => String(member.uid) !== String(currentUser.uid)).forEach((member) => {
         const notice = db.collection("csNotifications").doc(member.uid).collection("items").doc();
-        batch.set(notice, { type: "group_message", recipientUid: member.uid, groupId: group.id, groupName: groupTitle(group), messageId: messageRef.id, title: `Tin nhắn mới trong ${groupTitle(group)}`, preview: `${senderName}: ${text.slice(0, 180)}`, link: groupLeaderId(group) === String(member.uid) ? `/CS/Groups/group.html?group=${encodeURIComponent(group.id)}` : `/CS/Groups/group-member.html?group=${encodeURIComponent(group.id)}`, read: false, createdAt: serverTimestamp() });
+        batch.set(notice, isChatGroup ? { type: "chat_group_message", recipientUid: member.uid, senderId: currentUser.uid, senderName, chatGroupId: group.id, groupName: groupTitle(group), messageId: messageRef.id, title: `${senderName} đã gửi tin nhắn trong ${groupTitle(group)}`, preview: text.slice(0, 180), read: false, createdAt: serverTimestamp() } : { type: "group_message", recipientUid: member.uid, groupId: group.id, groupName: groupTitle(group), messageId: messageRef.id, title: `Tin nhắn mới trong ${groupTitle(group)}`, preview: `${senderName}: ${text.slice(0, 180)}`, link: groupLeaderId(group) === String(member.uid) ? `/CS/Groups/group.html?group=${encodeURIComponent(group.id)}` : `/CS/Groups/group-member.html?group=${encodeURIComponent(group.id)}`, read: false, createdAt: serverTimestamp() });
       });
       await batch.commit();
       elements.input.value = "";
@@ -2243,11 +2335,11 @@
     const target =
       state.selectedUser;
 
-    if (state.chatMode === "group") {
+    if (state.chatMode === "group" || state.chatMode === "chat-group") {
       return sendGroupMessage(event);
     }
 
-    const roomId = makeRoomId(currentUser.uid, target.uid);
+    const roomId = state.roomId || await resolveDirectRoomId(db, currentUser.uid, target.uid);
     state.roomId = roomId;
 
     const elements =
@@ -2439,6 +2531,14 @@
 
       });
 
+      await createDirectChatNotification(db, {
+        recipientUid: target.uid,
+        senderUid: currentUser.uid,
+        senderName: getUserName(state.currentUserData || currentUser),
+        roomId,
+        text
+      });
+
 
       elements.input.value =
         "";
@@ -2533,6 +2633,8 @@
         if (notificationChanged) await notificationBatch.commit();
         return;
       }
+
+      await markDirectChatNotificationsRead(roomId);
 
       const messagesRef =
         db
@@ -2806,9 +2908,8 @@
             );
 
 
-            updateBadge(
-              unread
-            );
+            state.directUnreadCount = unread;
+            updateBadge(state.directUnreadCount + state.groupUnreadCount);
 
           },
 
@@ -2819,6 +2920,8 @@
               "[CS CHAT] UNREAD ERROR:",
               error
             );
+            state.directUnreadCount = 0;
+            updateBadge(state.groupUnreadCount);
 
           }
 
@@ -2831,7 +2934,8 @@
         const data = doc.data() || {};
         if (data.type === "group_message" && data.read !== true) unreadGroups += 1;
       });
-      updateBadge(unreadGroups);
+      state.groupUnreadCount = unreadGroups;
+      updateBadge(state.directUnreadCount + state.groupUnreadCount);
     }, (error) => console.warn("[CS CHAT] GROUP BADGE ERROR:", error));
 
   }
@@ -3236,6 +3340,8 @@
 
             state.roleResolved = false;
             hideRestrictedNavigation();
+            state.directUnreadCount = 0;
+            state.groupUnreadCount = 0;
 
             state.currentUserData =
               null;

@@ -788,6 +788,26 @@ button {
 .adminbar-friend-info {
   overflow: hidden
 }
+
+.adminbar-friend-row.is-unread {
+  padding-right: 8px;
+  background: linear-gradient(90deg, rgba(244, 231, 213, .42), rgba(255, 253, 249, 0));
+}
+.adminbar-chat-unread-count {
+  min-width: 20px;
+  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: #fff;
+  background: #bd4137;
+  box-shadow: 0 3px 9px rgba(189, 65, 55, .26);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
 /* Final chat polish */
 .adminbar-top-actions {
   align-items: center;

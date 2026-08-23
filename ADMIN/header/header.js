@@ -12,6 +12,15 @@
       .slice(0, 2) || 'AD'
   ).toUpperCase();
 
+  const ensureAdminMessenger = () => {
+    if (window.__adminbarLoadedVersion || document.querySelector('script[data-adminbar-chat]')) return;
+    const script = document.createElement('script');
+    script.src = '/ADMIN/admin-bar.js';
+    script.async = false;
+    script.dataset.adminbarChat = 'true';
+    document.head.appendChild(script);
+  };
+
   const install = (markup) => {
     const host = document.getElementById('adminBar');
     const main = document.querySelector('main.main-content');
@@ -139,6 +148,7 @@
     };
 
     loadCsAccountCount();
+    ensureAdminMessenger();
     document.dispatchEvent(new CustomEvent('adminbar:ready'));
   };
 
