@@ -958,29 +958,76 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
     loadTicketsForCurrentCS(currentCSProfile);
   });
   /* =====================================================
-       LOAD TICKET THEO PHÒNG BAN + CAMPUS
+       LOAD TICKET THEO PHÂN CÔNG / PHÒNG BAN + CAMPUS
     ===================================================== */
-  function isTicketAssignedToLeader(ticket, profile) {
+
+  /**
+   * Các phiên bản cũ của luồng leader có thể lưu người nhận ở một
+   * trong nhiều field khác nhau. Phải dùng cùng một bộ field với trang
+   * Quản lý Ticket để hai trang luôn hiển thị cùng một tập dữ liệu.
+   */
+  function getTicketAssignmentValues(ticket) {
+    const uidFields = [
+      "assignedToUid",
+      "supportLeaderUid",
+      "recipientUid",
+      "leaderUid",
+      "assigneeUid",
+    ];
+    const emailFields = [
+      "assignedToEmail",
+      "supportLeaderEmail",
+      "recipientEmail",
+      "leaderEmail",
+      "assigneeEmail",
+    ];
+
+    return {
+      uids: uidFields
+        .map((field) => ticket?.[field])
+        .filter(Boolean)
+        .map((value) => String(value).trim()),
+      emails: emailFields
+        .map((field) => ticket?.[field])
+        .filter(Boolean)
+        .map((value) => String(value).trim().toLowerCase()),
+    };
+  }
+
+  function isTicketAssignedToProfile(ticket, profile) {
     if (!ticket || !profile?.uid) {
       return false;
     }
+
+    const assignment = getTicketAssignmentValues(ticket);
     const uid = String(profile.uid).trim();
-    const email = String(profile.email || "").trim().toLowerCase();
-    const uids = [
-      ticket.supportLeaderUid,
-      ticket.assignedToUid,
-      ticket.recipientUid,
-      ticket.leaderUid,
-      ticket.assigneeUid
-    ].filter(Boolean).map(value => String(value).trim());
-    const emails = [
-      ticket.supportLeaderEmail,
-      ticket.assignedToEmail,
-      ticket.recipientEmail,
-      ticket.leaderEmail,
-      ticket.assigneeEmail
-    ].filter(Boolean).map(value => String(value).trim().toLowerCase());
-    return uids.includes(uid) || (email && emails.includes(email));
+    const email = String(profile.email || currentCSUser?.email || "")
+      .trim()
+      .toLowerCase();
+
+    return assignment.uids.includes(uid) ||
+      (email && assignment.emails.includes(email));
+  }
+
+  function hasExplicitTicketAssignee(ticket) {
+    const assignment = getTicketAssignmentValues(ticket);
+    return assignment.uids.length > 0 || assignment.emails.length > 0;
+  }
+
+  function isTicketVisibleOnHomepage(ticket, profile) {
+    if (!ticket || !profile?.uid) {
+      return false;
+    }
+
+    // Ticket đã được leader giao cụ thể: chỉ CS đúng UID/email được xem.
+    // Không dùng department/campus để cho ticket đã giao nhầm người lọt vào.
+    if (hasExplicitTicketAssignee(ticket)) {
+      return isTicketAssignedToProfile(ticket, profile);
+    }
+
+    // Ticket chưa có người nhận cụ thể: giữ cơ chế tự phân tuyến cũ.
+    return resolveDepartmentCode(ticket) === profile.department &&
+      getTicketCampus(ticket) === profile.campus;
   }
 
   function loadTicketsForCurrentCS(profile) {
@@ -993,42 +1040,35 @@ const DEFAULT_DEPARTMENT_CODE = "IT";
       return;
     }
 
-    // Leader xem ticket được định tuyến trực tiếp cho mình.
-    // CS thường vẫn xem ticket theo phòng ban/cơ sở.
-    const ticketQuery = profile.isLeader
-      ? db.collection(TICKET_COLLECTION)
-      : db.collection(TICKET_COLLECTION)
-          .where("departmentCode", "==", profile.department)
-          .where("campus", "==", profile.campus);
+    // Đọc toàn bộ collection rồi lọc ở client vì assignment có thể nằm ở
+    // assignedToUid, supportLeaderUid, recipientUid, leaderUid hoặc assigneeUid.
+    // Query theo department/campus trước đây làm mất ticket leader giao cho
+    // CS con khi ticket thiếu hoặc khác một trong hai field này.
+    const ticketQuery = db.collection(TICKET_COLLECTION);
 
     dashboardUnsubscribe = ticketQuery.onSnapshot(
-        (snapshot) => {
-          const tickets = [];
-          snapshot.forEach((docSnap) => {
-            const ticket = { id: docSnap.id, ...docSnap.data() };
-            if (!profile.isLeader || isTicketAssignedToLeader(ticket, profile)) {
-              tickets.push(ticket);
-            }
-          });
-          /*
-           * Ticket mới nhất trước.
-           *
-           * Phần "Cần phản hồi gấp"
-           * sẽ tự sort lại theo priority.
-           */
-          tickets.sort((a, b) => {
-            const timeA = getTimestampMillis(a.createdAt);
-            const timeB = getTimestampMillis(b.createdAt);
-            return timeB - timeA;
-          });
-          console.log("📋 Ticket của CS:", tickets);
-          renderDashboard(tickets);
-        },
-        (error) => {
-          console.error("❌ Không thể lấy ticket của CS:", error);
-          showTicketLoadError();
-        },
-      );
+      (snapshot) => {
+        const tickets = [];
+        snapshot.forEach((docSnap) => {
+          const ticket = { id: docSnap.id, ...docSnap.data() };
+          if (isTicketVisibleOnHomepage(ticket, profile)) {
+            tickets.push(ticket);
+          }
+        });
+
+        tickets.sort((a, b) => {
+          const timeA = getTimestampMillis(a.createdAt);
+          const timeB = getTimestampMillis(b.createdAt);
+          return timeB - timeA;
+        });
+        console.log("📋 Ticket của CS trên trang chủ:", tickets);
+        renderDashboard(tickets);
+      },
+      (error) => {
+        console.error("❌ Không thể lấy ticket của CS:", error);
+        showTicketLoadError();
+      },
+    );
   }
   /* =====================================================
        LOAD ERROR
