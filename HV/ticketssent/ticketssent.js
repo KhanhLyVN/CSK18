@@ -10,13 +10,9 @@
     return;
   }
 
-  if (!window.firebaseConfig) {
-    console.error("Chưa tìm thấy firebaseConfig.");
-    return;
-  }
-
   if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+    console.error("Firebase chưa được khởi tạo. Hãy kiểm tra đường dẫn firebase-config.js.");
+    return;
   }
 
   const auth = firebase.auth();
@@ -28,10 +24,12 @@
     loading: $("#sentLoading") || $("#stLoading"),
     empty: $("#sentEmpty") || $("#stEmpty"),
     error: $("#sentError") || $("#stStatus"),
-    grid: $("#sentTicketGrid") || $("#stTicketGrid"),
+    grid: $("#sentTicketGrid") || $("#stTicketGrid") || $("#recentTicketList"),
     count: $("#sentTicketCount") || $("#stTicketCount"),
     profile: $("#sentProfileLink") || $("#stProfileLink"),
   };
+
+  const isRecentList = nodes.grid && nodes.grid.id === "recentTicketList";
 
   const STATUS_LABELS = {
     open: "Đang mở",
@@ -82,8 +80,13 @@
     setHidden(nodes.empty, true);
 
     if (nodes.grid) {
-      nodes.grid.innerHTML = "";
-      nodes.grid.hidden = true;
+      if (isRecentList) {
+        nodes.grid.hidden = false;
+        nodes.grid.innerHTML = `<div class="loading-state">${escapeHtml(message)}</div>`;
+      } else {
+        nodes.grid.innerHTML = "";
+        nodes.grid.hidden = true;
+      }
     }
 
     if (nodes.error) {
@@ -162,10 +165,17 @@
     setHidden(nodes.loading, true);
     setHidden(nodes.error, true);
     setHidden(nodes.empty, tickets.length !== 0);
-    setHidden(nodes.grid, tickets.length === 0);
+
+    if (isRecentList) {
+      nodes.grid.hidden = false;
+    } else {
+      setHidden(nodes.grid, tickets.length === 0);
+    }
 
     if (!tickets.length) {
-      nodes.grid.innerHTML = "";
+      nodes.grid.innerHTML = isRecentList
+        ? `<div class="empty-state">Bạn chưa có ticket nào. Hãy tạo yêu cầu đầu tiên.</div>`
+        : "";
       return;
     }
 

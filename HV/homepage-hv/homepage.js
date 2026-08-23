@@ -147,15 +147,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // FIREBASE
   // ======================================================
   function getDatabase() {
-    if (typeof db !== "undefined" && db) {
-      return db;
+    if (window.db) {
+      return window.db;
     }
     return window.db || null;
   }
 
   function getAuth() {
-    if (typeof auth !== "undefined" && auth) {
-      return auth;
+    if (window.auth) {
+      return window.auth;
     }
     return window.auth || null;
   }
