@@ -27,6 +27,9 @@
       --gold: #b08a4e;
       --ink: #2a1712;
       --soft: #6b5348;
+      --muted: var(--soft);
+      --green: var(--ok);
+      --red: var(--danger);
       --line: rgba(93, 7, 3, .15);
       --ok: #4c6b3c;
       --danger: #a23b2e;
@@ -1028,7 +1031,7 @@
       margin: 0 -26px;
       padding: 10px 26px 8px;
       border-bottom: 1px solid var(--line);
-      background: rgba(255,251,245,.98);
+      background: rgba(255, 251, 245, .98);
     }
 
     .admin-tab {
@@ -1068,7 +1071,7 @@
       border: 1px solid var(--line);
       border-radius: 11px;
       background: #fff;
-      box-shadow: 0 5px 15px rgba(62,4,2,.04);
+      box-shadow: 0 5px 15px rgba(62, 4, 2, .04);
     }
 
     .admin-hero-card {
@@ -1160,7 +1163,7 @@
       align-items: center;
       gap: 10px;
       padding: 9px;
-      border: 1px solid rgba(93,7,3,.09);
+      border: 1px solid rgba(93, 7, 3, .09);
       border-radius: 9px;
       background: var(--pale);
     }
@@ -1232,12 +1235,12 @@
 
     .danger-btn {
       color: var(--danger) !important;
-      border: 1px solid rgba(162,59,46,.2) !important;
-      background: rgba(162,59,46,.07) !important;
+      border: 1px solid rgba(162, 59, 46, .2) !important;
+      background: rgba(162, 59, 46, .07) !important;
     }
 
     .danger-btn:hover {
-      background: rgba(162,59,46,.13) !important;
+      background: rgba(162, 59, 46, .13) !important;
     }
 
     .member-action-title {
@@ -1438,10 +1441,10 @@
       gap: 4px;
       margin-top: 13px;
       padding: 10px;
-      border: 1px solid rgba(162,59,46,.15);
+      border: 1px solid rgba(162, 59, 46, .15);
       border-radius: 8px;
       color: var(--soft);
-      background: rgba(162,59,46,.05);
+      background: rgba(162, 59, 46, .05);
       font-size: 10px;
     }
 
@@ -1451,10 +1454,12 @@
     }
 
     @media (max-width: 820px) {
+
       .admin-summary-hero,
       .admin-control-grid {
         grid-template-columns: 1fr 1fr;
       }
+
       .admin-hero-card.main,
       .admin-control-card.full {
         grid-column: 1 / -1;
@@ -1465,43 +1470,705 @@
       .admin-group-modal {
         padding: 0 14px 14px;
       }
+
       .admin-control-tabs {
         margin: 0 -14px;
         padding-left: 14px;
         padding-right: 14px;
         overflow-x: auto;
       }
+
       .admin-summary-hero,
       .admin-control-grid,
       .admin-edit-grid,
       .activity-report-summary {
         grid-template-columns: 1fr;
       }
+
       .admin-hero-card.main,
       .admin-control-card.full,
       .admin-edit-grid .full-field {
         grid-column: auto;
       }
+
       .admin-member-row {
         align-items: flex-start;
         flex-wrap: wrap;
       }
+
       .admin-member-actions {
         width: 100%;
       }
+
       .admin-member-actions button {
         flex: 1;
       }
+
       .activity-report-topline {
         align-items: flex-start;
         flex-direction: column;
         gap: 3px;
       }
+
       .activity-report-time {
         white-space: normal;
       }
     }
 
+
+
+
+    .admin-statistics-panel {
+      display: grid;
+      gap: 14px;
+    }
+
+    .admin-statistics-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(238, 220, 200, .48), #fff);
+    }
+
+    .admin-statistics-head h3 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 20px/1.1 Fraunces, serif;
+    }
+
+    .admin-statistics-head p:not(.overview-kicker) {
+      margin: 5px 0 0;
+      color: var(--soft);
+      font-size: 10px;
+    }
+
+    .admin-stat-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .admin-stat-kpis article {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .admin-stat-kpis span {
+      display: block;
+      color: var(--soft);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .admin-stat-kpis strong {
+      display: block;
+      margin-top: 7px;
+      color: var(--deep);
+      font: 700 24px/1 Fraunces, serif;
+    }
+
+    .admin-stat-progress,
+    .admin-stat-track {
+      height: 7px;
+      overflow: hidden;
+      margin-top: 8px;
+      border-radius: 99px;
+      background: var(--cream);
+    }
+
+    .admin-stat-progress i,
+    .admin-stat-track i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--maroon);
+    }
+
+    .admin-stat-columns {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+    }
+
+    .admin-stat-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .admin-stat-card h4 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 13px;
+    }
+
+    .admin-stat-card>p {
+      margin: 4px 0 14px;
+      color: var(--soft);
+      font-size: 10px;
+    }
+
+    .admin-stat-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-stat-row>div:first-child {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .admin-stat-row strong {
+      color: var(--deep);
+    }
+
+    .admin-stat-track i {
+      background: var(--gold);
+    }
+
+    .admin-stat-feedback {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 110px;
+    }
+
+    .admin-stat-ring {
+      position: relative;
+      display: grid;
+      place-items: center;
+      flex: 0 0 88px;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: conic-gradient(var(--ok) 0deg, var(--ok) var(--admin-feedback-angle, 0deg), var(--cream) var(--admin-feedback-angle, 0deg), var(--cream) 360deg);
+    }
+
+    .admin-stat-ring::after {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #fff;
+      content: "";
+    }
+
+    .admin-stat-ring span {
+      position: absolute;
+      color: var(--deep);
+      font: 700 16px/1 Fraunces, serif;
+    }
+
+    .admin-stat-feedback strong {
+      display: block;
+      color: var(--deep);
+      font-size: 12px;
+    }
+
+    .admin-stat-feedback small {
+      display: block;
+      margin-top: 5px;
+      color: var(--soft);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 720px) {
+      .admin-stat-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .admin-stat-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-statistics-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+
+
+    /* Dashboard tổng quan theo nhóm */
+    .overview-dashboard {
+      display: grid;
+      gap: 16px;
+    }
+
+    .overview-dashboard-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(93, 7, 3, .13);
+    }
+
+    .overview-kicker {
+      margin: 0 0 6px;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+
+    .overview-dashboard-head h3 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 23px/1.1 Fraunces, serif;
+    }
+
+    .overview-dashboard-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .overview-refresh {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 36px;
+      padding: 8px 11px;
+      border: 1px solid rgba(93, 7, 3, .18);
+      border-radius: 8px;
+      color: var(--maroon);
+      background: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .overview-refresh:hover {
+      border-color: var(--maroon);
+      background: var(--cream);
+    }
+
+    .overview-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .overview-stat-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid rgba(93, 7, 3, .13);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(62, 4, 2, .035);
+    }
+
+    .overview-stat-card.is-highlight {
+      border: 2px solid var(--gold);
+      background: linear-gradient(145deg, #fffaf0, #fffdf9);
+    }
+
+    .overview-stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .045em;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .overview-stat-value {
+      display: block;
+      margin-top: 10px;
+      color: var(--deep);
+      font: 800 clamp(24px, 2.3vw, 31px)/1 Fraunces, serif;
+    }
+
+    .overview-stat-sub {
+      display: block;
+      min-height: 27px;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .overview-progress {
+      height: 5px;
+      margin-top: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--cream);
+    }
+
+    .overview-progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--maroon);
+      transition: width .25s ease;
+    }
+
+    .overview-analytics-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(260px, .9fr);
+      gap: 11px;
+    }
+
+    .overview-chart-card {
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid rgba(93, 7, 3, .13);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(62, 4, 2, .035);
+    }
+
+    .overview-chart-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .overview-chart-head h4 {
+      margin: 0;
+      color: var(--deep);
+      font: 700 16px/1.2 Fraunces, serif;
+    }
+
+    .overview-chart-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .overview-chart-total {
+      color: var(--maroon);
+      font: 800 12px/1 Inter, sans-serif;
+      white-space: nowrap;
+    }
+
+    .overview-donut-layout {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) minmax(125px, .8fr);
+      align-items: center;
+      gap: 10px;
+      min-height: 190px;
+    }
+
+    .overview-donut {
+      position: relative;
+      width: min(190px, 100%);
+      aspect-ratio: 1;
+      margin: auto;
+      border: 1px solid rgba(93, 7, 3, .12);
+      border-radius: 50%;
+      background: conic-gradient(#eedcc8 0 100%);
+      box-shadow: 0 0 0 8px rgba(238, 220, 200, .22);
+    }
+
+    .overview-donut::after {
+      position: absolute;
+      inset: 25%;
+      border-radius: 50%;
+      background: #fff;
+      content: "";
+    }
+
+    .overview-donut-center {
+      position: absolute;
+      z-index: 1;
+      inset: 25%;
+      display: grid;
+      place-content: center;
+      text-align: center;
+    }
+
+    .overview-donut-center strong {
+      color: var(--deep);
+      font: 800 27px/1 Fraunces, serif;
+    }
+
+    .overview-donut-center small {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 8px;
+    }
+
+    .overview-legend {
+      display: grid;
+      gap: 8px;
+    }
+
+    .overview-legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .overview-legend-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .overview-legend-dot {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 8px;
+      border-radius: 50%;
+    }
+
+    .overview-legend-item strong {
+      color: var(--deep);
+      font-family: Fraunces, serif;
+    }
+
+    .overview-side-stack {
+      display: grid;
+      gap: 11px;
+    }
+
+    .overview-metric-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 105px;
+    }
+
+    .overview-satisfaction-card {
+      min-height: 196px;
+    }
+
+    .overview-satisfaction-chart-wrap {
+      position: relative;
+      min-height: 108px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overview-satisfaction-empty {
+      color: #c9bcae;
+      font-size: 11px;
+      font-style: italic;
+    }
+
+    .overview-satisfaction-summary {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .overview-satisfaction-summary>strong {
+      color: var(--deep);
+      font: 800 23px/1 Fraunces, serif;
+    }
+
+    .overview-satisfaction-counts {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .overview-satisfaction-counts span {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .overview-satisfaction-counts b {
+      color: var(--ink);
+      font-family: Fraunces, serif;
+    }
+
+    .overview-metric-card h4 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 13px;
+    }
+
+    .overview-metric-card p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .overview-metric-value {
+      display: block;
+      margin-top: 8px;
+      color: var(--maroon);
+      font: 800 27px/1 Fraunces, serif;
+    }
+
+    .overview-satisfaction-ring {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
+      border-radius: 50%;
+      background: conic-gradient(var(--green) 0 0%, var(--cream) 0 100%);
+    }
+
+    .overview-satisfaction-ring::after {
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: #fff;
+      content: "";
+    }
+
+    .overview-satisfaction-ring span {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      color: var(--deep);
+      font: 800 14px/1 Fraunces, serif;
+      text-align: center;
+    }
+
+    .overview-week-card {
+      padding-bottom: 12px;
+    }
+
+    .overview-bars {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      align-items: end;
+      gap: 8px;
+      height: 155px;
+      margin-top: 15px;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .overview-bar-day {
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+
+    .overview-bar-pair {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .overview-bar {
+      display: block;
+      width: 9px;
+      min-height: 3px;
+      max-height: 100%;
+      flex: 0 0 auto;
+      border-radius: 3px 3px 0 0;
+      background: var(--gold);
+      transition: height .25s ease;
+    }
+
+    .overview-bar.is-current {
+      background: var(--maroon);
+    }
+
+    .overview-bar-label {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 800;
+    }
+
+    .overview-week-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .overview-week-note strong {
+      color: var(--maroon);
+    }
+
+    @media (max-width: 900px) {
+      .overview-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .overview-analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .overview-dashboard-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .overview-refresh {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .overview-stat-card {
+        padding: 11px;
+      }
+
+      .overview-stat-value {
+        font-size: 25px;
+      }
+
+      .overview-donut-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-donut {
+        width: 165px;
+      }
+
+      .overview-legend {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .overview-bars {
+        gap: 4px;
+        height: 125px;
+      }
+
+      .overview-bar {
+        width: 6px;
+      }
+    }
   </style>
   <link rel="stylesheet" href="admin-theme.css" />
 </head>
@@ -1567,7 +2234,7 @@
           </form>
         </section>
 
-        <section class="list-panel" aria-labelledby="listTitle">
+        <section class="list-panel" id="groupsManagement" aria-labelledby="listTitle">
           <div class="list-head">
             <div>
               <h2 id="listTitle">Các nhóm hiện có</h2>
@@ -1599,7 +2266,8 @@
             </table>
           </div>
           <div class="tip"><span class="material-symbols-rounded">info</span><span>Nhóm được xem là đang hoạt động nếu
-              lần hoạt động gần nhất chưa quá 3 ngày. Khi quá 3 ngày, hệ thống tự hiển thị “Đã ngừng hoạt động”.</span></div>
+              lần hoạt động gần nhất chưa quá 3 ngày. Khi quá 3 ngày, hệ thống tự hiển thị “Đã ngừng hoạt động”.</span>
+          </div>
         </section>
       </div>
     </main>
@@ -1613,7 +2281,7 @@
       <div class="modal-actions"><button class="btn btn-secondary" type="button" data-close-modal>Hủy</button><button
           class="btn btn-primary" id="confirmDelete" type="button">Xóa nhóm</button></div>
     </div>
-    </div>
+  </div>
   <div id="overviewModal" class="overview-backdrop" role="dialog" aria-modal="true" aria-labelledby="overviewTitle">
     <div class="overview-modal admin-group-modal">
       <div class="overview-head">
@@ -1647,6 +2315,9 @@
         </button>
         <button class="admin-tab" type="button" data-tab="activity">
           <span class="material-symbols-rounded">history</span>Báo cáo hoạt động
+        </button>
+        <button class="admin-tab" type="button" data-tab="stats">
+          <span class="material-symbols-rounded">analytics</span>Báo cáo thống kê
         </button>
       </div>
 
@@ -1768,7 +2439,7 @@
       }).join("");
     }
 
-        function renderOverviewList(items, emptyText, kind) {
+    function renderOverviewList(items, emptyText, kind) {
       if (!items.length) return `<div class="admin-empty">${esc(emptyText)}</div>`;
       if (kind === "members") {
         return `<div class="admin-members-list">${items.map(item => {
@@ -1920,7 +2591,8 @@
         tasks: Array.isArray(groupData?.tasks) ? groupData.tasks.map((x, i) => ({
           ...x, id: x.id || x.taskId || `task-${i}`, documentId: x.id || x.taskId || `task-${i}`
         })) : [],
-        activities: []
+        activities: [],
+        tickets: []
       };
 
       // Ưu tiên subcollection nếu có, nhưng vẫn bổ sung các UID chỉ nằm trong memberIds.
@@ -1961,6 +2633,15 @@
         } catch (error) {
           console.warn(`Không thể tải subcollection ${name}:`, error);
         }
+      }
+      try {
+        const snapshot = await phongBanDb.collection("tickets").limit(1000).get();
+        result.tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(ticket => {
+          const ticketGroup = ticket.groupId || ticket.supportGroupId || ticket.groupID || ticket.supportGroup?.id || ticket.group?.id;
+          return String(ticketGroup || "") === String(groupId);
+        });
+      } catch (error) {
+        console.warn("Không thể tải ticket cho báo cáo thống kê nhóm:", error);
       }
       result.activities = await loadGroupActivities(groupRef, groupData || { id: groupId }, result.members);
       return result;
@@ -2121,6 +2802,126 @@
       </div>`;
     }
 
+
+    function renderGroupStatistics(group, related) {
+      const markup = `<section class="care-view is-active" data-care-view="overview"><div class="overview-dashboard"><div class="overview-dashboard-head"><div><p class="overview-kicker">DASHBOARD NHÓM</p><h3>Tổng quan hoạt động</h3><p>Thống kê ticket và chất lượng hỗ trợ của nhóm đang chọn.</p></div><button class="overview-refresh" type="button" data-overview-refresh><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="overview-stat-grid"><article class="overview-stat-card"><span class="overview-stat-label">Ticket cần xử lý hôm nay</span><strong class="overview-stat-value" data-overview-value="today">0</strong><small class="overview-stat-sub" data-overview-sub="today">Chưa có dữ liệu</small></article><article class="overview-stat-card"><span class="overview-stat-label">Ticket hoàn thành trong tuần</span><strong class="overview-stat-value" data-overview-value="completed">0</strong><small class="overview-stat-sub" data-overview-sub="completed">Chưa có dữ liệu</small></article><article class="overview-stat-card"><span class="overview-stat-label">Ticket đang xử lý</span><strong class="overview-stat-value" data-overview-value="inProgress">0</strong><small class="overview-stat-sub" data-overview-sub="inProgress">Chưa có dữ liệu</small></article><article class="overview-stat-card is-highlight"><span class="overview-stat-label">Tỷ lệ hoàn thành</span><strong class="overview-stat-value" data-overview-value="completionRate">0%</strong><div class="overview-progress"><span data-overview-progress></span></div><small class="overview-stat-sub" data-overview-sub="completionRate">0/0 ticket</small></article></div><div class="overview-analytics-grid"><article class="overview-chart-card"><div class="overview-chart-head"><div><h4>Loại ticket phổ biến</h4><p>Phân bổ ticket theo nhóm nội dung.</p></div><span class="overview-chart-total" data-overview-total>0 ticket</span></div><div class="overview-donut-layout"><div class="overview-donut" data-overview-donut><div class="overview-donut-center"><strong data-overview-total-value>0</strong><small>tổng ticket</small></div></div><div class="overview-legend" data-overview-legend></div></div></article><div class="overview-side-stack"><article class="overview-chart-card overview-metric-card"><div><h4>Thời gian xử lý trung bình</h4><p>Từ lúc tạo đến khi hoàn tất.</p><strong class="overview-metric-value" data-overview-value="avg">—</strong></div><span class="care-overview-icon"><span class="material-symbols-rounded">schedule</span></span></article><article class="overview-chart-card overview-satisfaction-card"><div class="overview-chart-head"><div><h4>Phản hồi sau hỗ trợ</h4><p data-overview-sub="satisfaction">Chưa có dữ liệu</p></div></div><div class="overview-satisfaction-chart-wrap"><div class="overview-satisfaction-ring" data-overview-satisfaction-ring><span>—</span></div><div class="overview-satisfaction-empty" data-overview-satisfaction-empty>Chưa có phản hồi đánh giá</div></div><div class="overview-satisfaction-summary"><strong data-overview-value="satisfaction">—</strong><div class="overview-satisfaction-counts"><span>Hài lòng <b data-overview-satisfied-count>0</b></span><span>Không hài lòng <b data-overview-unsatisfied-count>0</b></span></div></div></article></div></div><article class="overview-chart-card overview-week-card"><div class="overview-chart-head"><div><h4>So sánh ticket: Tuần này và tuần trước</h4><p>Số lượng ticket được tạo theo từng ngày.</p></div><div class="overview-legend-label"><span class="overview-legend-dot" style="background:var(--maroon)"></span><span style="font-size:9px;color:var(--muted)">Tuần này</span><span class="overview-legend-dot" style="background:var(--gold)"></span><span style="font-size:9px;color:var(--muted)">Tuần trước</span></div></div><div class="overview-bars" data-overview-bars></div><p class="overview-week-note" data-overview-week-note>Chưa có dữ liệu ticket.</p></article><div class="care-overview-note"><strong>Phạm vi thống kê:</strong> chỉ tính các ticket thuộc nhóm <strong>{{GROUP_NAME}}</strong>. Dữ liệu cập nhật theo ticket của nhóm đang chọn.</div></div></div></section>`;
+      return `<div id="adminGroupStatsRoot">${markup.replace("{{GROUP_NAME}}", esc(group?.name || "Nhóm CS"))}</div>`;
+    }
+
+    function overviewDate(value) {
+      if (!value) return null;
+      if (typeof value.toDate === "function") return value.toDate();
+      if (value.seconds) return new Date(value.seconds * 1000);
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function overviewCreatedAt(ticket) {
+      return overviewDate(ticket?.createdAt || ticket?.submittedAt || ticket?.createdTime || ticket?.timestamp);
+    }
+
+    function overviewCompletedAt(ticket) {
+      return overviewDate(ticket?.closedAt || ticket?.resolvedAt || ticket?.completedAt || ticket?.finishedAt || ticket?.statusUpdatedAt || ticket?.updatedAt);
+    }
+
+    function overviewIsCompleted(ticket) {
+      return ["closed", "resolved", "completed", "done"].includes(String(ticket?.status || "").trim().toLowerCase());
+    }
+
+    function overviewCategory(ticket) {
+      const raw = String(ticket?.ticketCategory || ticket?.category || ticket?.ticketCategoryId || ticket?.type || ticket?.typeId || ticket?.ticketType || "").trim().toLowerCase();
+      if (raw === "1" || raw.includes("system") || raw.includes("hệ thống") || raw.includes("he thong")) return "system";
+      if (raw === "2" || raw.includes("learning") || raw.includes("khóa học") || raw.includes("khoa hoc")) return "learning";
+      if (raw === "3" || raw.includes("account") || raw.includes("tài khoản") || raw.includes("tai khoan") || raw.includes("vận hành") || raw.includes("van hanh") || raw.includes("operations")) return "account";
+      return "other";
+    }
+
+    function overviewFormatDuration(minutes) {
+      if (minutes < 60) return `${minutes}m`;
+      const days = Math.floor(minutes / 1440);
+      const hours = Math.floor((minutes % 1440) / 60);
+      const mins = minutes % 60;
+      if (days) return hours ? `${days}d ${hours}h` : `${days}d`;
+      return mins ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+
+    function overviewMonday(date) {
+      const result = new Date(date);
+      const day = result.getDay();
+      result.setDate(result.getDate() + (day === 0 ? -6 : 1 - day));
+      result.setHours(0, 0, 0, 0);
+      return result;
+    }
+
+    function overviewSetValue(key, value, sub) {
+      const valueNode = document.querySelector(`[data-overview-value="${key}"]`);
+      const subNodes = document.querySelectorAll(`[data-overview-sub="${key}"]`);
+      if (valueNode) valueNode.textContent = value;
+      subNodes.forEach(node => { node.textContent = sub || ""; });
+    }
+
+    function hydrateAdminGroupStatistics(group, related) {
+      const root = document.querySelector('#adminGroupStatsRoot');
+      if (!root) return;
+      const tickets = related?.tickets || [];
+      const now = new Date();
+      const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const monday = overviewMonday(now);
+      const lastMonday = new Date(monday); lastMonday.setDate(lastMonday.getDate() - 7);
+      const thisWeek = [0, 0, 0, 0, 0, 0, 0];
+      const lastWeek = [0, 0, 0, 0, 0, 0, 0];
+      const types = { system: 0, learning: 0, account: 0, other: 0 };
+      let today = 0, completedThisWeek = 0, inProgress = 0, completedTotal = 0, totalMinutes = 0, resolvedCount = 0, satisfied = 0, unsatisfied = 0;
+      tickets.forEach(ticket => {
+        const created = overviewCreatedAt(ticket);
+        if (!created) return;
+        types[overviewCategory(ticket)] += 1;
+        const createdKey = `${created.getFullYear()}-${String(created.getMonth() + 1).padStart(2, "0")}-${String(created.getDate()).padStart(2, "0")}`;
+        if (createdKey === todayKey) today += 1;
+        const thisIndex = Math.floor((created - monday) / 86400000);
+        const lastIndex = Math.floor((created - lastMonday) / 86400000);
+        if (thisIndex >= 0 && thisIndex < 7) { thisWeek[thisIndex] += 1; if (overviewIsCompleted(ticket)) completedThisWeek += 1; }
+        if (lastIndex >= 0 && lastIndex < 7) lastWeek[lastIndex] += 1;
+        const status = String(ticket.status || ticket.routingStatus || "").trim().toLowerCase();
+        if (["in_progress", "processing", "pending"].includes(status)) inProgress += 1;
+        if (overviewIsCompleted(ticket)) {
+          completedTotal += 1;
+          const completed = overviewCompletedAt(ticket);
+          if (completed && completed >= created) { totalMinutes += Math.max(1, Math.round((completed - created) / 60000)); resolvedCount += 1; }
+        }
+        const satisfaction = String(ticket.satisfactionStatus || "").trim().toLowerCase();
+        if (satisfaction === "satisfied") satisfied += 1;
+        if (satisfaction === "unsatisfied") unsatisfied += 1;
+      });
+      const total = tickets.length;
+      const rate = total ? Math.round((completedTotal / total) * 100) : 0;
+      const avg = resolvedCount ? overviewFormatDuration(Math.round(totalMinutes / resolvedCount)) : "—";
+      const satisfactionTotal = satisfied + unsatisfied;
+      const satisfactionRate = satisfactionTotal ? Math.round((satisfied / satisfactionTotal) * 100) : null;
+      overviewSetValue("today", today, today ? `${today} ticket được tạo hôm nay` : "Không có ticket mới hôm nay");
+      overviewSetValue("completed", completedThisWeek, completedThisWeek ? `${completedThisWeek} ticket đã hoàn thành` : "Chưa có ticket hoàn thành");
+      overviewSetValue("inProgress", inProgress, inProgress ? `${inProgress} ticket đang xử lý` : "Không có ticket đang xử lý");
+      overviewSetValue("completionRate", `${rate}%`, `${completedTotal}/${total} ticket`);
+      overviewSetValue("avg", avg, resolvedCount ? `Từ lúc tạo đến khi hoàn tất · ${resolvedCount} ticket` : "Chưa có dữ liệu hoàn tất");
+      overviewSetValue("satisfaction", satisfactionRate === null ? "—" : `${satisfactionRate}%`, satisfactionTotal ? `${satisfied} hài lòng · ${unsatisfied} không hài lòng` : "Chưa có phản hồi đánh giá");
+      const progress = root.querySelector("[data-overview-progress]"); if (progress) progress.style.width = `${rate}%`;
+      const totalNode = root.querySelector("[data-overview-total]"); if (totalNode) totalNode.textContent = `${total} ticket`;
+      const totalValueNode = root.querySelector("[data-overview-total-value]"); if (totalValueNode) totalValueNode.textContent = String(total);
+      const palette = { system: "#5d0703", learning: "#b08a4e", account: "#7a1410", other: "#55734c" };
+      const labels = { system: "Hệ thống", learning: "Khóa học", account: "Vận hành", other: "Khác" };
+      const typeTotal = Object.values(types).reduce((sum, value) => sum + value, 0) || 1;
+      let cursor = 0;
+      const stops = Object.entries(types).map(([key, value]) => { const start = cursor; cursor += (value / typeTotal) * 100; return `${palette[key]} ${start}% ${cursor}%`; }).join(", ");
+      const donut = root.querySelector("[data-overview-donut]"); if (donut) donut.style.background = total ? `conic-gradient(${stops})` : "conic-gradient(var(--cream) 0 100%)";
+      const legend = root.querySelector("[data-overview-legend]"); if (legend) legend.innerHTML = Object.entries(types).map(([key, value]) => `<div class="overview-legend-item"><span class="overview-legend-label"><span class="overview-legend-dot" style="background:${palette[key]}"></span>${labels[key]}</span><strong>${value}</strong></div>`).join("");
+      const satisfiedCountNode = root.querySelector("[data-overview-satisfied-count]"); if (satisfiedCountNode) satisfiedCountNode.textContent = String(satisfied);
+      const unsatisfiedCountNode = root.querySelector("[data-overview-unsatisfied-count]"); if (unsatisfiedCountNode) unsatisfiedCountNode.textContent = String(unsatisfied);
+      const ring = root.querySelector("[data-overview-satisfaction-ring]"); const satisfactionEmpty = root.querySelector("[data-overview-satisfaction-empty]"); if (ring) { ring.style.display = satisfactionRate === null ? "none" : "block"; ring.style.background = satisfactionRate === null ? "conic-gradient(#eedcc8 0 100%)" : `conic-gradient(#55734c 0 ${satisfactionRate}%, #a23b2e ${satisfactionRate}% 100%)`; const ringText = ring.querySelector("span"); if (ringText) ringText.textContent = satisfactionRate === null ? "—" : `${satisfactionRate}%`; } if (satisfactionEmpty) satisfactionEmpty.style.display = satisfactionRate === null ? "block" : "none";
+      const bars = root.querySelector("[data-overview-bars]"); if (bars) { const rawMax = Math.max(...thisWeek, ...lastWeek, 0); const chartMax = rawMax === 0 ? 5 : Math.max(5, Math.ceil(rawMax / 5) * 5); const barHeight = value => `${Math.min(100, Math.max(4, value / chartMax * 100))}%`; const dayLabels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]; bars.innerHTML = dayLabels.map((label, index) => `<div class="overview-bar-day"><div class="overview-bar-pair"><span class="overview-bar is-current" style="height:${barHeight(thisWeek[index])}" title="${thisWeek[index]} ticket"></span><span class="overview-bar" style="height:${barHeight(lastWeek[index])}" title="${lastWeek[index]} ticket"></span></div><span class="overview-bar-label">${label}</span></div>`).join(""); }
+      const weekNote = root.querySelector("[data-overview-week-note]"); if (weekNote) { const thisTotal = thisWeek.reduce((sum, value) => sum + value, 0); const lastTotal = lastWeek.reduce((sum, value) => sum + value, 0); const diff = thisTotal - lastTotal; weekNote.innerHTML = `Tuần này: <strong>${thisTotal} ticket</strong> · Tuần trước: <strong>${lastTotal} ticket</strong> · ${diff >= 0 ? "tăng" : "giảm"} ${Math.abs(diff)} ticket`; }
+    }
+
+
     function setOverviewTab(tab) {
       document.querySelectorAll(".admin-tab").forEach(button => button.classList.toggle("active", button.dataset.tab === tab));
       const group = state.groups.find(item => item.id === state.overviewId);
@@ -2139,6 +2940,20 @@
         els.overviewContent.innerHTML = `<section class="admin-control-card"><div class="admin-card-head"><div><h3>Tất cả lớp học</h3><p>Danh sách lớp đang thuộc nhóm.</p></div><span class="count-badge">${classes.length}</span></div>${renderOverviewList(classes, "Chưa có lớp học.", "classes")}</section>`;
       } else if (tab === "activity") {
         els.overviewContent.innerHTML = renderActivityReport(group, activities, members);
+      } else if (tab === "stats") {
+        els.overviewContent.innerHTML = renderGroupStatistics(group, state.overviewRelated);
+        hydrateAdminGroupStatistics(group, state.overviewRelated);
+        els.overviewContent.querySelector("[data-overview-refresh]")?.addEventListener("click", async event => {
+          const button = event.currentTarget;
+          button.disabled = true;
+          try {
+            state.overviewRelated = await getGroupRelated(group.id);
+            els.overviewContent.innerHTML = renderGroupStatistics(group, state.overviewRelated);
+            hydrateAdminGroupStatistics(group, state.overviewRelated);
+          } finally {
+            button.disabled = false;
+          }
+        });
       } else {
         els.overviewContent.innerHTML = `<section class="admin-control-card"><div class="admin-card-head"><div><h3>Tất cả công việc</h3><p>Danh sách task/hoạt động của nhóm.</p></div><span class="count-badge">${tasks.length}</span></div>${renderOverviewList(tasks, "Chưa có công việc.", "tasks")}</section>`;
       }
@@ -2146,7 +2961,7 @@
 
     async function openGroupOverview(group) {
       state.overviewId = group.id;
-      state.overviewRelated = { members: [], classes: [], tasks: [], activities: [] };
+      state.overviewRelated = { members: [], classes: [], tasks: [], activities: [], tickets: [] };
       els.overviewTitle.textContent = group.name || "Nhóm chưa đặt tên";
       els.overviewSubtitle.textContent = group.description || "Admin Control Center — toàn quyền quản lý nhóm.";
       els.overviewContent.innerHTML = '<div class="overview-loading">Đang tải toàn bộ thông tin nhóm...</div>';
@@ -2450,6 +3265,7 @@
 
     function closeGroupOverview() { els.overview.classList.remove("show"); document.body.classList.remove("overview-open"); state.overviewId = null; }
 
+
     function watchGroups() {
 
       if (state.unsubscribe) state.unsubscribe();
@@ -2479,10 +3295,10 @@
     });
 
     els.list.addEventListener("click", async event => {
-            const activityButton = event.target.closest("[data-activity]"); const viewButton = event.target.closest("[data-view]"); const editButton = event.target.closest("[data-edit]"); const deleteButton = event.target.closest("[data-delete]");
+      const activityButton = event.target.closest("[data-activity]"); const viewButton = event.target.closest("[data-view]"); const editButton = event.target.closest("[data-edit]"); const deleteButton = event.target.closest("[data-delete]");
 
       if (activityButton) { activityButton.disabled = true; try { await phongBanDb.collection(GROUPS_COLLECTION).doc(activityButton.dataset.activity).set({ lastActivityAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); toast("Đã ghi nhận nhóm vừa hoạt động."); } catch (error) { toast("Không thể cập nhật thời gian hoạt động.", true); } finally { activityButton.disabled = false; } }
-            if (viewButton) { const group = state.groups.find(item => item.id === viewButton.dataset.view); if (group) await openGroupOverview(group); }
+      if (viewButton) { const group = state.groups.find(item => item.id === viewButton.dataset.view); if (group) await openGroupOverview(group); }
       if (editButton) { const group = state.groups.find(item => item.id === editButton.dataset.edit); if (group) startEdit(group); }
 
       if (deleteButton) { const group = state.groups.find(item => item.id === deleteButton.dataset.delete); if (!group) return; state.deleteId = group.id; els.deleteText.textContent = `Bạn có chắc muốn xóa nhóm “${group.name || "này"}” không?`; els.modal.classList.add("show"); }

@@ -843,8 +843,166 @@
     }
 
     #classDetailStudentSearchWrap[hidden],
-    #saveClassStudentsActions[hidden] {
+    #classDetailAgentSearchWrap[hidden],
+    #saveClassStudentsActions[hidden],
+    #saveClassAgentsActions[hidden],
+    #classDetailAgents[hidden] {
       display: none;
+    }
+
+    .class-detail-section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 18px 0 9px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+    }
+
+    .class-detail-agent-head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .class-detail-edit-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid var(--maroon);
+      border-radius: 8px;
+      color: #fff;
+      background: var(--maroon);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .class-detail-edit-toggle:hover,
+    .class-detail-edit-toggle:focus-visible {
+      background: var(--deep);
+    }
+
+    .class-detail-agent-view {
+      display: grid;
+      gap: 7px;
+      max-height: 230px;
+      overflow: auto;
+      padding: 2px;
+    }
+
+    .class-detail-agent-view-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 1px solid rgba(93, 7, 3, .12);
+      border-radius: 9px;
+      color: var(--deep);
+      background: #fff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .class-detail-agent-edit[hidden],
+    .class-detail-agent-view[hidden] {
+      display: none;
+    }
+
+    .class-detail-section-head h3 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 14px;
+    }
+
+    .class-detail-section-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .class-detail-agent-count {
+      margin-left: 5px;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .class-detail-agent-search-wrap {
+      position: relative;
+      width: min(260px, 46%);
+      flex: 0 1 260px;
+      margin: 0;
+    }
+
+    .class-detail-agent-search-wrap .material-symbols-rounded {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      color: var(--muted);
+      font-size: 17px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .class-detail-agent-search-wrap input {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 10px 8px 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: 0;
+      color: var(--ink);
+      background: #fff;
+      font-size: 11px;
+    }
+
+    .class-detail-agent-search-wrap input:focus {
+      border-color: var(--maroon);
+      box-shadow: 0 0 0 3px rgba(93, 7, 3, .08);
+    }
+
+    .class-detail-agent-list {
+      max-height: 250px;
+      overflow: auto;
+    }
+
+    .class-detail-agent-list .check-row {
+      min-height: 48px;
+      border-bottom: 1px solid rgba(93,7,3,.06);
+    }
+
+    .class-detail-agent-list .check-row:last-child {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+      .class-detail-section-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .class-detail-agent-head-actions {
+        align-items: stretch;
+        justify-content: stretch;
+        flex-direction: column;
+      }
+
+      .class-detail-agent-search-wrap {
+        width: 100%;
+        flex-basis: auto;
+      }
+
+      .class-detail-edit-toggle {
+        width: 100%;
+      }
     }
 
     .class-detail-dialog .dialog-actions {
@@ -1113,6 +1271,182 @@
 
       .group-ticket-card { grid-template-columns: 1fr }
     }
+  
+/* Form giao việc mở trực tiếp trong khu vực Công việc của nhóm */
+.task-inline-panel { display: none; margin-top: 18px; padding: 22px 24px 24px; border: 1px solid rgba(93,7,3,.16); border-radius: 15px; background: linear-gradient(145deg,#fffdf9,#fff7ec); box-shadow: 0 8px 20px rgba(62,4,2,.06); }
+.task-inline-panel.is-open { display: block; animation: careViewIn .2s ease-out; }
+.task-inline-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(93,7,3,.13); }
+.task-inline-head p { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.task-inline-head h4 { margin: 0; color: var(--deep); font: 700 24px/1.1 Fraunces,serif; }
+.task-inline-close { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 1px solid rgba(93,7,3,.18); border-radius: 9px; color: var(--maroon); background: #fff; }
+.task-inline-close:hover { color: #fff; border-color: var(--maroon); background: var(--maroon); }
+.task-inline-panel form { max-width: 900px; }
+.task-inline-panel .field { margin-bottom: 17px; }
+.task-inline-panel .field label { display: block; margin-bottom: 7px; color: var(--deep); font-size: 12px; font-weight: 800; }
+.task-inline-panel input, .task-inline-panel select, .task-inline-panel textarea { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid rgba(93,7,3,.18); border-radius: 10px; color: var(--ink); background: rgba(255,255,255,.92); font-size: 13px; }
+.task-inline-panel textarea { min-height: 112px; resize: vertical; line-height: 1.55; }
+.task-inline-panel input:focus, .task-inline-panel select:focus, .task-inline-panel textarea:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,7,3,.08); outline: 0; }
+.task-inline-panel .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(93,7,3,.13); }
+.task-inline-panel .modal-actions .btn { min-width: 126px; min-height: 44px; border-radius: 10px; font-size: 12px; }
+@media (max-width: 720px) { .task-inline-panel { padding: 18px 14px 20px; } .task-inline-head h4 { font-size: 21px; } .task-inline-panel .modal-actions .btn { flex: 1; min-width: 0; } }
+  
+/* Dashboard tổng quan theo nhóm */
+.overview-dashboard { display: grid; gap: 16px; }
+.overview-dashboard-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding-bottom: 15px; border-bottom: 1px solid rgba(93,7,3,.13); }
+.overview-kicker { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.overview-dashboard-head h3 { margin: 0; color: var(--deep); font: 700 23px/1.1 Fraunces,serif; }
+.overview-dashboard-head p { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.overview-refresh { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 8px 11px; border: 1px solid rgba(93,7,3,.18); border-radius: 8px; color: var(--maroon); background: #fff; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.overview-refresh:hover { border-color: var(--maroon); background: var(--cream); }
+.overview-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.overview-stat-card { min-width: 0; padding: 14px; border: 1px solid rgba(93,7,3,.13); border-radius: 12px; background: #fff; box-shadow: 0 4px 12px rgba(62,4,2,.035); }
+.overview-stat-card.is-highlight { border: 2px solid var(--gold); background: linear-gradient(145deg,#fffaf0,#fffdf9); }
+.overview-stat-label { display: block; color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .045em; line-height: 1.35; text-transform: uppercase; }
+.overview-stat-value { display: block; margin-top: 10px; color: var(--deep); font: 800 clamp(24px, 2.3vw, 31px)/1 Fraunces,serif; }
+.overview-stat-sub { display: block; min-height: 27px; margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.4; }
+.overview-progress { height: 5px; margin-top: 9px; overflow: hidden; border-radius: 999px; background: var(--cream); }
+.overview-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--maroon); transition: width .25s ease; }
+.overview-analytics-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, .9fr); gap: 11px; }
+.overview-chart-card { min-width: 0; padding: 15px; border: 1px solid rgba(93,7,3,.13); border-radius: 12px; background: #fff; box-shadow: 0 4px 12px rgba(62,4,2,.035); }
+.overview-chart-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.overview-chart-head h4 { margin: 0; color: var(--deep); font: 700 16px/1.2 Fraunces,serif; }
+.overview-chart-head p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
+.overview-chart-total { color: var(--maroon); font: 800 12px/1 Inter,sans-serif; white-space: nowrap; }
+.overview-donut-layout { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(125px, .8fr); align-items: center; gap: 10px; min-height: 190px; }
+.overview-donut { position: relative; width: min(190px, 100%); aspect-ratio: 1; margin: auto; border: 1px solid rgba(93,7,3,.12); border-radius: 50%; background: conic-gradient(#eedcc8 0 100%); box-shadow: 0 0 0 8px rgba(238,220,200,.22); }
+.overview-donut::after { position: absolute; inset: 25%; border-radius: 50%; background: #fff; content: ""; }
+.overview-donut-center { position: absolute; z-index: 1; inset: 25%; display: grid; place-content: center; text-align: center; }
+.overview-donut-center strong { color: var(--deep); font: 800 27px/1 Fraunces,serif; }
+.overview-donut-center small { margin-top: 4px; color: var(--muted); font-size: 8px; }
+.overview-legend { display: grid; gap: 8px; }
+.overview-legend-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 10px; }
+.overview-legend-label { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.overview-legend-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; }
+.overview-legend-item strong { color: var(--deep); font-family: Fraunces,serif; }
+.overview-side-stack { display: grid; gap: 11px; }
+.overview-metric-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 105px; }
+.overview-satisfaction-card { min-height: 196px; }
+.overview-satisfaction-chart-wrap { position: relative; min-height: 108px; display: flex; align-items: center; justify-content: center; }
+.overview-satisfaction-empty { color: #c9bcae; font-size: 11px; font-style: italic; }
+.overview-satisfaction-summary { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; padding-top: 10px; border-top: 1px dashed var(--line); }
+.overview-satisfaction-summary > strong { color: var(--deep); font: 800 23px/1 Fraunces,serif; }
+.overview-satisfaction-counts { display: grid; gap: 4px; color: var(--muted); font-size: 9px; font-weight: 700; }
+.overview-satisfaction-counts span { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.overview-satisfaction-counts b { color: var(--ink); font-family: Fraunces,serif; }
+.overview-metric-card h4 { margin: 0; color: var(--deep); font-size: 13px; }
+.overview-metric-card p { margin: 6px 0 0; color: var(--muted); font-size: 9px; line-height: 1.4; }
+.overview-metric-value { display: block; margin-top: 8px; color: var(--maroon); font: 800 27px/1 Fraunces,serif; }
+.overview-satisfaction-ring { position: relative; width: 68px; height: 68px; flex: 0 0 68px; border-radius: 50%; background: conic-gradient(var(--green) 0 0%, var(--cream) 0 100%); }
+.overview-satisfaction-ring::after { position: absolute; inset: 9px; border-radius: 50%; background: #fff; content: ""; }
+.overview-satisfaction-ring span { position: absolute; z-index: 1; inset: 0; display: grid; place-content: center; color: var(--deep); font: 800 14px/1 Fraunces,serif; text-align: center; }
+.overview-week-card { padding-bottom: 12px; }
+.overview-bars { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); align-items: end; gap: 8px; height: 155px; margin-top: 15px; padding: 0 4px; border-bottom: 1px solid var(--line); }
+.overview-bar-day { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; }
+.overview-bar-pair { display: flex; align-items: flex-end; gap: 3px; height: 100%; min-height: 0; }
+.overview-bar { display: block; width: 9px; min-height: 3px; max-height: 100%; flex: 0 0 auto; border-radius: 3px 3px 0 0; background: var(--gold); transition: height .25s ease; }
+.overview-bar.is-current { background: var(--maroon); }
+.overview-bar-label { color: var(--muted); font-size: 8px; font-weight: 800; }
+.overview-week-note { margin-top: 10px; color: var(--muted); font-size: 10px; text-align: center; }
+.overview-week-note strong { color: var(--maroon); }
+@media (max-width: 900px) { .overview-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .overview-analytics-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .overview-dashboard-head { align-items: flex-start; flex-direction: column; } .overview-refresh { width: 100%; justify-content: center; } .overview-stat-card { padding: 11px; } .overview-stat-value { font-size: 25px; } .overview-donut-layout { grid-template-columns: 1fr; } .overview-donut { width: 165px; } .overview-legend { grid-template-columns: 1fr 1fr; } .overview-bars { gap: 4px; height: 125px; } .overview-bar { width: 6px; } }
+  </style>
+  <style id="task-feature-inline-css">
+.task-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.task-summary-card{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}.task-summary-card span{display:block;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.task-summary-card strong{display:block;margin-top:5px;color:var(--deep);font:700 22px/1 Fraunces,serif}.task-filter-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}.task-list,.member-task-list{display:grid;gap:10px}.task-card,.member-task-card{padding:13px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 3px 10px rgba(62,4,2,.035)}.task-card{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:14px}.task-card-top,.member-task-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.task-card h4,.member-task-card h4{margin:6px 0 0;color:var(--deep);font-size:13px;line-height:1.35}.task-card p,.member-task-card p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.5;white-space:pre-wrap}.task-meta,.member-task-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;color:var(--muted);font-size:9px}.task-card-side{display:grid;gap:8px;align-content:start;padding:10px;border-radius:8px;background:var(--pale)}.task-card-side>strong{color:var(--maroon);font-size:9px;text-transform:uppercase}.task-assignees-inline{display:flex;flex-wrap:wrap;gap:5px;color:var(--maroon);font-size:10px;font-weight:700}.task-assignees-inline span{padding:4px 6px;border-radius:999px;background:#fff}.task-status,.task-priority{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap}.task-status.todo,.task-priority.medium{color:#8d6319;background:#fff2d9}.task-status.in_progress{color:#245a83;background:#eaf4fb}.task-status.done,.task-priority.low{color:var(--green);background:#eef4eb}.task-status.cancelled,.task-priority.high{color:var(--red);background:#fdeceb}.task-assignee-picker{display:grid;gap:7px;max-height:180px;overflow-y:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fffdf9}.task-assignee-option{display:flex;align-items:center;gap:8px;padding:7px;border-radius:7px;cursor:pointer}.task-assignee-option:hover{background:var(--pale)}.task-assignee-option input{width:auto;min-height:0}.task-assignee-option strong,.task-assignee-option small{display:block}.task-assignee-option strong{font-size:11px}.task-assignee-option small{margin-top:2px;color:var(--muted);font-size:9px}.task-avatar{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border-radius:50%;color:#fff;background:var(--maroon);font-size:9px;font-weight:800}.task-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.task-empty{padding:22px 14px;color:var(--muted);font-size:11px;line-height:1.5;text-align:center}.member-task-panel{border-bottom:1px solid var(--line);background:#fffdf9}.member-task-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 20px 8px}.member-task-head h3{margin:0;color:var(--deep);font:700 17px/1.1 Fraunces,serif}.member-task-filter{padding:0 20px 10px}.member-task-filter select{min-height:34px;padding:7px 9px;font-size:10px}.member-task-list{max-height:290px;overflow-y:auto;padding:0 20px 14px}.member-task-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:11px}.member-task-actions select{min-height:34px;padding:7px 8px;font-size:10px}.task-update-btn{min-height:34px;padding:7px 10px;border:0;border-radius:7px;color:#fff;background:var(--maroon);font-size:10px;font-weight:800}.task-update-btn:hover{background:var(--deep)}.task-update-btn:disabled{cursor:not-allowed;opacity:.55}@media(max-width:720px){.task-card{grid-template-columns:1fr}.task-summary{grid-template-columns:repeat(3,1fr)}.task-form-grid,.task-filter-row{grid-template-columns:1fr}}@media(max-width:600px){.member-task-head,.member-task-filter{padding-left:14px;padding-right:14px}.member-task-list{padding-left:14px;padding-right:14px}.task-summary-card{padding:8px}.task-summary-card strong{font-size:19px}.task-section .task-summary{gap:8px}.task-section .task-summary-card{min-height:68px;padding:10px}.task-section .task-summary-card strong{font-size:23px}.task-section .task-filter-row{grid-template-columns:1fr;gap:9px}}
+
+/* Giao diện nâng cấp cho khu vực giao việc */
+.task-section{margin-top:28px;padding:26px 24px 30px;border:1px solid rgba(93,7,3,.14);border-radius:18px;background:linear-gradient(145deg,#fffdf9 0%,#fff8ef 100%);box-shadow:0 10px 28px rgba(62,4,2,.06)}
+.task-section>.section-head{align-items:center;margin-bottom:18px;padding:0 0 17px;border-bottom:1px solid var(--line)}
+.task-section>.section-head h3{font-size:24px;letter-spacing:-.03em;line-height:1.15}
+.task-section>.section-head p{margin-top:7px;color:#8a766b;font-size:13px;line-height:1.45}
+.task-section>.section-head .btn{min-height:50px;padding:12px 18px;border-radius:10px;font-size:13px;box-shadow:0 7px 16px rgba(93,7,3,.16)}
+.task-card{min-width:0;overflow:hidden;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.task-card:hover,.member-task-card:hover{border-color:rgba(176,138,78,.65);box-shadow:0 7px 17px rgba(62,4,2,.08);transform:translateY(-1px)}
+.task-card-top h4,.member-task-card-top h4{max-width:430px;overflow-wrap:anywhere}
+.task-card-side{min-width:0;border:1px solid rgba(176,138,78,.22);border-left:3px solid rgba(176,138,78,.65);background:linear-gradient(180deg,#fffaf0,#fff5e7)}.task-card-side select{width:100%;min-width:0}.task-card-side .task-assignees-inline{line-height:1.35}.task-section .task-list{max-height:540px;overflow:auto;padding:2px 4px 4px 1px}.task-section .task-filter-row{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.task-section .task-filter-row select{width:100%;min-width:0;min-height:38px;padding:8px 12px;border:1px solid rgba(93,7,3,.28);border-radius:7px;outline:0;color:var(--ink);background:#fff;font-size:14px;appearance:auto}.task-section .task-filter-row select:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(93,7,3,.08)}.task-section .task-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 14px}.task-section .task-summary-card{min-height:74px;padding:14px;border:1px solid rgba(93,7,3,.18);border-radius:11px;background:rgba(255,255,255,.82)}.task-section .task-summary-card span{font-size:10px;color:#88776d}.task-section .task-summary-card strong{margin-top:7px;font-size:28px}
+.modal-backdrop{position:fixed;inset:0;z-index:2000;display:none;place-items:center;padding:18px;background:rgba(42,23,18,.45)}.modal-backdrop.show{display:grid}.modal-backdrop>.modal{position:relative;inset:auto;display:block}.task-modal{width:min(650px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;padding:28px 30px 24px!important;border:1px solid rgba(93,7,3,.16);border-radius:20px!important;background:linear-gradient(145deg,#fffdf9,#fff8ef)!important;box-shadow:0 24px 70px rgba(62,4,2,.28)}
+.task-modal .modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid rgba(93,7,3,.14)}.task-modal .modal-head .overview-kicker{margin:0 0 8px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.14em}.task-modal .modal-head .overview-close{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid rgba(93,7,3,.2);border-radius:10px;color:var(--deep);background:#fff;transition:.18s}.task-modal .modal-head .overview-close:hover{color:#fff;border-color:var(--maroon);background:var(--maroon);transform:translateY(-1px)}
+.task-modal .modal-head h2{margin:2px 0 0;color:var(--deep);font:700 30px/1.08 Fraunces,serif;letter-spacing:-.025em}
+.task-modal .modal-head p:last-child{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+.task-modal .field{margin-bottom:17px}
+.task-modal .field label{display:block;margin-bottom:7px;color:var(--deep);font-size:12px;font-weight:800}
+.task-modal input,.task-modal select,.task-modal textarea{width:100%;min-height:42px;padding:10px 12px;border:1px solid rgba(93,7,3,.18);border-radius:10px;color:var(--ink);background:rgba(255,255,255,.92);font-size:13px;transition:border-color .18s,box-shadow .18s,background .18s}.task-modal input::placeholder,.task-modal textarea::placeholder{color:#a59489}.task-modal input:hover,.task-modal select:hover,.task-modal textarea:hover{border-color:rgba(176,138,78,.8);background:#fff}
+.task-modal textarea{height:auto;min-height:112px;max-height:220px;resize:vertical;line-height:1.55}
+.task-modal input:focus,.task-modal select:focus,.task-modal textarea:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(93,7,3,.08);outline:0}
+.task-modal .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(93,7,3,.14)}
+.task-modal .modal-actions .btn{min-width:126px;min-height:44px;border-radius:10px;font-size:12px}.task-modal .modal-actions .btn-secondary{border:1px solid rgba(176,138,78,.18);background:#f1dfca}.task-modal .modal-actions .btn-primary{box-shadow:0 7px 15px rgba(93,7,3,.18)}
+.task-assignee-picker{min-height:86px;max-height:230px;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow-y:auto;padding:9px;border:1px solid rgba(93,7,3,.14);border-radius:11px;background:rgba(255,255,255,.72)}
+.task-assignee-option{min-width:0;border:1px solid rgba(93,7,3,.08);background:#fff;transition:.18s}.task-assignee-option:hover{border-color:rgba(176,138,78,.65);background:#fffaf2;transform:translateY(-1px)}
+.task-assignee-option:has(input:checked){border-color:rgba(93,7,3,.35);background:#fff3e5;box-shadow:inset 3px 0 var(--maroon)}
+.task-assignee-option input{accent-color:var(--maroon)}
+@media(max-width:720px){.task-section{padding:18px 14px 22px}.task-section>.section-head{align-items:flex-start;flex-direction:column}.task-section>.section-head h3{font-size:21px}.task-section>.section-head .btn{width:100%}.task-assignee-picker{grid-template-columns:1fr}.task-modal{padding:22px 17px 17px!important}.task-modal .modal-head h2{font-size:26px}.task-modal .modal-actions{position:sticky;bottom:-17px;margin-inline:-17px;padding:12px 17px;background:#fffaf3}.task-modal .modal-actions .btn{flex:1;min-width:0}.task-card-side{border-left:0;border-top:3px solid rgba(176,138,78,.45)}.task-section .task-list{max-height:none;overflow:visible}}.modal-backdrop.show{visibility:visible;opacity:1}
+
+
+
+    /* Redesign: nhóm nằm ngang, chăm sóc khách hàng là workspace phía dưới */
+    .groups-page { width: min(1440px, 100%); padding: 30px clamp(16px, 3vw, 52px) 70px; }
+    .page-head { align-items: flex-start; margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid rgba(93,7,3,.18); }
+    .page-head h1 { letter-spacing: -.035em; }
+    .page-head > div:first-child { max-width: 760px; }
+    .page-head .student-account-action { margin: 0 0 20px; }
+    .layout { display: block; }
+    .groups-panel { overflow: hidden; }
+    .groups-panel .panel-head { padding: 19px 22px 16px; }
+    .group-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 1fr); grid-template-rows: 1fr; gap: 12px; overflow-x: auto; padding: 15px 18px 18px; scroll-snap-type: x proximity; }
+    .group-list::-webkit-scrollbar { height: 7px; }
+    .group-list::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(93,7,3,.2); }
+    .group-card { min-height: 150px; margin: 0; padding: 17px; border: 1px solid rgba(93,7,3,.12); border-radius: 15px; box-shadow: 0 7px 18px rgba(62,4,2,.04); scroll-snap-align: start; }
+    .group-card.selected { border-color: var(--maroon); background: linear-gradient(145deg,#fffaf3,#fff0dc); box-shadow: 0 10px 22px rgba(93,7,3,.12), 0 0 0 3px rgba(93,7,3,.05); }
+    .group-card-title { align-items: center; }
+    .group-card h3 { font-size: 15px; }
+    .group-card-meta { margin-top: 24px; gap: 14px; }
+    .group-panel-footer { padding: 12px 18px 16px; }
+    .group-panel-footer .student-account-action { margin: 0; }
+    .detail { margin-top: 20px; min-height: 0; }
+    .detail-body { padding: 22px; }
+    .detail-title { align-items: center; gap: 16px; padding-bottom: 20px; }
+    .detail-title h2 { font-size: clamp(24px, 3vw, 32px); }
+    .detail-title-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .detail-title-actions .btn { min-height: 36px; padding: 8px 11px; }
+    .care-workspace { margin-top: 20px; padding: 0; overflow: hidden; border: 1px solid rgba(93,7,3,.16); border-radius: 17px; background: #fffdf9; box-shadow: 0 12px 28px rgba(62,4,2,.06); }
+    .care-workspace-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 20px 22px 16px; background: linear-gradient(135deg, #fff8ed, #fffdf9 72%); }
+    .care-kicker { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+    .care-workspace-head h3 { margin: 0; color: var(--deep); font: 700 25px/1.1 Fraunces, serif; letter-spacing: -.025em; }
+    .care-workspace-head p { max-width: 640px; margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .care-workspace-status { display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid rgba(85,115,76,.18); border-radius: 999px; color: var(--green); background: #eef4eb; font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .care-workspace-status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+    .care-nav { display: flex; gap: 7px; overflow-x: auto; padding: 0 22px; border-top: 1px solid rgba(93,7,3,.09); border-bottom: 1px solid rgba(93,7,3,.13); background: #fffaf3; }
+    .care-nav::-webkit-scrollbar { height: 0; }
+    .care-nav-btn { display: inline-flex; align-items: center; gap: 7px; min-height: 48px; padding: 10px 12px; border: 0; border-bottom: 3px solid transparent; color: var(--muted); background: transparent; font-size: 11px; font-weight: 800; white-space: nowrap; transition: color .18s, border-color .18s, background .18s; }
+    .care-nav-btn:hover { color: var(--maroon); background: rgba(238,220,200,.35); }
+    .care-nav-btn.is-active { border-bottom-color: var(--maroon); color: var(--maroon); background: #fff5e8; }
+    .care-nav-btn .material-symbols-rounded { font-size: 18px; }
+    .care-content { padding: 20px 22px 24px; }
+    .care-view { display: none; min-height: 160px; }
+    .care-view.is-active { display: block; animation: careViewIn .2s ease-out; }
+    @keyframes careViewIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .care-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+    .care-overview-card { display: flex; align-items: flex-start; gap: 11px; min-height: 116px; padding: 15px; border: 1px solid rgba(93,7,3,.12); border-radius: 13px; color: var(--ink); background: #fff; text-align: left; box-shadow: 0 4px 12px rgba(62,4,2,.035); transition: border-color .18s, box-shadow .18s, transform .18s; }
+    button.care-overview-card { cursor: pointer; }
+    button.care-overview-card:hover { border-color: rgba(176,138,78,.75); box-shadow: 0 8px 18px rgba(62,4,2,.08); transform: translateY(-1px); }
+    .care-overview-icon { display: grid; width: 35px; height: 35px; flex: 0 0 35px; place-items: center; border-radius: 10px; color: var(--maroon); background: var(--cream); }
+    .care-overview-card strong { display: block; color: var(--deep); font-size: 12px; }
+    .care-overview-card span:last-child { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .care-overview-note { margin-top: 14px; padding: 13px 15px; border: 1px dashed rgba(176,138,78,.6); border-radius: 11px; color: var(--muted); background: #fffaf0; font-size: 11px; line-height: 1.55; }
+    .care-view > .section:first-child { margin-top: 0; }
+    .care-view .section-head { align-items: flex-end; }
+    .care-view .section-head h3 { font-size: 18px; }
+    .care-view .section-head p { margin-top: 5px; }
+    .care-view .members { gap: 9px; }
+    .care-view .member { min-width: 210px; padding: 9px 10px; }
+    .care-view.task-section { margin-top: 0; padding: 22px 0 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+    .care-view.task-section > .section-head { padding: 0 0 16px; }
+    .care-view.task-section > .section-head h3 { font-size: 20px; }
+    .care-view.task-section .task-list { max-height: 540px; }
+    .care-view .ticket-controls { grid-template-columns: minmax(150px, .8fr) minmax(150px, .8fr) minmax(180px, 1.15fr) auto; }
+    .care-view .group-ticket-list { max-height: 540px; }
+    @media (max-width: 900px) { .group-list { grid-auto-columns: minmax(260px, 44vw); } .detail-title { display: block; } .detail-title-actions { justify-content: flex-start; margin-top: 14px; } .care-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .care-workspace-head { align-items: flex-start; flex-direction: column; } }
+    @media (max-width: 600px) { .groups-page { padding: 20px 12px 44px; } .groups-panel .panel-head, .group-list, .group-panel-footer, .detail-body { padding-inline: 14px; } .group-list { grid-auto-columns: minmax(245px, 82vw); padding-top: 12px; } .group-card { min-height: 138px; } .detail { margin-top: 14px; } .care-workspace-head { padding: 17px 15px 14px; } .care-workspace-head h3 { font-size: 22px; } .care-nav { padding-inline: 14px; } .care-content { padding: 16px 14px 18px; } .care-overview-grid { grid-template-columns: 1fr; } .care-view .ticket-controls { grid-template-columns: 1fr; } .care-view .member { min-width: 0; width: 100%; } .care-workspace-status { align-self: stretch; justify-content: center; } }
   </style>
 </head>
 
@@ -1134,11 +1468,11 @@
         <div class="user-chip" id="currentUserChip">Đang tải tài khoản...</div>
       </header>
       <div class="layout">
-        <section class="panel">
+        <section class="panel groups-panel">
           <div class="panel-head">
             <div>
               <h2>Các nhóm của bạn</h2>
-              <p>Nhóm bạn là leader hoặc thành viên.</p>
+              <p>Cuộn ngang để xem thêm nhóm, sau đó chọn nhóm cần quản lý.</p>
             </div><span class="count" id="groupCount">0 nhóm</span>
           </div>
           <div class="group-list" id="groupList">
@@ -1148,8 +1482,8 @@
         </section>
         <section class="panel detail" id="detailPanel">
           <div class="detail-empty">
-            <div><span class="material-symbols-rounded">folder_open</span>
-              <p>Chọn một nhóm ở bên trái để xem chi tiết.</p>
+            <div><span class="material-symbols-rounded">dashboard_customize</span>
+              <p>Chọn một nhóm ở phía trên để mở khu vực Chăm sóc khách hàng.</p>
             </div>
           </div>
         </section>
@@ -1216,14 +1550,13 @@
       </div>
       <div class="dialog-actions" style="justify-content:flex-start;margin:0 0 12px">
         <button class="class-detail-add-btn" id="addStudentsToClass" type="button"><span class="material-symbols-rounded">person_add</span>Thêm học viên</button>
-        <button class="class-detail-add-btn" id="editClassAgents" type="button"><span class="material-symbols-rounded">groups</span>Cập nhật CS con</button>
       </div>
       <div class="member-search" id="classDetailStudentSearchWrap" hidden><input id="classDetailStudentSearch" type="search" placeholder="Tìm tên hoặc email học viên..." autocomplete="off" /></div>
       <div class="checkbox-list" id="classDetailStudents"><div class="empty">Bấm “Thêm học viên” để tải danh sách học viên phù hợp với lớp.</div></div>
       <div class="dialog-actions" id="saveClassStudentsActions" hidden><button class="btn btn-primary" id="saveClassStudents" type="button"><span class="material-symbols-rounded">save</span>Lưu học viên</button></div>
-      <div class="member-search" id="classDetailAgentSearchWrap" hidden><input id="classDetailAgentSearch" type="search" placeholder="Tìm CS con theo tên hoặc email..." autocomplete="off" /></div>
-      <div class="checkbox-list" id="classDetailAgents" hidden><div class="empty">Bấm “Cập nhật CS con” để chọn CS phụ trách lớp.</div></div>
-      <div class="dialog-actions" id="saveClassAgentsActions" hidden><button class="btn btn-primary" id="saveClassAgents" type="button"><span class="material-symbols-rounded">save</span>Lưu CS con</button></div>
+      <div class="class-detail-section-head"><div><h3>CS con phụ trách lớp <span class="class-detail-agent-count" id="classDetailAgentCount">0 CS con</span></h3><p>Danh sách người đang phụ trách lớp này.</p></div><div class="class-detail-agent-head-actions"><div class="class-detail-agent-search-wrap" id="classDetailAgentSearchWrap" hidden><span class="material-symbols-rounded">search</span><input id="classDetailAgentSearch" type="search" placeholder="Tìm tên hoặc email CS con..." autocomplete="off" /></div><button class="class-detail-edit-toggle" id="editClassAgents" type="button"><span class="material-symbols-rounded">edit</span>Chỉnh sửa</button></div></div>
+      <div class="class-detail-agent-view" id="classDetailAgentView"><div class="empty">Đang tải danh sách CS con...</div></div>
+      <div class="class-detail-agent-edit" id="classDetailAgentEdit" hidden><div class="checkbox-list class-detail-agent-list" id="classDetailAgents"><div class="empty">Đang tải danh sách CS con...</div></div><div class="dialog-actions" id="saveClassAgentsActions" hidden><button class="btn btn-secondary" id="cancelClassAgents" type="button">Hủy</button><button class="btn btn-primary" id="saveClassAgents" type="button"><span class="material-symbols-rounded">save</span>Lưu CS con</button></div></div>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -1277,13 +1610,150 @@
       $("groupList").innerHTML = state.groups.map(group => `<button class="group-card ${state.selected && state.selected.id === group.id ? "selected" : ""}" type="button" data-group-id="${esc(group.id)}"><div class="group-card-title"><h3>${esc(group.name || "Chưa đặt tên")}</h3>${isLeader(group) ? '<span class="role-badge">LEADER</span>' : ''}</div>${group.code ? `<span class="group-code">${esc(group.code)}</span>` : ""}<div class="group-card-meta"><span><span class="material-symbols-rounded">group</span> ${(group.memberIds || group.members || []).length || (group.leaderUid ? 1 : 0)} người</span><span><span class="material-symbols-rounded">school</span> Xem lớp</span></div></button>`).join("");
     }
 
+
+    function overviewDate(value) {
+      if (!value) return null;
+      if (typeof value.toDate === "function") return value.toDate();
+      if (value.seconds) return new Date(value.seconds * 1000);
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function overviewCreatedAt(ticket) {
+      return overviewDate(ticket?.createdAt || ticket?.submittedAt || ticket?.createdTime || ticket?.timestamp);
+    }
+
+    function overviewCompletedAt(ticket) {
+      return overviewDate(ticket?.closedAt || ticket?.resolvedAt || ticket?.completedAt || ticket?.finishedAt || ticket?.statusUpdatedAt || ticket?.updatedAt);
+    }
+
+    function overviewIsCompleted(ticket) {
+      return ["closed", "resolved", "completed", "done"].includes(String(ticket?.status || "").trim().toLowerCase());
+    }
+
+    function overviewCategory(ticket) {
+      const raw = String(ticket?.ticketCategory || ticket?.category || ticket?.ticketCategoryId || ticket?.type || ticket?.typeId || ticket?.ticketType || "").trim().toLowerCase();
+      if (raw === "1" || raw.includes("system") || raw.includes("hệ thống") || raw.includes("he thong")) return "system";
+      if (raw === "2" || raw.includes("learning") || raw.includes("khóa học") || raw.includes("khoa hoc")) return "learning";
+      if (raw === "3" || raw.includes("account") || raw.includes("tài khoản") || raw.includes("tai khoan") || raw.includes("vận hành") || raw.includes("van hanh") || raw.includes("operations")) return "account";
+      return "other";
+    }
+
+    function overviewFormatDuration(minutes) {
+      if (minutes < 60) return `${minutes}m`;
+      const days = Math.floor(minutes / 1440);
+      const hours = Math.floor((minutes % 1440) / 60);
+      const mins = minutes % 60;
+      if (days) return hours ? `${days}d ${hours}h` : `${days}d`;
+      return mins ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+
+    function overviewMonday(date) {
+      const result = new Date(date);
+      const day = result.getDay();
+      result.setDate(result.getDate() + (day === 0 ? -6 : 1 - day));
+      result.setHours(0, 0, 0, 0);
+      return result;
+    }
+
+    function overviewSetValue(key, value, sub) {
+      const valueNode = document.querySelector(`[data-overview-value="${key}"]`);
+      const subNodes = document.querySelectorAll(`[data-overview-sub="${key}"]`);
+      if (valueNode) valueNode.textContent = value;
+      subNodes.forEach(node => { node.textContent = sub || ""; });
+    }
+
+    function renderGroupOverview() {
+      const root = document.querySelector('[data-care-view="overview"]');
+      if (!root) return;
+      const group = state.selected;
+      const tickets = state.tickets.filter(ticket => !group || ticket.groupId === group.id);
+      const now = new Date();
+      const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const monday = overviewMonday(now);
+      const lastMonday = new Date(monday); lastMonday.setDate(lastMonday.getDate() - 7);
+      const thisWeek = [0, 0, 0, 0, 0, 0, 0];
+      const lastWeek = [0, 0, 0, 0, 0, 0, 0];
+      const types = { system: 0, learning: 0, account: 0, other: 0 };
+      let today = 0, completedThisWeek = 0, inProgress = 0, completedTotal = 0, totalMinutes = 0, resolvedCount = 0, satisfied = 0, unsatisfied = 0;
+      tickets.forEach(ticket => {
+        const created = overviewCreatedAt(ticket);
+        if (!created) return;
+        types[overviewCategory(ticket)] += 1;
+        const createdKey = `${created.getFullYear()}-${String(created.getMonth() + 1).padStart(2, "0")}-${String(created.getDate()).padStart(2, "0")}`;
+        if (createdKey === todayKey) today += 1;
+        const thisIndex = Math.floor((created - monday) / 86400000);
+        const lastIndex = Math.floor((created - lastMonday) / 86400000);
+        if (thisIndex >= 0 && thisIndex < 7) { thisWeek[thisIndex] += 1; if (overviewIsCompleted(ticket)) completedThisWeek += 1; }
+        if (lastIndex >= 0 && lastIndex < 7) lastWeek[lastIndex] += 1;
+        const status = String(ticket.status || ticket.routingStatus || "").trim().toLowerCase();
+        if (["in_progress", "processing", "pending"].includes(status)) inProgress += 1;
+        if (overviewIsCompleted(ticket)) {
+          completedTotal += 1;
+          const completed = overviewCompletedAt(ticket);
+          if (completed && completed >= created) { totalMinutes += Math.max(1, Math.round((completed - created) / 60000)); resolvedCount += 1; }
+        }
+        const satisfaction = String(ticket.satisfactionStatus || "").trim().toLowerCase();
+        if (satisfaction === "satisfied") satisfied += 1;
+        if (satisfaction === "unsatisfied") unsatisfied += 1;
+      });
+      const total = tickets.length;
+      const rate = total ? Math.round((completedTotal / total) * 100) : 0;
+      const avg = resolvedCount ? overviewFormatDuration(Math.round(totalMinutes / resolvedCount)) : "—";
+      const satisfactionTotal = satisfied + unsatisfied;
+      const satisfactionRate = satisfactionTotal ? Math.round((satisfied / satisfactionTotal) * 100) : null;
+      overviewSetValue("today", today, today ? `${today} ticket được tạo hôm nay` : "Không có ticket mới hôm nay");
+      overviewSetValue("completed", completedThisWeek, completedThisWeek ? `${completedThisWeek} ticket đã hoàn thành` : "Chưa có ticket hoàn thành");
+      overviewSetValue("inProgress", inProgress, inProgress ? `${inProgress} ticket đang xử lý` : "Không có ticket đang xử lý");
+      overviewSetValue("completionRate", `${rate}%`, `${completedTotal}/${total} ticket`);
+      overviewSetValue("avg", avg, resolvedCount ? `Từ lúc tạo đến khi hoàn tất · ${resolvedCount} ticket` : "Chưa có dữ liệu hoàn tất");
+      overviewSetValue("satisfaction", satisfactionRate === null ? "—" : `${satisfactionRate}%`, satisfactionTotal ? `${satisfied} hài lòng · ${unsatisfied} không hài lòng` : "Chưa có phản hồi đánh giá");
+      const progress = root.querySelector("[data-overview-progress]"); if (progress) progress.style.width = `${rate}%`;
+      const totalNode = root.querySelector("[data-overview-total]"); if (totalNode) totalNode.textContent = `${total} ticket`;
+      const totalValueNode = root.querySelector("[data-overview-total-value]"); if (totalValueNode) totalValueNode.textContent = String(total);
+      const palette = { system: "#5d0703", learning: "#b08a4e", account: "#7a1410", other: "#55734c" };
+      const labels = { system: "Hệ thống", learning: "Khóa học", account: "Vận hành", other: "Khác" };
+      const typeTotal = Object.values(types).reduce((sum, value) => sum + value, 0) || 1;
+      let cursor = 0;
+      const stops = Object.entries(types).map(([key, value]) => { const start = cursor; cursor += (value / typeTotal) * 100; return `${palette[key]} ${start}% ${cursor}%`; }).join(", ");
+      const donut = root.querySelector("[data-overview-donut]"); if (donut) donut.style.background = total ? `conic-gradient(${stops})` : "conic-gradient(var(--cream) 0 100%)";
+      const legend = root.querySelector("[data-overview-legend]"); if (legend) legend.innerHTML = Object.entries(types).map(([key, value]) => `<div class="overview-legend-item"><span class="overview-legend-label"><span class="overview-legend-dot" style="background:${palette[key]}"></span>${labels[key]}</span><strong>${value}</strong></div>`).join("");
+      const satisfiedCountNode = root.querySelector("[data-overview-satisfied-count]"); if (satisfiedCountNode) satisfiedCountNode.textContent = String(satisfied);
+      const unsatisfiedCountNode = root.querySelector("[data-overview-unsatisfied-count]"); if (unsatisfiedCountNode) unsatisfiedCountNode.textContent = String(unsatisfied);
+      const ring = root.querySelector("[data-overview-satisfaction-ring]"); const satisfactionEmpty = root.querySelector("[data-overview-satisfaction-empty]"); if (ring) { ring.style.display = satisfactionRate === null ? "none" : "block"; ring.style.background = satisfactionRate === null ? "conic-gradient(#eedcc8 0 100%)" : `conic-gradient(#55734c 0 ${satisfactionRate}%, #a23b2e ${satisfactionRate}% 100%)`; const ringText = ring.querySelector("span"); if (ringText) ringText.textContent = satisfactionRate === null ? "—" : `${satisfactionRate}%`; } if (satisfactionEmpty) satisfactionEmpty.style.display = satisfactionRate === null ? "block" : "none";
+      const bars = root.querySelector("[data-overview-bars]"); if (bars) { const rawMax = Math.max(...thisWeek, ...lastWeek, 0); const chartMax = rawMax === 0 ? 5 : Math.max(5, Math.ceil(rawMax / 5) * 5); const barHeight = value => `${Math.min(100, Math.max(4, value / chartMax * 100))}%`; const dayLabels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]; bars.innerHTML = dayLabels.map((label, index) => `<div class="overview-bar-day"><div class="overview-bar-pair"><span class="overview-bar is-current" style="height:${barHeight(thisWeek[index])}" title="${thisWeek[index]} ticket"></span><span class="overview-bar" style="height:${barHeight(lastWeek[index])}" title="${lastWeek[index]} ticket"></span></div><span class="overview-bar-label">${label}</span></div>`).join(""); }
+      const weekNote = root.querySelector("[data-overview-week-note]"); if (weekNote) { const thisTotal = thisWeek.reduce((sum, value) => sum + value, 0); const lastTotal = lastWeek.reduce((sum, value) => sum + value, 0); const diff = thisTotal - lastTotal; weekNote.innerHTML = `Tuần này: <strong>${thisTotal} ticket</strong> · Tuần trước: <strong>${lastTotal} ticket</strong> · ${diff >= 0 ? "tăng" : "giảm"} ${Math.abs(diff)} ticket`; }
+    }
+
+    function activateCarePanel(view) {
+      const panel = $("detailPanel");
+      if (!panel) return;
+      const target = panel.querySelector(`[data-care-view="${view}"]`) ? view : "overview";
+      panel.querySelectorAll("[data-care-view]").forEach(node => node.classList.toggle("is-active", node.dataset.careView === target));
+      panel.querySelectorAll("[data-care-trigger]").forEach(button => {
+        const active = button.dataset.careTrigger === target;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-selected", active ? "true" : "false");
+      });
+    }
+
     function renderDetail() {
-      const group = state.selected; if (!group) { $("detailPanel").innerHTML = '<div class="detail-empty"><div><span class="material-symbols-rounded">folder_open</span><p>Chọn một nhóm ở bên trái để xem chi tiết.</p></div></div>'; return; }
+      const group = state.selected;
+      if (!group) {
+        $("detailPanel").innerHTML = '<div class="detail-empty"><div><span class="material-symbols-rounded">dashboard_customize</span><p>Chọn một nhóm ở phía trên để mở khu vực Chăm sóc khách hàng.</p></div></div>';
+        return;
+      }
       const leader = { uid: group.leaderUid, name: group.leaderName, email: group.leaderEmail };
       const members = group.members || (group.memberIds || []).map(uid => userFromGroup(group, uid)).filter(Boolean);
       const canCreate = isLeader(group);
-      const ticketWorkspace = canCreate ? `<div class="section"><div class="section-head"><div><h3>Phân công ticket</h3><p>Ticket học viên của nhóm sẽ đến Leader trước khi giao cho CS con trong lớp.</p></div><span class="count" id="ticketCount">0 ticket</span></div><div class="ticket-controls"><select id="ticketClassFilter" aria-label="Lọc theo lớp"><option value="">Tất cả lớp</option></select><select id="ticketStatusFilter" aria-label="Lọc trạng thái"><option value="all">Tất cả trạng thái</option><option value="waiting_leader_assignment">Chờ phân công</option><option value="assigned_to_cs">Đã phân công</option><option value="in_progress">Đang xử lý</option></select><input id="ticketSearchFilter" type="search" placeholder="Tìm mã ticket, tên học viên..." autocomplete="off"><button class="btn btn-secondary" id="refreshTickets" type="button"><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="ticket-summary" id="ticketSummary"></div><div class="group-ticket-list" id="groupTicketList"><div class="loading">Đang tải ticket...</div></div></div>` : '';
-      $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>'}</div></div><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp, thêm học viên và chọn CS con phụ trách.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div>${ticketWorkspace}</div>`;
+      const memberCards = members.length ? members.map(member => `<div class="member"><span class="avatar">${esc(initials(member.name, member.email))}</span><div><div class="member-name">${esc(member.name || "Chưa có tên")}</div><div class="member-email">${esc(member.email || "")}</div></div></div>`).join("") : '<div class="empty">Nhóm chưa có danh sách thành viên. Hiện chỉ hiển thị nhóm trưởng.</div>';
+      const ticketWorkspace = canCreate ? `<section class="care-view" data-care-view="tickets"><div class="section"><div class="section-head"><div><h3>Ticket cần phân công</h3><p>Leader xem ticket học viên và giao cho CS con đúng lớp phụ trách.</p></div><span class="count" id="ticketCount">0 ticket</span></div><div class="ticket-controls"><select id="ticketClassFilter" aria-label="Lọc theo lớp"><option value="">Tất cả lớp</option></select><select id="ticketStatusFilter" aria-label="Lọc trạng thái"><option value="all">Tất cả trạng thái</option><option value="waiting_leader_assignment">Chờ phân công</option><option value="assigned_to_cs">Đã phân công</option><option value="in_progress">Đang xử lý</option></select><input id="ticketSearchFilter" type="search" placeholder="Tìm mã ticket, tên học viên..." autocomplete="off"><button class="btn btn-secondary" id="refreshTickets" type="button"><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="ticket-summary" id="ticketSummary"></div><div class="group-ticket-list" id="groupTicketList"><div class="loading">Đang tải ticket...</div></div></div></section>` : '';
+      const taskWorkspace = canCreate ? `<section class="care-view task-section" data-care-view="tasks"><div class="section-head"><div><h3>Công việc của nhóm</h3><p>Leader giao việc cho CS con và theo dõi tiến độ.</p></div><button class="btn btn-primary" id="openTaskForm" type="button"><span class="material-symbols-rounded">assignment_add</span>Giao công việc</button></div><div class="task-summary" id="taskSummary"></div><div class="task-filter-row"><select id="taskStatusFilter"><option value="all">Tất cả trạng thái</option><option value="todo">Chưa làm</option><option value="in_progress">Đang làm</option><option value="done">Hoàn thành</option><option value="cancelled">Đã hủy</option></select><select id="taskAssigneeFilter"><option value="all">Tất cả CS</option></select></div><div id="taskList" class="task-list"><div class="task-empty">Đang tải công việc...</div></div></section>` : '';
+      const careButtons = `<button class="care-nav-btn is-active" type="button" data-care-trigger="overview" role="tab" aria-selected="true"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button><button class="care-nav-btn" type="button" data-care-trigger="members" role="tab" aria-selected="false"><span class="material-symbols-rounded">groups</span>Thành viên <span class="count">${members.length}</span></button><button class="care-nav-btn" type="button" data-care-trigger="classes" role="tab" aria-selected="false"><span class="material-symbols-rounded">school</span>Lớp học</button>${canCreate ? '<button class="care-nav-btn" type="button" data-care-trigger="tickets" role="tab" aria-selected="false"><span class="material-symbols-rounded">confirmation_number</span>Ticket</button><button class="care-nav-btn" type="button" data-care-trigger="tasks" role="tab" aria-selected="false"><span class="material-symbols-rounded">assignment</span>Công việc</button>' : ''}`;
+      $("detailPanel").innerHTML = `<div class="detail-body"><div class="detail-title"><div><p class="eyebrow">Đang quản lý</p><h2>${esc(group.name || "Chưa đặt tên")}</h2><p>${esc(group.description || "Nhóm chưa có mô tả.")}${group.code ? ` · Mã nhóm: ${esc(group.code)}` : ""}</p></div><div class="detail-title-actions"><div class="leader-box"><span class="avatar">${esc(initials(leader.name, leader.email))}</span><div><strong>${esc(leader.name || "Chưa có nhóm trưởng")}</strong><small>Nhóm trưởng · leader</small></div></div></div></div><section class="care-workspace" id="careWorkspace"><div class="care-workspace-head"><div><p class="care-kicker">CUSTOMER SUCCESS WORKSPACE</p><h3>Chăm sóc khách hàng</h3><p>Chọn một nút bên dưới để mở đúng danh sách cần xử lý cho nhóm này.</p></div><span class="care-workspace-status">${canCreate ? "Leader workspace" : "Member workspace"}</span></div><nav class="care-nav" aria-label="Các chức năng chăm sóc khách hàng" role="tablist">${careButtons}</nav><div class="care-content"><section class="care-view is-active" data-care-view="overview"><div class="overview-dashboard"><div class="overview-dashboard-head"><div><p class="overview-kicker">DASHBOARD NHÓM</p><h3>Tổng quan hoạt động</h3><p>Thống kê ticket và chất lượng hỗ trợ của nhóm đang chọn.</p></div><button class="overview-refresh" type="button" data-overview-refresh><span class="material-symbols-rounded">refresh</span>Làm mới</button></div><div class="overview-stat-grid"><article class="overview-stat-card"><span class="overview-stat-label">Ticket cần xử lý hôm nay</span><strong class="overview-stat-value" data-overview-value="today">0</strong><small class="overview-stat-sub" data-overview-sub="today">Chưa có dữ liệu</small></article><article class="overview-stat-card"><span class="overview-stat-label">Ticket hoàn thành trong tuần</span><strong class="overview-stat-value" data-overview-value="completed">0</strong><small class="overview-stat-sub" data-overview-sub="completed">Chưa có dữ liệu</small></article><article class="overview-stat-card"><span class="overview-stat-label">Ticket đang xử lý</span><strong class="overview-stat-value" data-overview-value="inProgress">0</strong><small class="overview-stat-sub" data-overview-sub="inProgress">Chưa có dữ liệu</small></article><article class="overview-stat-card is-highlight"><span class="overview-stat-label">Tỷ lệ hoàn thành</span><strong class="overview-stat-value" data-overview-value="completionRate">0%</strong><div class="overview-progress"><span data-overview-progress></span></div><small class="overview-stat-sub" data-overview-sub="completionRate">0/0 ticket</small></article></div><div class="overview-analytics-grid"><article class="overview-chart-card"><div class="overview-chart-head"><div><h4>Loại ticket phổ biến</h4><p>Phân bổ ticket theo nhóm nội dung.</p></div><span class="overview-chart-total" data-overview-total>0 ticket</span></div><div class="overview-donut-layout"><div class="overview-donut" data-overview-donut><div class="overview-donut-center"><strong data-overview-total-value>0</strong><small>tổng ticket</small></div></div><div class="overview-legend" data-overview-legend></div></div></article><div class="overview-side-stack"><article class="overview-chart-card overview-metric-card"><div><h4>Thời gian xử lý trung bình</h4><p>Từ lúc tạo đến khi hoàn tất.</p><strong class="overview-metric-value" data-overview-value="avg">—</strong></div><span class="care-overview-icon"><span class="material-symbols-rounded">schedule</span></span></article><article class="overview-chart-card overview-satisfaction-card"><div class="overview-chart-head"><div><h4>Phản hồi sau hỗ trợ</h4><p data-overview-sub="satisfaction">Chưa có dữ liệu</p></div></div><div class="overview-satisfaction-chart-wrap"><div class="overview-satisfaction-ring" data-overview-satisfaction-ring><span>—</span></div><div class="overview-satisfaction-empty" data-overview-satisfaction-empty>Chưa có phản hồi đánh giá</div></div><div class="overview-satisfaction-summary"><strong data-overview-value="satisfaction">—</strong><div class="overview-satisfaction-counts"><span>Hài lòng <b data-overview-satisfied-count>0</b></span><span>Không hài lòng <b data-overview-unsatisfied-count>0</b></span></div></div></article></div></div><article class="overview-chart-card overview-week-card"><div class="overview-chart-head"><div><h4>So sánh ticket: Tuần này và tuần trước</h4><p>Số lượng ticket được tạo theo từng ngày.</p></div><div class="overview-legend-label"><span class="overview-legend-dot" style="background:var(--maroon)"></span><span style="font-size:9px;color:var(--muted)">Tuần này</span><span class="overview-legend-dot" style="background:var(--gold)"></span><span style="font-size:9px;color:var(--muted)">Tuần trước</span></div></div><div class="overview-bars" data-overview-bars></div><p class="overview-week-note" data-overview-week-note>Chưa có dữ liệu ticket.</p></article><div class="care-overview-note"><strong>Phạm vi thống kê:</strong> chỉ tính các ticket thuộc nhóm <strong>${esc(group.name || "Nhóm CS")}</strong>. Dữ liệu cập nhật theo ticket của nhóm đang chọn.</div></div></div></section><section class="care-view" data-care-view="members"><div class="section"><div class="section-head"><div><h3>Thành viên trong nhóm</h3><p>Chỉ các thành viên này mới được thêm vào lớp và nhận công việc.</p></div><div style="display:flex;align-items:center;gap:8px"><span class="count">${members.length} người</span>${canCreate ? '<button class="btn btn-secondary" id="openMemberModal" type="button"><span class="material-symbols-rounded">person_add</span>Thêm thành viên</button>' : ''}</div></div><div class="members">${memberCards}</div></div></section><section class="care-view" data-care-view="classes"><div class="section"><div class="section-head"><div><h3>Lớp học trong nhóm</h3><p>Leader tạo lớp, thêm học viên và chọn CS con phụ trách.</p></div>${canCreate ? '<button class="btn btn-primary" id="openClassModal" type="button"><span class="material-symbols-rounded">add</span>Tạo lớp</button>' : ''}</div><div class="class-grid" id="classGrid"><div class="loading">Đang tải lớp...</div></div></div></section>${ticketWorkspace}${taskWorkspace}</div></section></div>`;
+      activateCarePanel("overview");
+      renderGroupOverview();
+      $("detailPanel").querySelector("[data-overview-refresh]")?.addEventListener("click", () => { renderGroupOverview(); toast("Đã làm mới thống kê nhóm."); });
       if (canCreate) {
         const leaderBox = $("detailPanel").querySelector(".detail-title .leader-box");
         const leaderCaption = leaderBox?.querySelector("small");
@@ -1293,9 +1763,10 @@
         $("openGroupChat")?.addEventListener("click", () => openGroupChatPanel(group));
         $("closeGroupChat")?.addEventListener("click", closeGroupChatPanel);
         bindGroupChatPanel(group);
-        $("openClassModal").addEventListener("click", openClassModal);
-        $("openMemberModal").addEventListener("click", openMemberModal);
-        $("refreshTickets").addEventListener("click", watchGroupTickets);
+        if (window.CSTasksLeader) window.CSTasksLeader.init({ group, user: state.user });
+        $("openClassModal")?.addEventListener("click", openClassModal);
+        $("openMemberModal")?.addEventListener("click", openMemberModal);
+        $("refreshTickets")?.addEventListener("click", watchGroupTickets);
       }
       loadClasses(group);
       if (canCreate) renderGroupTickets();
@@ -1501,7 +1972,7 @@
     function loadClasses(group) { if (state.unsubscribeClasses) state.unsubscribeClasses(); state.unsubscribeClasses = myGroupsDb.collection(GROUPS).doc(group.id).collection("classes").orderBy("createdAt", "desc").onSnapshot(snapshot => { state.classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); const grid = $("classGrid"); if (!grid) return; if (!state.classes.length) { grid.innerHTML = '<div class="empty">Chưa có lớp học. Leader có thể tạo lớp đầu tiên.</div>'; renderGroupTickets(); return; } grid.innerHTML = state.classes.map(item => `<article class="class-card" tabindex="0" role="button" data-class-id="${esc(item.id)}" aria-label="Mở chi tiết lớp ${esc(item.name)}"><h4>${esc(item.name)}</h4><p>${esc(item.description || "Chưa có mô tả")}</p><div class="class-foot"><span>${(item.studentIds || item.memberIds || []).length} học viên</span><span>${(item.csMemberIds || []).length} CS con</span><span class="status">Đang hoạt động</span></div></article>`).join(""); renderGroupTickets(); }, error => { console.error(error); const grid = $("classGrid"); if (grid) grid.innerHTML = '<div class="empty">Không thể tải lớp. Kiểm tra Firestore Rules.</div>'; }); }
 
     function ticketTime(value) { return value && value.toDate ? value.toDate().getTime() : value && value.seconds ? value.seconds * 1000 : 0; }
-    function watchGroupTickets() { if (!state.user || !state.selected || !isLeader(state.selected)) return; if (state.unsubscribeTickets) state.unsubscribeTickets(); state.unsubscribeTickets = myGroupsDb.collection("tickets").where("supportLeaderUid", "==", state.user.uid).onSnapshot(snapshot => { state.tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => ticketTime(b.createdAt) - ticketTime(a.createdAt)); renderGroupTickets(); }, error => { console.error(error); const list = $("groupTicketList"); if (list) list.innerHTML = '<div class="empty">Không thể tải ticket. Kiểm tra quyền Firestore.</div>'; toast("Không thể tải ticket của nhóm.", true); }); }
+    function watchGroupTickets() { if (!state.user || !state.selected || !isLeader(state.selected)) return; if (state.unsubscribeTickets) state.unsubscribeTickets(); state.unsubscribeTickets = myGroupsDb.collection("tickets").where("supportLeaderUid", "==", state.user.uid).onSnapshot(snapshot => { state.tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => ticketTime(b.createdAt) - ticketTime(a.createdAt)); renderGroupTickets(); renderGroupOverview(); }, error => { console.error(error); const list = $("groupTicketList"); if (list) list.innerHTML = '<div class="empty">Không thể tải ticket. Kiểm tra quyền Firestore.</div>'; toast("Không thể tải ticket của nhóm.", true); }); }
     function renderGroupTickets() { const group = state.selected, list = $("groupTicketList"); if (!group || !list || !isLeader(group)) return; const classFilter = $("ticketClassFilter"), statusFilter = $("ticketStatusFilter"), searchFilter = $("ticketSearchFilter"); const previousClass = classFilter.value; classFilter.innerHTML = `<option value="">Tất cả lớp (${state.classes.length})</option>${state.classes.map(item => `<option value="${esc(item.id)}">${esc(item.name || "Lớp chưa đặt tên")}</option>`).join("")}`; classFilter.value = state.classes.some(item => item.id === previousClass) ? previousClass : ""; const classId = classFilter.value, status = statusFilter.value, keyword = String(searchFilter.value || "").trim().toLowerCase(); const visible = state.tickets.filter(ticket => ticket.groupId === group.id && (!classId || ticket.classId === classId) && (status === "all" || ticket.routingStatus === status || ticket.status === status) && (!keyword || `${ticket.ticketNum || ticket.id} ${ticket.name || ""} ${ticket.email || ""} ${ticket.title || ""}`.toLowerCase().includes(keyword))); const waiting = visible.filter(ticket => !ticket.assigneeUid).length, assigned = visible.filter(ticket => ticket.assigneeUid).length; $("ticketCount").textContent = `${visible.length} ticket`; $("ticketSummary").innerHTML = `<article class="ticket-summary-card"><span>Trong bộ lọc</span><strong>${visible.length}</strong></article><article class="ticket-summary-card"><span>Chờ phân công</span><strong>${waiting}</strong></article><article class="ticket-summary-card"><span>Đã giao CS con</span><strong>${assigned}</strong></article>`; if (!visible.length) { list.innerHTML = '<div class="empty">Chưa có ticket học viên phù hợp với nhóm/lớp này.</div>'; return; } list.innerHTML = visible.map(ticket => { const agents = ticketAgents(ticket), priority = String(ticket.priority || "medium").toLowerCase(), options = agents.map(agent => `<option value="${esc(agent.uid)}" ${ticket.assigneeUid === agent.uid ? "selected" : ""}>${esc(agent.name || agent.email || "CS")}</option>`).join(""); return `<article class="group-ticket-card" data-ticket-id="${esc(ticket.id)}"><div><div class="group-ticket-top"><div><div class="group-ticket-code">${esc(ticket.ticketNum || ticket.id)}</div><h4 class="group-ticket-title">${esc(ticket.title || "Không có tiêu đề")}</h4></div><span class="ticket-tag ${priority}">${esc(ticket.priorityLabel || priority)}</span></div><div class="group-ticket-meta"><span class="ticket-tag">Học viên: ${esc(ticket.name || "Chưa có tên")}</span><span class="ticket-tag">Lớp: ${esc(ticket.className || "Chưa gắn lớp")}</span><span class="ticket-tag">${esc(ticket.ticketCategory || "Khác")}</span></div></div><div class="ticket-assignment"><label>Giao CS con trong lớp</label><select class="ticket-agent-select" ${agents.length ? "" : "disabled"}><option value="">${agents.length ? "-- Chọn CS phụ trách --" : "Lớp chưa có CS con"}</option>${options}</select><button class="btn btn-primary assign-ticket-btn" type="button" ${agents.length ? "" : "disabled"}>${ticket.assigneeUid ? "Cập nhật phân công" : "Giao ticket"}</button><div class="ticket-assignment-note">${ticket.assigneeName ? `Đang giao cho: ${esc(ticket.assigneeName)}` : "Chưa giao CS con"}</div></div></article>`; }).join(""); }
 
     /*
@@ -1640,13 +2111,38 @@
       return [...members.values()].filter(member => String(member.uid) !== String(state.selected.leaderUid || ""));
     }
 
+    function classDetailAssignedAgents() {
+      if (!activeClassDetail) return [];
+      const groupAgents = groupCsMembersForClass();
+      const byId = new Map(groupAgents.map(agent => [String(agent.uid), agent]));
+      (activeClassDetail.csMembers || []).forEach(member => {
+        const uid = String(member.uid || member.id || "");
+        if (uid && !byId.has(uid)) byId.set(uid, { uid, name: member.name || member.displayName || "CS con", email: member.email || "" });
+      });
+      const ids = [...(activeClassDetail.csMemberIds || []), ...(activeClassDetail.csMembers || []).map(member => member.uid || member.id)].map(id => String(id)).filter(Boolean);
+      return [...new Set(ids)].map(uid => byId.get(uid) || { uid, name: "CS con", email: "" });
+    }
+
+    function renderClassDetailAgentView() {
+      const container = $("classDetailAgentView");
+      if (!container) return;
+      const agents = classDetailAssignedAgents();
+      const count = $("classDetailAgentCount");
+      if (count) count.textContent = `${agents.length} CS con`;
+      container.innerHTML = agents.length ? agents.map(agent => `<div class="class-detail-agent-view-row"><span class="avatar">${esc(initials(agent.name, agent.email))}</span><span>${esc(agent.name || "CS con")}</span></div>`).join("") : '<div class="empty">Chưa có CS con được gán cho lớp.</div>';
+    }
+
     function renderClassDetailAgents() {
       if (!activeClassDetail) return;
       const selected = new Set([...(activeClassDetail.csMemberIds || []), ...(activeClassDetail.csMembers || []).map(member => member.uid || member.id)].map(id => String(id)).filter(Boolean));
       const keyword = String($("classDetailAgentSearch").value || "").trim().toLowerCase();
-      const agents = groupCsMembersForClass().filter(agent => !keyword || `${agent.name} ${agent.email}`.toLowerCase().includes(keyword));
+      const allAgents = groupCsMembersForClass();
+      const agents = allAgents.filter(agent => !keyword || `${agent.name} ${agent.email}`.toLowerCase().includes(keyword));
+      const canEdit = Boolean(state.selected && isLeader(state.selected));
+      const count = $("classDetailAgentCount");
+      if (count) count.textContent = `${classDetailAssignedAgents().length} CS con`;
       const container = $("classDetailAgents");
-      container.innerHTML = agents.length ? agents.map(agent => `<label class="check-row"><input type="checkbox" value="${esc(agent.uid)}" ${selected.has(String(agent.uid)) ? "checked" : ""} /><span class="avatar">${esc(initials(agent.name, agent.email))}</span><span><strong>${esc(agent.name || "CS con")}</strong><small>${esc(agent.email || "")}</small></span></label>`).join("") : '<div class="empty">Nhóm chưa có CS con để chọn. Hãy thêm CS con vào nhóm trước.</div>';
+      container.innerHTML = agents.length ? agents.map(agent => `<label class="check-row"><input type="checkbox" value="${esc(agent.uid)}" ${selected.has(String(agent.uid)) ? "checked" : ""} ${canEdit ? "" : "disabled"} /><span class="avatar">${esc(initials(agent.name, agent.email))}</span><span><strong>${esc(agent.name || "CS con")}</strong><small>${esc(agent.email || "")}</small></span></label>`).join("") : '<div class="empty">Không tìm thấy CS con phù hợp.</div>';
     }
 
     async function syncStudentRoute(group, classId, classData, students) {
@@ -1683,9 +2179,11 @@
       $("saveClassStudentsActions").hidden = true;
       $("addStudentsToClass").hidden = false;
       $("classDetailAgentSearchWrap").hidden = true;
+      $("classDetailAgentEdit").hidden = true;
       $("classDetailAgents").hidden = true;
       $("saveClassAgentsActions").hidden = true;
-      $("editClassAgents").hidden = false;
+      $("editClassAgents").hidden = !isLeader(state.selected);
+      renderClassDetailAgentView();
       $("classDetailModal").classList.add("show");
       $("classDetailModal").setAttribute("aria-hidden", "false");
     }
@@ -1710,11 +2208,26 @@
     function startEditingClassAgents() {
       if (!activeClassDetail || !state.selected || !isLeader(state.selected)) return;
       $("classDetailAgentSearch").value = "";
+      $("classDetailAgentView").hidden = true;
       $("classDetailAgentSearchWrap").hidden = false;
+      $("classDetailAgentEdit").hidden = false;
       $("classDetailAgents").hidden = false;
       $("saveClassAgentsActions").hidden = false;
+      $("editClassAgents").hidden = true;
       renderClassDetailAgents();
       $("classDetailAgentSearch").focus();
+    }
+
+    function cancelEditingClassAgents() {
+      if (!activeClassDetail) return;
+      $("classDetailAgentSearch").value = "";
+      $("classDetailAgentView").hidden = false;
+      $("classDetailAgentSearchWrap").hidden = true;
+      $("classDetailAgentEdit").hidden = true;
+      $("classDetailAgents").hidden = true;
+      $("saveClassAgentsActions").hidden = true;
+      $("editClassAgents").hidden = !isLeader(state.selected);
+      renderClassDetailAgentView();
     }
 
     function renderClassDetailStudents() {
@@ -1770,9 +2283,7 @@
         }, { merge: true });
         activeClassDetail = { ...activeClassDetail, csMemberIds: selectedIds, csMembers };
         state.classes = state.classes.map(item => item.id === activeClassDetail.id ? activeClassDetail : item);
-        $("classDetailAgentSearchWrap").hidden = true;
-        $("classDetailAgents").hidden = true;
-        $("saveClassAgentsActions").hidden = true;
+        cancelEditingClassAgents();
         toast(`Đã cập nhật ${csMembers.length} CS con phụ trách lớp.`);
       } catch (error) {
         console.error(error);
@@ -1787,8 +2298,11 @@
       $("classDetailModal").classList.remove("show");
       $("classDetailModal").setAttribute("aria-hidden", "true");
       $("classDetailAgentSearchWrap").hidden = true;
+      $("classDetailAgentView").hidden = false;
+      $("classDetailAgentEdit").hidden = true;
       $("classDetailAgents").hidden = true;
       $("saveClassAgentsActions").hidden = true;
+      $("editClassAgents").hidden = true;
       activeClassDetail = null;
     }
     function renderAvailableStudents(keyword = "") {
@@ -1828,13 +2342,14 @@
     }
     function closeClassModal() { $("classModal").classList.remove("show"); $("classModal").setAttribute("aria-hidden", "true"); $("classForm").reset(); $("classStudents").innerHTML = '<div class="loading">Nhập tên lớp để tìm học viên...</div>'; }
     $("groupList").addEventListener("click", event => { const card = event.target.closest("[data-group-id]"); if (card) selectGroup(card.dataset.groupId); });
-    $("detailPanel").addEventListener("click", event => { const assignButton = event.target.closest(".assign-ticket-btn"); if (assignButton) { assignGroupTicket(assignButton); return; } const card = event.target.closest("[data-class-id]"); if (card) openClassDetail(card.dataset.classId); });
+    $("detailPanel").addEventListener("click", event => { const careTrigger = event.target.closest("[data-care-trigger]"); if (careTrigger) { activateCarePanel(careTrigger.dataset.careTrigger); return; } const assignButton = event.target.closest(".assign-ticket-btn"); if (assignButton) { assignGroupTicket(assignButton); return; } const card = event.target.closest("[data-class-id]"); if (card) openClassDetail(card.dataset.classId); });
     $("detailPanel").addEventListener("keydown", event => { const card = event.target.closest("[data-class-id]"); if (card && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openClassDetail(card.dataset.classId); } });
     $("detailPanel").addEventListener("input", event => { if (event.target && event.target.id === "ticketSearchFilter") renderGroupTickets(); });
     $("detailPanel").addEventListener("change", event => { if (event.target && (event.target.id === "ticketClassFilter" || event.target.id === "ticketStatusFilter")) renderGroupTickets(); });
     $("closeClassDetail").addEventListener("click", closeClassDetail);
     $("addStudentsToClass").addEventListener("click", startAddingStudentsToClass);
     $("editClassAgents").addEventListener("click", startEditingClassAgents);
+    $("cancelClassAgents").addEventListener("click", cancelEditingClassAgents);
     $("classDetailStudentSearch").addEventListener("input", renderClassDetailStudents);
     $("classDetailAgentSearch").addEventListener("input", renderClassDetailAgents);
     $("saveClassStudents").addEventListener("click", saveClassStudents);
@@ -1884,6 +2399,338 @@
     $("currentUserChip").textContent = "Đang xác thực...";
     myGroupsAuth.onAuthStateChanged(async user => { if (!user) { $("currentUserChip").textContent = "Chưa đăng nhập"; toast("Bạn cần đăng nhập để xem nhóm.", true); return; } state.user = user; $("currentUserChip").textContent = user.email || "Tài khoản hiện tại"; watchMyGroups(); });
   </script>
+
+  <div id="taskModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal task-modal">
+      <div class="modal-head">
+        <div><p class="overview-kicker">PHÂN CÔNG NỘI BỘ</p><h2>Giao công việc</h2><p>Chọn người nhận, hạn hoàn thành và mức ưu tiên.</p></div>
+        <button class="overview-close" id="closeTaskModal" type="button" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <form id="taskForm">
+        <div class="field"><label for="taskTitle">Tên công việc <span class="required">*</span></label><input id="taskTitle" maxlength="140" required placeholder="Ví dụ: Gọi lại cho học viên..."></div>
+        <div class="field"><label for="taskDescription">Mô tả</label><textarea id="taskDescription" maxlength="1000" rows="4" placeholder="Nội dung cần thực hiện..."></textarea></div>
+        <div class="task-form-grid"><div class="field"><label for="taskPriority">Mức ưu tiên</label><select id="taskPriority"><option value="high">Cao</option><option value="medium" selected>Trung bình</option><option value="low">Thấp</option></select></div><div class="field"><label for="taskDueDate">Hạn hoàn thành</label><input id="taskDueDate" type="datetime-local"></div></div>
+        <div class="field"><label>Giao cho CS con <span class="required">*</span></label><div id="taskAssignees" class="task-assignee-picker"></div></div>
+        <div class="modal-actions"><button class="btn btn-secondary" id="cancelTaskModal" type="button">Hủy</button><button class="btn btn-primary" id="saveTaskBtn" type="submit">Giao việc</button></div>
+      </form>
+    </div>
+  </div>
+  <script id="leader-tasks-inline">
+(function () {
+  "use strict";
+
+  const TASKS = "tasks";
+  const NOTIFICATIONS = "csNotifications";
+  const GROUPS = "groups";
+
+  const esc = value => {
+    const node = document.createElement("div");
+    node.textContent = value == null ? "" : String(value);
+    return node.innerHTML;
+  };
+
+  const byId = id => document.getElementById(id);
+  const getDb = () => window.firebase && firebase.firestore();
+  const serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
+
+  const state = {
+    group: null,
+    user: null,
+    members: [],
+    tasks: [],
+    formTemplate: "",
+    unsubscribe: null,
+    toast: null
+  };
+
+  function notify(message, isError) {
+    if (typeof window.csToast === "function") return window.csToast(message, isError);
+    const node = byId("toast");
+    if (!node) return;
+    node.textContent = message;
+    node.className = `toast show${isError ? " error" : ""}`;
+    clearTimeout(state.toast);
+    state.toast = setTimeout(() => { node.className = "toast"; }, 3200);
+  }
+
+  function isLeader(group, user) {
+    const leaderUid = group && (group.leaderUid || group.leader?.uid || group.leader?.id);
+    return Boolean(user && leaderUid && String(leaderUid) === String(user.uid));
+  }
+
+  function initials(name, email) {
+    return String(name || email || "?").trim().split(/\s+/).filter(Boolean).slice(-2).map(part => part[0]).join("").toUpperCase() || "?";
+  }
+
+  function toDate(value) {
+    if (!value) return null;
+    if (typeof value.toDate === "function") return value.toDate();
+    if (value.seconds) return new Date(value.seconds * 1000);
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function dateText(value) {
+    const date = toDate(value);
+    return date ? date.toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" }) : "Chưa đặt hạn";
+  }
+
+  function statusText(value) {
+    return { todo: "Chưa làm", in_progress: "Đang làm", done: "Hoàn thành", cancelled: "Đã hủy" }[value] || "Chưa làm";
+  }
+
+  function priorityText(value) {
+    return { high: "Cao", medium: "Trung bình", low: "Thấp" }[value] || "Trung bình";
+  }
+
+  function normalizeMembers(group) {
+    const map = new Map();
+    const leaderUid = String(group?.leaderUid || group?.leader?.uid || group?.leader?.id || "");
+    (Array.isArray(group?.members) ? group.members : []).forEach(member => {
+      const uid = String(member.uid || member.id || "");
+      if (uid && uid !== leaderUid) map.set(uid, { uid, name: member.name || member.displayName || "CS con", email: member.email || "" });
+    });
+    (Array.isArray(group?.memberIds) ? group.memberIds : []).forEach(uid => {
+      const id = String(uid || "");
+      if (!id || id === leaderUid || map.has(id)) return;
+      map.set(id, { uid: id, name: "CS con", email: "" });
+    });
+    return [...map.values()];
+  }
+
+  function renderAssignees() {
+    const node = byId("taskAssignees");
+    if (!node) return;
+    if (!state.members.length) {
+      node.innerHTML = '<div class="task-empty">Nhóm chưa có CS con để giao việc.</div>';
+      return;
+    }
+    node.innerHTML = state.members.map(member => `
+      <label class="task-assignee-option">
+        <input type="checkbox" value="${esc(member.uid)}">
+        <span class="task-avatar">${esc(initials(member.name, member.email))}</span>
+        <span><strong>${esc(member.name)}</strong><small>${esc(member.email)}</small></span>
+      </label>`).join("");
+  }
+
+  function renderFilters() {
+    const node = byId("taskAssigneeFilter");
+    if (!node) return;
+    const current = node.value;
+    node.innerHTML = `<option value="all">Tất cả CS</option>${state.members.map(member => `<option value="${esc(member.uid)}">${esc(member.name)}</option>`).join("")}`;
+    node.value = state.members.some(member => member.uid === current) ? current : "all";
+  }
+
+  function renderSummary(tasks) {
+    const node = byId("taskSummary");
+    if (!node) return;
+    const count = { todo: 0, in_progress: 0, done: 0 };
+    tasks.forEach(task => { if (count[task.status] !== undefined) count[task.status] += 1; });
+    node.innerHTML = `
+      <div class="task-summary-card todo"><span>Chưa làm</span><strong>${count.todo}</strong></div>
+      <div class="task-summary-card in_progress"><span>Đang làm</span><strong>${count.in_progress}</strong></div>
+      <div class="task-summary-card done"><span>Hoàn thành</span><strong>${count.done}</strong></div>`;
+  }
+
+  function renderTasks() {
+    const list = byId("taskList");
+    if (!list || !state.group) return;
+    const status = byId("taskStatusFilter")?.value || "all";
+    const assignee = byId("taskAssigneeFilter")?.value || "all";
+    const groupTasks = state.tasks.filter(task => task.groupId === state.group.id);
+    const visible = groupTasks.filter(task => {
+      const assigned = Array.isArray(task.assigneeUids) ? task.assigneeUids.map(String) : [];
+      return (status === "all" || task.status === status) && (assignee === "all" || assigned.includes(String(assignee)));
+    }).sort((a, b) => (toDate(a.dueAt)?.getTime() || Infinity) - (toDate(b.dueAt)?.getTime() || Infinity));
+
+    renderSummary(groupTasks);
+    const countNode = byId("taskCount");
+    if (countNode) countNode.textContent = `${visible.length} việc`;
+    if (!visible.length) {
+      list.innerHTML = '<div class="task-empty">Chưa có công việc phù hợp.</div>';
+      return;
+    }
+
+    list.innerHTML = visible.map(task => `
+      <article class="task-card" data-task-id="${esc(task.id)}">
+        <div class="task-card-main">
+          <div class="task-card-top">
+            <div><span class="task-priority ${esc(task.priority || "medium")}">${esc(priorityText(task.priority))}</span><h4>${esc(task.title || "Công việc")}</h4></div>
+            <span class="task-status ${esc(task.status || "todo")}">${esc(statusText(task.status))}</span>
+          </div>
+          <p>${esc(task.description || "Không có mô tả")}</p>
+          <div class="task-meta"><span>Hạn: ${esc(dateText(task.dueAt))}</span><span>Người giao: ${esc(task.createdByName || "Leader")}</span></div>
+        </div>
+        <div class="task-card-side"><strong>Người nhận</strong><div class="task-assignees-inline">${(task.assigneeNames || []).map(name => `<span>${esc(name)}</span>`).join("") || "Chưa giao"}</div></div>
+      </article>`).join("");
+  }
+
+  function watch(group) {
+    if (state.unsubscribe) state.unsubscribe();
+    state.tasks = [];
+    if (!group || !isLeader(group, state.user)) return;
+    const db = getDb();
+    state.unsubscribe = db.collection(GROUPS).doc(group.id).collection(TASKS).orderBy("createdAt", "desc").onSnapshot(snapshot => {
+      state.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderTasks();
+    }, error => {
+      console.error("Không thể tải công việc Leader:", error);
+      const list = byId("taskList");
+      if (list) list.innerHTML = '<div class="task-empty">Không thể tải công việc. Kiểm tra quyền Firestore.</div>';
+      notify("Không thể tải công việc.", true);
+    });
+  }
+
+function openModal() {
+    if (!state.group || !isLeader(state.group, state.user)) return;
+    state.members = normalizeMembers(state.group);
+    byId("taskForm")?.reset();
+    renderAssignees();
+    byId("taskInlinePanel")?.classList.add("is-open");
+    byId("taskInlinePanel")?.setAttribute("aria-hidden", "false");
+    byId("taskTitle")?.focus();
+  }
+
+  function closeModal() {
+    byId("taskInlinePanel")?.classList.remove("is-open");
+    byId("taskInlinePanel")?.setAttribute("aria-hidden", "true");
+  }
+
+  async function saveTask(event) {
+    event.preventDefault();
+if (!state.group || !isLeader(state.group, state.user)) return;
+    if (!getDb()) { notify("Firebase chưa sẵn sàng. Vui lòng tải lại trang.", true); return; }
+    const title = String(byId("taskTitle")?.value || "").trim();
+    const description = String(byId("taskDescription")?.value || "").trim();
+    const priority = byId("taskPriority")?.value || "medium";
+    const dueValue = byId("taskDueDate")?.value || "";
+    const assigneeUids = [...document.querySelectorAll("#taskAssignees input[type=checkbox]:checked")].map(input => input.value);
+    if (!title || !assigneeUids.length) {
+      notify("Hãy nhập tên công việc và chọn ít nhất một CS con.", true);
+      return;
+    }
+    const selectedIds = new Set(assigneeUids.map(String));
+    const members = state.members.filter(member => selectedIds.has(String(member.uid)));
+    if (!members.length) {
+      notify("Người nhận không thuộc nhóm này.", true);
+      return;
+    }
+    const db = getDb();
+    const taskRef = db.collection(GROUPS).doc(state.group.id).collection(TASKS).doc();
+    const leaderName = state.user.displayName || state.user.email || state.group.leaderName || "CS Leader";
+    const dueDate = dueValue ? new Date(dueValue) : null;
+    if (dueDate && Number.isNaN(dueDate.getTime())) {
+      notify("Hạn hoàn thành không hợp lệ.", true);
+      return;
+    }
+    const dueAt = dueDate ? firebase.firestore.Timestamp.fromDate(dueDate) : null;
+    const task = {
+      groupId: state.group.id,
+      groupName: state.group.name || "Nhóm CS",
+      title,
+      description,
+      priority,
+      status: "todo",
+assigneeUids: members.map(member => String(member.uid)),
+      assigneeNames: members.map(member => member.name || member.email || "CS con"),
+      assignees: members.map(member => ({ uid: String(member.uid), name: member.name || member.email || "CS con", email: member.email || "" })),
+      createdByUid: state.user.uid,
+      createdByName: leaderName,
+      dueAt,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      completedAt: null,
+      completedByUid: ""
+    };
+    const button = byId("saveTaskBtn");
+    if (button) { button.disabled = true; button.textContent = "Đang giao..."; }
+    try {
+      // Lưu task trước. Notification là phần phụ, không được làm hỏng thao tác giao việc.
+      await taskRef.set(task);
+      await Promise.all(members.map(async member => {
+        try {
+          await db.collection(NOTIFICATIONS).doc(member.uid).collection("items").add({
+            type: "task_assignment",
+            recipientUid: member.uid,
+            taskId: taskRef.id,
+            groupId: state.group.id,
+            groupName: state.group.name || "Nhóm CS",
+            title: "Bạn có công việc mới",
+            preview: `${title} · Hạn ${dateText(dueAt)}`,
+            link: `/CS/Groups/group-member.html?group=${encodeURIComponent(state.group.id)}&task=${encodeURIComponent(taskRef.id)}`,
+            read: false,
+            createdAt: serverTimestamp()
+          });
+        } catch (notificationError) {
+          console.warn("Không tạo được notification task cho", member.uid, notificationError);
+        }
+      }));
+      closeModal();
+      notify("Đã giao công việc cho CS con.");
+    } catch (error) {
+      console.error("Không thể tạo task:", error);
+      notify("Không thể giao công việc.", true);
+    } finally {
+      if (button) { button.disabled = false; button.textContent = "Giao việc"; }
+    }
+  }
+
+  function ensureMarkup() {
+    if (!byId("taskList")) {
+      const host = document.querySelector("#detailPanel .detail-body") || document.querySelector("#detailPanel");
+      if (host) host.insertAdjacentHTML("beforeend", `<section class="section task-section"><div class="section-head"><div><h3>Công việc của nhóm</h3><p>Leader giao việc cho CS con và theo dõi tiến độ.</p></div><button class="btn btn-primary" id="openTaskForm" type="button"><span class="material-symbols-rounded">assignment_add</span>Giao công việc</button></div><div class="task-summary" id="taskSummary"></div><div class="task-filter-row"><select id="taskStatusFilter"><option value="all">Tất cả trạng thái</option><option value="todo">Chưa làm</option><option value="in_progress">Đang làm</option><option value="done">Hoàn thành</option><option value="cancelled">Đã hủy</option></select><select id="taskAssigneeFilter"><option value="all">Tất cả CS</option></select></div><div id="taskList" class="task-list"><div class="task-empty">Đang tải công việc...</div></div></section>`);
+    }
+    if (!state.formTemplate && byId("taskForm")) {
+      state.formTemplate = byId("taskForm").outerHTML;
+      byId("taskForm")?.remove();
+    }
+    const inlinePanel = byId("taskInlinePanel") || (() => {
+      const host = byId("taskList")?.parentElement;
+      if (!host) return null;
+      host.insertAdjacentHTML("beforeend", `<section id="taskInlinePanel" class="task-inline-panel" aria-hidden="true"><div class="task-inline-head"><div><p>PHÂN CÔNG NỘI BỘ</p><h4>Giao công việc</h4></div><button class="task-inline-close" id="closeTaskModal" type="button" aria-label="Đóng form"><span class="material-symbols-rounded">close</span></button></div></section>`);
+      return byId("taskInlinePanel");
+    })();
+    if (inlinePanel && !byId("taskForm") && state.formTemplate) inlinePanel.insertAdjacentHTML("beforeend", state.formTemplate);
+    byId("taskModal")?.setAttribute("aria-hidden", "true");
+  }
+
+  function init(options) {
+    const config = options || {};
+    state.group = config.group || window.csSelectedGroup || null;
+    state.user = config.user || window.csCurrentUser || firebase.auth().currentUser;
+    if (!state.group || !state.user || !isLeader(state.group, state.user)) return;
+    ensureMarkup();
+    state.members = normalizeMembers(state.group);
+    renderAssignees();
+    renderFilters();
+    watch(state.group);
+    byId("openTaskForm")?.addEventListener("click", openModal);
+    byId("closeTaskModal")?.addEventListener("click", closeModal);
+    byId("cancelTaskModal")?.addEventListener("click", closeModal);
+    const taskForm = byId("taskForm");
+    if (taskForm && taskForm.dataset.bound !== "true") {
+      taskForm.addEventListener("submit", saveTask);
+      taskForm.dataset.bound = "true";
+    }
+    byId("taskStatusFilter")?.addEventListener("change", renderTasks);
+    byId("taskAssigneeFilter")?.addEventListener("change", renderTasks);
+    byId("taskInlinePanel")?.addEventListener("click", event => { if (event.target.id === "taskInlinePanel") closeModal(); });
+  }
+
+  window.CSTasksLeader = { init, watch, close: closeModal };
+
+  // Tự khởi chạy khi URL có ?group=...; vẫn giữ API init để trang cũ có thể gọi lại khi đổi nhóm.
+  document.addEventListener("DOMContentLoaded", () => {
+    const groupId = new URLSearchParams(window.location.search).get("group");
+    const user = firebase.auth().currentUser;
+    if (!groupId || !user) return;
+    firebase.firestore().collection(GROUPS).doc(groupId).get().then(snapshot => {
+      if (snapshot.exists) init({ group: { id: snapshot.id, ...snapshot.data() }, user });
+    }).catch(error => console.warn("Không thể tự tải group cho task Leader:", error));
+  });
+})();
+
+</script>
 </body>
 
 </html>

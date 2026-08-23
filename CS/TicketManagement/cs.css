@@ -2960,3 +2960,11 @@ textarea:focus-visible {
     width: 100%;
   }
 }
+
+
+/* Ticket assignment summary */
+.assigned-agent-detail { grid-column: 1 / -1; }
+.assigned-agent-detail strong { display: inline-flex; align-items: center; gap: 7px; }
+.assigned-agent-detail strong::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.assigned-agent-detail.is-unassigned strong::before { background: var(--muted); }
+.assigned-agent-detail small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }

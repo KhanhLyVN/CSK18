@@ -14,6 +14,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <script src="/firebase-config.js"></script>
+  <style>
+    .chat-head-actions{display:flex;align-items:center;gap:8px}.task-toggle-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:8px 12px;border:1px solid rgba(255,255,255,.28);border-radius:9px;color:#fff;background:rgba(255,255,255,.12);font:700 11px Inter,sans-serif;cursor:pointer}.task-toggle-btn:hover,.task-toggle-btn.is-active{color:#5d0703;background:#fff}.tasks-panel{margin:0 18px 18px;padding:16px;border:1px solid rgba(93,7,3,.14);border-radius:14px;background:linear-gradient(145deg,#fffdf9,#fff7ed);box-shadow:0 8px 20px rgba(62,4,2,.06)}.tasks-panel[hidden]{display:none}.tasks-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(93,7,3,.12)}.tasks-panel-head h3{margin:0;color:#3e0402;font:700 20px/1.1 Fraunces,serif}.tasks-panel-head p{margin:5px 0 0;color:#806d61;font-size:11px}.member-task-list{display:grid;gap:10px}.member-task-card{padding:13px;border:1px solid rgba(93,7,3,.12);border-radius:11px;background:#fff}.member-task-card-top{display:flex;justify-content:space-between;gap:10px}.member-task-card h4{margin:0;color:#3e0402;font-size:13px}.member-task-card p{margin:7px 0 0;color:#806d61;font-size:11px;line-height:1.5;white-space:pre-wrap}.member-task-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;color:#806d61;font-size:10px}.member-task-status{padding:4px 7px;border-radius:999px;font-size:9px;font-weight:800}.member-task-status.todo{color:#8d6319;background:#fff2d9}.member-task-status.in_progress{color:#245a83;background:#eaf4fb}.member-task-status.done{color:#55734c;background:#eef4eb}.member-task-status.cancelled{color:#a23b2e;background:#fdeceb}.member-task-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:11px}.member-task-actions select,.member-task-actions button{min-height:34px;padding:7px 9px;border:1px solid rgba(93,7,3,.15);border-radius:8px;font-size:10px}.member-task-actions button{border:0;color:#fff;background:#5d0703;font-weight:800;cursor:pointer}.member-task-actions button:disabled{opacity:.55;cursor:not-allowed}.tasks-empty{padding:24px 12px;color:#806d61;font-size:11px;text-align:center}@media(max-width:600px){.chat-head-actions{align-items:flex-end;flex-direction:column}.task-toggle-btn{font-size:10px}.tasks-panel{margin:0 12px 12px;padding:13px}.tasks-panel-head{flex-direction:column}.member-task-actions{justify-content:stretch}.member-task-actions select,.member-task-actions button{flex:1}}
+  </style>
 </head>
 <body data-nav-page="member-groups">
   <div class="app">
@@ -56,10 +59,11 @@
                     <p id="chatSubtitle">Đang tải thành viên...</p>
                   </div>
                 </div>
-                <span class="online-chip"><i></i>Trao đổi nội bộ</span>
+                <div class="chat-head-actions"><span class="online-chip"><i></i>Trao đổi nội bộ</span><button class="task-toggle-btn" id="toggleTasksBtn" type="button" aria-expanded="false">Công việc</button></div>
               </header>
 
-              <div class="members-strip" id="membersStrip" aria-label="Thành viên CS trong nhóm"></div>
+                            <div class="members-strip" id="membersStrip" aria-label="Thành viên CS trong nhóm"></div>
+              <section class="tasks-panel" id="tasksPanel" hidden aria-label="Công việc được giao"><div class="tasks-panel-head"><div><h3>Công việc của tôi</h3><p>Các công việc do Leader giao cho bạn trong nhóm này.</p></div><span class="count" id="memberTaskCount">0 việc</span></div><div class="member-task-list" id="memberTaskList"><div class="tasks-empty">Bấm “Công việc” để tải danh sách.</div></div></section>
 
               <div class="message-list" id="messageList" aria-live="polite">
                 <div class="loading">Đang tải tin nhắn...</div>

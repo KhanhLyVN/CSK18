@@ -5,7 +5,7 @@
     const GROUPS = "groups";
     const MESSAGE_COLLECTION = "memberMessages";
     const $ = (id) => document.getElementById(id);
-    const state = { user: null, profile: null, groups: [], selected: null, unsubscribeMessages: null, toastTimer: null, isBooted: false };
+    const state = { user: null, profile: null, groups: [], selected: null, tasks: [], unsubscribeMessages: null, unsubscribeTasks: null, toastTimer: null, isBooted: false };
   
     const escapeHTML = (value) => {
       const element = document.createElement("div");
@@ -164,6 +164,7 @@
       renderGroups();
       showWorkspace(group);
       watchMessages(group);
+      watchTasks(group);
     }
   
     async function loadMemberGroups() {
@@ -193,6 +194,33 @@
       }
     }
   
+    const taskStatusText = (status) => ({ todo: "Chưa làm", in_progress: "Đang làm", done: "Hoàn thành", cancelled: "Đã hủy" }[status] || "Chưa làm");
+    const taskPriorityText = (priority) => ({ high: "Cao", medium: "Trung bình", low: "Thấp" }[priority] || "Trung bình");
+    const taskDateText = (value) => { const date = value?.toDate ? value.toDate() : value?.seconds ? new Date(value.seconds * 1000) : value ? new Date(value) : null; return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" }) : "Chưa đặt hạn"; };
+
+    function renderTasks() {
+      const list = $("memberTaskList"), count = $("memberTaskCount");
+      if (!list || !state.selected) return;
+      const visible = state.tasks.filter((task) => task.groupId === state.selected.id && Array.isArray(task.assigneeUids) && task.assigneeUids.map(String).includes(String(state.user?.uid)));
+      if (count) count.textContent = `${visible.length} việc`;
+      if (!visible.length) { list.innerHTML = '<div class="tasks-empty">Bạn chưa có công việc nào trong nhóm này.</div>'; return; }
+      list.innerHTML = visible.map((task) => `<article class="member-task-card" data-task-id="${escapeHTML(task.id)}"><div class="member-task-card-top"><h4>${escapeHTML(task.title || "Công việc chưa đặt tên")}</h4><span class="member-task-status ${escapeHTML(task.status || "todo")}">${escapeHTML(taskStatusText(task.status))}</span></div>${task.description ? `<p>${escapeHTML(task.description)}</p>` : ""}<div class="member-task-meta"><span>Ưu tiên: ${escapeHTML(taskPriorityText(task.priority))}</span><span>Hạn: ${escapeHTML(taskDateText(task.dueAt))}</span><span>Giao bởi: ${escapeHTML(task.createdByName || "Leader")}</span></div><div class="member-task-actions"><select class="member-task-status-select" aria-label="Cập nhật trạng thái"><option value="todo" ${task.status === "todo" ? "selected" : ""}>Chưa làm</option><option value="in_progress" ${task.status === "in_progress" ? "selected" : ""}>Đang làm</option><option value="done" ${task.status === "done" ? "selected" : ""}>Hoàn thành</option><option value="cancelled" ${task.status === "cancelled" ? "selected" : ""}>Đã hủy</option></select><button type="button" class="save-task-status">Cập nhật</button></div></article>`).join("");
+    }
+
+    function watchTasks(group) {
+      if (state.unsubscribeTasks) state.unsubscribeTasks();
+      state.tasks = [];
+      const list = $("memberTaskList");
+      if (!group || !state.user) return;
+      state.unsubscribeTasks = firebase.firestore().collection(GROUPS).doc(group.id).collection("tasks").orderBy("createdAt", "desc").onSnapshot((snapshot) => { state.tasks = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })); renderTasks(); }, (error) => { console.error("Không thể tải công việc:", error); if (list) list.innerHTML = '<div class="tasks-empty">Không thể tải công việc. Vui lòng kiểm tra quyền Firebase.</div>'; toast("Không thể tải công việc được giao.", true); });
+    }
+
+    async function updateTaskStatus(taskId, status, button) {
+      if (!state.selected || !taskId || !status) return;
+      button.disabled = true;
+      try { await firebase.firestore().collection(GROUPS).doc(state.selected.id).collection("tasks").doc(taskId).update({ status, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedByUid: state.user.uid, updatedByName: state.profile?.name || state.user.displayName || state.user.email || "CS con", completedAt: status === "done" ? firebase.firestore.FieldValue.serverTimestamp() : null, completedByUid: status === "done" ? state.user.uid : "" }); toast("Đã cập nhật trạng thái công việc."); } catch (error) { console.error("Không thể cập nhật công việc:", error); toast("Không thể cập nhật công việc.", true); } finally { button.disabled = false; }
+    }
+
     async function sendMessage(event) {
       event.preventDefault();
       const text = $("messageInput").value.trim();
@@ -270,6 +298,8 @@
       if (button) selectGroup(button.dataset.groupId);
     });
     $("chatComposer").addEventListener("submit", sendMessage);
+    $("toggleTasksBtn")?.addEventListener("click", () => { const panel = $("tasksPanel"), button = $("toggleTasksBtn"); if (!panel) return; const willOpen = panel.hidden; panel.hidden = !willOpen; button.classList.toggle("is-active", willOpen); button.setAttribute("aria-expanded", String(willOpen)); if (willOpen) { watchTasks(state.selected); renderTasks(); } });
+    $("memberTaskList")?.addEventListener("click", (event) => { const button = event.target.closest(".save-task-status"); if (!button) return; const card = button.closest("[data-task-id]"), select = card?.querySelector(".member-task-status-select"); if (card && select) updateTaskStatus(card.dataset.taskId, select.value, button); });
     $("messageInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();

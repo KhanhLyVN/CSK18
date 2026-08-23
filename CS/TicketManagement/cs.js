@@ -104,7 +104,7 @@
     open: { label: "Đang mở", shortLabel: "Mới nhận", color: "#B08A4E", icon: "○" },
     pending: { label: "Đang chờ", shortLabel: "Chờ học viên", color: "#B08A4E", icon: "◐" },
     in_progress: { label: "Đang xử lý", shortLabel: "Đang xử lý", color: "#5D0703", icon: "●" },
-    resolved: { label: "Đã giải quyết", shortLabel: "Đã giải quyết", color: "#4C6B3C", icon: "✓" },
+    resolved: { label: "Hoàn thành", shortLabel: "Hoàn thành", color: "#4C6B3C", icon: "✓" },
     closed: { label: "Đã đóng", shortLabel: "Đã đóng", color: "#8A7A6D", icon: "×" }
   };
 
@@ -1353,6 +1353,71 @@
     }
   }
 
+
+  function getAssignedReferences(ticket) {
+    const entries = [
+      [ticket?.assignedToUid, ticket?.assignedToName, ticket?.assignedToEmail],
+      [ticket?.assigneeUid, ticket?.assigneeName, ticket?.assigneeEmail],
+      [ticket?.recipientUid, ticket?.recipientName, ticket?.recipientEmail],
+      [ticket?.supportAgentUid, ticket?.supportAgentName, ticket?.supportAgentEmail],
+      [ticket?.assignedCSUid, ticket?.assignedCSName, ticket?.assignedCSEmail]
+    ];
+    const refs = entries.filter(row => row.some(Boolean)).map(([uid, name, email]) => ({
+      uid: uid ? String(uid).trim() : "",
+      name: name ? String(name).trim() : "",
+      email: email ? String(email).trim() : ""
+    }));
+    if (Array.isArray(ticket?.assignees)) {
+      ticket.assignees.forEach(item => refs.push({ uid: String(item?.uid || item?.id || "").trim(), name: String(item?.name || item?.displayName || "").trim(), email: String(item?.email || "").trim() }));
+    }
+    const unique = new Map();
+    refs.forEach(ref => { const key = ref.uid || ref.email.toLowerCase() || ref.name.toLowerCase(); if (key) unique.set(key, ref); });
+    return [...unique.values()];
+  }
+
+  function assignedAgentMarkup(refs, loading = false) {
+    if (loading) return '<strong>Đang tìm người phụ trách…</strong>';
+    if (!refs.length) return '<strong>Chưa phân công</strong><small>Ticket chưa có CS con được giao trả lời.</small>';
+    const names = refs.map(ref => ref.name || ref.email || ref.uid).filter(Boolean);
+    const emails = refs.map(ref => ref.email).filter(Boolean).filter((email, index, list) => list.indexOf(email) === index);
+    return `<strong>${escapeHtml(names.join(", "))}</strong>${emails.length ? `<small>${escapeHtml(emails.join(" · "))}</small>` : ""}`;
+  }
+
+  async function hydrateAssignedAgent(ticket) {
+    const holder = document.getElementById("ticketAssignedAgent");
+    if (!holder) return;
+    const refs = getAssignedReferences(ticket);
+    holder.innerHTML = assignedAgentMarkup(refs, true);
+    const resolved = refs.map(ref => ({ ...ref }));
+    for (const ref of resolved) {
+      if (ref.name || !ref.uid) continue;
+      try {
+        const snap = await db.collection(USER_COLLECTION).doc(ref.uid).get();
+        if (snap.exists) {
+          const data = snap.data() || {};
+          ref.name = data.name || data.displayName || data.fullName || data.email || ref.uid;
+          ref.email = ref.email || data.email || "";
+        }
+      } catch (error) {
+        console.warn("Không thể tải tên CS phụ trách:", error);
+      }
+    }
+    for (const ref of resolved) {
+      if (ref.name || !ref.email) continue;
+      try {
+        const snap = await db.collection(USER_COLLECTION).where("email", "==", ref.email).limit(1).get();
+        if (!snap.empty) {
+          const data = snap.docs[0].data() || {};
+          ref.name = data.name || data.displayName || data.fullName || ref.email;
+        }
+      } catch (error) {
+        console.warn("Không thể tìm CS theo email:", error);
+      }
+    }
+    holder.innerHTML = assignedAgentMarkup(resolved);
+    holder.classList.toggle("is-unassigned", !resolved.length);
+  }
+
   /* =========================================================
      DRAWER
   ========================================================= */
@@ -1377,7 +1442,6 @@
             <span class="drawer-kicker">${escapeHtml(ticketNum)}</span>
             <h3>${escapeHtml(title)}</h3>
           </div>
-          ${statusPill(ticket.status)}
         </div>
 
         <div class="detail-grid">
@@ -1411,6 +1475,12 @@
             <span>NGÀY GỬI</span>
             <strong>${escapeHtml(formatDateTime(ticket.createdAt))}</strong>
           </div>
+
+          <div class="detail-item assigned-agent-detail" id="ticketAssignedAgent">
+            <span>NGƯỜI PHỤ TRÁCH</span>
+            <strong>Đang tải…</strong>
+          </div>
+
         </div>
 
         <div class="detail-section">
@@ -1431,6 +1501,7 @@
     `;
 
     hydrateTicketAttachment(ticket);
+    hydrateAssignedAgent(ticket);
 
     const openChatButton = document.getElementById("openChatFromDrawer");
     if (openChatButton) {
@@ -2496,6 +2567,14 @@
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           notificationHistory: appendNotificationHistory(latestTicket, notification)
         };
+        if (latestTicket.status !== "closed") {
+          messageUpdate.status = "resolved";
+          messageUpdate.resolvedAt = firebase.firestore.FieldValue.serverTimestamp();
+          messageUpdate.completedAt = firebase.firestore.FieldValue.serverTimestamp();
+          messageUpdate.resolvedByUid = currentCSUser.uid;
+          messageUpdate.resolvedByEmail = currentCSUser.email || "";
+          messageUpdate.resolvedByName = currentCSProfile?.name || currentCSUser.displayName || currentCSUser.email || "Customer Success";
+        }
         if (shouldAskAfterReply) {
           messageUpdate.satisfactionAttemptCount = 1;
           messageUpdate.satisfactionRound = 1;
@@ -2505,6 +2584,19 @@
         }
         transaction.update(ticketRef, messageUpdate);
       });
+      if (selectedTicket.status !== "closed") {
+        selectedTicket.status = "resolved";
+        selectedTicket.resolvedAt = new Date();
+        selectedTicket.completedAt = new Date();
+        const allIndex = allTickets.findIndex(item => item.id === selectedTicket.id);
+        if (allIndex !== -1) allTickets[allIndex] = { ...allTickets[allIndex], ...selectedTicket };
+        const filteredIndex = filteredTickets.findIndex(item => item.id === selectedTicket.id);
+        if (filteredIndex !== -1) filteredTickets[filteredIndex] = { ...filteredTickets[filteredIndex], ...selectedTicket };
+        renderStats(allTickets);
+        renderTable();
+        renderDrawer(selectedTicket);
+      }
+
       await notifyAdminFromCS({
         action: "reply_ticket",
         actionLabel: "phản hồi ticket",
