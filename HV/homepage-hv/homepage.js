@@ -147,17 +147,31 @@ document.addEventListener("DOMContentLoaded", () => {
   // FIREBASE
   // ======================================================
   function getDatabase() {
+    // Ưu tiên biến db nếu firebase-config.js đã tạo sẵn.
+    // Nếu không có, lấy Firestore trực tiếp từ Firebase SDK.
     if (window.db) {
       return window.db;
     }
-    return window.db || null;
+
+    if (window.firebase && typeof firebase.firestore === "function") {
+      return firebase.firestore();
+    }
+
+    return null;
   }
 
   function getAuth() {
+    // Ưu tiên biến auth nếu firebase-config.js đã tạo sẵn.
+    // Nếu không có, lấy Firebase Auth trực tiếp từ Firebase SDK.
     if (window.auth) {
       return window.auth;
     }
-    return window.auth || null;
+
+    if (window.firebase && typeof firebase.auth === "function") {
+      return firebase.auth();
+    }
+
+    return null;
   }
 
   // ======================================================
@@ -237,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!welcomeNameEl) {
       return;
     }
-    const displayName = (name || "Học viên").trim();
+    const displayName = String(name || "").trim();
     welcomeNameEl.textContent = displayName || "Học viên";
   }
 
@@ -459,19 +473,50 @@ document.addEventListener("DOMContentLoaded", () => {
     // ----------------------------------------------------
     const currentUid = user.uid;
     currentStudentUid = currentUid;
-    console.log("Học viên hiện tại:", currentUid);
+    console.log("Người dùng hiện tại:", {
+      uid: currentUid,
+      email: user.email,
+      displayName: user.displayName,
+    });
+
+    
 
     // ====================================================
     // LẤY PROFILE
     // ====================================================
     try {
-      const userDoc = await database.collection("users").doc(currentUid).get();
-      const userData = userDoc.exists ? userDoc.data() : {};
-      const displayName = userData.name || user.displayName || "Học viên";
-      updateWelcomeName(displayName);
+      let userData = {};
+
+      // Trường hợp Document ID của users là UID.
+      const userDocById = await database
+        .collection("users")
+        .doc(currentUid)
+        .get();
+
+      if (userDocById.exists) {
+        userData = userDocById.data() || {};
+      } else {
+        // Trường hợp Document ID khác UID: tìm theo trường uid.
+        const userQuery = await database
+          .collection("users")
+          .where("uid", "==", currentUid)
+          .limit(1)
+          .get();
+
+        if (!userQuery.empty) {
+          userData = userQuery.docs[0].data() || {};
+        }
+      }
+
+      // Chỉ lấy đúng trường `name` trong hồ sơ Firestore.
+      const displayName = userData.name;
+      updateWelcomeName(displayName || "Học viên");
+
+      console.log("Tên lấy từ trường name:", displayName);
     } catch (error) {
-      console.error("Không thể lấy thông tin học viên:", error);
-      updateWelcomeName(user.displayName || "Học viên");
+      console.error("Không thể lấy thông tin người dùng:", error);
+      // Không dùng username hoặc email làm tên hiển thị.
+      updateWelcomeName("Học viên");
     }
 
     // ====================================================
