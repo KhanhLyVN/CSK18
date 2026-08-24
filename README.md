@@ -289,6 +289,10 @@ py -m http.server 8000
 3. Mở `CS/login/login.html`.
 4. Chọn **Open with Live Server**.
 5. Bảo đảm URL được phục vụ từ thư mục gốc dự án để các route bắt đầu bằng `/` hoạt động chính xác.
+6. Đăng nhập vào trang admin: hcm@admin.com, mật khẩu: admin123456
+   Đăng nhập vào trang CS leader: a.bv@gmail.com, mật khẩu: buivan123
+   Đăng nhập vào trang CS: khanh.bp@gmail.com, mật khẩu: buikhanh123
+   Đăng nhập vào trang học viên: nguyenvanan@student.edu.vn, mật khẩu: nguyenan123
 
 ---
 
