@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="admin-theme.css">
 </head>
 
-<body data-admin-page="accounts">
+<body data-admin-page="add-cs">
   <div class="app-shell">
     <div id="adminBar" aria-label="Thanh điều hướng quản trị dùng chung"></div>
     <!-- Main Content Area -->
@@ -161,6 +161,21 @@
     </div>
     <div id="drawerContent"></div>
   </aside>
+
+  <!-- Create CS account popup -->
+  <div class="create-account-modal" id="createAccountModal" aria-hidden="true">
+    <div class="create-account-dialog" role="dialog" aria-modal="true" aria-labelledby="createAccountTitle">
+      <div class="create-account-modal-head">
+        <div>
+          <small>TÀI KHOẢN CUSTOMER SUCCESS</small>
+          <h2 id="createAccountTitle">Tạo tài khoản CS</h2>
+        </div>
+        <button class="close-btn create-account-close" id="closeCreateAccount" type="button" aria-label="Đóng popup">×</button>
+      </div>
+      <iframe id="createAccountFrame" title="Tạo tài khoản CS" src="about:blank" loading="lazy"></iframe>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <!-- <div class="toast" id="toast"></div> -->
   <!-- App Main Logic -->

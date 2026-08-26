@@ -103,13 +103,38 @@
         closeDrawer();
       }
     });
-    /* Add account */
-    elements.addAccountBtn?.addEventListener("click", () => {
-      /*
-       * Trang tạo tài khoản của bé có thể thay
-       * bằng đường dẫn thật sau này.
-       */
-      window.location.href = "./addAccount.html";
+    /* Add account: mở popup, không chuyển trang */
+    const createAccountModal = document.getElementById("createAccountModal");
+    const createAccountFrame = document.getElementById("createAccountFrame");
+    const closeCreateAccount = document.getElementById("closeCreateAccount");
+
+    function openCreateAccountModal() {
+      if (!createAccountModal || !createAccountFrame) return;
+      if (createAccountFrame.getAttribute("src") === "about:blank") {
+        createAccountFrame.src = "./addAccount.html?embedded=1";
+      }
+      createAccountModal.classList.add("show");
+      createAccountModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("create-account-modal-open");
+    }
+
+    function closeCreateAccountModal() {
+      if (!createAccountModal) return;
+      createAccountModal.classList.remove("show");
+      createAccountModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("create-account-modal-open");
+    }
+
+    elements.addAccountBtn?.addEventListener("click", openCreateAccountModal);
+    closeCreateAccount?.addEventListener("click", closeCreateAccountModal);
+    createAccountModal?.addEventListener("click", (event) => {
+      if (event.target === createAccountModal) closeCreateAccountModal();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && createAccountModal?.classList.contains("show")) {
+        closeCreateAccountModal();
+      }
     });
   }
 

@@ -877,26 +877,16 @@
     /*
      * Sidebar
      */
-    if (
-      sidebar &&
-      host &&
-      sidebar.parentElement !== host
-    ) {
-      host.prepend(
-        sidebar
-      );
-    }
     /*
-     * Backdrop
+     * Sidebar và backdrop luôn được đưa trực tiếp vào body.
+     * Nếu để trong .app-shell/.main-content, transform hoặc overflow
+     * của từng trang có thể làm position: fixed bị dịch chuyển.
      */
-    if (
-      backdrop &&
-      host &&
-      backdrop.parentElement !== host
-    ) {
-      host.appendChild(
-        backdrop
-      );
+    if (sidebar && document.body && sidebar.parentElement !== document.body) {
+      document.body.prepend(sidebar);
+    }
+    if (backdrop && document.body && backdrop.parentElement !== document.body) {
+      document.body.appendChild(backdrop);
     }
     /*
      * Topbar
